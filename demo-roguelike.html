@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Roguelike Portfolio | Anshull Garg - Software Developer</title>
+<meta name="description" content="Explore Anshull Garg's portfolio as a dungeon crawler. Navigate rooms, discover projects, collect skills, and uncover the story of a Software Developer at Walmart.">
+<meta name="theme-color" content="#0D0D1A">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   CSS CUSTOM PROPERTIES
+   ========================================================================== */
+:root {
+  --stone-dark: #0D0D1A;
+  --stone-mid: #1A1A2E;
+  --stone-floor: #2A2A3E;
+  --stone-light: #3A3A4E;
+  --player-green: #33FF66;
+  --amber-glow: #FFB000;
+  --amber-dim: #996A00;
+  --amber-soft: rgba(255, 176, 0, 0.08);
+  --amber-medium: rgba(255, 176, 0, 0.15);
+  --torch-glow: rgba(255, 176, 0, 0.25);
+  --red-accent: #FF4444;
+  --blue-accent: #44AAFF;
+  --purple-accent: #AA66FF;
+  --gold-accent: #FFD700;
+  --text-primary: #E8E0D0;
+  --text-dim: #8A8070;
+  --text-ghost: #4A4540;
+  --panel-bg: rgba(13, 13, 26, 0.95);
+  --panel-border: #3A3A4E;
+  --pixel-border: 0 0 0 2px #3A3A4E, 0 0 0 4px #0D0D1A;
+  --room-size: 80px;
+  --corridor-size: 20px;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-body: 'Space Mono', monospace;
+}
+
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(255, 176, 0, 0.3);
+  color: #FFB000;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--stone-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   INTRO SCREEN
+   ========================================================================== */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.8s ease;
+}
+
+#intro-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#intro-screen.hidden { display: none; }
+
+.intro-title {
+  font-family: var(--font-pixel);
+  font-size: 20px;
+  color: var(--amber-glow);
+  text-align: center;
+  line-height: 2;
+  text-shadow: 0 0 20px rgba(255, 176, 0, 0.5), 0 0 40px rgba(255, 176, 0, 0.2);
+  animation: titlePulse 3s ease-in-out infinite;
+  margin-bottom: 30px;
+}
+
+.intro-subtitle {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 2.2;
+  margin-bottom: 50px;
+}
+
+.intro-press {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--player-green);
+  animation: blink 1.2s step-end infinite;
+}
+
+.intro-hint {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-ghost);
+  margin-top: 12px;
+}
+
+@keyframes titlePulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(255, 176, 0, 0.5), 0 0 40px rgba(255, 176, 0, 0.2); }
+  50% { text-shadow: 0 0 30px rgba(255, 176, 0, 0.7), 0 0 60px rgba(255, 176, 0, 0.4); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Torch flicker on intro */
+.torch-border {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: var(--amber-glow);
+  border-radius: 50%;
+  animation: torchFlicker 0.8s ease-in-out infinite alternate;
+  box-shadow: 0 0 10px var(--amber-glow), 0 0 20px rgba(255, 176, 0, 0.4);
+}
+
+@keyframes torchFlicker {
+  0% { opacity: 0.6; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.7; transform: scale(0.9); }
+}
+
+/* ==========================================================================
+   MAIN GAME CONTAINER
+   ========================================================================== */
+#game-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#game-container.active { opacity: 1; }
+
+/* ==========================================================================
+   HUD - TOP BAR
+   ========================================================================== */
+#hud-top {
+  height: 44px;
+  background: linear-gradient(180deg, rgba(13, 13, 26, 0.98), rgba(13, 13, 26, 0.92));
+  border-bottom: 2px solid var(--stone-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.hud-stat {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-stat .label { color: var(--text-ghost); }
+.hud-stat .value { color: var(--amber-glow); }
+.hud-stat .value.green { color: var(--player-green); }
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hud-progress-bar {
+  width: 100px;
+  height: 6px;
+  background: var(--stone-mid);
+  border: 1px solid var(--stone-light);
+  overflow: hidden;
+}
+
+.hud-progress-fill {
+  height: 100%;
+  background: var(--player-green);
+  transition: width 0.5s ease;
+  box-shadow: 0 0 6px rgba(51, 255, 102, 0.5);
+}
+
+/* ==========================================================================
+   GAME AREA (map + content panel)
+   ========================================================================== */
+#game-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   MAP VIEWPORT
+   ========================================================================== */
+#map-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Subtle vignette */
+#map-viewport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+#map-canvas {
+  position: relative;
+  /* Size set dynamically */
+}
+
+/* ==========================================================================
+   ROOM STYLES
+   ========================================================================== */
+.room {
+  position: absolute;
+  width: var(--room-size);
+  height: var(--room-size);
+  border-radius: 4px;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+/* Hidden room (not discovered, not adjacent) */
+.room.hidden-room {
+  background: #050510;
+  border: 1px solid #0A0A15;
+}
+
+/* Adjacent room (can see outline) */
+.room.adjacent {
+  background: #0C0C1A;
+  border: 1px solid var(--stone-mid);
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+}
+
+.room.adjacent::after {
+  content: '?';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  color: var(--text-ghost);
+  opacity: 0.4;
+}
+
+/* Visited room */
+.room.visited {
+  background: var(--stone-floor);
+  border: 1px solid var(--stone-light);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* Current room */
+.room.current {
+  background: var(--stone-floor);
+  border: 2px solid var(--amber-glow);
+  box-shadow:
+    0 0 20px var(--torch-glow),
+    0 0 40px rgba(255, 176, 0, 0.1),
+    inset 0 0 15px rgba(255, 176, 0, 0.05);
+}
+
+/* Room icon */
+.room-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.room.visited .room-icon,
+.room.current .room-icon {
+  opacity: 1;
+}
+
+/* Room label */
+.room-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-pixel);
+  font-size: 5px;
+  color: var(--text-ghost);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.room.visited .room-label,
+.room.current .room-label {
+  opacity: 0.6;
+}
+
+.room.current .room-label {
+  color: var(--amber-glow);
+  opacity: 1;
+}
+
+/* Room collected indicator */
+.room-collected {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  background: var(--player-green);
+  border-radius: 50%;
+  font-size: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 6px rgba(51, 255, 102, 0.5);
+}
+
+.room.collected .room-collected { opacity: 1; }
+
+/* Stone texture overlay for rooms */
+.room.visited::before,
+.room.current::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(circle at 60% 70%, rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 12px 12px, 18px 18px, 9px 9px;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   CORRIDORS
+   ========================================================================== */
+.corridor {
+  position: absolute;
+  background: transparent;
+  transition: all 0.4s ease;
+}
+
+.corridor.horizontal {
+  width: var(--corridor-size);
+  height: 12px;
+}
+
+.corridor.vertical {
+  width: 12px;
+  height: var(--corridor-size);
+}
+
+.corridor.revealed {
+  background: var(--stone-floor);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+.corridor.active {
+  background: var(--stone-floor);
+  box-shadow:
+    inset 0 0 6px rgba(0,0,0,0.3),
+    0 0 10px var(--torch-glow);
+}
+
+/* ==========================================================================
+   PLAYER
+   ========================================================================== */
+#player {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--player-green);
+  border-radius: 50%;
+  z-index: 10;
+  transition: left 0.25s ease, top 0.25s ease;
+  box-shadow:
+    0 0 10px rgba(51, 255, 102, 0.6),
+    0 0 20px rgba(51, 255, 102, 0.3),
+    0 0 30px rgba(51, 255, 102, 0.15);
+  animation: playerPulse 2s ease-in-out infinite;
+}
+
+#player::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  width: 4px;
+  height: 3px;
+  background: rgba(0, 80, 20, 0.7);
+  border-radius: 50%;
+}
+
+#player.moving {
+  animation: playerBounce 0.25s ease;
+}
+
+@keyframes playerPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(51, 255, 102, 0.6), 0 0 20px rgba(51, 255, 102, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(51, 255, 102, 0.8), 0 0 30px rgba(51, 255, 102, 0.4); }
+}
+
+@keyframes playerBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   CONTENT PANEL (right side)
+   ========================================================================== */
+#content-panel {
+  width: 420px;
+  max-width: 100%;
+  background: var(--panel-bg);
+  border-left: 2px solid var(--stone-light);
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 50;
+  position: relative;
+  flex-shrink: 0;
+}
+
+#content-panel.open {
+  transform: translateX(0);
+}
+
+#content-panel::-webkit-scrollbar {
+  width: 4px;
+}
+#content-panel::-webkit-scrollbar-track {
+  background: var(--stone-dark);
+}
+#content-panel::-webkit-scrollbar-thumb {
+  background: var(--stone-light);
+}
+
+.panel-header {
+  padding: 20px;
+  border-bottom: 2px solid var(--stone-light);
+  position: sticky;
+  top: 0;
+  background: var(--panel-bg);
+  z-index: 2;
+}
+
+.panel-room-type {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--amber-glow);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.panel-room-name {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+
+.panel-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  background: var(--stone-mid);
+  border: 1px solid var(--stone-light);
+  color: var(--text-dim);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.panel-close:hover {
+  background: var(--red-accent);
+  color: #fff;
+  border-color: var(--red-accent);
+}
+
+.panel-body {
+  padding: 20px;
+}
+
+.panel-body p {
+  margin-bottom: 12px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  font-size: 12px;
+}
+
+.panel-body h3 {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--amber-glow);
+  margin: 20px 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Collect button */
+.collect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid var(--player-green);
+  color: var(--player-green);
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 16px;
+  text-transform: uppercase;
+}
+
+.collect-btn:hover {
+  background: var(--player-green);
+  color: var(--stone-dark);
+  box-shadow: 0 0 15px rgba(51, 255, 102, 0.4);
+}
+
+.collect-btn.collected {
+  background: rgba(51, 255, 102, 0.1);
+  border-color: var(--text-ghost);
+  color: var(--text-ghost);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Project card */
+.project-card {
+  background: var(--stone-mid);
+  border: 1px solid var(--stone-light);
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+.project-card .project-name {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--gold-accent);
+  margin-bottom: 8px;
+}
+
+.project-card .project-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  background: rgba(255, 176, 0, 0.1);
+  border: 1px solid rgba(255, 176, 0, 0.2);
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  color: var(--amber-glow);
+  margin: 2px 4px 2px 0;
+}
+
+/* Skill item */
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--stone-mid);
+  border: 1px solid var(--stone-light);
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.skill-item:hover {
+  border-color: var(--amber-glow);
+  background: rgba(255, 176, 0, 0.05);
+}
+
+.skill-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+}
+
+.skill-name {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--text-primary);
+}
+
+.skill-type {
+  font-size: 10px;
+  color: var(--text-ghost);
+}
+
+.skill-rarity {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  margin-left: auto;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.rarity-legendary { color: var(--gold-accent); background: rgba(255, 215, 0, 0.15); border: 1px solid rgba(255, 215, 0, 0.3); }
+.rarity-epic { color: var(--purple-accent); background: rgba(170, 102, 255, 0.15); border: 1px solid rgba(170, 102, 255, 0.3); }
+.rarity-rare { color: var(--blue-accent); background: rgba(68, 170, 255, 0.15); border: 1px solid rgba(68, 170, 255, 0.3); }
+.rarity-common { color: var(--player-green); background: rgba(51, 255, 102, 0.1); border: 1px solid rgba(51, 255, 102, 0.2); }
+
+/* Timeline */
+.timeline-entry {
+  position: relative;
+  padding-left: 24px;
+  padding-bottom: 20px;
+  border-left: 2px solid var(--stone-light);
+  margin-left: 8px;
+}
+
+.timeline-entry:last-child { padding-bottom: 0; }
+
+.timeline-entry::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 2px;
+  width: 10px;
+  height: 10px;
+  background: var(--amber-glow);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
+}
+
+.timeline-entry.current-role::before {
+  background: var(--player-green);
+  box-shadow: 0 0 8px rgba(51, 255, 102, 0.5);
+  animation: playerPulse 2s ease-in-out infinite;
+}
+
+.timeline-year {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--amber-glow);
+  margin-bottom: 4px;
+}
+
+.timeline-role {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.timeline-company {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.timeline-desc {
+  font-size: 11px;
+  color: var(--text-ghost);
+  line-height: 1.7;
+}
+
+/* Contact links */
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--stone-mid);
+  border: 1px solid var(--stone-light);
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.contact-link:hover {
+  border-color: var(--amber-glow);
+  background: rgba(255, 176, 0, 0.05);
+  transform: translateX(4px);
+}
+
+.contact-link .link-icon { font-size: 20px; }
+
+.contact-link .link-label {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--text-dim);
+}
+
+.contact-link .link-value {
+  font-size: 11px;
+  color: var(--amber-glow);
+}
+
+/* Boss room */
+.boss-title {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--red-accent);
+  text-align: center;
+  margin: 20px 0;
+  text-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+  animation: bossFlash 2s ease-in-out infinite;
+}
+
+@keyframes bossFlash {
+  0%, 100% { text-shadow: 0 0 20px rgba(255, 68, 68, 0.5); }
+  50% { text-shadow: 0 0 40px rgba(255, 68, 68, 0.8), 0 0 60px rgba(255, 68, 68, 0.3); }
+}
+
+.boss-hp-bar {
+  width: 100%;
+  height: 16px;
+  background: var(--stone-mid);
+  border: 2px solid var(--red-accent);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.boss-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-accent), #FF6644);
+  transition: width 1s ease;
+}
+
+.boss-hp-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+.hire-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(180deg, var(--red-accent), #CC2222);
+  border: 2px solid #FF6644;
+  color: #fff;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  cursor: pointer;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  animation: hirePulse 2s ease-in-out infinite;
+}
+
+.hire-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
+}
+
+@keyframes hirePulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(255, 68, 68, 0.6); }
+}
+
+/* Campfire (about room) */
+.campfire {
+  text-align: center;
+  margin: 16px 0;
+  font-size: 32px;
+  animation: campfireGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes campfireGlow {
+  0% { text-shadow: 0 0 10px rgba(255, 100, 0, 0.4); }
+  100% { text-shadow: 0 0 25px rgba(255, 100, 0, 0.7), 0 0 40px rgba(255, 50, 0, 0.3); }
+}
+
+/* Fun fact (treasure room) */
+.fun-fact {
+  padding: 12px 16px;
+  background: rgba(255, 215, 0, 0.05);
+  border-left: 3px solid var(--gold-accent);
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.fun-fact .fact-label {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  color: var(--gold-accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   MINIMAP
+   ========================================================================== */
+#minimap {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(13, 13, 26, 0.9);
+  border: 2px solid var(--stone-light);
+  padding: 8px;
+  z-index: 200;
+  box-shadow: var(--pixel-border);
+}
+
+.minimap-title {
+  font-family: var(--font-pixel);
+  font-size: 5px;
+  color: var(--text-ghost);
+  text-align: center;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.minimap-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 12px);
+  grid-template-rows: repeat(7, 12px);
+  gap: 2px;
+}
+
+.minimap-cell {
+  width: 12px;
+  height: 12px;
+  background: transparent;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+
+.minimap-cell.mm-empty { background: transparent; }
+.minimap-cell.mm-hidden { background: #0A0A15; }
+.minimap-cell.mm-adjacent { background: #151520; border: 1px solid #202030; }
+.minimap-cell.mm-visited { background: var(--stone-floor); }
+.minimap-cell.mm-current {
+  background: var(--player-green);
+  box-shadow: 0 0 4px rgba(51, 255, 102, 0.6);
+}
+.minimap-cell.mm-collected {
+  background: var(--stone-floor);
+  position: relative;
+}
+.minimap-cell.mm-collected::after {
+  content: '';
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 3px; height: 3px;
+  background: var(--player-green);
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   ACHIEVEMENT TOAST
+   ========================================================================== */
+#achievement-toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: rgba(13, 13, 26, 0.95);
+  border: 2px solid var(--gold-accent);
+  padding: 12px 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+#achievement-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.achievement-icon { font-size: 24px; }
+
+.achievement-text {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--gold-accent);
+  line-height: 2;
+}
+
+.achievement-label {
+  font-size: 6px;
+  color: var(--text-ghost);
+  display: block;
+}
+
+/* ==========================================================================
+   MOBILE D-PAD
+   ========================================================================== */
+#dpad {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 200;
+}
+
+.dpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(3, 48px);
+  gap: 2px;
+}
+
+.dpad-btn {
+  width: 48px;
+  height: 48px;
+  background: rgba(13, 13, 26, 0.9);
+  border: 2px solid var(--stone-light);
+  color: var(--text-dim);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: all 0.1s ease;
+}
+
+.dpad-btn:active {
+  background: var(--amber-glow);
+  color: var(--stone-dark);
+  border-color: var(--amber-glow);
+}
+
+.dpad-btn.empty {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
+/* ==========================================================================
+   ROOM LOCATION INDICATOR
+   ========================================================================== */
+#room-indicator {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--amber-glow);
+  text-align: center;
+  z-index: 200;
+  text-shadow: 0 0 10px rgba(255, 176, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+#room-indicator.show { opacity: 1; }
+
+/* ==========================================================================
+   INVENTORY PANEL (bottom-left, above minimap)
+   ========================================================================== */
+#inventory {
+  position: fixed;
+  bottom: 130px;
+  left: 16px;
+  background: rgba(13, 13, 26, 0.9);
+  border: 2px solid var(--stone-light);
+  padding: 8px;
+  z-index: 200;
+  box-shadow: var(--pixel-border);
+  max-height: 200px;
+  overflow-y: auto;
+  width: 160px;
+}
+
+.inventory-title {
+  font-family: var(--font-pixel);
+  font-size: 5px;
+  color: var(--text-ghost);
+  text-align: center;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.inventory-item .inv-icon { font-size: 12px; }
+.inventory-item .inv-name {
+  font-family: var(--font-pixel);
+  font-size: 5px;
+  color: var(--text-primary);
+}
+
+.inventory-empty {
+  font-family: var(--font-pixel);
+  font-size: 5px;
+  color: var(--text-ghost);
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root {
+    --room-size: 60px;
+    --corridor-size: 14px;
+  }
+
+  #content-panel {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    z-index: 500;
+    transform: translateY(100%);
+  }
+
+  #content-panel.open {
+    transform: translateY(0);
+  }
+
+  #dpad { display: block; }
+
+  #minimap {
+    bottom: auto;
+    top: 52px;
+    left: 8px;
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+
+  #inventory {
+    display: none;
+  }
+
+  .intro-title { font-size: 14px; }
+  .intro-subtitle { font-size: 7px; }
+
+  #room-indicator {
+    bottom: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --room-size: 48px;
+    --corridor-size: 10px;
+  }
+
+  .intro-title { font-size: 11px; }
+
+  .hud-stat { font-size: 6px; }
+  .hud-progress-bar { width: 60px; }
+
+  .panel-room-name { font-size: 10px; }
+  .panel-body p { font-size: 11px; }
+}
+
+/* ==========================================================================
+   SCANLINE OVERLAY
+   ========================================================================== */
+#scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* Pixel border utility */
+.pixel-border {
+  box-shadow: var(--pixel-border);
+}
+
+/* Scrollbar for body content */
+.panel-body::-webkit-scrollbar {
+  width: 4px;
+}
+.panel-body::-webkit-scrollbar-track {
+  background: var(--stone-dark);
+}
+.panel-body::-webkit-scrollbar-thumb {
+  background: var(--stone-light);
+}
+</style>
+</head>
+<body>
+
+<!-- ====================================================================
+     INTRO SCREEN
+     ==================================================================== -->
+<div id="intro-screen">
+  <!-- Torch decorations -->
+  <div class="torch-border" style="top:10%;left:10%"></div>
+  <div class="torch-border" style="top:10%;right:10%"></div>
+  <div class="torch-border" style="bottom:15%;left:15%"></div>
+  <div class="torch-border" style="bottom:15%;right:15%"></div>
+  <div class="torch-border" style="top:50%;left:5%"></div>
+  <div class="torch-border" style="top:50%;right:5%"></div>
+
+  <div class="intro-title">
+    THE ROGUELIKE<br>PORTFOLIO
+  </div>
+  <div class="intro-subtitle">
+    A dungeon-crawling journey through the<br>
+    work and world of Anshull Garg<br>
+    Software Developer at Walmart
+  </div>
+  <div class="intro-press">PRESS ANY KEY TO BEGIN</div>
+  <div class="intro-hint">or tap anywhere on mobile</div>
+</div>
+
+<!-- ====================================================================
+     GAME CONTAINER
+     ==================================================================== -->
+<div id="game-container">
+
+  <!-- HUD Top Bar -->
+  <div id="hud-top">
+    <div class="hud-left">
+      <div class="hud-stat">
+        <span class="label">EXPLORER:</span>
+        <span class="value green">VISITOR</span>
+      </div>
+      <div class="hud-stat">
+        <span class="label">ROOMS:</span>
+        <span class="value" id="hud-rooms">1/12</span>
+      </div>
+      <div class="hud-stat">
+        <span class="label">ITEMS:</span>
+        <span class="value" id="hud-items">0/8</span>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-stat">
+        <span class="label">PROGRESS</span>
+        <div class="hud-progress-bar">
+          <div class="hud-progress-fill" id="hud-progress" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div id="game-area">
+    <!-- Map Viewport -->
+    <div id="map-viewport">
+      <div id="map-canvas">
+        <!-- Rooms and corridors rendered by JS -->
+        <div id="player"></div>
+      </div>
+    </div>
+
+    <!-- Content Panel (slides in from right) -->
+    <div id="content-panel">
+      <div class="panel-header">
+        <div class="panel-room-type" id="panel-type"></div>
+        <div class="panel-room-name" id="panel-name"></div>
+        <button class="panel-close" id="panel-close-btn">X</button>
+      </div>
+      <div class="panel-body" id="panel-body">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Minimap -->
+<div id="minimap">
+  <div class="minimap-title">MAP</div>
+  <div class="minimap-grid" id="minimap-grid"></div>
+</div>
+
+<!-- Inventory -->
+<div id="inventory">
+  <div class="inventory-title">INVENTORY</div>
+  <div id="inventory-list">
+    <div class="inventory-empty">No items yet...</div>
+  </div>
+</div>
+
+<!-- Mobile D-Pad -->
+<div id="dpad">
+  <div class="dpad-grid">
+    <div class="dpad-btn empty"></div>
+    <div class="dpad-btn" data-dir="up">^</div>
+    <div class="dpad-btn empty"></div>
+    <div class="dpad-btn" data-dir="left">&lt;</div>
+    <div class="dpad-btn empty"></div>
+    <div class="dpad-btn" data-dir="right">&gt;</div>
+    <div class="dpad-btn empty"></div>
+    <div class="dpad-btn" data-dir="down">v</div>
+    <div class="dpad-btn empty"></div>
+  </div>
+</div>
+
+<!-- Room Indicator -->
+<div id="room-indicator"></div>
+
+<!-- Achievement Toast -->
+<div id="achievement-toast">
+  <div class="achievement-icon"></div>
+  <div>
+    <span class="achievement-label">ACHIEVEMENT UNLOCKED</span>
+    <div class="achievement-text" id="achievement-text"></div>
+  </div>
+</div>
+
+<!-- Scanlines overlay -->
+<div id="scanlines"></div>
+
+<!-- ====================================================================
+     GAME ENGINE
+     ==================================================================== -->
+<script>
+(function() {
+  'use strict';
+
+  // ======================================================================
+  // DUNGEON MAP DATA
+  // ======================================================================
+  // 7x7 grid. null = empty/wall, string = room id
+  // Rooms are identified by their grid position [row][col]
+
+  const ROOM_TYPES = {
+    start:      { icon: '&#x1F3F0;', label: 'ENTRANCE HALL', type: 'Start Room' },
+    project1:   { icon: '&#x1F4DC;', label: 'SCROLL CHAMBER', type: 'Project Vault' },
+    project2:   { icon: '&#x1F4DC;', label: 'ARTIFACT ROOM', type: 'Project Vault' },
+    project3:   { icon: '&#x1F4DC;', label: 'RELIC ARCHIVE', type: 'Project Vault' },
+    skills:     { icon: '&#x2694;&#xFE0F;', label: 'THE ARMORY', type: 'Skills Arsenal' },
+    about:      { icon: '&#x1F525;', label: 'CAMPFIRE', type: 'Rest Area' },
+    experience: { icon: '&#x1F3C6;', label: 'HALL OF FAME', type: 'Trophy Hall' },
+    contact:    { icon: '&#x1F426;', label: 'PIGEON POST', type: 'Message Board' },
+    treasure:   { icon: '&#x1F48E;', label: 'SECRET STASH', type: 'Hidden Chamber' },
+    boss:       { icon: '&#x1F480;', label: 'BOSS CHAMBER', type: 'Final Encounter' },
+    corridor1:  { icon: '&#x1F5DD;&#xFE0F;', label: 'PASSAGE', type: 'Corridor' },
+    corridor2:  { icon: '&#x1F5DD;&#xFE0F;', label: 'TUNNEL', type: 'Corridor' }
+  };
+
+  // Grid layout: [row][col] -> room_id or null
+  // 7x7 grid. Player starts at center (3,3)
+  const GRID = [
+    [null,       null,       'boss',     null,       'treasure', null,       null      ],
+    [null,       null,       'experience', null,     'corridor2', null,      null      ],
+    ['project1', 'corridor1', 'skills',  null,       'contact',  null,      null      ],
+    [null,       null,       'start',    null,       null,       null,       null      ],
+    [null,       'project2', 'about',    null,       null,       null,       null      ],
+    [null,       null,       'project3', null,       null,       null,       null      ],
+    [null,       null,       null,       null,       null,       null,       null      ]
+  ];
+
+  // Connections between rooms: [[r1,c1],[r2,c2]] means rooms are connected
+  const CONNECTIONS = [
+    // Center cluster
+    [[3,2],[2,2]], // start -> skills (N)
+    [[3,2],[4,2]], // start -> about (S)
+    [[2,2],[2,1]], // skills -> corridor1 (W)
+    [[2,1],[2,0]], // corridor1 -> project1 (W)
+    [[2,2],[1,2]], // skills -> experience (N)
+    [[1,2],[0,2]], // experience -> boss (N)
+    [[4,2],[4,1]], // about -> project2 (W)
+    [[4,2],[5,2]], // about -> project3 (S)
+    [[2,2],[2,4]], // skills -> contact (E) -- long connection
+    [[2,4],[1,4]], // contact -> corridor2 (N)
+    [[1,4],[0,4]], // corridor2 -> treasure (N)
+  ];
+
+  // Room content data
+  const ROOM_CONTENT = {
+    start: {
+      html: `
+        <p>You awaken in a dimly lit stone chamber. Torches flicker on the walls, casting dancing shadows across ancient carvings.</p>
+        <p>A weathered sign reads:</p>
+        <div style="text-align:center;padding:16px;border:2px solid var(--amber-glow);margin:16px 0;background:rgba(255,176,0,0.05);">
+          <div style="font-family:var(--font-pixel);font-size:9px;color:var(--amber-glow);line-height:2.2;">
+            "Welcome, adventurer.<br>
+            Explore these halls to discover<br>
+            the story of Anshull Garg."
+          </div>
+        </div>
+        <h3>How to Explore</h3>
+        <p><strong style="color:var(--amber-glow);">Arrow keys</strong> or <strong style="color:var(--amber-glow);">WASD</strong> to move between rooms.<br>
+        On mobile, use the <strong style="color:var(--amber-glow);">D-Pad</strong> in the bottom-right corner.</p>
+        <p>Each room contains a piece of the portfolio. <strong style="color:var(--player-green);">Collect items</strong> by clicking the button in each room to track your progress.</p>
+        <p>The <strong style="color:var(--text-primary);">minimap</strong> in the bottom-left shows your explored territory. Rooms marked with <span style="color:var(--text-ghost);">?</span> are adjacent and unexplored.</p>
+        <h3>Legend</h3>
+        <p>
+          &#x1F4DC; Project Vaults &mdash; Discover my work<br>
+          &#x2694;&#xFE0F; The Armory &mdash; Skills and tech stack<br>
+          &#x1F525; Campfire &mdash; My story<br>
+          &#x1F3C6; Hall of Fame &mdash; Career timeline<br>
+          &#x1F426; Pigeon Post &mdash; Get in touch<br>
+          &#x1F48E; Secret Stash &mdash; Hidden surprises<br>
+          &#x1F480; Boss Chamber &mdash; The final encounter
+        </p>
+      `,
+      collectible: false
+    },
+
+    project1: {
+      html: `
+        <div class="project-card">
+          <div class="project-name">&#x1F4DC; SCROLL OF COMMERCE</div>
+          <div class="project-desc">A high-performance e-commerce platform built to handle millions of concurrent users. Architected with micro-frontend patterns for independent team deployments and optimized for Core Web Vitals.</div>
+          <h3>The Challenge</h3>
+          <p>Build a scalable storefront capable of handling Black Friday-level traffic spikes while maintaining sub-second page loads and seamless checkout experiences.</p>
+          <h3>The Solution</h3>
+          <p>Implemented server-side rendering with intelligent caching layers, optimistic UI updates for cart operations, and edge-deployed assets for global low-latency delivery. Reduced page load time by 40% and improved conversion rates.</p>
+          <h3>Tech Stack</h3>
+          <div style="margin-top:8px;">
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">Next.js</span>
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">GraphQL</span>
+            <span class="tech-tag">Redis</span>
+          </div>
+        </div>
+      `,
+      collectible: true,
+      collectName: 'Scroll of Commerce',
+      collectIcon: '&#x1F4DC;'
+    },
+
+    project2: {
+      html: `
+        <div class="project-card">
+          <div class="project-name">&#x1F4DC; TOME OF REAL-TIME</div>
+          <div class="project-desc">A real-time collaborative dashboard enabling teams to monitor, analyze, and act on live data streams. Features WebSocket-driven updates, interactive charts, and role-based access controls.</div>
+          <h3>The Challenge</h3>
+          <p>Create a unified monitoring interface that aggregates data from multiple microservices and presents actionable insights with zero perceptible lag.</p>
+          <h3>The Solution</h3>
+          <p>Built a custom WebSocket orchestration layer with automatic reconnection and state reconciliation. Implemented virtualized rendering for large datasets and differential updates to minimize re-renders. Achieved consistent 60fps even with 10,000+ data points.</p>
+          <h3>Tech Stack</h3>
+          <div style="margin-top:8px;">
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">WebSocket</span>
+            <span class="tech-tag">D3.js</span>
+            <span class="tech-tag">Express</span>
+            <span class="tech-tag">PostgreSQL</span>
+          </div>
+        </div>
+      `,
+      collectible: true,
+      collectName: 'Tome of Real-Time',
+      collectIcon: '&#x1F4DC;'
+    },
+
+    project3: {
+      html: `
+        <div class="project-card">
+          <div class="project-name">&#x1F4DC; CODEX OF AUTOMATION</div>
+          <div class="project-desc">An internal developer tooling platform that automates CI/CD pipelines, enforces code quality standards, and provides self-service infrastructure provisioning. Used by 200+ engineers daily.</div>
+          <h3>The Challenge</h3>
+          <p>Reduce deployment friction and standardize engineering practices across multiple teams, each with different tech stacks and workflows.</p>
+          <h3>The Solution</h3>
+          <p>Designed a plugin-based architecture allowing teams to customize their pipelines while enforcing organization-wide quality gates. Integrated with GitHub, Slack, and internal tooling APIs. Reduced average deployment time from 45 minutes to 8 minutes.</p>
+          <h3>Tech Stack</h3>
+          <div style="margin-top:8px;">
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">Docker</span>
+            <span class="tech-tag">GitHub Actions</span>
+            <span class="tech-tag">Kubernetes</span>
+            <span class="tech-tag">Terraform</span>
+          </div>
+        </div>
+      `,
+      collectible: true,
+      collectName: 'Codex of Automation',
+      collectIcon: '&#x1F4DC;'
+    },
+
+    skills: {
+      html: `
+        <p style="color:var(--text-dim);margin-bottom:16px;">You enter a vast armory. Weapons and artifacts line the walls, each representing a mastered technology.</p>
+        <h3>Legendary Weapons</h3>
+        <div class="skill-item">
+          <div class="skill-icon">&#x2694;&#xFE0F;</div>
+          <div>
+            <div class="skill-name">React / Next.js</div>
+            <div class="skill-type">Legendary Sword of Interfaces</div>
+          </div>
+          <span class="skill-rarity rarity-legendary">LEGENDARY</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F6E1;&#xFE0F;</div>
+          <div>
+            <div class="skill-name">Node.js / Express</div>
+            <div class="skill-type">Shield of the Backend</div>
+          </div>
+          <span class="skill-rarity rarity-legendary">LEGENDARY</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F52E;</div>
+          <div>
+            <div class="skill-name">TypeScript</div>
+            <div class="skill-type">Orb of Type Safety</div>
+          </div>
+          <span class="skill-rarity rarity-legendary">LEGENDARY</span>
+        </div>
+        <h3>Epic Artifacts</h3>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F9EA;</div>
+          <div>
+            <div class="skill-name">GraphQL</div>
+            <div class="skill-type">Potion of Precise Queries</div>
+          </div>
+          <span class="skill-rarity rarity-epic">EPIC</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F4E6;</div>
+          <div>
+            <div class="skill-name">Docker / Kubernetes</div>
+            <div class="skill-type">Chest of Containerization</div>
+          </div>
+          <span class="skill-rarity rarity-epic">EPIC</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x2601;&#xFE0F;</div>
+          <div>
+            <div class="skill-name">AWS / Cloud Services</div>
+            <div class="skill-type">Wings of Deployment</div>
+          </div>
+          <span class="skill-rarity rarity-epic">EPIC</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F4CA;</div>
+          <div>
+            <div class="skill-name">PostgreSQL / MongoDB</div>
+            <div class="skill-type">Tome of Persistence</div>
+          </div>
+          <span class="skill-rarity rarity-epic">EPIC</span>
+        </div>
+        <h3>Rare Gear</h3>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F3AF;</div>
+          <div>
+            <div class="skill-name">Jest / Cypress / Playwright</div>
+            <div class="skill-type">Bow of Testing Precision</div>
+          </div>
+          <span class="skill-rarity rarity-rare">RARE</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F517;</div>
+          <div>
+            <div class="skill-name">CI/CD Pipelines</div>
+            <div class="skill-type">Chain of Continuous Delivery</div>
+          </div>
+          <span class="skill-rarity rarity-rare">RARE</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F3A8;</div>
+          <div>
+            <div class="skill-name">Tailwind / CSS Architecture</div>
+            <div class="skill-type">Cloak of Styling</div>
+          </div>
+          <span class="skill-rarity rarity-rare">RARE</span>
+        </div>
+        <h3>Common Tools</h3>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F528;</div>
+          <div>
+            <div class="skill-name">Git / GitHub</div>
+            <div class="skill-type">Hammer of Version Control</div>
+          </div>
+          <span class="skill-rarity rarity-common">COMMON</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x1F310;</div>
+          <div>
+            <div class="skill-name">REST API Design</div>
+            <div class="skill-type">Map of Endpoints</div>
+          </div>
+          <span class="skill-rarity rarity-common">COMMON</span>
+        </div>
+        <div class="skill-item">
+          <div class="skill-icon">&#x26A1;</div>
+          <div>
+            <div class="skill-name">Agile / Scrum</div>
+            <div class="skill-type">Ring of Sprint Planning</div>
+          </div>
+          <span class="skill-rarity rarity-common">COMMON</span>
+        </div>
+      `,
+      collectible: true,
+      collectName: 'Armory Catalog',
+      collectIcon: '&#x2694;&#xFE0F;'
+    },
+
+    about: {
+      html: `
+        <div class="campfire">&#x1F525;&#x1FA93;&#x1F525;</div>
+        <p style="text-align:center;color:var(--amber-glow);font-style:italic;margin-bottom:20px;">"Sit by the fire, traveler. Let me tell you a story..."</p>
+
+        <p>The tale begins not with code, but with curiosity. Anshull Garg is a software developer who discovered early on that the most satisfying problems are the ones that require both technical depth and creative thinking.</p>
+
+        <p>Today, as a <strong style="color:var(--amber-glow);">Software Developer at Walmart</strong>, Anshull works on systems that operate at a scale most engineers only read about. The kind of systems that serve millions of users, handle massive traffic spikes, and must remain reliable around the clock.</p>
+
+        <h3>Philosophy</h3>
+        <p>Good code is not just code that works -- it is code that can be understood, maintained, and evolved by the next person who reads it. Engineering is a team sport, and clean architecture is a form of communication.</p>
+
+        <h3>Approach</h3>
+        <p>Every challenge starts with understanding the "why." Before writing a single line of code, the problem must be fully understood. Then the solution is designed with scalability, maintainability, and the end user in mind.</p>
+
+        <h3>Beyond the Terminal</h3>
+        <p>When not architecting systems or reviewing pull requests, you might find Anshull exploring new technologies, contributing to developer communities, or thinking about how to make complex things simple.</p>
+      `,
+      collectible: true,
+      collectName: 'Campfire Story',
+      collectIcon: '&#x1F525;'
+    },
+
+    experience: {
+      html: `
+        <p style="color:var(--text-dim);margin-bottom:16px;">Grand trophies and plaques adorn the walls of this magnificent hall, each commemorating a chapter of the journey.</p>
+
+        <div class="timeline-entry current-role">
+          <div class="timeline-year">PRESENT</div>
+          <div class="timeline-role">Software Developer</div>
+          <div class="timeline-company">Walmart Global Tech</div>
+          <div class="timeline-desc">Building scalable, high-performance applications for one of the world's largest digital retail platforms. Working across the full stack to deliver features that serve millions of users. Architecting solutions at Fortune 1 scale with a focus on reliability, performance, and developer experience.</div>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="timeline-year">EARLIER CHAPTER</div>
+          <div class="timeline-role">Software Development</div>
+          <div class="timeline-company">Building the Foundation</div>
+          <div class="timeline-desc">Developed full-stack applications, honed skills in modern JavaScript ecosystems, and built a deep understanding of software engineering principles. Contributed to projects ranging from responsive web applications to backend API systems.</div>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="timeline-year">THE ORIGIN</div>
+          <div class="timeline-role">The Learning Arc</div>
+          <div class="timeline-company">Education &amp; Early Projects</div>
+          <div class="timeline-desc">Studied computer science fundamentals, algorithms, and system design. Built early projects that sparked a passion for clean code and user-centric design. Laid the groundwork for a career focused on engineering excellence.</div>
+        </div>
+
+        <h3>Key Achievements</h3>
+        <p>&#x1F3C6; Architected systems serving millions of users at enterprise scale</p>
+        <p>&#x1F3C6; Delivered performance optimizations resulting in measurable improvements</p>
+        <p>&#x1F3C6; Contributed to cross-functional initiatives spanning multiple engineering teams</p>
+        <p>&#x1F3C6; Championed code quality practices and developer productivity tools</p>
+      `,
+      collectible: true,
+      collectName: 'Hall of Fame Record',
+      collectIcon: '&#x1F3C6;'
+    },
+
+    contact: {
+      html: `
+        <p style="color:var(--text-dim);margin-bottom:16px;">A flock of carrier pigeons waits eagerly to deliver your message. Choose your preferred method of communication.</p>
+
+        <div style="text-align:center;font-size:40px;margin:16px 0;">&#x1F426;&#x1F4E8;&#x1F426;</div>
+
+        <a class="contact-link" href="mailto:anshullgarg@gmail.com" target="_blank" rel="noopener">
+          <span class="link-icon">&#x2709;&#xFE0F;</span>
+          <div>
+            <div class="link-label">SEND A RAVEN</div>
+            <div class="link-value">anshullgarg@gmail.com</div>
+          </div>
+        </a>
+
+        <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+          <span class="link-icon">&#x1F4BC;</span>
+          <div>
+            <div class="link-label">GUILD REGISTRY</div>
+            <div class="link-value">linkedin.com/in/anshullgarg</div>
+          </div>
+        </a>
+
+        <a class="contact-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+          <span class="link-icon">&#x1F4BB;</span>
+          <div>
+            <div class="link-label">SPELL BOOK</div>
+            <div class="link-value">github.com/anshullgarg</div>
+          </div>
+        </a>
+
+        <a class="contact-link" href="https://twitter.com/anshullgarg" target="_blank" rel="noopener">
+          <span class="link-icon">&#x1F426;</span>
+          <div>
+            <div class="link-label">TOWN CRIER</div>
+            <div class="link-value">@anshullgarg</div>
+          </div>
+        </a>
+
+        <div style="margin-top:20px;padding:16px;background:rgba(255,176,0,0.05);border:1px solid rgba(255,176,0,0.2);text-align:center;">
+          <p style="font-family:var(--font-pixel);font-size:7px;color:var(--amber-glow);margin:0;">Open to new adventures and quests.<br>Let us build something together.</p>
+        </div>
+      `,
+      collectible: true,
+      collectName: 'Carrier Pigeon',
+      collectIcon: '&#x1F426;'
+    },
+
+    treasure: {
+      html: `
+        <div style="text-align:center;font-size:40px;margin:16px 0;">&#x1F48E;&#x2728;&#x1F48E;</div>
+        <p style="text-align:center;color:var(--gold-accent);font-family:var(--font-pixel);font-size:8px;margin-bottom:20px;">YOU FOUND THE SECRET STASH!</p>
+        <p style="color:var(--text-dim);margin-bottom:16px;">Hidden behind a false wall, you discover a collection of curious artifacts and forgotten lore...</p>
+
+        <div class="fun-fact">
+          <span class="fact-label">HIDDEN LORE #1</span>
+          This entire portfolio is a single HTML file with zero external dependencies (besides fonts). The dungeon, game engine, fog of war, content panels -- all vanilla HTML, CSS, and JavaScript.
+        </div>
+
+        <div class="fun-fact">
+          <span class="fact-label">HIDDEN LORE #2</span>
+          The fog of war system uses a simple adjacency check on a 7x7 grid, proving that sometimes the simplest data structures create the most engaging experiences.
+        </div>
+
+        <div class="fun-fact">
+          <span class="fact-label">HIDDEN LORE #3</span>
+          Anshull believes that developer portfolios should be as creative as the work they showcase. Hence: a dungeon crawler.
+        </div>
+
+        <div class="fun-fact">
+          <span class="fact-label">HIDDEN LORE #4</span>
+          The best code is not the cleverest code -- it is the code that the next developer can read at 2 AM during an on-call incident and immediately understand what it does.
+        </div>
+
+        <div class="fun-fact">
+          <span class="fact-label">HIDDEN LORE #5</span>
+          This roguelike was inspired by the idea that exploring someone's portfolio should feel like an adventure, not a chore. Every room is a new discovery.
+        </div>
+      `,
+      collectible: true,
+      collectName: 'Secret Treasure',
+      collectIcon: '&#x1F48E;'
+    },
+
+    boss: {
+      html: `
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-size:48px;margin-bottom:10px;">&#x1F480;</div>
+          <div class="boss-title">FINAL BOSS<br>THE HIRING DECISION</div>
+        </div>
+
+        <div class="boss-hp-bar">
+          <div class="boss-hp-fill" id="boss-hp" style="width:100%"></div>
+          <div class="boss-hp-label">HESITATION: 100%</div>
+        </div>
+
+        <p style="color:var(--text-dim);margin-bottom:16px;">You have explored the dungeon. You have seen the projects, the skills, the story. Now there is only one challenge left...</p>
+
+        <p style="color:var(--red-accent);font-family:var(--font-pixel);font-size:8px;text-align:center;margin:20px 0;">Will you take the final step?</p>
+
+        <h3>Battle Stats</h3>
+        <p>&#x2694;&#xFE0F; <strong style="color:var(--text-primary);">Attack:</strong> Full-stack development, scalable architecture, clean code</p>
+        <p>&#x1F6E1;&#xFE0F; <strong style="color:var(--text-primary);">Defense:</strong> Testing, CI/CD, monitoring, code review culture</p>
+        <p>&#x2728; <strong style="color:var(--text-primary);">Special:</strong> Enterprise-scale experience at Fortune 1 company</p>
+        <p>&#x1F4AB; <strong style="color:var(--text-primary);">Passive:</strong> Continuous learning, collaborative spirit, problem-solving mindset</p>
+
+        <div style="margin-top:24px;">
+          <button class="hire-btn" id="boss-hire-btn" onclick="defeatBoss()">
+            &#x2694;&#xFE0F; HIRE ANSHULL &#x2694;&#xFE0F;
+          </button>
+        </div>
+
+        <div id="boss-defeated" style="display:none;margin-top:20px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:12px;">&#x1F389;&#x2728;&#x1F3C6;&#x2728;&#x1F389;</div>
+          <p style="font-family:var(--font-pixel);font-size:9px;color:var(--player-green);line-height:2;">VICTORY!</p>
+          <p style="color:var(--text-dim);margin-top:8px;">The boss has been defeated. Reach out at <a href="mailto:anshullgarg@gmail.com" style="color:var(--amber-glow);">anshullgarg@gmail.com</a> to begin the next quest together.</p>
+        </div>
+      `,
+      collectible: false
+    },
+
+    corridor1: {
+      html: `
+        <p style="color:var(--text-dim);">A narrow stone passage connects the chambers. The walls are damp and you can hear the faint echo of your footsteps.</p>
+        <p style="color:var(--text-ghost);font-style:italic;margin-top:12px;">"Not all those who wander are lost... but you might want to check the minimap."</p>
+      `,
+      collectible: false
+    },
+
+    corridor2: {
+      html: `
+        <p style="color:var(--text-dim);">This hidden corridor is barely visible. Faint runes glow along the walls, guiding the way north to something... secret.</p>
+        <p style="color:var(--text-ghost);font-style:italic;margin-top:12px;">"Curiosity rewards the explorer."</p>
+      `,
+      collectible: false
+    }
+  };
+
+  // ======================================================================
+  // GAME STATE
+  // ======================================================================
+  const state = {
+    started: false,
+    playerRow: 3,
+    playerCol: 2,
+    visited: new Set(),
+    collected: new Set(),
+    inventory: [],
+    panelOpen: false,
+    moving: false,
+    achievements: [],
+    bossDefeated: false
+  };
+
+  // ======================================================================
+  // DOM REFERENCES
+  // ======================================================================
+  const dom = {
+    intro: document.getElementById('intro-screen'),
+    game: document.getElementById('game-container'),
+    mapCanvas: document.getElementById('map-canvas'),
+    mapViewport: document.getElementById('map-viewport'),
+    player: document.getElementById('player'),
+    panel: document.getElementById('content-panel'),
+    panelType: document.getElementById('panel-type'),
+    panelName: document.getElementById('panel-name'),
+    panelBody: document.getElementById('panel-body'),
+    panelCloseBtn: document.getElementById('panel-close-btn'),
+    minimapGrid: document.getElementById('minimap-grid'),
+    hudRooms: document.getElementById('hud-rooms'),
+    hudItems: document.getElementById('hud-items'),
+    hudProgress: document.getElementById('hud-progress'),
+    inventoryList: document.getElementById('inventory-list'),
+    roomIndicator: document.getElementById('room-indicator'),
+    achievementToast: document.getElementById('achievement-toast'),
+    achievementText: document.getElementById('achievement-text')
+  };
+
+  // ======================================================================
+  // ROOM POSITIONS (compute pixel positions)
+  // ======================================================================
+  const ROOM_SIZE = 80;
+  const GAP = 20;
+  const CELL_SIZE = ROOM_SIZE + GAP;
+
+  function getRoomPixelPos(row, col) {
+    return {
+      x: col * CELL_SIZE,
+      y: row * CELL_SIZE
+    };
+  }
+
+  // ======================================================================
+  // CONNECTION LOOKUP
+  // ======================================================================
+  function buildConnectionMap() {
+    const map = {};
+    function key(r, c) { return r + ',' + c; }
+    CONNECTIONS.forEach(function(conn) {
+      const a = key(conn[0][0], conn[0][1]);
+      const b = key(conn[1][0], conn[1][1]);
+      if (!map[a]) map[a] = [];
+      if (!map[b]) map[b] = [];
+      map[a].push({ row: conn[1][0], col: conn[1][1] });
+      map[b].push({ row: conn[0][0], col: conn[0][1] });
+    });
+    return map;
+  }
+
+  const connectionMap = buildConnectionMap();
+
+  function getNeighbors(row, col) {
+    const k = row + ',' + col;
+    return connectionMap[k] || [];
+  }
+
+  function canMoveTo(fromRow, fromCol, toRow, toCol) {
+    const neighbors = getNeighbors(fromRow, fromCol);
+    return neighbors.some(function(n) { return n.row === toRow && n.col === toCol; });
+  }
+
+  function getAdjacentRooms(row, col) {
+    return getNeighbors(row, col);
+  }
+
+  // ======================================================================
+  // INIT GAME
+  // ======================================================================
+  function initGame() {
+    state.visited.add('3,2');
+    renderMap();
+    renderMinimap();
+    updatePlayer(false);
+    updateHUD();
+    openPanel(3, 2);
+  }
+
+  // ======================================================================
+  // RENDER MAP
+  // ======================================================================
+  function renderMap() {
+    // Calculate canvas size
+    const canvasW = 7 * CELL_SIZE;
+    const canvasH = 7 * CELL_SIZE;
+    dom.mapCanvas.style.width = canvasW + 'px';
+    dom.mapCanvas.style.height = canvasH + 'px';
+
+    // Clear existing rooms (keep player)
+    var existingRooms = dom.mapCanvas.querySelectorAll('.room, .corridor');
+    existingRooms.forEach(function(el) { el.remove(); });
+
+    // Render connections (corridors between rooms)
+    CONNECTIONS.forEach(function(conn) {
+      var r1 = conn[0][0], c1 = conn[0][1];
+      var r2 = conn[1][0], c2 = conn[1][1];
+
+      var pos1 = getRoomPixelPos(r1, c1);
+      var pos2 = getRoomPixelPos(r2, c2);
+
+      var corridor = document.createElement('div');
+      corridor.className = 'corridor';
+      corridor.dataset.from = r1 + ',' + c1;
+      corridor.dataset.to = r2 + ',' + c2;
+
+      var halfRoom = ROOM_SIZE / 2;
+
+      if (r1 === r2) {
+        // Horizontal
+        corridor.classList.add('horizontal');
+        var minC = Math.min(c1, c2);
+        var maxC = Math.max(c1, c2);
+        var leftPos = getRoomPixelPos(r1, minC);
+        corridor.style.left = (leftPos.x + ROOM_SIZE) + 'px';
+        corridor.style.top = (leftPos.y + halfRoom - 6) + 'px';
+        corridor.style.width = ((maxC - minC) * CELL_SIZE - ROOM_SIZE) + 'px';
+        corridor.style.height = '12px';
+      } else {
+        // Vertical
+        corridor.classList.add('vertical');
+        var minR = Math.min(r1, r2);
+        var maxR = Math.max(r1, r2);
+        var topPos = getRoomPixelPos(minR, c1);
+        corridor.style.left = (topPos.x + halfRoom - 6) + 'px';
+        corridor.style.top = (topPos.y + ROOM_SIZE) + 'px';
+        corridor.style.width = '12px';
+        corridor.style.height = ((maxR - minR) * CELL_SIZE - ROOM_SIZE) + 'px';
+      }
+
+      dom.mapCanvas.appendChild(corridor);
+    });
+
+    // Render rooms
+    for (var r = 0; r < 7; r++) {
+      for (var c = 0; c < 7; c++) {
+        var roomId = GRID[r][c];
+        if (!roomId) continue;
+
+        var roomInfo = ROOM_TYPES[roomId];
+        var pos = getRoomPixelPos(r, c);
+
+        var roomEl = document.createElement('div');
+        roomEl.className = 'room hidden-room';
+        roomEl.dataset.row = r;
+        roomEl.dataset.col = c;
+        roomEl.dataset.roomId = roomId;
+        roomEl.style.left = pos.x + 'px';
+        roomEl.style.top = pos.y + 'px';
+
+        roomEl.innerHTML = '<div class="room-icon">' + roomInfo.icon + '</div>' +
+          '<div class="room-label">' + roomInfo.label + '</div>' +
+          '<div class="room-collected">&#x2713;</div>';
+
+        roomEl.addEventListener('click', function() {
+          var row = parseInt(this.dataset.row);
+          var col = parseInt(this.dataset.col);
+          if (row === state.playerRow && col === state.playerCol) {
+            openPanel(row, col);
+          }
+        });
+
+        dom.mapCanvas.appendChild(roomEl);
+      }
+    }
+
+    updateRoomVisibility();
+  }
+
+  // ======================================================================
+  // UPDATE ROOM VISIBILITY (FOG OF WAR)
+  // ======================================================================
+  function updateRoomVisibility() {
+    var currentKey = state.playerRow + ',' + state.playerCol;
+    var adjacent = getAdjacentRooms(state.playerRow, state.playerCol);
+    var adjacentKeys = new Set(adjacent.map(function(n) { return n.row + ',' + n.col; }));
+
+    // Also show adjacents of all visited rooms
+    state.visited.forEach(function(vKey) {
+      var parts = vKey.split(',');
+      var vr = parseInt(parts[0]);
+      var vc = parseInt(parts[1]);
+      var vAdj = getAdjacentRooms(vr, vc);
+      vAdj.forEach(function(n) {
+        adjacentKeys.add(n.row + ',' + n.col);
+      });
+    });
+
+    // Update room elements
+    var rooms = dom.mapCanvas.querySelectorAll('.room');
+    rooms.forEach(function(roomEl) {
+      var row = parseInt(roomEl.dataset.row);
+      var col = parseInt(roomEl.dataset.col);
+      var key = row + ',' + col;
+      var roomId = roomEl.dataset.roomId;
+
+      roomEl.className = 'room';
+
+      if (key === currentKey) {
+        roomEl.classList.add('current');
+      } else if (state.visited.has(key)) {
+        roomEl.classList.add('visited');
+      } else if (adjacentKeys.has(key)) {
+        roomEl.classList.add('adjacent');
+      } else {
+        roomEl.classList.add('hidden-room');
+      }
+
+      if (state.collected.has(roomId)) {
+        roomEl.classList.add('collected');
+      }
+    });
+
+    // Update corridors
+    var corridors = dom.mapCanvas.querySelectorAll('.corridor');
+    corridors.forEach(function(corrEl) {
+      var from = corrEl.dataset.from;
+      var to = corrEl.dataset.to;
+
+      corrEl.className = 'corridor ' + (corrEl.classList.contains('horizontal') ? 'horizontal' : 'vertical');
+
+      var fromVisited = state.visited.has(from);
+      var toVisited = state.visited.has(to);
+      var fromCurrent = from === currentKey;
+      var toCurrent = to === currentKey;
+
+      if (fromCurrent || toCurrent) {
+        corrEl.classList.add('active');
+      } else if (fromVisited && toVisited) {
+        corrEl.classList.add('revealed');
+      } else if (fromVisited || toVisited) {
+        corrEl.classList.add('revealed');
+      }
+    });
+  }
+
+  // ======================================================================
+  // UPDATE PLAYER POSITION
+  // ======================================================================
+  function updatePlayer(animate) {
+    var pos = getRoomPixelPos(state.playerRow, state.playerCol);
+    var x = pos.x + (ROOM_SIZE / 2) - 8;
+    var y = pos.y + (ROOM_SIZE / 2) - 8;
+
+    dom.player.style.left = x + 'px';
+    dom.player.style.top = y + 'px';
+
+    if (animate) {
+      dom.player.classList.add('moving');
+      setTimeout(function() {
+        dom.player.classList.remove('moving');
+      }, 250);
+    }
+
+    // Center viewport on player
+    centerViewport();
+  }
+
+  function centerViewport() {
+    var pos = getRoomPixelPos(state.playerRow, state.playerCol);
+    var centerX = pos.x + ROOM_SIZE / 2;
+    var centerY = pos.y + ROOM_SIZE / 2;
+
+    var vpW = dom.mapViewport.clientWidth;
+    var vpH = dom.mapViewport.clientHeight;
+
+    var scrollX = centerX - vpW / 2;
+    var scrollY = centerY - vpH / 2;
+
+    dom.mapCanvas.style.transform = 'translate(' + (-scrollX) + 'px, ' + (-scrollY) + 'px)';
+  }
+
+  // ======================================================================
+  // MOVE PLAYER
+  // ======================================================================
+  function movePlayer(dRow, dCol) {
+    if (state.moving) return;
+
+    var newRow = state.playerRow + dRow;
+    var newCol = state.playerCol + dCol;
+
+    // Check bounds
+    if (newRow < 0 || newRow >= 7 || newCol < 0 || newCol >= 7) return;
+
+    // Check if room exists
+    if (!GRID[newRow][newCol]) return;
+
+    // Check if connected
+    if (!canMoveTo(state.playerRow, state.playerCol, newRow, newCol)) return;
+
+    state.moving = true;
+    state.playerRow = newRow;
+    state.playerCol = newCol;
+
+    var key = newRow + ',' + newCol;
+    var isNew = !state.visited.has(key);
+    state.visited.add(key);
+
+    updatePlayer(true);
+    updateRoomVisibility();
+    updateMinimap();
+    updateHUD();
+
+    // Show room name indicator
+    var roomId = GRID[newRow][newCol];
+    var roomInfo = ROOM_TYPES[roomId];
+    showRoomIndicator(roomInfo.label);
+
+    // Open panel for the room
+    setTimeout(function() {
+      openPanel(newRow, newCol);
+      state.moving = false;
+    }, 300);
+
+    // Check achievements
+    if (isNew) {
+      checkAchievements();
+    }
+  }
+
+  // ======================================================================
+  // DIRECTION MAPPING
+  // ======================================================================
+  function tryMove(direction) {
+    switch (direction) {
+      case 'up':    movePlayer(-1, 0); break;
+      case 'down':  movePlayer(1, 0);  break;
+      case 'left':  movePlayer(0, -1); break;
+      case 'right': movePlayer(0, 1);  break;
+    }
+  }
+
+  // ======================================================================
+  // CONTENT PANEL
+  // ======================================================================
+  function openPanel(row, col) {
+    var roomId = GRID[row][col];
+    if (!roomId) return;
+
+    var roomInfo = ROOM_TYPES[roomId];
+    var content = ROOM_CONTENT[roomId];
+    if (!content) return;
+
+    dom.panelType.textContent = roomInfo.type;
+    dom.panelName.innerHTML = roomInfo.icon + ' ' + roomInfo.label;
+
+    var bodyHTML = content.html;
+
+    if (content.collectible) {
+      var isCollected = state.collected.has(roomId);
+      bodyHTML += '<button class="collect-btn' + (isCollected ? ' collected' : '') + '" ' +
+        'data-room-id="' + roomId + '" ' +
+        (isCollected ? '' : 'onclick="collectItem(\'' + roomId + '\')"') + '>' +
+        (isCollected ? '&#x2713; COLLECTED' : '&#x1F4E6; COLLECT ITEM') +
+        '</button>';
+    }
+
+    dom.panelBody.innerHTML = bodyHTML;
+    dom.panel.classList.add('open');
+    state.panelOpen = true;
+
+    // Scroll panel to top
+    dom.panel.scrollTop = 0;
+  }
+
+  function closePanel() {
+    dom.panel.classList.remove('open');
+    state.panelOpen = false;
+  }
+
+  // ======================================================================
+  // COLLECT ITEM
+  // ======================================================================
+  window.collectItem = function(roomId) {
+    if (state.collected.has(roomId)) return;
+
+    state.collected.add(roomId);
+
+    var content = ROOM_CONTENT[roomId];
+    state.inventory.push({
+      name: content.collectName,
+      icon: content.collectIcon
+    });
+
+    // Update the button
+    var btn = dom.panelBody.querySelector('.collect-btn');
+    if (btn) {
+      btn.classList.add('collected');
+      btn.innerHTML = '&#x2713; COLLECTED';
+      btn.onclick = null;
+    }
+
+    updateRoomVisibility();
+    updateMinimap();
+    updateHUD();
+    updateInventory();
+    checkAchievements();
+  };
+
+  // ======================================================================
+  // BOSS DEFEAT
+  // ======================================================================
+  window.defeatBoss = function() {
+    if (state.bossDefeated) return;
+    state.bossDefeated = true;
+
+    var hpBar = document.getElementById('boss-hp');
+    var hpLabel = hpBar.parentElement.querySelector('.boss-hp-label');
+    var defeated = document.getElementById('boss-defeated');
+    var hireBtn = document.getElementById('boss-hire-btn');
+
+    // Animate HP bar
+    var hp = 100;
+    var interval = setInterval(function() {
+      hp -= 2;
+      if (hp <= 0) {
+        hp = 0;
+        clearInterval(interval);
+        hireBtn.style.display = 'none';
+        defeated.style.display = 'block';
+        showAchievement('&#x1F480;', 'BOSS DEFEATED! Quest complete.');
+      }
+      hpBar.style.width = hp + '%';
+      hpLabel.textContent = 'HESITATION: ' + hp + '%';
+    }, 30);
+  };
+
+  // ======================================================================
+  // UPDATE HUD
+  // ======================================================================
+  function updateHUD() {
+    var totalRooms = 0;
+    for (var r = 0; r < 7; r++) {
+      for (var c = 0; c < 7; c++) {
+        if (GRID[r][c]) totalRooms++;
+      }
+    }
+
+    dom.hudRooms.textContent = state.visited.size + '/' + totalRooms;
+
+    var totalCollectible = 0;
+    Object.keys(ROOM_CONTENT).forEach(function(id) {
+      if (ROOM_CONTENT[id].collectible) totalCollectible++;
+    });
+    dom.hudItems.textContent = state.collected.size + '/' + totalCollectible;
+
+    var progress = ((state.visited.size + state.collected.size) / (totalRooms + totalCollectible)) * 100;
+    dom.hudProgress.style.width = progress + '%';
+  }
+
+  // ======================================================================
+  // UPDATE INVENTORY
+  // ======================================================================
+  function updateInventory() {
+    if (state.inventory.length === 0) {
+      dom.inventoryList.innerHTML = '<div class="inventory-empty">No items yet...</div>';
+      return;
+    }
+
+    var html = '';
+    state.inventory.forEach(function(item) {
+      html += '<div class="inventory-item">' +
+        '<span class="inv-icon">' + item.icon + '</span>' +
+        '<span class="inv-name">' + item.name + '</span>' +
+        '</div>';
+    });
+    dom.inventoryList.innerHTML = html;
+  }
+
+  // ======================================================================
+  // MINIMAP
+  // ======================================================================
+  function renderMinimap() {
+    var html = '';
+    for (var r = 0; r < 7; r++) {
+      for (var c = 0; c < 7; c++) {
+        var roomId = GRID[r][c];
+        var key = r + ',' + c;
+        var cls = 'minimap-cell';
+
+        if (!roomId) {
+          cls += ' mm-empty';
+        } else {
+          cls += ' mm-hidden';
+        }
+
+        html += '<div class="' + cls + '" data-mm-row="' + r + '" data-mm-col="' + c + '"></div>';
+      }
+    }
+    dom.minimapGrid.innerHTML = html;
+    updateMinimap();
+  }
+
+  function updateMinimap() {
+    var currentKey = state.playerRow + ',' + state.playerCol;
+
+    // Gather all adjacent
+    var adjacentKeys = new Set();
+    state.visited.forEach(function(vKey) {
+      var parts = vKey.split(',');
+      var vr = parseInt(parts[0]);
+      var vc = parseInt(parts[1]);
+      getAdjacentRooms(vr, vc).forEach(function(n) {
+        adjacentKeys.add(n.row + ',' + n.col);
+      });
+    });
+
+    var cells = dom.minimapGrid.querySelectorAll('.minimap-cell');
+    cells.forEach(function(cell) {
+      var r = parseInt(cell.dataset.mmRow);
+      var c = parseInt(cell.dataset.mmCol);
+      var key = r + ',' + c;
+      var roomId = GRID[r][c];
+
+      cell.className = 'minimap-cell';
+
+      if (!roomId) {
+        cell.classList.add('mm-empty');
+      } else if (key === currentKey) {
+        cell.classList.add('mm-current');
+      } else if (state.collected.has(roomId)) {
+        cell.classList.add('mm-collected');
+      } else if (state.visited.has(key)) {
+        cell.classList.add('mm-visited');
+      } else if (adjacentKeys.has(key)) {
+        cell.classList.add('mm-adjacent');
+      } else {
+        cell.classList.add('mm-hidden');
+      }
+    });
+  }
+
+  // ======================================================================
+  // ROOM INDICATOR
+  // ======================================================================
+  function showRoomIndicator(name) {
+    dom.roomIndicator.textContent = '~ ' + name + ' ~';
+    dom.roomIndicator.classList.add('show');
+    clearTimeout(state._roomIndicatorTimeout);
+    state._roomIndicatorTimeout = setTimeout(function() {
+      dom.roomIndicator.classList.remove('show');
+    }, 2000);
+  }
+
+  // ======================================================================
+  // ACHIEVEMENTS
+  // ======================================================================
+  function checkAchievements() {
+    // All rooms visited
+    var totalRooms = 0;
+    for (var r = 0; r < 7; r++) {
+      for (var c = 0; c < 7; c++) {
+        if (GRID[r][c]) totalRooms++;
+      }
+    }
+
+    if (state.visited.size === totalRooms && !state.achievements.includes('all_rooms')) {
+      state.achievements.push('all_rooms');
+      showAchievement('&#x1F5FA;&#xFE0F;', 'CARTOGRAPHER: Explored every room!');
+    }
+
+    // All items collected
+    var totalCollectible = 0;
+    Object.keys(ROOM_CONTENT).forEach(function(id) {
+      if (ROOM_CONTENT[id].collectible) totalCollectible++;
+    });
+
+    if (state.collected.size === totalCollectible && !state.achievements.includes('all_items')) {
+      state.achievements.push('all_items');
+      showAchievement('&#x1F3C6;', 'COMPLETIONIST: Collected every item!');
+    }
+
+    // All projects found
+    var projectRooms = ['project1', 'project2', 'project3'];
+    var allProjects = projectRooms.every(function(id) { return state.collected.has(id); });
+    if (allProjects && !state.achievements.includes('all_projects')) {
+      state.achievements.push('all_projects');
+      showAchievement('&#x1F4DC;', 'SCHOLAR: Found all project scrolls!');
+    }
+
+    // Found treasure room
+    if (state.visited.has('0,4') && !state.achievements.includes('found_treasure')) {
+      state.achievements.push('found_treasure');
+      showAchievement('&#x1F48E;', 'TREASURE HUNTER: Found the secret stash!');
+    }
+
+    // First item collected
+    if (state.collected.size === 1 && !state.achievements.includes('first_item')) {
+      state.achievements.push('first_item');
+      showAchievement('&#x1F381;', 'COLLECTOR: Picked up your first item!');
+    }
+  }
+
+  var achievementQueue = [];
+  var achievementShowing = false;
+
+  function showAchievement(icon, text) {
+    achievementQueue.push({ icon: icon, text: text });
+    processAchievementQueue();
+  }
+
+  function processAchievementQueue() {
+    if (achievementShowing || achievementQueue.length === 0) return;
+
+    achievementShowing = true;
+    var ach = achievementQueue.shift();
+
+    dom.achievementToast.querySelector('.achievement-icon').innerHTML = ach.icon;
+    dom.achievementText.textContent = ach.text;
+    dom.achievementToast.classList.add('show');
+
+    setTimeout(function() {
+      dom.achievementToast.classList.remove('show');
+      setTimeout(function() {
+        achievementShowing = false;
+        processAchievementQueue();
+      }, 500);
+    }, 3000);
+  }
+
+  // ======================================================================
+  // INPUT HANDLING
+  // ======================================================================
+  document.addEventListener('keydown', function(e) {
+    // Intro screen
+    if (!state.started) {
+      startGame();
+      e.preventDefault();
+      return;
+    }
+
+    // Close panel with Escape
+    if (e.key === 'Escape' && state.panelOpen) {
+      closePanel();
+      e.preventDefault();
+      return;
+    }
+
+    // Movement
+    var dir = null;
+    switch (e.key) {
+      case 'ArrowUp': case 'w': case 'W': dir = 'up'; break;
+      case 'ArrowDown': case 's': case 'S': dir = 'down'; break;
+      case 'ArrowLeft': case 'a': case 'A': dir = 'left'; break;
+      case 'ArrowRight': case 'd': case 'D': dir = 'right'; break;
+    }
+
+    if (dir) {
+      e.preventDefault();
+      if (state.panelOpen) closePanel();
+      setTimeout(function() { tryMove(dir); }, state.panelOpen ? 200 : 0);
+    }
+  });
+
+  // D-Pad
+  document.querySelectorAll('.dpad-btn[data-dir]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var dir = this.dataset.dir;
+      if (state.panelOpen) closePanel();
+      setTimeout(function() { tryMove(dir); }, state.panelOpen ? 200 : 0);
+    });
+
+    // Prevent ghost clicks on mobile
+    btn.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      var dir = this.dataset.dir;
+      if (state.panelOpen) closePanel();
+      setTimeout(function() { tryMove(dir); }, state.panelOpen ? 200 : 0);
+    });
+  });
+
+  // Touch swipe on map
+  var touchStartX = 0;
+  var touchStartY = 0;
+
+  dom.mapViewport.addEventListener('touchstart', function(e) {
+    if (!state.started) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  dom.mapViewport.addEventListener('touchend', function(e) {
+    if (!state.started) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+
+    var absDx = Math.abs(dx);
+    var absDy = Math.abs(dy);
+    var threshold = 40;
+
+    if (absDx < threshold && absDy < threshold) return;
+
+    var dir = null;
+    if (absDx > absDy) {
+      dir = dx > 0 ? 'right' : 'left';
+    } else {
+      dir = dy > 0 ? 'down' : 'up';
+    }
+
+    if (dir) {
+      if (state.panelOpen) closePanel();
+      setTimeout(function() { tryMove(dir); }, state.panelOpen ? 200 : 0);
+    }
+  }, { passive: true });
+
+  // Close panel
+  dom.panelCloseBtn.addEventListener('click', closePanel);
+
+  // Intro screen click
+  dom.intro.addEventListener('click', function() {
+    if (!state.started) startGame();
+  });
+
+  // ======================================================================
+  // START GAME
+  // ======================================================================
+  function startGame() {
+    if (state.started) return;
+    state.started = true;
+
+    dom.intro.classList.add('fade-out');
+    setTimeout(function() {
+      dom.intro.classList.add('hidden');
+      dom.game.classList.add('active');
+      initGame();
+    }, 800);
+  }
+
+  // ======================================================================
+  // WINDOW RESIZE
+  // ======================================================================
+  window.addEventListener('resize', function() {
+    if (state.started) {
+      centerViewport();
+    }
+  });
+
+  // ======================================================================
+  // Responsive room size adjustment
+  // ======================================================================
+  function adjustForScreenSize() {
+    var w = window.innerWidth;
+    if (w <= 480) {
+      // Already handled by CSS variables, but let's ensure JS matches
+    }
+  }
+
+  adjustForScreenSize();
+  window.addEventListener('resize', adjustForScreenSize);
+
+})();
+</script>
+
+</body>
+</html>
