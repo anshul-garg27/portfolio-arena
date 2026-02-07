@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Terraform Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ocean: #1A3A5A;
+  --deep-water: #0A2A4A;
+  --shallow-water: #1A4A7A;
+  --beach: #D4A76A;
+  --grass: #4A8B4A;
+  --forest: #2D5F2D;
+  --mountain: #6B7B8D;
+  --snow: #E8EEF4;
+  --volcanic: #8B3A3A;
+  --gold: #D4A853;
+  --text-light: #F0F0F0;
+  --text-dark: #1A1A1A;
+  --panel-bg: rgba(10, 20, 35, 0.88);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--deep-water);
+  font-family: 'Inter', sans-serif;
+  color: var(--text-light);
+  cursor: crosshair;
+}
+
+#mapCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/* ---- HUD Overlay ---- */
+.hud {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+}
+.hud > * { pointer-events: auto; }
+
+/* Top bar */
+.top-bar {
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+}
+.logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(212,168,83,0.3);
+}
+.logo span { color: var(--text-light); font-weight: 400; opacity: 0.6; font-size: 13px; margin-left: 10px; letter-spacing: 1px; }
+
+.cursor-coords {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-light);
+  opacity: 0.7;
+  background: var(--panel-bg);
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Zoom controls */
+.zoom-controls {
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.zoom-btn {
+  width: 40px; height: 40px;
+  background: var(--panel-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: var(--text-light);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.zoom-btn:hover { background: rgba(212,168,83,0.2); border-color: var(--gold); }
+.zoom-btn.active { background: rgba(212,168,83,0.3); border-color: var(--gold); color: var(--gold); }
+
+/* Legend */
+.legend {
+  bottom: 24px;
+  left: 24px;
+  background: var(--panel-bg);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 14px 18px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  min-width: 160px;
+}
+.legend h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.legend-swatch {
+  width: 14px; height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Minimap */
+.minimap-container {
+  bottom: 24px;
+  right: 24px;
+  width: 180px;
+  height: 140px;
+  background: var(--panel-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.minimap-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.minimap-viewport {
+  position: absolute;
+  border: 1.5px solid var(--gold);
+  pointer-events: none;
+  transition: all 0.1s;
+}
+.minimap-label {
+  position: absolute;
+  top: 4px; left: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  opacity: 0.7;
+}
+
+/* Compass */
+.compass {
+  top: 80px;
+  left: 24px;
+  width: 70px;
+  height: 70px;
+}
+.compass svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4)); }
+
+/* Scale bar */
+.scale-bar {
+  bottom: 180px;
+  left: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  opacity: 0.5;
+}
+.scale-line {
+  width: 100px;
+  height: 2px;
+  background: var(--text-light);
+  margin-bottom: 4px;
+  position: relative;
+}
+.scale-line::before, .scale-line::after {
+  content: '';
+  position: absolute;
+  width: 2px; height: 8px;
+  background: var(--text-light);
+  top: -3px;
+}
+.scale-line::before { left: 0; }
+.scale-line::after { right: 0; }
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  background: var(--panel-bg);
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.tooltip.visible { opacity: 1; transform: translateY(0); }
+.tooltip .tt-name { color: var(--gold); font-weight: 600; }
+.tooltip .tt-coords {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+/* Info Panel */
+.info-panel {
+  position: fixed;
+  top: 0; right: 0;
+  width: 420px;
+  max-width: 90vw;
+  height: 100%;
+  z-index: 100;
+  background: rgba(8, 16, 28, 0.92);
+  border-left: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.info-panel.open { transform: translateX(0); }
+.info-panel::-webkit-scrollbar { width: 4px; }
+.info-panel::-webkit-scrollbar-track { background: transparent; }
+.info-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.panel-header {
+  padding: 28px 28px 0;
+  position: relative;
+}
+.panel-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  color: var(--text-light);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.panel-close:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); color: var(--gold); }
+
+.panel-coords {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0.7;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.panel-biome {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  margin-bottom: 14px;
+}
+.panel-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.panel-subtitle {
+  font-size: 14px;
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.panel-body {
+  padding: 20px 28px 40px;
+}
+.panel-body p {
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.8;
+  margin-bottom: 16px;
+}
+.panel-body h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  margin: 24px 0 12px;
+}
+.panel-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 20px 0;
+}
+
+.skill-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  margin: 3px 4px 3px 0;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-light);
+  opacity: 0.8;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.timeline-item::after {
+  content: '';
+  position: absolute;
+  left: 3.5px; top: 20px;
+  width: 1px;
+  height: calc(100% + 4px);
+  background: rgba(212,168,83,0.2);
+}
+.timeline-item:last-child::after { display: none; }
+.timeline-item .tl-role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-light);
+}
+.timeline-item .tl-company {
+  font-size: 13px;
+  color: var(--gold);
+  opacity: 0.8;
+}
+.timeline-item .tl-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  opacity: 0.4;
+  margin-top: 2px;
+}
+.timeline-item .tl-desc {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text-light);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.contact-link:hover {
+  background: rgba(212,168,83,0.08);
+  border-color: rgba(212,168,83,0.2);
+}
+.contact-link .cl-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  color: var(--gold);
+}
+
+/* Fog of war overlay */
+.fog-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.fog-overlay.active { opacity: 1; }
+
+/* Loading screen */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--deep-water);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s;
+}
+.loading-screen.fade-out { opacity: 0; pointer-events: none; }
+.loading-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+.loading-bar-outer {
+  width: 240px; height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loading-bar-inner {
+  width: 0%; height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-panel { width: 100%; max-width: 100%; }
+  .legend { display: none; }
+  .compass { width: 50px; height: 50px; top: 70px; left: 12px; }
+  .top-bar { padding: 12px 14px; }
+  .logo { font-size: 14px; }
+  .logo span { display: none; }
+  .minimap-container { width: 120px; height: 90px; }
+  .zoom-controls { right: 14px; }
+  .scale-bar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="mapCanvas"></canvas>
+<canvas id="fogCanvas" class="fog-overlay"></canvas>
+
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-text">Generating Terrain</div>
+  <div class="loading-bar-outer"><div class="loading-bar-inner" id="loadingBar"></div></div>
+</div>
+
+<!-- Top Bar -->
+<div class="hud top-bar">
+  <div class="logo">ANSHULL GARG <span>Software Developer // Walmart</span></div>
+  <div class="cursor-coords" id="cursorCoords">CURSOR: 0000, 0000</div>
+</div>
+
+<!-- Zoom Controls -->
+<div class="hud zoom-controls">
+  <button class="zoom-btn" id="zoomIn" title="Zoom In">+</button>
+  <button class="zoom-btn" id="zoomOut" title="Zoom Out">&minus;</button>
+  <div style="height: 8px;"></div>
+  <button class="zoom-btn" id="centerMap" title="Center Map" style="font-size:14px;">&#8982;</button>
+  <button class="zoom-btn" id="fogToggle" title="Fog of War">&#9729;</button>
+</div>
+
+<!-- Compass -->
+<div class="hud compass">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="46" fill="rgba(10,20,35,0.7)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <line x1="50" y1="8" x2="50" y2="92" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <line x1="8" y1="50" x2="92" y2="50" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <polygon points="50,12 44,38 50,34 56,38" fill="#D4A853" opacity="0.9"/>
+    <polygon points="50,88 44,62 50,66 56,62" fill="rgba(255,255,255,0.2)"/>
+    <polygon points="12,50 38,44 34,50 38,56" fill="rgba(255,255,255,0.2)"/>
+    <polygon points="88,50 62,44 66,50 62,56" fill="rgba(255,255,255,0.2)"/>
+    <circle cx="50" cy="50" r="3" fill="#D4A853"/>
+    <text x="50" y="8" text-anchor="middle" font-family="Space Grotesk" font-size="9" fill="#D4A853" font-weight="600">N</text>
+    <text x="50" y="98" text-anchor="middle" font-family="Space Grotesk" font-size="8" fill="rgba(255,255,255,0.3)">S</text>
+    <text x="4" y="53" text-anchor="middle" font-family="Space Grotesk" font-size="8" fill="rgba(255,255,255,0.3)">W</text>
+    <text x="96" y="53" text-anchor="middle" font-family="Space Grotesk" font-size="8" fill="rgba(255,255,255,0.3)">E</text>
+  </svg>
+</div>
+
+<!-- Scale Bar -->
+<div class="hud scale-bar">
+  <div class="scale-line"></div>
+  <span>500 km</span>
+</div>
+
+<!-- Legend -->
+<div class="hud legend">
+  <h4>Biomes</h4>
+  <div class="legend-item"><div class="legend-swatch" style="background:#0A2A4A;"></div>Deep Ocean</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#1A4A7A;"></div>Shallow Water</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#D4A76A;"></div>Beach / Sand</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#4A8B4A;"></div>Grassland</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#2D5F2D;"></div>Dense Forest</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#6B7B8D;"></div>Mountain</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#E8EEF4;"></div>Snow Peaks</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#8B3A3A;"></div>Volcanic</div>
+</div>
+
+<!-- Minimap -->
+<div class="hud minimap-container" id="minimapContainer">
+  <canvas id="minimapCanvas"></canvas>
+  <div class="minimap-viewport" id="minimapViewport"></div>
+  <div class="minimap-label">Overview</div>
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip">
+  <div class="tt-name"></div>
+  <div class="tt-coords"></div>
+</div>
+
+<!-- Info Panel -->
+<div class="info-panel" id="infoPanel">
+  <div class="panel-header">
+    <button class="panel-close" id="panelClose">&times;</button>
+    <div class="panel-coords" id="panelCoords"></div>
+    <div class="panel-biome" id="panelBiome"></div>
+    <div class="panel-title" id="panelTitle"></div>
+    <div class="panel-subtitle" id="panelSubtitle"></div>
+  </div>
+  <div class="panel-divider"></div>
+  <div class="panel-body" id="panelBody"></div>
+</div>
+
+<script>
+// ==========================================
+//  PERLIN NOISE IMPLEMENTATION
+// ==========================================
+class PerlinNoise {
+  constructor(seed) {
+    this.seed = seed || Math.random() * 65536;
+    this.p = new Uint8Array(512);
+    const perm = new Uint8Array(256);
+    for (let i = 0; i < 256; i++) perm[i] = i;
+    // Fisher-Yates shuffle with seed
+    let s = this.seed;
+    for (let i = 255; i > 0; i--) {
+      s = (s * 16807 + 0) % 2147483647;
+      const j = s % (i + 1);
+      [perm[i], perm[j]] = [perm[j], perm[i]];
+    }
+    for (let i = 0; i < 512; i++) this.p[i] = perm[i & 255];
+  }
+
+  fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+  lerp(a, b, t) { return a + t * (b - a); }
+
+  grad(hash, x, y) {
+    const h = hash & 3;
+    const u = h < 2 ? x : y;
+    const v = h < 2 ? y : x;
+    return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
+  }
+
+  noise(x, y) {
+    const X = Math.floor(x) & 255;
+    const Y = Math.floor(y) & 255;
+    const xf = x - Math.floor(x);
+    const yf = y - Math.floor(y);
+    const u = this.fade(xf);
+    const v = this.fade(yf);
+
+    const aa = this.p[this.p[X] + Y];
+    const ab = this.p[this.p[X] + Y + 1];
+    const ba = this.p[this.p[X + 1] + Y];
+    const bb = this.p[this.p[X + 1] + Y + 1];
+
+    return this.lerp(
+      this.lerp(this.grad(aa, xf, yf), this.grad(ba, xf - 1, yf), u),
+      this.lerp(this.grad(ab, xf, yf - 1), this.grad(bb, xf - 1, yf - 1), u),
+      v
+    );
+  }
+
+  fbm(x, y, octaves = 6, lacunarity = 2.0, gain = 0.5) {
+    let sum = 0, amp = 1, freq = 1, max = 0;
+    for (let i = 0; i < octaves; i++) {
+      sum += this.noise(x * freq, y * freq) * amp;
+      max += amp;
+      amp *= gain;
+      freq *= lacunarity;
+    }
+    return sum / max;
+  }
+}
+
+// ==========================================
+//  TERRAIN CONFIG
+// ==========================================
+const MAP_W = 800;
+const MAP_H = 600;
+const TILE = 2; // pixel size of each terrain cell on the offscreen buffer
+const COLS = MAP_W;
+const ROWS = MAP_H;
+
+const perlin1 = new PerlinNoise(42);
+const perlin2 = new PerlinNoise(137);
+const perlin3 = new PerlinNoise(999);
+
+// Generate heightmap
+const heightmap = new Float32Array(COLS * ROWS);
+const moisturemap = new Float32Array(COLS * ROWS);
+
+function generateTerrain() {
+  const scale = 0.006;
+  const mScale = 0.008;
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      // Create island-like shape with distance falloff
+      const nx = x / COLS - 0.5;
+      const ny = y / ROWS - 0.5;
+      const dist = Math.sqrt(nx * nx + ny * ny) * 2.2;
+      const falloff = 1.0 - Math.min(1.0, dist * dist * 1.8);
+
+      let h = perlin1.fbm(x * scale, y * scale, 6, 2.0, 0.5);
+      h += perlin2.fbm(x * scale * 2.5, y * scale * 2.5, 4, 2.0, 0.4) * 0.3;
+
+      // Continental shelf
+      h = (h * 0.5 + 0.5) * falloff;
+
+      // Add mountain ridges in specific regions
+      const ridgeNoise = Math.abs(perlin3.fbm(x * 0.01, y * 0.01, 4));
+      const ridgeMask = Math.max(0, 1 - Math.abs(nx + 0.1) * 4) * Math.max(0, 1 - Math.abs(ny - 0.05) * 5);
+      h += ridgeNoise * ridgeMask * 0.35;
+
+      heightmap[y * COLS + x] = Math.max(0, Math.min(1, h));
+
+      // Moisture for biome variety
+      let m = perlin2.fbm(x * mScale + 100, y * mScale + 100, 4, 2.0, 0.5);
+      moisturemap[y * COLS + x] = m * 0.5 + 0.5;
+    }
+  }
+}
+
+function hexToRGB(hex) {
+  return {
+    r: parseInt(hex.slice(1,3), 16),
+    g: parseInt(hex.slice(3,5), 16),
+    b: parseInt(hex.slice(5,7), 16)
+  };
+}
+
+function lerpColor(c1, c2, t) {
+  return {
+    r: c1.r + (c2.r - c1.r) * t,
+    g: c1.g + (c2.g - c1.g) * t,
+    b: c1.b + (c2.b - c1.b) * t
+  };
+}
+
+const BIOME_COLORS = {
+  deepWater:    hexToRGB('#0A2A4A'),
+  shallowWater: hexToRGB('#1A4A7A'),
+  beach:        hexToRGB('#D4A76A'),
+  grass:        hexToRGB('#4A8B4A'),
+  forest:       hexToRGB('#2D5F2D'),
+  mountain:     hexToRGB('#6B7B8D'),
+  snow:         hexToRGB('#E8EEF4'),
+  volcanic:     hexToRGB('#8B3A3A'),
+  desert:       hexToRGB('#C4975A'),
+};
+
+function getBiomeColor(h, m, x, y) {
+  if (h < 0.28) return BIOME_COLORS.deepWater;
+  if (h < 0.35) return lerpColor(BIOME_COLORS.deepWater, BIOME_COLORS.shallowWater, (h - 0.28) / 0.07);
+  if (h < 0.40) return BIOME_COLORS.shallowWater;
+  if (h < 0.42) return BIOME_COLORS.beach;
+  if (h < 0.55) {
+    if (m < 0.35) return lerpColor(BIOME_COLORS.desert, BIOME_COLORS.beach, m / 0.35 * 0.3);
+    if (m < 0.5) return BIOME_COLORS.grass;
+    return lerpColor(BIOME_COLORS.grass, BIOME_COLORS.forest, (m - 0.5) / 0.5);
+  }
+  if (h < 0.65) return lerpColor(BIOME_COLORS.forest, BIOME_COLORS.mountain, (h - 0.55) / 0.10);
+  if (h < 0.78) return BIOME_COLORS.mountain;
+  if (h < 0.85) {
+    // Some volcanic spots
+    const volcNoise = perlin3.noise(x * 0.05, y * 0.05);
+    if (volcNoise > 0.3) return lerpColor(BIOME_COLORS.mountain, BIOME_COLORS.volcanic, (volcNoise - 0.3) / 0.4);
+    return lerpColor(BIOME_COLORS.mountain, BIOME_COLORS.snow, (h - 0.78) / 0.07);
+  }
+  return BIOME_COLORS.snow;
+}
+
+function getBiomeName(h, m) {
+  if (h < 0.35) return 'Deep Ocean';
+  if (h < 0.40) return 'Shallow Water';
+  if (h < 0.42) return 'Beach';
+  if (h < 0.55) {
+    if (m < 0.35) return 'Desert';
+    if (m < 0.5) return 'Grassland';
+    return 'Forest';
+  }
+  if (h < 0.65) return 'Dense Forest';
+  if (h < 0.78) return 'Mountain';
+  if (h < 0.85) return 'High Mountain';
+  return 'Snow Peak';
+}
+
+// ==========================================
+//  OFFSCREEN TERRAIN BUFFER
+// ==========================================
+const terrainCanvas = document.createElement('canvas');
+terrainCanvas.width = COLS;
+terrainCanvas.height = ROWS;
+const terrainCtx = terrainCanvas.getContext('2d');
+
+function renderTerrainBuffer() {
+  const imgData = terrainCtx.createImageData(COLS, ROWS);
+  const d = imgData.data;
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      const idx = y * COLS + x;
+      const h = heightmap[idx];
+      const m = moisturemap[idx];
+      const c = getBiomeColor(h, m, x, y);
+      // Slight detail noise
+      const detail = perlin3.noise(x * 0.1, y * 0.1) * 8;
+      const pi = idx * 4;
+      d[pi]     = Math.max(0, Math.min(255, c.r + detail));
+      d[pi + 1] = Math.max(0, Math.min(255, c.g + detail));
+      d[pi + 2] = Math.max(0, Math.min(255, c.b + detail));
+      d[pi + 3] = 255;
+    }
+  }
+  terrainCtx.putImageData(imgData, 0, 0);
+}
+
+// ==========================================
+//  LOCATION MARKERS
+// ==========================================
+const markers = [
+  {
+    id: 'about',
+    name: 'Settlement of Origin',
+    subtitle: 'About Anshull Garg',
+    icon: 'settlement',
+    mapX: 0.50, mapY: 0.48,
+    pinColor: '#D4A853',
+    biome: 'Central Grassland',
+    biomeColor: 'rgba(74,139,74,0.3)',
+    biomeBorder: '#4A8B4A',
+    content: () => `
+      <p>Welcome, traveler. You've reached the central settlement -- the heart of this terrain. I'm <strong>Anshull Garg</strong>, a Software Developer based at Walmart's technology division.</p>
+      <p>I build scalable, high-impact systems that power experiences for millions of users. My journey across this landscape represents a career driven by curiosity, craftsmanship, and a relentless pursuit of elegant solutions.</p>
+      <p>This map charts the territory I've explored: from dense forests of frontend frameworks to the mountain peaks of distributed systems, and the vast deserts of data engineering.</p>
+      <h3>Coordinates</h3>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:12px;opacity:0.5;">Bentonville, AR // Remote-Ready<br/>Currently mapping new territories at Walmart Global Tech</p>
+    `
+  },
+  {
+    id: 'project-alpha',
+    name: 'Evergreen Canopy',
+    subtitle: 'E-Commerce Platform Engine',
+    icon: 'project',
+    mapX: 0.32, mapY: 0.38,
+    pinColor: '#4A8B4A',
+    biome: 'Dense Forest',
+    biomeColor: 'rgba(45,95,45,0.3)',
+    biomeBorder: '#2D5F2D',
+    content: () => `
+      <p>Deep in the forest biome lies the <strong>Evergreen Canopy</strong> -- a high-throughput e-commerce platform engine built to handle Black Friday-scale traffic.</p>
+      <p>Architected a micro-frontend system that serves 200M+ page views monthly, with sub-second load times and 99.99% uptime. The forest grows denser with each feature shipped.</p>
+      <h3>Resources Gathered</h3>
+      <div>
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Next.js</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">GraphQL</span>
+        <span class="skill-tag">Micro-Frontends</span>
+        <span class="skill-tag">Webpack</span>
+      </div>
+      <h3>Terrain Notes</h3>
+      <p>Reduced page load time by 40% through code splitting and edge caching. Implemented A/B testing framework serving 50+ concurrent experiments.</p>
+    `
+  },
+  {
+    id: 'project-beta',
+    name: 'Iron Ridge Summit',
+    subtitle: 'Distributed Systems Platform',
+    icon: 'project',
+    mapX: 0.55, mapY: 0.28,
+    pinColor: '#6B7B8D',
+    biome: 'Mountain Range',
+    biomeColor: 'rgba(107,123,141,0.3)',
+    biomeBorder: '#6B7B8D',
+    content: () => `
+      <p>At the highest elevation of the map stands <strong>Iron Ridge Summit</strong> -- a distributed event-driven architecture processing millions of transactions per hour.</p>
+      <p>Built real-time inventory management systems that synchronize across 4,700+ stores and the entire digital marketplace. The mountain air is thin but the views are unmatched.</p>
+      <h3>Resources Gathered</h3>
+      <div>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">Kafka</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">gRPC</span>
+        <span class="skill-tag">Redis</span>
+        <span class="skill-tag">Cassandra</span>
+      </div>
+      <h3>Terrain Notes</h3>
+      <p>Achieved 99.999% reliability for critical inventory operations. Reduced cross-service latency by 60% through intelligent caching and connection pooling.</p>
+    `
+  },
+  {
+    id: 'project-gamma',
+    name: 'Amber Dunes Outpost',
+    subtitle: 'Data Pipeline & Analytics',
+    icon: 'project',
+    mapX: 0.68, mapY: 0.58,
+    pinColor: '#D4A76A',
+    biome: 'Desert Basin',
+    biomeColor: 'rgba(212,167,106,0.3)',
+    biomeBorder: '#D4A76A',
+    content: () => `
+      <p>Across the arid sands lies the <strong>Amber Dunes Outpost</strong> -- a data pipeline system that transforms raw terrain surveys into actionable intelligence.</p>
+      <p>Designed ETL pipelines processing 10TB+ daily, feeding machine learning models that predict demand patterns and optimize supply chain logistics across the entire Walmart network.</p>
+      <h3>Resources Gathered</h3>
+      <div>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Apache Spark</span>
+        <span class="skill-tag">Airflow</span>
+        <span class="skill-tag">BigQuery</span>
+        <span class="skill-tag">dbt</span>
+        <span class="skill-tag">Snowflake</span>
+      </div>
+      <h3>Terrain Notes</h3>
+      <p>Reduced data processing costs by 35% through pipeline optimization. Built self-healing data quality monitors with automated alerting.</p>
+    `
+  },
+  {
+    id: 'skills',
+    name: 'The Deep Mines',
+    subtitle: 'Technical Resources & Tools',
+    icon: 'mine',
+    mapX: 0.40, mapY: 0.25,
+    pinColor: '#9B8BBD',
+    biome: 'Mountain Interior',
+    biomeColor: 'rgba(107,123,141,0.3)',
+    biomeBorder: '#6B7B8D',
+    content: () => `
+      <p>Beneath the mountain range lies the <strong>Deep Mines</strong> -- a rich vein of technical resources accumulated across years of exploration.</p>
+      <h3>Languages</h3>
+      <div>
+        <span class="skill-tag">JavaScript / TypeScript</span>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Go</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">Rust</span>
+      </div>
+      <h3>Frontend Ore</h3>
+      <div>
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Next.js</span>
+        <span class="skill-tag">Vue.js</span>
+        <span class="skill-tag">Tailwind CSS</span>
+        <span class="skill-tag">Three.js</span>
+        <span class="skill-tag">D3.js</span>
+      </div>
+      <h3>Backend Minerals</h3>
+      <div>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">Spring Boot</span>
+        <span class="skill-tag">FastAPI</span>
+        <span class="skill-tag">GraphQL</span>
+        <span class="skill-tag">REST</span>
+        <span class="skill-tag">gRPC</span>
+      </div>
+      <h3>Infrastructure Deposits</h3>
+      <div>
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">GCP</span>
+        <span class="skill-tag">Azure</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">Terraform</span>
+        <span class="skill-tag">CI/CD</span>
+      </div>
+      <h3>Data Crystals</h3>
+      <div>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">MongoDB</span>
+        <span class="skill-tag">Redis</span>
+        <span class="skill-tag">Kafka</span>
+        <span class="skill-tag">Elasticsearch</span>
+      </div>
+    `
+  },
+  {
+    id: 'experience',
+    name: 'The Long Road',
+    subtitle: 'Career Expedition Log',
+    icon: 'road',
+    mapX: 0.48, mapY: 0.62,
+    pinColor: '#D4A853',
+    biome: 'Grassland Trail',
+    biomeColor: 'rgba(74,139,74,0.2)',
+    biomeBorder: '#4A8B4A',
+    content: () => `
+      <p>The <strong>Long Road</strong> stretches across the terrain, connecting each settlement and outpost. Here is the expedition log.</p>
+      <div class="panel-divider"></div>
+      <div class="timeline-item">
+        <div class="tl-role">Software Developer</div>
+        <div class="tl-company">Walmart Global Tech</div>
+        <div class="tl-date">2022 -- Present</div>
+        <div class="tl-desc">Building planet-scale commerce systems. Leading frontend architecture for customer-facing platforms serving hundreds of millions of users.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-role">Software Engineer</div>
+        <div class="tl-company">Previous Territory</div>
+        <div class="tl-date">2020 -- 2022</div>
+        <div class="tl-desc">Developed full-stack applications and microservices. Established engineering best practices and mentored junior explorers.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-role">Junior Developer</div>
+        <div class="tl-company">First Expedition</div>
+        <div class="tl-date">2018 -- 2020</div>
+        <div class="tl-desc">Began the journey. Built foundational skills in web development, learned to navigate complex codebases, and shipped first production features.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-role">Computer Science</div>
+        <div class="tl-company">University Outpost</div>
+        <div class="tl-date">2014 -- 2018</div>
+        <div class="tl-desc">Where the expedition began. Studied algorithms, data structures, and the ancient arts of software engineering.</div>
+      </div>
+    `
+  },
+  {
+    id: 'contact',
+    name: 'Beacon Lighthouse',
+    subtitle: 'Communication Channels',
+    icon: 'lighthouse',
+    mapX: 0.22, mapY: 0.60,
+    pinColor: '#E8EEF4',
+    biome: 'Coastal Bluff',
+    biomeColor: 'rgba(26,74,122,0.3)',
+    biomeBorder: '#1A4A7A',
+    content: () => `
+      <p>The <strong>Beacon Lighthouse</strong> stands on the western coast, its signal visible across the entire terrain. Reach out through any of these channels.</p>
+      <div class="panel-divider"></div>
+      <a class="contact-link" href="mailto:anshull.garg@gmail.com">
+        <div class="cl-icon">&#9993;</div>
+        <div>anshull.garg@gmail.com</div>
+      </a>
+      <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank">
+        <div class="cl-icon">in</div>
+        <div>linkedin.com/in/anshullgarg</div>
+      </a>
+      <a class="contact-link" href="https://github.com/anshullgarg" target="_blank">
+        <div class="cl-icon">&lt;/&gt;</div>
+        <div>github.com/anshullgarg</div>
+      </a>
+      <a class="contact-link" href="#">
+        <div class="cl-icon">&#9782;</div>
+        <div>anshullgarg.dev</div>
+      </a>
+      <div class="panel-divider"></div>
+      <p style="font-size:12px;opacity:0.4;font-family:'JetBrains Mono',monospace;">Signal strength: Excellent<br/>Lighthouse status: Active<br/>Response time: &lt; 24h</p>
+    `
+  },
+  {
+    id: 'project-delta',
+    name: 'Obsidian Forge',
+    subtitle: 'CI/CD & DevOps Platform',
+    icon: 'project',
+    mapX: 0.58, mapY: 0.42,
+    pinColor: '#8B3A3A',
+    biome: 'Volcanic Plains',
+    biomeColor: 'rgba(139,58,58,0.3)',
+    biomeBorder: '#8B3A3A',
+    content: () => `
+      <p>Near the volcanic region lies the <strong>Obsidian Forge</strong> -- a continuous integration and deployment platform that tempers code into production-ready steel.</p>
+      <p>Built a custom deployment orchestration system that manages 500+ microservices across multiple environments, with automated canary deployments and instant rollback capabilities.</p>
+      <h3>Resources Gathered</h3>
+      <div>
+        <span class="skill-tag">GitHub Actions</span>
+        <span class="skill-tag">ArgoCD</span>
+        <span class="skill-tag">Terraform</span>
+        <span class="skill-tag">Helm</span>
+        <span class="skill-tag">Prometheus</span>
+        <span class="skill-tag">Grafana</span>
+      </div>
+      <h3>Terrain Notes</h3>
+      <p>Reduced deployment time from 45 minutes to 4 minutes. Achieved zero-downtime deployments for all critical services. Built custom observability dashboards monitoring 10,000+ metrics.</p>
+    `
+  }
+];
+
+// Journey path order (chronological)
+const journeyOrder = ['experience', 'skills', 'project-alpha', 'project-beta', 'project-gamma', 'project-delta', 'about', 'contact'];
+
+// ==========================================
+//  CANVAS SETUP
+// ==========================================
+const canvas = document.getElementById('mapCanvas');
+const ctx = canvas.getContext('2d');
+const fogCanvas = document.getElementById('fogCanvas');
+const fogCtx = fogCanvas.getContext('2d');
+const minimapCanvas = document.getElementById('minimapCanvas');
+const minimapCtx = minimapCanvas.getContext('2d');
+
+let W, H;
+let camX = 0, camY = 0;
+let zoom = 1.0;
+let targetZoom = 1.0;
+let targetCamX = 0, targetCamY = 0;
+let isDragging = false;
+let dragStartX, dragStartY, dragCamX, dragCamY;
+let fogEnabled = false;
+let mouseX = 0, mouseY = 0;
+let hoveredMarker = null;
+let openMarkerId = null;
+let journeyProgress = 0; // 0-1 animation
+let breatheTime = 0;
+let isLoaded = false;
+
+function resize() {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W;
+  canvas.height = H;
+  fogCanvas.width = W;
+  fogCanvas.height = H;
+  minimapCanvas.width = 180;
+  minimapCanvas.height = 140;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Center camera
+function centerCamera() {
+  targetCamX = 0;
+  targetCamY = 0;
+  targetZoom = 1.0;
+}
+
+// ==========================================
+//  COORDINATE CONVERSION
+// ==========================================
+function worldToScreen(wx, wy) {
+  return {
+    x: W / 2 + (wx - camX) * zoom,
+    y: H / 2 + (wy - camY) * zoom
+  };
+}
+function screenToWorld(sx, sy) {
+  return {
+    x: (sx - W / 2) / zoom + camX,
+    y: (sy - H / 2) / zoom + camY
+  };
+}
+function markerWorldPos(m) {
+  return {
+    x: (m.mapX - 0.5) * COLS,
+    y: (m.mapY - 0.5) * ROWS
+  };
+}
+function formatCoord(mapX, mapY) {
+  const lat = ((0.5 - mapY) * 90).toFixed(1);
+  const lng = ((mapX - 0.5) * 180).toFixed(1);
+  return `LAT: ${Math.abs(lat)}${lat >= 0 ? 'N' : 'S'}, LONG: ${Math.abs(lng)}${lng >= 0 ? 'E' : 'W'}`;
+}
+
+// ==========================================
+//  DRAWING
+// ==========================================
+function drawTerrain() {
+  ctx.save();
+  ctx.imageSmoothingEnabled = zoom < 2;
+
+  const sx = W / 2 - camX * zoom;
+  const sy = H / 2 - camY * zoom;
+  const sw = COLS * zoom;
+  const sh = ROWS * zoom;
+
+  // Draw from offscreen buffer
+  ctx.drawImage(terrainCanvas,
+    0, 0, COLS, ROWS,
+    sx - sw / 2, sy - sh / 2, sw, sh
+  );
+
+  ctx.restore();
+}
+
+function drawGrid() {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+
+  const gridSpacing = 50;
+  const worldTopLeft = screenToWorld(0, 0);
+  const worldBottomRight = screenToWorld(W, H);
+  const startX = Math.floor(worldTopLeft.x / gridSpacing) * gridSpacing;
+  const startY = Math.floor(worldTopLeft.y / gridSpacing) * gridSpacing;
+
+  for (let wx = startX; wx <= worldBottomRight.x; wx += gridSpacing) {
+    const s = worldToScreen(wx, 0);
+    ctx.beginPath();
+    ctx.moveTo(s.x, 0);
+    ctx.lineTo(s.x, H);
+    ctx.stroke();
+  }
+  for (let wy = startY; wy <= worldBottomRight.y; wy += gridSpacing) {
+    const s = worldToScreen(0, wy);
+    ctx.beginPath();
+    ctx.moveTo(0, s.y);
+    ctx.lineTo(W, s.y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawJourneyPath() {
+  if (journeyOrder.length < 2) return;
+  ctx.save();
+
+  const points = journeyOrder.map(id => {
+    const m = markers.find(mk => mk.id === id);
+    const wp = markerWorldPos(m);
+    return worldToScreen(wp.x, wp.y);
+  });
+
+  // Total path length for animation
+  let totalLen = 0;
+  const segLengths = [];
+  for (let i = 1; i < points.length; i++) {
+    const dx = points[i].x - points[i-1].x;
+    const dy = points[i].y - points[i-1].y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    segLengths.push(len);
+    totalLen += len;
+  }
+
+  const drawLen = totalLen * journeyProgress;
+  let accumulated = 0;
+
+  ctx.setLineDash([8, 6]);
+  ctx.lineDashOffset = -performance.now() / 80;
+  ctx.strokeStyle = 'rgba(212,168,83,0.35)';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+
+  for (let i = 1; i < points.length; i++) {
+    const segLen = segLengths[i-1];
+    if (accumulated + segLen <= drawLen) {
+      ctx.lineTo(points[i].x, points[i].y);
+      accumulated += segLen;
+    } else {
+      const remain = drawLen - accumulated;
+      const t = remain / segLen;
+      const px = points[i-1].x + (points[i].x - points[i-1].x) * t;
+      const py = points[i-1].y + (points[i].y - points[i-1].y) * t;
+      ctx.lineTo(px, py);
+      break;
+    }
+  }
+  ctx.stroke();
+
+  // Glow
+  ctx.strokeStyle = 'rgba(212,168,83,0.08)';
+  ctx.lineWidth = 8;
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawPin(sx, sy, color, isHovered, isActive, icon) {
+  ctx.save();
+  const t = performance.now() / 1000;
+  const bounce = Math.sin(t * 2) * 3;
+  const drawY = sy + (isHovered ? bounce - 4 : bounce * 0.3);
+
+  // Shadow
+  ctx.beginPath();
+  ctx.ellipse(sx, sy + 8, 8 * zoom * 0.4, 3 * zoom * 0.4, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fill();
+
+  // Pin body
+  ctx.beginPath();
+  ctx.moveTo(sx, drawY + 2);
+  ctx.bezierCurveTo(sx - 10, drawY - 8, sx - 10, drawY - 22, sx, drawY - 22);
+  ctx.bezierCurveTo(sx + 10, drawY - 22, sx + 10, drawY - 8, sx, drawY + 2);
+  ctx.fillStyle = isHovered || isActive ? '#FFD470' : color;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Inner circle
+  ctx.beginPath();
+  ctx.arc(sx, drawY - 12, 4, 0, Math.PI * 2);
+  ctx.fillStyle = isHovered || isActive ? '#FFF' : 'rgba(255,255,255,0.8)';
+  ctx.fill();
+
+  // Icon symbol in center
+  ctx.fillStyle = isHovered || isActive ? color : 'rgba(0,0,0,0.5)';
+  ctx.font = '6px "JetBrains Mono"';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (icon === 'settlement') ctx.fillText('\u2302', sx, drawY - 12);
+  else if (icon === 'mine') ctx.fillText('\u2692', sx, drawY - 12);
+  else if (icon === 'road') ctx.fillText('\u2263', sx, drawY - 12);
+  else if (icon === 'lighthouse') ctx.fillText('\u2600', sx, drawY - 12);
+  else ctx.fillText('\u2605', sx, drawY - 12);
+
+  // Pulse ring on hover
+  if (isHovered || isActive) {
+    const pulse = (Math.sin(t * 3) + 1) / 2;
+    ctx.beginPath();
+    ctx.arc(sx, drawY - 12, 14 + pulse * 6, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(212,168,83,${0.3 - pulse * 0.25})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawMarkers() {
+  for (const m of markers) {
+    const wp = markerWorldPos(m);
+    const sp = worldToScreen(wp.x, wp.y);
+
+    // Check if on screen
+    if (sp.x < -50 || sp.x > W + 50 || sp.y < -50 || sp.y > H + 50) continue;
+
+    const isHovered = hoveredMarker === m.id;
+    const isActive = openMarkerId === m.id;
+    drawPin(sp.x, sp.y, m.pinColor, isHovered, isActive, m.icon);
+
+    // Label
+    if (zoom > 0.6) {
+      ctx.save();
+      ctx.font = `${isHovered ? '600' : '500'} 11px "Space Grotesk"`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = isHovered ? '#FFD470' : 'rgba(240,240,240,0.7)';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(m.name, sp.x, sp.y + 22);
+      ctx.restore();
+    }
+  }
+}
+
+function drawFog() {
+  if (!fogEnabled) {
+    fogCanvas.classList.remove('active');
+    return;
+  }
+  fogCanvas.classList.add('active');
+
+  fogCtx.clearRect(0, 0, W, H);
+  fogCtx.fillStyle = 'rgba(5, 10, 20, 0.7)';
+  fogCtx.fillRect(0, 0, W, H);
+  fogCtx.globalCompositeOperation = 'destination-out';
+
+  // Clear circles around markers
+  for (const m of markers) {
+    const wp = markerWorldPos(m);
+    const sp = worldToScreen(wp.x, wp.y);
+    const radius = 80 * zoom;
+    const grad = fogCtx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, radius);
+    grad.addColorStop(0, 'rgba(0,0,0,1)');
+    grad.addColorStop(0.7, 'rgba(0,0,0,0.6)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    fogCtx.fillStyle = grad;
+    fogCtx.fillRect(sp.x - radius, sp.y - radius, radius * 2, radius * 2);
+  }
+
+  // Clear around cursor
+  const cursorRad = 60 * zoom;
+  const cursorGrad = fogCtx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, cursorRad);
+  cursorGrad.addColorStop(0, 'rgba(0,0,0,0.8)');
+  cursorGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  fogCtx.fillStyle = cursorGrad;
+  fogCtx.fillRect(mouseX - cursorRad, mouseY - cursorRad, cursorRad * 2, cursorRad * 2);
+
+  fogCtx.globalCompositeOperation = 'source-over';
+}
+
+function drawMinimap() {
+  minimapCtx.clearRect(0, 0, 180, 140);
+
+  // Draw terrain scaled down
+  minimapCtx.drawImage(terrainCanvas, 0, 0, COLS, ROWS, 0, 0, 180, 140);
+
+  // Draw marker dots
+  for (const m of markers) {
+    minimapCtx.fillStyle = m.pinColor;
+    minimapCtx.beginPath();
+    minimapCtx.arc(m.mapX * 180, m.mapY * 140, 2, 0, Math.PI * 2);
+    minimapCtx.fill();
+  }
+
+  // Viewport indicator
+  const vp = document.getElementById('minimapViewport');
+  const worldTL = screenToWorld(0, 0);
+  const worldBR = screenToWorld(W, H);
+
+  const mmScaleX = 180 / COLS;
+  const mmScaleY = 140 / ROWS;
+
+  const vpLeft = (worldTL.x + COLS / 2) * mmScaleX;
+  const vpTop = (worldTL.y + ROWS / 2) * mmScaleY;
+  const vpRight = (worldBR.x + COLS / 2) * mmScaleX;
+  const vpBottom = (worldBR.y + ROWS / 2) * mmScaleY;
+
+  vp.style.left = Math.max(0, vpLeft) + 'px';
+  vp.style.top = Math.max(0, vpTop) + 'px';
+  vp.style.width = Math.min(180, vpRight - vpLeft) + 'px';
+  vp.style.height = Math.min(140, vpBottom - vpTop) + 'px';
+}
+
+// ==========================================
+//  TOOLTIP & PANEL
+// ==========================================
+const tooltipEl = document.getElementById('tooltip');
+
+function updateTooltip() {
+  if (hoveredMarker && !isDragging) {
+    const m = markers.find(mk => mk.id === hoveredMarker);
+    const wp = markerWorldPos(m);
+    const sp = worldToScreen(wp.x, wp.y);
+    tooltipEl.querySelector('.tt-name').textContent = m.name;
+    tooltipEl.querySelector('.tt-coords').textContent = formatCoord(m.mapX, m.mapY);
+    tooltipEl.style.left = (sp.x + 16) + 'px';
+    tooltipEl.style.top = (sp.y - 40) + 'px';
+    tooltipEl.classList.add('visible');
+  } else {
+    tooltipEl.classList.remove('visible');
+  }
+}
+
+function openPanel(markerId) {
+  const m = markers.find(mk => mk.id === markerId);
+  if (!m) return;
+
+  openMarkerId = markerId;
+
+  document.getElementById('panelCoords').textContent = formatCoord(m.mapX, m.mapY);
+
+  const biomeEl = document.getElementById('panelBiome');
+  biomeEl.textContent = m.biome;
+  biomeEl.style.background = m.biomeColor;
+  biomeEl.style.border = `1px solid ${m.biomeBorder}`;
+  biomeEl.style.color = '#F0F0F0';
+
+  document.getElementById('panelTitle').textContent = m.name;
+  document.getElementById('panelSubtitle').textContent = m.subtitle;
+  document.getElementById('panelBody').innerHTML = m.content();
+
+  document.getElementById('infoPanel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('infoPanel').classList.remove('open');
+  openMarkerId = null;
+}
+
+// ==========================================
+//  INPUT HANDLING
+// ==========================================
+function hitTestMarkers(sx, sy) {
+  for (let i = markers.length - 1; i >= 0; i--) {
+    const m = markers[i];
+    const wp = markerWorldPos(m);
+    const sp = worldToScreen(wp.x, wp.y);
+    const dx = sx - sp.x;
+    const dy = sy - (sp.y - 10);
+    if (dx * dx + dy * dy < 20 * 20) return m.id;
+  }
+  return null;
+}
+
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  dragCamX = camX;
+  dragCamY = camY;
+  canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  if (isDragging) {
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    targetCamX = dragCamX - dx / zoom;
+    targetCamY = dragCamY - dy / zoom;
+  }
+
+  // Hit test markers
+  hoveredMarker = hitTestMarkers(e.clientX, e.clientY);
+  canvas.style.cursor = isDragging ? 'grabbing' : (hoveredMarker ? 'pointer' : 'crosshair');
+
+  // Update coord display
+  const world = screenToWorld(e.clientX, e.clientY);
+  const mapFracX = world.x / COLS + 0.5;
+  const mapFracY = world.y / ROWS + 0.5;
+  const displayX = Math.floor(mapFracX * 9999);
+  const displayY = Math.floor(mapFracY * 9999);
+  document.getElementById('cursorCoords').textContent =
+    `CURSOR: ${String(displayX).padStart(4, '0')}, ${String(displayY).padStart(4, '0')}`;
+});
+
+window.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    canvas.style.cursor = hoveredMarker ? 'pointer' : 'crosshair';
+  }
+});
+
+canvas.addEventListener('click', e => {
+  const clicked = hitTestMarkers(e.clientX, e.clientY);
+  if (clicked) {
+    openPanel(clicked);
+  }
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const zoomDelta = e.deltaY > 0 ? 0.9 : 1.1;
+  targetZoom = Math.max(0.3, Math.min(5, targetZoom * zoomDelta));
+}, { passive: false });
+
+document.getElementById('zoomIn').addEventListener('click', () => {
+  targetZoom = Math.min(5, targetZoom * 1.3);
+});
+document.getElementById('zoomOut').addEventListener('click', () => {
+  targetZoom = Math.max(0.3, targetZoom * 0.7);
+});
+document.getElementById('centerMap').addEventListener('click', centerCamera);
+document.getElementById('fogToggle').addEventListener('click', () => {
+  fogEnabled = !fogEnabled;
+  document.getElementById('fogToggle').classList.toggle('active', fogEnabled);
+});
+document.getElementById('panelClose').addEventListener('click', closePanel);
+
+// Keyboard
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePanel();
+});
+
+// Touch support
+let touchStartDist = 0;
+let touchStartZoom = 1;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    dragStartX = e.touches[0].clientX;
+    dragStartY = e.touches[0].clientY;
+    dragCamX = camX;
+    dragCamY = camY;
+  } else if (e.touches.length === 2) {
+    isDragging = false;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    touchStartDist = Math.sqrt(dx*dx + dy*dy);
+    touchStartZoom = zoom;
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && isDragging) {
+    const dx = e.touches[0].clientX - dragStartX;
+    const dy = e.touches[0].clientY - dragStartY;
+    targetCamX = dragCamX - dx / zoom;
+    targetCamY = dragCamY - dy / zoom;
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    targetZoom = Math.max(0.3, Math.min(5, touchStartZoom * (dist / touchStartDist)));
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', () => { isDragging = false; });
+
+// Minimap click to navigate
+document.getElementById('minimapContainer').addEventListener('click', e => {
+  const rect = minimapCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  targetCamX = (mx / 180) * COLS - COLS / 2;
+  targetCamY = (my / 140) * ROWS - ROWS / 2;
+});
+
+// ==========================================
+//  ANIMATION LOOP
+// ==========================================
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function update() {
+  const smoothing = 0.08;
+  camX = lerp(camX, targetCamX, smoothing);
+  camY = lerp(camY, targetCamY, smoothing);
+  zoom = lerp(zoom, targetZoom, smoothing);
+
+  // Journey path animation
+  if (isLoaded && journeyProgress < 1) {
+    journeyProgress = Math.min(1, journeyProgress + 0.004);
+  }
+
+  breatheTime += 0.001;
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background ocean
+  ctx.fillStyle = '#0A2133';
+  ctx.fillRect(0, 0, W, H);
+
+  drawTerrain();
+  drawGrid();
+  drawJourneyPath();
+  drawMarkers();
+  drawFog();
+  drawMinimap();
+  updateTooltip();
+}
+
+function frame() {
+  update();
+  render();
+  requestAnimationFrame(frame);
+}
+
+// ==========================================
+//  INITIALIZATION
+// ==========================================
+function init() {
+  const loadingBar = document.getElementById('loadingBar');
+  const loadingScreen = document.getElementById('loadingScreen');
+
+  // Simulate loading stages
+  loadingBar.style.width = '20%';
+
+  setTimeout(() => {
+    generateTerrain();
+    loadingBar.style.width = '60%';
+
+    setTimeout(() => {
+      renderTerrainBuffer();
+      loadingBar.style.width = '90%';
+
+      setTimeout(() => {
+        loadingBar.style.width = '100%';
+
+        setTimeout(() => {
+          loadingScreen.classList.add('fade-out');
+          isLoaded = true;
+          frame();
+
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+          }, 800);
+        }, 300);
+      }, 200);
+    }, 100);
+  }, 400);
+}
+
+init();
+</script>
+</body>
+</html>
