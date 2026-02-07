@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Accelerator Portfolio | Anshull Garg</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #050508;
+  --panel: #0A0A14;
+  --border: #1A3A5F;
+  --blue: #00BFFF;
+  --pink: #FF1493;
+  --green: #39FF14;
+  --gold: #FFD700;
+  --white: #F0F0F0;
+  --text-dim: #6A7A8A;
+  --grid-color: rgba(26, 58, 95, 0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* Blue grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 0%, var(--bg) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- HUD OVERLAY ---- */
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0.7) 80%, transparent 100%);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--blue);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(26,58,95,0.3);
+}
+
+#hud .hud-left, #hud .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.hud-label {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.hud-value {
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.hud-value.green { color: var(--green); }
+.hud-value.gold { color: var(--gold); }
+.hud-value.pink { color: var(--pink); }
+
+.hud-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+}
+
+#oscilloscope-container {
+  width: 120px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.4);
+}
+
+#oscilloscope {
+  width: 120px;
+  height: 32px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+  margin-right: 6px;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--green); }
+  50% { opacity: 0.4; box-shadow: 0 0 8px var(--green); }
+}
+
+/* ---- HERO / ACCELERATOR ---- */
+#hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+#accelerator-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  pointer-events: none;
+}
+
+.hero-overlay h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-shadow: 0 0 40px rgba(0,191,255,0.3);
+  margin-bottom: 8px;
+}
+
+.hero-overlay .hero-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11px, 1.5vw, 14px);
+  color: var(--blue);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.hero-overlay .hero-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(14px, 2vw, 20px);
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  margin-top: 12px;
+  font-weight: 300;
+}
+
+.hero-overlay .hero-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  margin-top: 4px;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: float-down 2s ease-in-out infinite;
+}
+
+.scroll-indicator::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 30px;
+  background: linear-gradient(180deg, var(--blue), transparent);
+  margin: 8px auto 0;
+}
+
+@keyframes float-down {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ---- PERIODIC TABLE ---- */
+#periodic-table {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-header {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 40px;
+  letter-spacing: 0.05em;
+}
+
+.periodic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .periodic-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.element-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.element-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(0,191,255,0.05), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.element-card:hover::before { opacity: 1; }
+
+.element-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 0 20px rgba(0,191,255,0.1), inset 0 0 20px rgba(0,191,255,0.03);
+  transform: translateY(-2px);
+}
+
+/* Geiger counter tick on hover */
+.element-card:hover .geiger-tick {
+  animation: geiger 0.1s steps(2) infinite;
+}
+
+@keyframes geiger {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.element-card .atomic-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.element-card .element-symbol {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.element-card .element-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.element-card .geiger-tick {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+  opacity: 0.3;
+}
+
+.element-card.discovered {
+  border-color: rgba(0,191,255,0.4);
+}
+
+.element-card.discovered .element-symbol { color: var(--blue); }
+
+.element-card.undiscovered .element-symbol { color: var(--text-dim); }
+.element-card.undiscovered .element-name { color: rgba(106,122,138,0.5); }
+
+.element-card[data-color="blue"] .element-symbol { color: var(--blue); }
+.element-card[data-color="pink"] .element-symbol { color: var(--pink); }
+.element-card[data-color="green"] .element-symbol { color: var(--green); }
+.element-card[data-color="gold"] .element-symbol { color: var(--gold); }
+.element-card[data-color="white"] .element-symbol { color: var(--white); }
+
+/* Discovery flash */
+.element-card.flash-active {
+  animation: discovery-flash 0.6s ease-out;
+}
+
+@keyframes discovery-flash {
+  0% { box-shadow: 0 0 60px rgba(0,191,255,0.8), inset 0 0 60px rgba(0,191,255,0.3); background: rgba(0,191,255,0.15); }
+  100% { box-shadow: 0 0 20px rgba(0,191,255,0.1); background: var(--panel); }
+}
+
+/* ---- CONTENT PANEL (Lab Report) ---- */
+#content-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  background: rgba(5,5,8,0.7);
+  backdrop-filter: blur(4px);
+}
+
+#content-overlay.active { display: flex; }
+
+#content-panel {
+  width: min(560px, 90vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  padding: 40px 32px;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+#content-overlay.active #content-panel {
+  transform: translateX(0);
+}
+
+#content-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--pink), var(--green));
+}
+
+.panel-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.panel-close:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.lab-report-header {
+  margin-bottom: 32px;
+}
+
+.lab-report-header .classification {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--pink);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.lab-report-header .report-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.lab-report-header .report-symbol {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  display: inline-block;
+  margin-right: 12px;
+  line-height: 1;
+}
+
+.lab-report-header .report-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.lab-section {
+  margin-bottom: 24px;
+}
+
+.lab-section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(26,58,95,0.3);
+}
+
+.lab-section p, .lab-section li {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(240,240,240,0.8);
+}
+
+.lab-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.lab-section ul li {
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.lab-section ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tech-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--blue);
+  background: rgba(0,191,255,0.05);
+  letter-spacing: 0.05em;
+}
+
+.tech-tag.pink { color: var(--pink); border-color: rgba(255,20,147,0.3); background: rgba(255,20,147,0.05); }
+.tech-tag.green { color: var(--green); border-color: rgba(57,255,20,0.3); background: rgba(57,255,20,0.05); }
+.tech-tag.gold { color: var(--gold); border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.05); }
+
+/* ---- FUNDAMENTAL FORCES (Skills) ---- */
+#forces {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.forces-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 700px) {
+  .forces-grid { grid-template-columns: 1fr; }
+}
+
+.force-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.force-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.force-card .force-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.force-card .force-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.force-card .force-alias {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.force-card .force-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: rgba(240,240,240,0.6);
+  margin-bottom: 16px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.force-card[data-force="gravity"] { border-left: 3px solid var(--pink); }
+.force-card[data-force="gravity"] .force-name { color: var(--pink); }
+.force-card[data-force="gravity"] .force-alias { color: var(--pink); }
+
+.force-card[data-force="em"] { border-left: 3px solid var(--blue); }
+.force-card[data-force="em"] .force-name { color: var(--blue); }
+.force-card[data-force="em"] .force-alias { color: var(--blue); }
+
+.force-card[data-force="strong"] { border-left: 3px solid var(--green); }
+.force-card[data-force="strong"] .force-name { color: var(--green); }
+.force-card[data-force="strong"] .force-alias { color: var(--green); }
+
+.force-card[data-force="weak"] { border-left: 3px solid var(--gold); }
+.force-card[data-force="weak"] .force-name { color: var(--gold); }
+.force-card[data-force="weak"] .force-alias { color: var(--gold); }
+
+/* ---- EXPERIENCE (Atomic Decay) ---- */
+#experience {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.decay-chain {
+  position: relative;
+  padding-left: 40px;
+}
+
+.decay-chain::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--blue), var(--pink), transparent);
+}
+
+.decay-event {
+  position: relative;
+  margin-bottom: 48px;
+  padding: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.decay-event::before {
+  content: '';
+  position: absolute;
+  left: -34px;
+  top: 28px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 10px rgba(0,191,255,0.3);
+}
+
+.decay-event .half-life {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.decay-event .isotope {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.decay-event .isotope-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+
+.decay-event .decay-products {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: rgba(240,240,240,0.7);
+  line-height: 1.6;
+}
+
+/* ---- CONTACT ---- */
+#contact {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px 120px;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-transmission {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 40px 32px;
+}
+
+.contact-transmission .signal-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.contact-transmission h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.contact-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 10px 24px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 320px;
+}
+
+.contact-link:hover {
+  border-color: var(--blue);
+  background: rgba(0,191,255,0.05);
+  box-shadow: 0 0 16px rgba(0,191,255,0.1);
+}
+
+/* ---- COLLISION BURST OVERLAY ---- */
+#burst-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+}
+
+/* ---- EASTER EGG ---- */
+.easter-egg-content {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.easter-egg-content .big-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(255,215,0,0.3);
+}
+
+.easter-egg-content .ee-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+/* Panel scrollbar */
+#content-panel::-webkit-scrollbar { width: 4px; }
+#content-panel::-webkit-scrollbar-track { background: transparent; }
+#content-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-left">
+    <div>
+      <span class="status-dot"></span>
+      <span class="hud-label">Experiment Status</span>
+      <span class="hud-value green" style="margin-left:6px;">RUNNING</span>
+    </div>
+    <div class="hud-divider"></div>
+    <div>
+      <span class="hud-label">Energy</span>
+      <span class="hud-value" id="hud-energy" style="margin-left:6px;">13.6 TeV</span>
+    </div>
+    <div class="hud-divider"></div>
+    <div>
+      <span class="hud-label">Collisions</span>
+      <span class="hud-value pink" id="hud-collisions" style="margin-left:6px;">0</span>
+    </div>
+  </div>
+  <div class="hud-right">
+    <div>
+      <span class="hud-label">Luminosity</span>
+      <span class="hud-value gold" id="hud-luminosity" style="margin-left:6px;">0.00 fb<sup>-1</sup></span>
+    </div>
+    <div class="hud-divider"></div>
+    <div id="oscilloscope-container">
+      <canvas id="oscilloscope"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="accelerator-canvas"></canvas>
+  <div class="hero-overlay">
+    <h1>Portfolio Accelerator</h1>
+    <div class="hero-sub">Experiment in Progress</div>
+    <div class="hero-name">Anshull Garg</div>
+    <div class="hero-role">Software Developer at Walmart</div>
+  </div>
+  <div class="scroll-indicator">Scroll to Discover</div>
+</section>
+
+<!-- PERIODIC TABLE -->
+<section id="periodic-table">
+  <div class="section-header">Element Discovery</div>
+  <div class="section-title">Periodic Table of Portfolio</div>
+  <div class="periodic-grid" id="periodic-grid"></div>
+</section>
+
+<!-- FUNDAMENTAL FORCES -->
+<section id="forces">
+  <div class="section-header">Standard Model</div>
+  <div class="section-title">Fundamental Forces</div>
+  <div class="forces-grid">
+    <div class="force-card" data-force="gravity">
+      <span class="force-icon">&#x1D4D6;</span>
+      <div class="force-name">Gravity</div>
+      <div class="force-alias">Design &mdash; "Pulls things together"</div>
+      <div class="force-desc">Shaping visual coherence and user experience through deliberate design choices.</div>
+      <div class="tech-tags">
+        <span class="tech-tag pink">React</span>
+        <span class="tech-tag pink">CSS / Tailwind</span>
+        <span class="tech-tag pink">UI/UX Design</span>
+        <span class="tech-tag pink">Figma</span>
+        <span class="tech-tag pink">Responsive Design</span>
+      </div>
+    </div>
+    <div class="force-card" data-force="em">
+      <span class="force-icon">&#x26A1;</span>
+      <div class="force-name">Electromagnetism</div>
+      <div class="force-alias">Code &mdash; "Connects systems"</div>
+      <div class="force-desc">Building the invisible infrastructure that connects user interfaces to data.</div>
+      <div class="tech-tags">
+        <span class="tech-tag">Node.js</span>
+        <span class="tech-tag">TypeScript</span>
+        <span class="tech-tag">REST APIs</span>
+        <span class="tech-tag">GraphQL</span>
+        <span class="tech-tag">Java</span>
+      </div>
+    </div>
+    <div class="force-card" data-force="strong">
+      <span class="force-icon">&#x2699;</span>
+      <div class="force-name">Strong Force</div>
+      <div class="force-alias">Architecture &mdash; "Holds things together"</div>
+      <div class="force-desc">Designing systems that endure scale, complexity, and the test of time.</div>
+      <div class="tech-tags">
+        <span class="tech-tag green">AWS</span>
+        <span class="tech-tag green">Docker</span>
+        <span class="tech-tag green">System Design</span>
+        <span class="tech-tag green">Microservices</span>
+        <span class="tech-tag green">Kubernetes</span>
+      </div>
+    </div>
+    <div class="force-card" data-force="weak">
+      <span class="force-icon">&#x1F50D;</span>
+      <div class="force-name">Weak Force</div>
+      <div class="force-alias">Debugging &mdash; "Breaks things apart to fix them"</div>
+      <div class="force-desc">Deconstructing failures to build reliability. Every bug is a particle waiting to be understood.</div>
+      <div class="tech-tags">
+        <span class="tech-tag gold">Testing / Jest</span>
+        <span class="tech-tag gold">CI/CD</span>
+        <span class="tech-tag gold">Monitoring</span>
+        <span class="tech-tag gold">Performance Profiling</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">Radioactive Decay Chain</div>
+  <div class="section-title">Work History</div>
+  <div class="decay-chain">
+    <div class="decay-event">
+      <div class="half-life">HALF-LIFE: PRESENT &mdash; ONGOING</div>
+      <div class="isotope">Software Developer</div>
+      <div class="isotope-sub">Walmart &mdash; Sunnyvale, CA</div>
+      <div class="decay-products">
+        Building and maintaining large-scale e-commerce systems serving millions of users. Working across the full stack to deliver reliable, performant features for Walmart's digital platforms. Collaborating with cross-functional teams in an agile environment to ship high-impact products.
+      </div>
+    </div>
+    <div class="decay-event">
+      <div class="half-life">HALF-LIFE: PREVIOUS DECAY STATE</div>
+      <div class="isotope">Software Engineering Intern</div>
+      <div class="isotope-sub">Previous Role</div>
+      <div class="decay-products">
+        Developed internal tools and contributed to production codebases. Gained hands-on experience with enterprise software development practices, code reviews, and deployment pipelines. Converted theoretical knowledge into practical engineering skills.
+      </div>
+    </div>
+    <div class="decay-event">
+      <div class="half-life">HALF-LIFE: ORIGIN STATE</div>
+      <div class="isotope">Computer Science Education</div>
+      <div class="isotope-sub">University</div>
+      <div class="decay-products">
+        Studied algorithms, data structures, systems programming, and software engineering principles. Built the foundational knowledge that powers everything else. This is where the first particles were accelerated.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">Signal Transmission</div>
+  <div class="section-title">Establish Contact</div>
+  <div class="contact-transmission">
+    <div class="signal-label">Transmitting on all frequencies</div>
+    <h3>Ready to collaborate on your next experiment?</h3>
+    <div class="contact-links">
+      <a href="mailto:anshullgarg@gmail.com" class="contact-link">anshullgarg@gmail.com</a>
+      <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank">linkedin.com/in/anshullgarg</a>
+      <a href="https://github.com/anshullgarg" class="contact-link" target="_blank">github.com/anshullgarg</a>
+    </div>
+  </div>
+</section>
+
+<!-- BURST CANVAS (for collision animations) -->
+<canvas id="burst-canvas"></canvas>
+
+<!-- CONTENT OVERLAY -->
+<div id="content-overlay">
+  <div id="content-panel">
+    <button class="panel-close" id="panel-close">&times;</button>
+    <div id="panel-content"></div>
+  </div>
+</div>
+
+<script>
+// =============================================================
+// STATE
+// =============================================================
+const state = {
+  collisions: 0,
+  energy: 13.6,
+  luminosity: 0,
+  discovered: new Set(),
+  interactions: 0
+};
+
+// =============================================================
+// ELEMENT DATA
+// =============================================================
+const elements = [
+  {
+    id: 'about', symbol: 'Ag', name: 'ABOUT', number: '01', color: 'blue',
+    content: {
+      classification: 'FUNDAMENTAL PARTICLE &mdash; PERSONAL PROFILE',
+      title: 'About',
+      symbol: 'Ag', symbolColor: '#00BFFF',
+      meta: 'Discovery Date: Always Known | Stability: Stable',
+      sections: [
+        { title: 'Observed Properties', html: '<p>Anshull Garg is a Software Developer at Walmart, passionate about building scalable systems and crafting thoughtful user experiences. With a strong foundation in computer science and a drive for continuous learning, Anshull approaches software development as both an engineering discipline and a creative pursuit.</p>' },
+        { title: 'Behavioral Characteristics', html: '<ul><li>Thrives in complex, large-scale system environments</li><li>Balances technical depth with product thinking</li><li>Values clean code, thorough testing, and collaborative development</li><li>Constantly exploring new technologies and paradigms</li></ul>' },
+        { title: 'Observed Interactions', html: '<p>Works effectively across the full stack, from pixel-perfect frontends to robust backend services. Comfortable navigating ambiguity and translating requirements into working software.</p>' }
+      ]
+    }
+  },
+  {
+    id: 'skills', symbol: 'Sk', name: 'SKILLS', number: '02', color: 'green',
+    content: {
+      classification: 'FORCE CARRIER &mdash; CAPABILITIES',
+      title: 'Skills',
+      symbol: 'Sk', symbolColor: '#39FF14',
+      meta: 'Classification: Composite | Interaction Range: Infinite',
+      sections: [
+        { title: 'Languages', html: '<div class="tech-tags"><span class="tech-tag">JavaScript</span><span class="tech-tag">TypeScript</span><span class="tech-tag">Java</span><span class="tech-tag">Python</span><span class="tech-tag">SQL</span><span class="tech-tag">HTML/CSS</span></div>' },
+        { title: 'Frameworks & Libraries', html: '<div class="tech-tags"><span class="tech-tag green">React</span><span class="tech-tag green">Node.js</span><span class="tech-tag green">Express</span><span class="tech-tag green">Next.js</span><span class="tech-tag green">Spring Boot</span></div>' },
+        { title: 'Infrastructure & Tools', html: '<div class="tech-tags"><span class="tech-tag gold">AWS</span><span class="tech-tag gold">Docker</span><span class="tech-tag gold">Kubernetes</span><span class="tech-tag gold">Git</span><span class="tech-tag gold">CI/CD</span><span class="tech-tag gold">REST APIs</span><span class="tech-tag gold">GraphQL</span></div>' },
+        { title: 'Principles', html: '<ul><li>System design and distributed architecture</li><li>Performance optimization and profiling</li><li>Test-driven development</li><li>Agile methodologies</li></ul>' }
+      ]
+    }
+  },
+  {
+    id: 'project1', symbol: 'Px', name: 'PROJECT X', number: '03', color: 'pink',
+    content: {
+      classification: 'COMPOSITE PARTICLE &mdash; PROJECT',
+      title: 'E-Commerce Platform',
+      symbol: 'Px', symbolColor: '#FF1493',
+      meta: 'Discovery Date: 2024 | Stability: Production-Stable',
+      sections: [
+        { title: 'Observed Properties', html: '<p>A high-performance e-commerce platform built to handle millions of concurrent users. Implemented real-time inventory management, dynamic pricing engines, and a seamless checkout flow optimized for conversion.</p>' },
+        { title: 'Composition (Tech Stack)', html: '<div class="tech-tags"><span class="tech-tag pink">React</span><span class="tech-tag pink">Node.js</span><span class="tech-tag pink">GraphQL</span><span class="tech-tag pink">Redis</span><span class="tech-tag pink">PostgreSQL</span><span class="tech-tag pink">AWS</span></div>' },
+        { title: 'Observed Behavior', html: '<ul><li>Sub-second page loads under heavy traffic</li><li>99.9% uptime across peak shopping events</li><li>Real-time inventory sync across distributed warehouses</li></ul>' },
+        { title: 'Decay Products', html: '<p>Led to development of shared component library and internal design system now used across multiple teams.</p>' }
+      ]
+    }
+  },
+  {
+    id: 'project2', symbol: 'Py', name: 'PROJECT Y', number: '04', color: 'blue',
+    content: {
+      classification: 'COMPOSITE PARTICLE &mdash; PROJECT',
+      title: 'Data Pipeline Engine',
+      symbol: 'Py', symbolColor: '#00BFFF',
+      meta: 'Discovery Date: 2023 | Stability: Production-Stable',
+      sections: [
+        { title: 'Observed Properties', html: '<p>A scalable data pipeline engine for processing and transforming large volumes of event data in near real-time. Designed to be fault-tolerant, observable, and easy to extend with new processing stages.</p>' },
+        { title: 'Composition (Tech Stack)', html: '<div class="tech-tags"><span class="tech-tag">Java</span><span class="tech-tag">Kafka</span><span class="tech-tag">Spark</span><span class="tech-tag">Docker</span><span class="tech-tag">Kubernetes</span><span class="tech-tag">Prometheus</span></div>' },
+        { title: 'Observed Behavior', html: '<ul><li>Processes 10M+ events per hour</li><li>Auto-scales based on queue depth</li><li>Comprehensive monitoring and alerting</li></ul>' },
+        { title: 'Decay Products', html: '<p>Became the foundation for the team\'s event-driven architecture strategy and influenced data platform roadmap.</p>' }
+      ]
+    }
+  },
+  {
+    id: 'project3', symbol: 'Pz', name: 'PROJECT Z', number: '05', color: 'gold',
+    content: {
+      classification: 'COMPOSITE PARTICLE &mdash; PROJECT',
+      title: 'Developer Tools Suite',
+      symbol: 'Pz', symbolColor: '#FFD700',
+      meta: 'Discovery Date: 2023 | Stability: Evolving',
+      sections: [
+        { title: 'Observed Properties', html: '<p>An internal developer productivity suite including a CLI tool, code scaffolding generator, and automated testing framework. Designed to reduce boilerplate and enforce best practices across engineering teams.</p>' },
+        { title: 'Composition (Tech Stack)', html: '<div class="tech-tags"><span class="tech-tag gold">TypeScript</span><span class="tech-tag gold">Node.js</span><span class="tech-tag gold">Jest</span><span class="tech-tag gold">GitHub Actions</span><span class="tech-tag gold">npm</span></div>' },
+        { title: 'Observed Behavior', html: '<ul><li>Reduced project setup time by 80%</li><li>Standardized testing patterns across 12+ repositories</li><li>Adopted by 50+ developers internally</li></ul>' },
+        { title: 'Decay Products', html: '<p>Open-sourced core modules. Sparked internal engineering guild focused on developer experience improvements.</p>' }
+      ]
+    }
+  },
+  {
+    id: 'experience', symbol: 'Ex', name: 'EXPERIENCE', number: '06', color: 'green',
+    content: {
+      classification: 'DECAY CHAIN &mdash; CAREER TRAJECTORY',
+      title: 'Experience',
+      symbol: 'Ex', symbolColor: '#39FF14',
+      meta: 'Observation Period: Multi-Year | Pattern: Exponential Growth',
+      sections: [
+        { title: 'Current State', html: '<p><strong style="color:#39FF14;">Software Developer at Walmart</strong><br>Building large-scale retail technology. Working across frontend and backend systems to deliver features that impact millions of customers. Part of a high-velocity team shipping weekly.</p>' },
+        { title: 'Previous States', html: '<p>Progressed through internships and academic projects, each role adding new capabilities and deeper understanding of production-grade software development. Each transition released new skills into the ecosystem.</p>' },
+        { title: 'Emission Spectrum', html: '<ul><li>Full-stack development across enterprise systems</li><li>Cross-team collaboration and technical mentorship</li><li>Production incident response and system reliability</li><li>Continuous learning and technology evaluation</li></ul>' }
+      ]
+    }
+  },
+  {
+    id: 'contact', symbol: 'Ct', name: 'CONTACT', number: '07', color: 'white',
+    content: {
+      classification: 'SIGNAL TRANSMISSION &mdash; COMMUNICATION',
+      title: 'Contact',
+      symbol: 'Ct', symbolColor: '#F0F0F0',
+      meta: 'Signal Strength: Strong | Frequency: Always Open',
+      sections: [
+        { title: 'Transmission Channels', html: '<p><strong>Email:</strong> <a href="mailto:anshullgarg@gmail.com" style="color:#00BFFF;">anshullgarg@gmail.com</a></p><p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/anshullgarg" style="color:#00BFFF;" target="_blank">linkedin.com/in/anshullgarg</a></p><p><strong>GitHub:</strong> <a href="https://github.com/anshullgarg" style="color:#00BFFF;" target="_blank">github.com/anshullgarg</a></p>' },
+        { title: 'Signal Protocol', html: '<p>Open to discussions about software engineering, collaboration opportunities, and interesting technical challenges. Response time is typically fast. All frequencies monitored.</p>' }
+      ]
+    }
+  },
+  {
+    id: 'easter', symbol: 'Eg', name: '???', number: '42', color: 'gold',
+    content: {
+      classification: 'EXOTIC MATTER &mdash; UNKNOWN',
+      title: 'The Answer',
+      symbol: 'Eg', symbolColor: '#FFD700',
+      meta: 'Discovery Date: The Beginning of Time | Stability: Absolute',
+      sections: [
+        { title: 'Observation', html: '<div class="easter-egg-content"><div class="big-number">42</div><div class="ee-text">The Answer to the Ultimate Question of Life, the Universe, and Everything.<br><br>You found the Higgs boson of this portfolio.<br>Your curiosity is noted and appreciated.<br><br>-- Anshull</div></div>' }
+      ]
+    }
+  }
+];
+
+// =============================================================
+// BUILD PERIODIC TABLE
+// =============================================================
+function buildPeriodicTable() {
+  const grid = document.getElementById('periodic-grid');
+  elements.forEach(el => {
+    const card = document.createElement('div');
+    card.className = 'element-card undiscovered';
+    card.dataset.id = el.id;
+    card.dataset.color = el.color;
+    card.innerHTML = `
+      <div class="atomic-number">${el.number}</div>
+      <div class="element-symbol">${el.id === 'easter' ? '??' : el.symbol}</div>
+      <div class="element-name">${el.name}</div>
+      <div class="geiger-tick"></div>
+    `;
+    card.addEventListener('click', () => discoverElement(el, card));
+    grid.appendChild(card);
+  });
+}
+
+// =============================================================
+// DISCOVER ELEMENT
+// =============================================================
+function discoverElement(el, card) {
+  state.interactions++;
+  state.collisions++;
+  updateHUD();
+
+  // Mark discovered
+  if (!state.discovered.has(el.id)) {
+    state.discovered.add(el.id);
+    card.classList.remove('undiscovered');
+    card.classList.add('discovered');
+    card.querySelector('.element-symbol').textContent = el.symbol;
+    card.querySelector('.element-name').textContent = el.name;
+  }
+
+  // Flash
+  card.classList.remove('flash-active');
+  void card.offsetWidth;
+  card.classList.add('flash-active');
+
+  // Trigger burst at card center
+  const rect = card.getBoundingClientRect();
+  triggerBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, el.color);
+
+  // Show panel
+  showPanel(el);
+}
+
+// =============================================================
+// SHOW / HIDE PANEL
+// =============================================================
+function showPanel(el) {
+  const overlay = document.getElementById('content-overlay');
+  const content = document.getElementById('panel-content');
+
+  const c = el.content;
+  let html = `
+    <div class="lab-report-header">
+      <div class="classification">${c.classification}</div>
+      <div style="display:flex;align-items:flex-end;gap:12px;">
+        <span class="report-symbol" style="color:${c.symbolColor}">${c.symbol}</span>
+        <span class="report-title">${c.title}</span>
+      </div>
+      <div class="report-meta">${c.meta}</div>
+    </div>
+  `;
+
+  c.sections.forEach(s => {
+    html += `
+      <div class="lab-section">
+        <div class="lab-section-title">${s.title}</div>
+        ${s.html}
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
+  overlay.classList.add('active');
+}
+
+document.getElementById('panel-close').addEventListener('click', () => {
+  document.getElementById('content-overlay').classList.remove('active');
+});
+
+document.getElementById('content-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    document.getElementById('content-overlay').classList.remove('active');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('content-overlay').classList.remove('active');
+  }
+});
+
+// =============================================================
+// HUD
+// =============================================================
+function updateHUD() {
+  document.getElementById('hud-collisions').textContent = state.collisions;
+  state.luminosity = (state.interactions * 0.37).toFixed(2);
+  document.getElementById('hud-luminosity').innerHTML = state.luminosity + ' fb<sup>-1</sup>';
+  const energyVal = (13.6 + state.interactions * 0.1).toFixed(1);
+  document.getElementById('hud-energy').textContent = energyVal + ' TeV';
+}
+
+// =============================================================
+// OSCILLOSCOPE
+// =============================================================
+const oscCanvas = document.getElementById('oscilloscope');
+const oscCtx = oscCanvas.getContext('2d');
+oscCanvas.width = 120;
+oscCanvas.height = 32;
+let oscPhase = 0;
+
+function drawOscilloscope() {
+  oscCtx.fillStyle = 'rgba(5,5,8,0.3)';
+  oscCtx.fillRect(0, 0, 120, 32);
+  oscCtx.strokeStyle = '#00BFFF';
+  oscCtx.lineWidth = 1.5;
+  oscCtx.shadowColor = '#00BFFF';
+  oscCtx.shadowBlur = 4;
+  oscCtx.beginPath();
+  for (let x = 0; x < 120; x++) {
+    const y = 16 + Math.sin((x * 0.08) + oscPhase) * 8 + Math.sin((x * 0.15) + oscPhase * 1.3) * 3;
+    if (x === 0) oscCtx.moveTo(x, y);
+    else oscCtx.lineTo(x, y);
+  }
+  oscCtx.stroke();
+  oscCtx.shadowBlur = 0;
+  oscPhase += 0.06;
+  requestAnimationFrame(drawOscilloscope);
+}
+drawOscilloscope();
+
+// =============================================================
+// PARTICLE ACCELERATOR (Main Canvas)
+// =============================================================
+const accelCanvas = document.getElementById('accelerator-canvas');
+const ctx = accelCanvas.getContext('2d');
+let W, H, cx, cy, ringRadius;
+
+function resizeAccelerator() {
+  W = accelCanvas.width = window.innerWidth;
+  H = accelCanvas.height = window.innerHeight;
+  cx = W / 2;
+  cy = H / 2;
+  ringRadius = Math.min(W, H) * 0.32;
+}
+resizeAccelerator();
+window.addEventListener('resize', resizeAccelerator);
+
+// Particle class
+const PARTICLE_COLORS = ['#00BFFF', '#FF1493', '#39FF14', '#FFD700', '#FFFFFF'];
+
+class Particle {
+  constructor() {
+    this.angle = Math.random() * Math.PI * 2;
+    this.speed = (0.005 + Math.random() * 0.012) * (Math.random() > 0.5 ? 1 : -1);
+    this.baseSpeed = this.speed;
+    this.radiusOffset = (Math.random() - 0.5) * 30;
+    this.color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+    this.size = 2 + Math.random() * 3;
+    this.trail = [];
+    this.maxTrail = 30 + Math.floor(Math.random() * 20);
+    this.perturbPhase = Math.random() * Math.PI * 2;
+    this.perturbAmp = 2 + Math.random() * 6;
+    this.perturbFreq = 0.02 + Math.random() * 0.03;
+    this.alive = true;
+  }
+
+  update() {
+    this.angle += this.speed;
+    this.perturbPhase += this.perturbFreq;
+    const r = ringRadius + this.radiusOffset + Math.sin(this.perturbPhase) * this.perturbAmp;
+    const x = cx + Math.cos(this.angle) * r;
+    const y = cy + Math.sin(this.angle) * r;
+    this.x = x;
+    this.y = y;
+    this.trail.push({ x, y, alpha: 1 });
+    if (this.trail.length > this.maxTrail) this.trail.shift();
+    // fade trail
+    this.trail.forEach((t, i) => {
+      t.alpha = i / this.trail.length;
+    });
+  }
+
+  draw(ctx) {
+    // trail
+    for (let i = 1; i < this.trail.length; i++) {
+      const t = this.trail[i];
+      const prev = this.trail[i - 1];
+      ctx.beginPath();
+      ctx.moveTo(prev.x, prev.y);
+      ctx.lineTo(t.x, t.y);
+      ctx.strokeStyle = this.color;
+      ctx.globalAlpha = t.alpha * 0.4;
+      ctx.lineWidth = this.size * 0.6;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // glow
+    ctx.save();
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
+
+    // bright center
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+  }
+}
+
+// Collision burst particles (small)
+class BurstParticle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1 + Math.random() * 4;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    this.color = color;
+    this.size = 1 + Math.random() * 2;
+    this.life = 1;
+    this.decay = 0.015 + Math.random() * 0.025;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= 0.98;
+    this.vy *= 0.98;
+    this.life -= this.decay;
+  }
+
+  draw(ctx) {
+    if (this.life <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = this.life;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// Collision ring effect
+class CollisionRing {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.radius = 0;
+    this.maxRadius = 60 + Math.random() * 40;
+    this.life = 1;
+  }
+
+  update() {
+    this.radius += 2.5;
+    this.life = 1 - (this.radius / this.maxRadius);
+  }
+
+  draw(ctx) {
+    if (this.life <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = this.life * 0.6;
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// Init particles
+let particles = [];
+let burstParticles = [];
+let collisionRings = [];
+
+function initParticles() {
+  particles = [];
+  for (let i = 0; i < 14; i++) {
+    particles.push(new Particle());
+  }
+}
+initParticles();
+
+// Check collisions between accelerator particles
+function checkCollisions() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const a = particles[i];
+      const b = particles[j];
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 20) {
+        // Collision!
+        const mx = (a.x + b.x) / 2;
+        const my = (a.y + b.y) / 2;
+        const color = Math.random() > 0.5 ? a.color : b.color;
+
+        // Spawn burst particles
+        for (let k = 0; k < 25; k++) {
+          burstParticles.push(new BurstParticle(mx, my, PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)]));
+        }
+        // Ring
+        collisionRings.push(new CollisionRing(mx, my, color));
+
+        // Perturb particles
+        a.angle += (Math.random() - 0.5) * 0.3;
+        b.angle += (Math.random() - 0.5) * 0.3;
+
+        state.collisions++;
+        updateHUD();
+      }
+    }
+  }
+}
+
+// Click to speed up
+accelCanvas.addEventListener('click', (e) => {
+  state.interactions++;
+  state.energy += 0.1;
+  updateHUD();
+
+  // Speed boost
+  particles.forEach(p => {
+    p.speed = p.baseSpeed * (1.5 + Math.random());
+    setTimeout(() => { p.speed = p.baseSpeed; }, 2000);
+  });
+
+  // Burst at click pos
+  for (let k = 0; k < 15; k++) {
+    burstParticles.push(new BurstParticle(e.clientX, e.clientY, PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)]));
+  }
+});
+
+// Draw the accelerator ring
+function drawRing() {
+  // Outer ring
+  ctx.save();
+  ctx.strokeStyle = 'rgba(26, 58, 95, 0.4)';
+  ctx.lineWidth = 40;
+  ctx.beginPath();
+  ctx.arc(cx, cy, ringRadius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Inner glow
+  ctx.strokeStyle = 'rgba(0, 191, 255, 0.06)';
+  ctx.lineWidth = 36;
+  ctx.beginPath();
+  ctx.arc(cx, cy, ringRadius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Edge lines
+  ctx.strokeStyle = 'rgba(0, 191, 255, 0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, ringRadius - 20, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, ringRadius + 20, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Segment marks
+  for (let i = 0; i < 32; i++) {
+    const a = (i / 32) * Math.PI * 2;
+    const inner = ringRadius - 20;
+    const outer = ringRadius + 20;
+    ctx.strokeStyle = 'rgba(0, 191, 255, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
+    ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer);
+    ctx.stroke();
+  }
+
+  // Detector points (4 quadrants)
+  const detectors = [0, Math.PI / 2, Math.PI, Math.PI * 1.5];
+  detectors.forEach(a => {
+    const dx = cx + Math.cos(a) * ringRadius;
+    const dy = cy + Math.sin(a) * ringRadius;
+    ctx.fillStyle = 'rgba(0, 191, 255, 0.3)';
+    ctx.beginPath();
+    ctx.arc(dx, dy, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 191, 255, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(dx, dy, 12, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+// Main animation loop
+function animate() {
+  ctx.fillStyle = 'rgba(5, 5, 8, 0.15)';
+  ctx.fillRect(0, 0, W, H);
+
+  drawRing();
+
+  // Update & draw particles
+  particles.forEach(p => {
+    p.update();
+    p.draw(ctx);
+  });
+
+  // Check collisions
+  checkCollisions();
+
+  // Update & draw burst particles
+  burstParticles = burstParticles.filter(bp => bp.life > 0);
+  burstParticles.forEach(bp => {
+    bp.update();
+    bp.draw(ctx);
+  });
+
+  // Update & draw collision rings
+  collisionRings = collisionRings.filter(cr => cr.life > 0);
+  collisionRings.forEach(cr => {
+    cr.update();
+    cr.draw(ctx);
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+// =============================================================
+// BURST CANVAS (for element discovery bursts)
+// =============================================================
+const burstCanvas = document.getElementById('burst-canvas');
+const bCtx = burstCanvas.getContext('2d');
+let uiBursts = [];
+
+function resizeBurst() {
+  burstCanvas.width = window.innerWidth;
+  burstCanvas.height = window.innerHeight;
+}
+resizeBurst();
+window.addEventListener('resize', resizeBurst);
+
+const colorMap = {
+  blue: '#00BFFF',
+  pink: '#FF1493',
+  green: '#39FF14',
+  gold: '#FFD700',
+  white: '#F0F0F0'
+};
+
+function triggerBurst(x, y, colorName) {
+  const color = colorMap[colorName] || '#00BFFF';
+  for (let i = 0; i < 30; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 6;
+    uiBursts.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      color,
+      size: 1 + Math.random() * 3,
+      life: 1,
+      decay: 0.02 + Math.random() * 0.03
+    });
+  }
+  // Ring
+  uiBursts.push({
+    x, y, ring: true,
+    color,
+    radius: 0,
+    maxRadius: 80,
+    life: 1
+  });
+}
+
+function animateBurst() {
+  bCtx.clearRect(0, 0, burstCanvas.width, burstCanvas.height);
+
+  uiBursts = uiBursts.filter(p => p.life > 0);
+  uiBursts.forEach(p => {
+    if (p.ring) {
+      p.radius += 3;
+      p.life = 1 - p.radius / p.maxRadius;
+      if (p.life <= 0) return;
+      bCtx.save();
+      bCtx.globalAlpha = p.life * 0.5;
+      bCtx.strokeStyle = p.color;
+      bCtx.lineWidth = 2;
+      bCtx.shadowColor = p.color;
+      bCtx.shadowBlur = 10;
+      bCtx.beginPath();
+      bCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      bCtx.stroke();
+      bCtx.restore();
+    } else {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.96;
+      p.vy *= 0.96;
+      p.life -= p.decay;
+      if (p.life <= 0) return;
+      bCtx.save();
+      bCtx.globalAlpha = p.life;
+      bCtx.shadowColor = p.color;
+      bCtx.shadowBlur = 6;
+      bCtx.beginPath();
+      bCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      bCtx.fillStyle = p.color;
+      bCtx.fill();
+      bCtx.restore();
+    }
+  });
+
+  requestAnimationFrame(animateBurst);
+}
+animateBurst();
+
+// =============================================================
+// INIT
+// =============================================================
+buildPeriodicTable();
+
+// Random auto-collision events for ambiance
+setInterval(() => {
+  if (Math.random() > 0.6) {
+    // pick two random particles and nudge them together
+    const a = particles[Math.floor(Math.random() * particles.length)];
+    const b = particles[Math.floor(Math.random() * particles.length)];
+    if (a !== b) {
+      a.angle = b.angle + 0.01;
+      a.radiusOffset = b.radiusOffset;
+    }
+  }
+}, 3000);
+
+// Luminosity tick
+setInterval(() => {
+  state.luminosity = (parseFloat(state.luminosity) + 0.01).toFixed(2);
+  document.getElementById('hud-luminosity').innerHTML = state.luminosity + ' fb<sup>-1</sup>';
+}, 2000);
+
+</script>
+</body>
+</html>
