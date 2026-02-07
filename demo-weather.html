@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - The Weather System Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A portfolio that changes with the weather.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Sunny (default) */
+  --bg-start: #FFF8E7;
+  --bg-end: #FFE4B5;
+  --text: #2C1810;
+  --text-secondary: #5C3D2E;
+  --accent: #D4A853;
+  --accent-glow: rgba(212, 168, 83, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.6);
+  --card-border: rgba(212, 168, 83, 0.2);
+  --card-shadow: 0 4px 20px rgba(44, 24, 16, 0.08);
+  --tag-bg: rgba(212, 168, 83, 0.15);
+  --divider: rgba(44, 24, 16, 0.1);
+
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --transition-speed: 2s;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+  transition:
+    background var(--transition-speed) ease,
+    color var(--transition-speed) ease;
+}
+
+/* ============================================================
+   WEATHER THEMES
+   ============================================================ */
+
+/* --- SUNNY --- */
+body.weather-sunny {
+  --bg-start: #FFF8E7;
+  --bg-end: #FFE4B5;
+  --text: #2C1810;
+  --text-secondary: #5C3D2E;
+  --accent: #D4A853;
+  --accent-glow: rgba(212, 168, 83, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.6);
+  --card-border: rgba(212, 168, 83, 0.2);
+  --card-shadow: 0 4px 20px rgba(44, 24, 16, 0.08);
+  --tag-bg: rgba(212, 168, 83, 0.15);
+  --divider: rgba(44, 24, 16, 0.1);
+}
+
+/* --- RAINY --- */
+body.weather-rainy {
+  --bg-start: #1A2332;
+  --bg-end: #2A3342;
+  --text: #D4E0ED;
+  --text-secondary: #8A9BB0;
+  --accent: #3DB8A6;
+  --accent-glow: rgba(61, 184, 166, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(61, 184, 166, 0.15);
+  --card-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  --tag-bg: rgba(61, 184, 166, 0.12);
+  --divider: rgba(212, 224, 237, 0.1);
+}
+
+/* --- SNOWY --- */
+body.weather-snowy {
+  --bg-start: #F0F4F8;
+  --bg-end: #E8EEF4;
+  --text: #1A2744;
+  --text-secondary: #4A5B75;
+  --accent: #4A9BD9;
+  --accent-glow: rgba(74, 155, 217, 0.25);
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(74, 155, 217, 0.15);
+  --card-shadow: 0 4px 24px rgba(26, 39, 68, 0.06);
+  --tag-bg: rgba(74, 155, 217, 0.1);
+  --divider: rgba(26, 39, 68, 0.08);
+}
+
+/* --- THUNDERSTORM --- */
+body.weather-storm {
+  --bg-start: #0A0A14;
+  --bg-end: #0F0F1E;
+  --text: #F0F0F0;
+  --text-secondary: #9A9AB0;
+  --accent: #FFD700;
+  --accent-glow: rgba(255, 215, 0, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-border: rgba(255, 215, 0, 0.12);
+  --card-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  --tag-bg: rgba(255, 215, 0, 0.1);
+  --divider: rgba(255, 255, 255, 0.06);
+}
+
+/* --- FOGGY --- */
+body.weather-foggy {
+  --bg-start: #E8E4DE;
+  --bg-end: #D8D4CE;
+  --text: #4A4A4A;
+  --text-secondary: #7A7A7A;
+  --accent: #6B8F71;
+  --accent-glow: rgba(107, 143, 113, 0.25);
+  --card-bg: rgba(255, 255, 255, 0.4);
+  --card-border: rgba(107, 143, 113, 0.12);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --tag-bg: rgba(107, 143, 113, 0.1);
+  --divider: rgba(74, 74, 74, 0.1);
+}
+
+/* ============================================================
+   PARTICLE CANVAS
+   ============================================================ */
+#weather-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================================
+   LIGHTNING FLASH OVERLAY
+   ============================================================ */
+#lightning-flash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.05s ease;
+}
+
+#lightning-flash.flash {
+  opacity: 0.85;
+}
+
+/* ============================================================
+   CSS SUN
+   ============================================================ */
+.sun-element {
+  position: fixed;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, transparent 70%);
+  box-shadow:
+    0 0 60px rgba(255, 215, 0, 0.6),
+    0 0 120px rgba(255, 165, 0, 0.3),
+    0 0 200px rgba(255, 215, 0, 0.15);
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  animation: sun-pulse 4s ease-in-out infinite;
+}
+
+body.weather-sunny .sun-element {
+  opacity: 1;
+}
+
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.sun-element::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    rgba(255, 215, 0, 0.15) 0deg,
+    transparent 15deg,
+    transparent 30deg,
+    rgba(255, 215, 0, 0.15) 30deg
+  );
+  border-radius: 50%;
+  animation: sun-rays-spin 30s linear infinite;
+}
+
+@keyframes sun-rays-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ============================================================
+   FOG LAYERS
+   ============================================================ */
+.fog-layer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 300%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+body.weather-foggy .fog-layer {
+  opacity: 1;
+}
+
+.fog-layer-1 {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(200, 196, 190, 0.4) 20%,
+    transparent 40%,
+    rgba(200, 196, 190, 0.3) 60%,
+    transparent 80%,
+    rgba(200, 196, 190, 0.35) 100%
+  );
+  animation: fog-drift-1 25s linear infinite;
+}
+
+.fog-layer-2 {
+  background: linear-gradient(
+    90deg,
+    rgba(190, 186, 178, 0.2) 0%,
+    transparent 25%,
+    rgba(190, 186, 178, 0.35) 50%,
+    transparent 75%,
+    rgba(190, 186, 178, 0.25) 100%
+  );
+  animation: fog-drift-2 35s linear infinite;
+  top: 20%;
+}
+
+.fog-layer-3 {
+  background: linear-gradient(
+    90deg,
+    transparent 10%,
+    rgba(210, 206, 198, 0.3) 30%,
+    transparent 50%,
+    rgba(210, 206, 198, 0.4) 70%,
+    transparent 90%
+  );
+  animation: fog-drift-3 18s linear infinite;
+  top: 50%;
+  height: 50%;
+}
+
+@keyframes fog-drift-1 {
+  from { transform: translateX(0); }
+  to { transform: translateX(33.33%); }
+}
+
+@keyframes fog-drift-2 {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.33%); }
+}
+
+@keyframes fog-drift-3 {
+  from { transform: translateX(-10%); }
+  to { transform: translateX(33.33%); }
+}
+
+/* ============================================================
+   FOGGY CONTENT BEHAVIOR
+   ============================================================ */
+body.weather-foggy .content-section {
+  opacity: 0.45;
+  filter: blur(1px);
+  transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
+body.weather-foggy .content-section:hover {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ============================================================
+   RAINY WET GLASS EFFECT
+   ============================================================ */
+body.weather-rainy .project-card,
+body.weather-rainy .skill-tag {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ============================================================
+   SNOWY FROSTED EDGES
+   ============================================================ */
+body.weather-snowy .project-card {
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 4px 24px rgba(26, 39, 68, 0.06),
+    inset 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+body.weather-snowy .content-section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+/* ============================================================
+   STORM EFFECTS
+   ============================================================ */
+body.weather-storm .hero-tagline {
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.storm-glitch {
+  animation: glitch-text 0.15s steps(2, end) forwards;
+}
+
+@keyframes glitch-text {
+  0% { transform: translate(0); filter: none; }
+  20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+  40% { transform: translate(3px, -1px); filter: hue-rotate(-90deg); }
+  60% { transform: translate(-2px, -2px); filter: brightness(2); }
+  80% { transform: translate(2px, 1px); filter: hue-rotate(45deg); }
+  100% { transform: translate(0); filter: none; }
+}
+
+@keyframes thunder-shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-4px) translateY(1px); }
+  20% { transform: translateX(4px) translateY(-1px); }
+  30% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  50% { transform: translateX(-1px); }
+  60% { transform: translateX(1px); }
+  70% { transform: translateX(0); }
+}
+
+.thunder-shake {
+  animation: thunder-shake 0.4s ease-out forwards;
+}
+
+/* ============================================================
+   WEATHER PANEL
+   ============================================================ */
+.weather-panel {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  min-width: 220px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transition:
+    background var(--transition-speed) ease,
+    border-color var(--transition-speed) ease,
+    box-shadow var(--transition-speed) ease;
+}
+
+.weather-panel-location {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  transition: color var(--transition-speed) ease;
+}
+
+.weather-panel-temp {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+  transition: color var(--transition-speed) ease;
+}
+
+.weather-panel-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  transition: color var(--transition-speed) ease;
+}
+
+.weather-selector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.weather-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--card-border);
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.2s ease;
+  position: relative;
+}
+
+.weather-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+}
+
+.weather-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+.weather-btn-auto {
+  width: 100%;
+  height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid var(--card-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.weather-btn-auto:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.weather-btn-auto.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.page-wrapper {
+  position: relative;
+  z-index: 5;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 24px 100px;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero-section {
+  padding: 100px 0 80px;
+  text-align: center;
+}
+
+.hero-weather-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+  animation: weather-icon-float 3s ease-in-out infinite;
+}
+
+@keyframes weather-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.hero-name {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text);
+  margin-bottom: 8px;
+  transition: color var(--transition-speed) ease;
+}
+
+.hero-role {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  transition: color var(--transition-speed) ease;
+}
+
+.hero-tagline {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--accent);
+  transition: color var(--transition-speed) ease;
+}
+
+.hero-divider {
+  width: 60px;
+  height: 3px;
+  background: var(--accent);
+  margin: 40px auto 0;
+  border-radius: 2px;
+  transition: background var(--transition-speed) ease;
+}
+
+/* ============================================================
+   CONTENT SECTIONS
+   ============================================================ */
+.content-section {
+  padding: 2rem 0;
+  transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 24px;
+  transition: color var(--transition-speed) ease;
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 12px;
+  vertical-align: middle;
+  transition: background var(--transition-speed) ease;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--divider);
+  margin: 1rem 0;
+  transition: background var(--transition-speed) ease;
+}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about-text {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  transition: color var(--transition-speed) ease;
+}
+
+.about-text strong {
+  color: var(--text);
+  font-weight: 600;
+  transition: color var(--transition-speed) ease;
+}
+
+.about-highlight {
+  color: var(--accent);
+  font-weight: 500;
+  transition: color var(--transition-speed) ease;
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+.projects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.project-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: var(--card-shadow);
+  transition:
+    background var(--transition-speed) ease,
+    border-color var(--transition-speed) ease,
+    box-shadow var(--transition-speed) ease,
+    transform 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+}
+
+.project-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.project-name {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: color var(--transition-speed) ease;
+}
+
+.project-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  background: var(--tag-bg);
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition:
+    color var(--transition-speed) ease,
+    background var(--transition-speed) ease;
+}
+
+.project-desc {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  transition: color var(--transition-speed) ease;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-tag {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--tag-bg);
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition:
+    color var(--transition-speed) ease,
+    background var(--transition-speed) ease;
+}
+
+/* ============================================================
+   SKILLS
+   ============================================================ */
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-tag {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition:
+    color var(--transition-speed) ease,
+    background var(--transition-speed) ease,
+    border-color var(--transition-speed) ease,
+    transform 0.2s ease;
+}
+
+.skill-tag:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.contact-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.contact-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  text-align: center;
+  padding: 40px 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  transition: color var(--transition-speed) ease;
+}
+
+.footer-accent {
+  color: var(--accent);
+  transition: color var(--transition-speed) ease;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .weather-panel {
+    top: 12px;
+    right: 12px;
+    min-width: 190px;
+    padding: 12px 16px;
+  }
+
+  .weather-panel-temp {
+    font-size: 26px;
+  }
+
+  .weather-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .hero-section {
+    padding: 80px 0 60px;
+  }
+
+  .page-wrapper {
+    padding: 50px 16px 80px;
+  }
+
+  .project-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact-grid {
+    flex-direction: column;
+  }
+
+  .contact-link {
+    justify-content: center;
+  }
+}
+</style>
+</head>
+<body class="weather-sunny">
+
+<!-- Weather Canvas for Particles -->
+<canvas id="weather-canvas" aria-hidden="true"></canvas>
+
+<!-- Lightning Flash Overlay -->
+<div id="lightning-flash" aria-hidden="true"></div>
+
+<!-- CSS Sun Element -->
+<div class="sun-element" aria-hidden="true"></div>
+
+<!-- Fog Layers -->
+<div class="fog-layer fog-layer-1" aria-hidden="true"></div>
+<div class="fog-layer fog-layer-2" aria-hidden="true"></div>
+<div class="fog-layer fog-layer-3" aria-hidden="true"></div>
+
+<!-- Weather Panel -->
+<nav class="weather-panel" role="navigation" aria-label="Weather mode selector">
+  <div class="weather-panel-location">Bentonville, AR</div>
+  <div class="weather-panel-temp" id="weather-temp">78&deg;F</div>
+  <div class="weather-panel-desc" id="weather-desc">Clear skies</div>
+  <div class="weather-selector" role="group" aria-label="Select weather mode">
+    <button class="weather-btn active" data-weather="sunny" title="Sunny" aria-label="Switch to sunny mode" aria-pressed="true">&#9728;&#65039;</button>
+    <button class="weather-btn" data-weather="rainy" title="Rainy" aria-label="Switch to rainy mode" aria-pressed="false">&#127783;&#65039;</button>
+    <button class="weather-btn" data-weather="snowy" title="Snowy" aria-label="Switch to snowy mode" aria-pressed="false">&#10052;&#65039;</button>
+    <button class="weather-btn" data-weather="storm" title="Thunderstorm" aria-label="Switch to thunderstorm mode" aria-pressed="false">&#9928;&#65039;</button>
+    <button class="weather-btn" data-weather="foggy" title="Foggy" aria-label="Switch to foggy mode" aria-pressed="false">&#127787;&#65039;</button>
+  </div>
+  <button class="weather-btn-auto" id="auto-btn" aria-label="Toggle automatic weather mode">Auto</button>
+</nav>
+
+<!-- Main Content -->
+<main class="page-wrapper">
+
+  <!-- Hero -->
+  <section class="hero-section content-section" aria-label="Introduction">
+    <span class="hero-weather-icon" id="hero-weather-icon" aria-hidden="true">&#9728;&#65039;</span>
+    <h1 class="hero-name">Anshull Garg</h1>
+    <p class="hero-role">Software Developer at Walmart</p>
+    <p class="hero-tagline" id="hero-tagline">Building in the sunshine</p>
+    <div class="hero-divider" aria-hidden="true"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- About -->
+  <section class="content-section" aria-label="About">
+    <h2 class="section-title">About</h2>
+    <p class="about-text">
+      I'm a <strong>Software Developer</strong> at <span class="about-highlight">Walmart</span>,
+      working on large-scale systems that impact millions of users every day. I specialize in building
+      <strong>robust, performant, and scalable</strong> applications across the full stack. From
+      architecting backend services that handle massive throughput to crafting polished frontend
+      experiences, I focus on the details that make software feel exceptional. Based in
+      <strong>Bentonville, Arkansas</strong>, I believe the best code is the kind that solves real
+      problems elegantly and holds up under pressure.
+    </p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Projects -->
+  <section class="content-section" aria-label="Projects">
+    <h2 class="section-title">Projects</h2>
+    <div class="projects-grid">
+
+      <article class="project-card">
+        <div class="project-header">
+          <h3 class="project-name">Inventory Intelligence Platform</h3>
+          <span class="project-label">Production</span>
+        </div>
+        <p class="project-desc">
+          Real-time inventory management system processing millions of SKU updates daily across
+          Walmart's distribution network. Built event-driven pipelines that reduced stock
+          discrepancies by 34% and improved replenishment accuracy at scale.
+        </p>
+        <div class="project-tech">
+          <span class="tech-tag">Java</span>
+          <span class="tech-tag">Kafka</span>
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">Kubernetes</span>
+          <span class="tech-tag">Azure</span>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-header">
+          <h3 class="project-name">Checkout Flow Optimization</h3>
+          <span class="project-label">Shipped</span>
+        </div>
+        <p class="project-desc">
+          Redesigned and rebuilt the web checkout experience to reduce friction and improve conversion.
+          Implemented progressive loading, optimistic UI updates, and A/B testing infrastructure
+          that contributed to a measurable uplift in completed transactions.
+        </p>
+        <div class="project-tech">
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">GraphQL</span>
+          <span class="tech-tag">Redis</span>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-header">
+          <h3 class="project-name">Developer Toolchain Suite</h3>
+          <span class="project-label">Internal</span>
+        </div>
+        <p class="project-desc">
+          Internal platform providing CI/CD templates, shared component libraries, and automated
+          testing scaffolds for engineering teams. Reduced new project bootstrap time from days to
+          minutes and standardized deployment patterns across 50+ services.
+        </p>
+        <div class="project-tech">
+          <span class="tech-tag">Go</span>
+          <span class="tech-tag">Docker</span>
+          <span class="tech-tag">GitHub Actions</span>
+          <span class="tech-tag">Terraform</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Skills -->
+  <section class="content-section" aria-label="Skills">
+    <h2 class="section-title">Skills</h2>
+    <div class="skills-grid">
+      <span class="skill-tag">Java</span>
+      <span class="skill-tag">JavaScript</span>
+      <span class="skill-tag">TypeScript</span>
+      <span class="skill-tag">React</span>
+      <span class="skill-tag">Node.js</span>
+      <span class="skill-tag">Go</span>
+      <span class="skill-tag">Python</span>
+      <span class="skill-tag">Spring Boot</span>
+      <span class="skill-tag">Kafka</span>
+      <span class="skill-tag">GraphQL</span>
+      <span class="skill-tag">PostgreSQL</span>
+      <span class="skill-tag">Redis</span>
+      <span class="skill-tag">Kubernetes</span>
+      <span class="skill-tag">Docker</span>
+      <span class="skill-tag">Azure</span>
+      <span class="skill-tag">Terraform</span>
+      <span class="skill-tag">CI/CD</span>
+      <span class="skill-tag">System Design</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Contact -->
+  <section class="content-section" aria-label="Contact">
+    <h2 class="section-title">Contact</h2>
+    <div class="contact-grid">
+      <a href="mailto:anshullgarg@gmail.com" class="contact-link" aria-label="Send email">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        anshullgarg@gmail.com
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Built with <span class="footer-accent">shifting skies</span> &mdash; this portfolio adapts to the weather.</p>
+  </footer>
+
+</main>
+
+<script>
+/* ============================================================
+   WEATHER SYSTEM - Main Controller
+   ============================================================ */
+(function() {
+  'use strict';
+
+  // --- Configuration ---
+  const WEATHER_CONFIG = {
+    sunny: {
+      temp: '78\u00B0F',
+      desc: 'Clear skies',
+      icon: '\u2600\uFE0F',
+      tagline: 'Building in the sunshine',
+      className: 'weather-sunny'
+    },
+    rainy: {
+      temp: '54\u00B0F',
+      desc: 'Steady rain',
+      icon: '\uD83C\uDF27\uFE0F',
+      tagline: 'Coding through the rain',
+      className: 'weather-rainy'
+    },
+    snowy: {
+      temp: '28\u00B0F',
+      desc: 'Light snow',
+      icon: '\u2744\uFE0F',
+      tagline: 'Crafting in the quiet snow',
+      className: 'weather-snowy'
+    },
+    storm: {
+      temp: '45\u00B0F',
+      desc: 'Thunderstorm',
+      icon: '\u26C8\uFE0F',
+      tagline: 'Coding through the storm',
+      className: 'weather-storm'
+    },
+    foggy: {
+      temp: '61\u00B0F',
+      desc: 'Dense fog',
+      icon: '\uD83C\uDF2B\uFE0F',
+      tagline: 'Emerging from the mist',
+      className: 'weather-foggy'
+    }
+  };
+
+  const WEATHERS = Object.keys(WEATHER_CONFIG);
+
+  // --- State ---
+  let currentWeather = 'sunny';
+  let isAutoMode = false;
+  let lightningInterval = null;
+  let animationFrameId = null;
+
+  // --- DOM References ---
+  const body = document.body;
+  const canvas = document.getElementById('weather-canvas');
+  const ctx = canvas.getContext('2d');
+  const flashOverlay = document.getElementById('lightning-flash');
+  const tempEl = document.getElementById('weather-temp');
+  const descEl = document.getElementById('weather-desc');
+  const heroIcon = document.getElementById('hero-weather-icon');
+  const heroTagline = document.getElementById('hero-tagline');
+  const weatherBtns = document.querySelectorAll('.weather-btn[data-weather]');
+  const autoBtn = document.getElementById('auto-btn');
+
+  // --- Canvas Setup ---
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // --- Particle Arrays ---
+  let raindrops = [];
+  let snowflakes = [];
+  let splashes = [];
+
+  // --- Rain System ---
+  function initRain(count) {
+    raindrops = [];
+    for (let i = 0; i < count; i++) {
+      raindrops.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        length: 15 + Math.random() * 25,
+        speed: 8 + Math.random() * 8,
+        thickness: 1 + Math.random() * 1.5,
+        opacity: 0.2 + Math.random() * 0.4,
+        angle: 0.1 + Math.random() * 0.05
+      });
+    }
+  }
+
+  function drawRain() {
+    raindrops.forEach(drop => {
+      ctx.save();
+      ctx.globalAlpha = drop.opacity;
+      ctx.strokeStyle = currentWeather === 'storm'
+        ? 'rgba(180, 200, 255, 0.7)'
+        : 'rgba(174, 210, 238, 0.6)';
+      ctx.lineWidth = drop.thickness;
+      ctx.beginPath();
+      ctx.moveTo(drop.x, drop.y);
+      ctx.lineTo(
+        drop.x + Math.sin(drop.angle) * drop.length,
+        drop.y + Math.cos(drop.angle) * drop.length
+      );
+      ctx.stroke();
+      ctx.restore();
+
+      // Update position
+      drop.y += drop.speed;
+      drop.x += Math.sin(drop.angle) * drop.speed * 0.3;
+
+      // When drop hits the ground
+      if (drop.y > canvas.height) {
+        // Create splash
+        splashes.push({
+          x: drop.x,
+          y: canvas.height,
+          radius: 1,
+          maxRadius: 3 + Math.random() * 4,
+          opacity: 0.5,
+          speed: 0.3 + Math.random() * 0.3
+        });
+
+        // Reset drop
+        drop.y = -drop.length;
+        drop.x = Math.random() * canvas.width;
+      }
+    });
+
+    // Draw splashes
+    splashes.forEach((splash, idx) => {
+      ctx.save();
+      ctx.globalAlpha = splash.opacity;
+      ctx.strokeStyle = currentWeather === 'storm'
+        ? 'rgba(180, 200, 255, 0.5)'
+        : 'rgba(174, 210, 238, 0.4)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.arc(splash.x, splash.y, splash.radius, Math.PI, 2 * Math.PI);
+      ctx.stroke();
+      ctx.restore();
+
+      splash.radius += splash.speed;
+      splash.opacity -= 0.02;
+
+      if (splash.opacity <= 0 || splash.radius >= splash.maxRadius) {
+        splashes.splice(idx, 1);
+      }
+    });
+  }
+
+  // --- Snow System ---
+  function initSnow(count) {
+    snowflakes = [];
+    for (let i = 0; i < count; i++) {
+      snowflakes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: 2 + Math.random() * 4,
+        speed: 0.5 + Math.random() * 1.5,
+        drift: (Math.random() - 0.5) * 0.8,
+        driftSpeed: 0.002 + Math.random() * 0.003,
+        driftOffset: Math.random() * Math.PI * 2,
+        opacity: 0.3 + Math.random() * 0.5
+      });
+    }
+  }
+
+  function drawSnow() {
+    snowflakes.forEach(flake => {
+      ctx.save();
+      ctx.globalAlpha = flake.opacity;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+      ctx.shadowBlur = flake.radius;
+      ctx.beginPath();
+      ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Update
+      flake.y += flake.speed;
+      flake.x += Math.sin(flake.driftOffset) * flake.drift;
+      flake.driftOffset += flake.driftSpeed;
+
+      // Reset
+      if (flake.y > canvas.height + flake.radius) {
+        flake.y = -flake.radius;
+        flake.x = Math.random() * canvas.width;
+      }
+      if (flake.x > canvas.width + flake.radius) flake.x = -flake.radius;
+      if (flake.x < -flake.radius) flake.x = canvas.width + flake.radius;
+    });
+  }
+
+  // --- Animation Loop ---
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (currentWeather === 'rainy') {
+      drawRain();
+    } else if (currentWeather === 'snowy') {
+      drawSnow();
+    } else if (currentWeather === 'storm') {
+      drawRain();
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
+  }
+
+  // --- Lightning System ---
+  function triggerLightning() {
+    flashOverlay.classList.add('flash');
+
+    // Glitch on hero text
+    heroTagline.classList.add('storm-glitch');
+
+    // Shake random elements
+    const cards = document.querySelectorAll('.project-card');
+    const randomCard = cards[Math.floor(Math.random() * cards.length)];
+    if (randomCard) randomCard.classList.add('thunder-shake');
+
+    const flashDuration = 80 + Math.random() * 120;
+
+    setTimeout(() => {
+      flashOverlay.classList.remove('flash');
+      heroTagline.classList.remove('storm-glitch');
+
+      // Sometimes a double flash
+      if (Math.random() > 0.5) {
+        setTimeout(() => {
+          flashOverlay.classList.add('flash');
+          setTimeout(() => {
+            flashOverlay.classList.remove('flash');
+          }, 50 + Math.random() * 60);
+        }, 80);
+      }
+    }, flashDuration);
+
+    setTimeout(() => {
+      if (randomCard) randomCard.classList.remove('thunder-shake');
+    }, 500);
+  }
+
+  function startLightning() {
+    stopLightning();
+    function scheduleFlash() {
+      const delay = 2000 + Math.random() * 6000;
+      lightningInterval = setTimeout(() => {
+        if (currentWeather === 'storm') {
+          triggerLightning();
+          scheduleFlash();
+        }
+      }, delay);
+    }
+    scheduleFlash();
+  }
+
+  function stopLightning() {
+    if (lightningInterval) {
+      clearTimeout(lightningInterval);
+      lightningInterval = null;
+    }
+    flashOverlay.classList.remove('flash');
+  }
+
+  // --- Weather Switcher ---
+  function setWeather(weather) {
+    if (!WEATHER_CONFIG[weather]) return;
+
+    currentWeather = weather;
+    const config = WEATHER_CONFIG[weather];
+
+    // Update body class
+    WEATHERS.forEach(w => body.classList.remove(WEATHER_CONFIG[w].className));
+    body.classList.add(config.className);
+
+    // Update background gradient transition
+    body.style.background = '';
+    void body.offsetHeight;
+
+    // Update panel info
+    tempEl.textContent = config.temp;
+    descEl.textContent = config.desc;
+
+    // Update hero
+    heroIcon.textContent = config.icon;
+    heroTagline.textContent = config.tagline;
+
+    // Update button states
+    weatherBtns.forEach(btn => {
+      const isActive = btn.dataset.weather === weather;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    // Reset particles
+    raindrops = [];
+    snowflakes = [];
+    splashes = [];
+
+    // Stop lightning
+    stopLightning();
+
+    // Initialize particles based on weather
+    switch (weather) {
+      case 'rainy':
+        initRain(100);
+        break;
+      case 'snowy':
+        initSnow(80);
+        break;
+      case 'storm':
+        initRain(150);
+        startLightning();
+        break;
+    }
+  }
+
+  // --- Event Listeners ---
+  weatherBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      isAutoMode = false;
+      autoBtn.classList.remove('active');
+      setWeather(btn.dataset.weather);
+    });
+  });
+
+  autoBtn.addEventListener('click', () => {
+    isAutoMode = !isAutoMode;
+    autoBtn.classList.toggle('active', isAutoMode);
+    if (isAutoMode) {
+      const randomWeather = WEATHERS[Math.floor(Math.random() * WEATHERS.length)];
+      setWeather(randomWeather);
+    }
+  });
+
+  // --- Keyboard Accessibility ---
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '1' && e.key <= '5') {
+      const index = parseInt(e.key) - 1;
+      if (WEATHERS[index]) {
+        isAutoMode = false;
+        autoBtn.classList.remove('active');
+        setWeather(WEATHERS[index]);
+      }
+    }
+  });
+
+  // --- Init ---
+  // Pick a random weather on first load for the "never the same twice" effect
+  const initialWeather = WEATHERS[Math.floor(Math.random() * WEATHERS.length)];
+  setWeather(initialWeather);
+  isAutoMode = true;
+  autoBtn.classList.add('active');
+
+  // Start animation loop
+  animate();
+
+})();
+</script>
+</body>
+</html>

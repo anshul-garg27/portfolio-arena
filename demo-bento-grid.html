@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Software Developer</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. Building scalable, performant software.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0C0C0E;
+  --card: #161618;
+  --card-hover: #1C1C1F;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #EDEDED;
+  --text-secondary: #8B8B8B;
+  --text-tertiary: #52525B;
+  --accent: #E8613C;
+  --accent-warm: #F5A623;
+  --accent-coral: #FF8A80;
+  --success: #4ADE80;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --radius: 16px;
+  --gap: 12px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   NOISE TEXTURE OVERLAY
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ============================================================
+   LAYOUT WRAPPER
+   ============================================================ */
+.page-wrapper {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeInDown 0.6s ease forwards;
+  animation-delay: 0.1s;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-bar-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.top-bar-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kbd-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kbd-hint:hover {
+  background: rgba(255,255,255,0.07);
+  color: var(--text-secondary);
+  border-color: var(--border-hover);
+}
+
+.kbd-hint kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+/* ============================================================
+   BENTO GRID
+   ============================================================ */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gap);
+}
+
+/* ============================================================
+   CARD BASE STYLES
+   ============================================================ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              background 0.3s ease;
+  /* stagger entrance */
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card:hover {
+  transform: translateY(-3px) scale(1);
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4),
+              0 0 0 1px rgba(255,255,255,0.06);
+  background: var(--card-hover);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ENTRANCE ANIMATION */
+.card.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              background 0.3s ease;
+}
+
+/* ============================================================
+   CARD SIZES
+   ============================================================ */
+
+/* IDENTITY: 5 columns, 2 rows */
+.card-identity {
+  grid-column: span 5;
+  grid-row: span 2;
+}
+
+/* TECH STACK: 4 columns */
+.card-tech {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* YEARS: 3 columns */
+.card-years {
+  grid-column: span 3;
+}
+
+/* GITHUB STATS: 3 columns */
+.card-github {
+  grid-column: span 3;
+}
+
+/* PROJECT 1: 5 columns, 2 rows */
+.card-project-1 {
+  grid-column: span 5;
+  grid-row: span 2;
+}
+
+/* PROJECT 2: 4 columns */
+.card-project-2 {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* EXPERIENCE: 3 columns, 2 rows */
+.card-experience {
+  grid-column: span 3;
+  grid-row: span 2;
+}
+
+/* QUOTE: 4 columns */
+.card-quote {
+  grid-column: span 4;
+}
+
+/* LOCATION: 3 columns */
+.card-location {
+  grid-column: span 3;
+}
+
+/* CONTACT: 5 columns */
+.card-contact {
+  grid-column: span 5;
+}
+
+/* ============================================================
+   1. IDENTITY CARD
+   ============================================================ */
+.card-identity::before {
+  background: radial-gradient(ellipse at 30% 20%, rgba(232,97,60,0.08), transparent 70%);
+}
+
+.identity-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 20px;
+  background: rgba(74,222,128,0.08);
+  border: 1px solid rgba(74,222,128,0.15);
+  margin-bottom: 24px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  position: relative;
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--success);
+  opacity: 0.4;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.8); opacity: 0; }
+}
+
+.identity-status span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--success);
+  letter-spacing: 0.01em;
+}
+
+.identity-name {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #C4C4C4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.identity-role {
+  font-size: 17px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+
+.identity-role strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.identity-sub {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-bottom: 32px;
+}
+
+.identity-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.identity-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.identity-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.identity-link svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.7;
+}
+
+.identity-link:hover svg {
+  opacity: 1;
+}
+
+/* ============================================================
+   2. TECH STACK CARD
+   ============================================================ */
+.card-tech::before {
+  background: radial-gradient(ellipse at 70% 50%, rgba(245,166,35,0.06), transparent 70%);
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.tech-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.tech-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  filter: grayscale(0.2);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.tech-item:hover .tech-icon {
+  filter: grayscale(0);
+  transform: scale(1.15);
+}
+
+.tech-name {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.tech-item:hover .tech-name {
+  color: var(--text-secondary);
+}
+
+/* floating animation for tech icons */
+.tech-item:nth-child(odd) .tech-icon {
+  animation: techFloat1 4s ease-in-out infinite;
+}
+.tech-item:nth-child(even) .tech-icon {
+  animation: techFloat2 5s ease-in-out infinite;
+}
+
+@keyframes techFloat1 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes techFloat2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.tech-item:hover .tech-icon {
+  animation: none;
+  transform: scale(1.15);
+}
+
+/* ============================================================
+   3. YEARS CARD
+   ============================================================ */
+.card-years {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-years::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(232,97,60,0.07), transparent 70%);
+}
+
+.years-number {
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.years-number .accent-plus {
+  color: var(--accent);
+}
+
+.years-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ============================================================
+   4. GITHUB STATS CARD
+   ============================================================ */
+.card-github::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(245,166,35,0.06), transparent 70%);
+}
+
+.github-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.github-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.github-stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text);
+}
+
+.github-stat-label {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.github-mini-chart {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 32px;
+  margin-top: 12px;
+}
+
+.github-bar {
+  width: 6px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.github-bar:nth-child(odd) { opacity: 0.5; }
+.github-bar.active { opacity: 0.8; }
+
+.card-github:hover .github-bar {
+  opacity: 0.5;
+}
+.card-github:hover .github-bar.active {
+  opacity: 1;
+}
+
+/* ============================================================
+   5. PROJECT 1 CARD (Feature)
+   ============================================================ */
+.card-project-1 {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-project-1::before {
+  background: radial-gradient(ellipse at 20% 80%, rgba(232,97,60,0.06), transparent 60%);
+}
+
+.project-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.project-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.project-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 440px;
+}
+
+.project-visual {
+  flex: 1;
+  min-height: 100px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(232,97,60,0.08) 0%, rgba(245,166,35,0.04) 100%);
+  border: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.project-visual-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.8;
+  padding: 20px;
+  width: 100%;
+  opacity: 0.6;
+}
+
+.project-visual-code .kw { color: var(--accent); }
+.project-visual-code .fn { color: var(--accent-warm); }
+.project-visual-code .str { color: var(--success); }
+.project-visual-code .cm { color: var(--text-tertiary); opacity: 0.6; }
+
+.project-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+/* ============================================================
+   6. PROJECT 2 CARD
+   ============================================================ */
+.card-project-2 {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-project-2::before {
+  background: radial-gradient(ellipse at 80% 80%, rgba(245,166,35,0.06), transparent 60%);
+}
+
+.project-2-visual {
+  flex: 1;
+  min-height: 80px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(245,166,35,0.06) 0%, rgba(232,97,60,0.03) 100%);
+  border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 16px;
+}
+
+.comp-block {
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  min-height: 44px;
+  transition: all 0.3s ease;
+}
+
+.comp-block:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--accent);
+}
+
+.comp-block.wide {
+  grid-column: span 2;
+}
+
+.comp-block.tall {
+  grid-row: span 2;
+}
+
+/* ============================================================
+   7. EXPERIENCE CARD
+   ============================================================ */
+.card-experience::before {
+  background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.02), transparent 70%);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: rgba(255,255,255,0.08);
+}
+
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  padding: 12px 0;
+  position: relative;
+}
+
+.timeline-dot-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 3px;
+}
+
+.timeline-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  border: 2px solid var(--card);
+  flex-shrink: 0;
+}
+
+.timeline-dot.current {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232,97,60,0.2);
+}
+
+.timeline-dot.current::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(232,97,60,0.3);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-company {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.timeline-role {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.timeline-date {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   8. QUOTE CARD
+   ============================================================ */
+.card-quote {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.card-quote::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,138,128,0.04), transparent 70%);
+}
+
+.quote-mark {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-size: 80px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.03);
+  line-height: 1;
+  pointer-events: none;
+  font-family: Georgia, serif;
+}
+
+.quote-text {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.quote-author {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* ============================================================
+   9. LOCATION CARD
+   ============================================================ */
+.card-location {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-location::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(74,222,128,0.04), transparent 70%);
+}
+
+.location-city {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+.location-region {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+}
+
+.location-time-wrap {
+  margin-top: auto;
+}
+
+.location-time-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.location-time {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.location-time .time-seconds {
+  font-size: 16px;
+  color: var(--text-tertiary);
+}
+
+.location-time .time-period {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.location-map-dots {
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+}
+
+.map-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+.map-dot.active {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(74,222,128,0.3);
+}
+
+/* ============================================================
+   10. CONTACT CTA CARD
+   ============================================================ */
+.card-contact {
+  background: linear-gradient(135deg, var(--accent) 0%, #D4502D 100%);
+  border-color: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+}
+
+.card-contact::before {
+  background: radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.08), transparent 60%);
+}
+
+.card-contact:hover {
+  background: linear-gradient(135deg, #EF7353 0%, var(--accent) 100%);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.contact-text h3 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.contact-text p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 400;
+}
+
+.contact-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.card-contact:hover .contact-arrow {
+  background: rgba(255,255,255,0.25);
+  transform: translateX(4px);
+}
+
+.contact-arrow svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+/* ============================================================
+   PERSPECTIVE TILT (for project cards)
+   ============================================================ */
+.tilt-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ============================================================
+   GLOW EFFECT ON HOVER (pointer-following)
+   ============================================================ */
+.card-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,97,60,0.08), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+}
+
+.card:hover .card-glow {
+  opacity: 1;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+/* ============================================================
+   KEYFRAME ANIMATIONS
+   ============================================================ */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1100px) {
+  .page-wrapper {
+    padding: 32px 24px 60px;
+  }
+
+  .bento-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
+  .card-identity    { grid-column: span 6; grid-row: span 1; }
+  .card-tech        { grid-column: span 6; }
+  .card-years       { grid-column: span 3; }
+  .card-github      { grid-column: span 3; }
+  .card-project-1   { grid-column: span 6; grid-row: span 1; }
+  .card-project-2   { grid-column: span 6; grid-row: span 1; }
+  .card-experience  { grid-column: span 6; grid-row: span 1; }
+  .card-quote       { grid-column: span 3; }
+  .card-location    { grid-column: span 3; }
+  .card-contact     { grid-column: span 6; }
+
+  .identity-name { font-size: 36px; }
+  .tech-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 680px) {
+  .page-wrapper {
+    padding: 20px 16px 48px;
+  }
+
+  .bento-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .card-identity,
+  .card-tech,
+  .card-years,
+  .card-github,
+  .card-project-1,
+  .card-project-2,
+  .card-experience,
+  .card-quote,
+  .card-location,
+  .card-contact {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .card { padding: 20px; }
+  .identity-name { font-size: 32px; }
+  .years-number { font-size: 56px; }
+  .tech-grid { grid-template-columns: repeat(3, 1fr); }
+  .project-title { font-size: 20px; }
+  .contact-text h3 { font-size: 18px; }
+  .top-bar { margin-bottom: 20px; }
+
+  .kbd-hint { display: none; }
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .card {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   FOCUS STYLES (ACCESSIBILITY)
+   ============================================================ */
+.card:focus-visible,
+.identity-link:focus-visible,
+.kbd-hint:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- TOP BAR -->
+  <header class="top-bar" role="banner">
+    <div class="top-bar-left">
+      <div class="top-bar-logo" aria-hidden="true">AG</div>
+      <span class="top-bar-name">anshullgarg.dev</span>
+    </div>
+    <div class="top-bar-right">
+      <button class="kbd-hint" aria-label="Open command palette" tabindex="0">
+        <kbd aria-hidden="true">&#8984;</kbd>
+        <kbd aria-hidden="true">K</kbd>
+        <span>Command</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- BENTO GRID -->
+  <main class="bento-grid" role="main">
+
+    <!-- 1. IDENTITY CARD -->
+    <article class="card card-identity tilt-card" tabindex="0" aria-label="Identity - Anshull Garg, Software Developer at Walmart" style="--delay: 0;">
+      <div class="card-glow"></div>
+      <div class="identity-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>Available for opportunities</span>
+      </div>
+      <h1 class="identity-name">Anshull<br>Garg</h1>
+      <p class="identity-role">Software Developer @ <strong>Walmart</strong></p>
+      <p class="identity-sub">Building scalable systems that serve millions</p>
+      <nav class="identity-links" aria-label="Social links">
+        <a href="https://github.com/anshullgarg" class="identity-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="identity-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:anshull.garg@gmail.com" class="identity-link" aria-label="Send email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+          Email
+        </a>
+        <a href="/resume" class="identity-link" aria-label="View resume">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Resume
+        </a>
+      </nav>
+    </article>
+
+    <!-- 2. TECH STACK CARD -->
+    <article class="card card-tech" tabindex="0" aria-label="Technology stack" style="--delay: 1;">
+      <div class="card-glow"></div>
+      <p class="card-label">Tech Stack</p>
+      <div class="tech-grid" role="list">
+        <div class="tech-item" role="listitem" title="React">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" fill="#61DAFB"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1.2" fill="none"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1.2" fill="none" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1.2" fill="none" transform="rotate(120 12 12)"/></svg>
+          </span>
+          <span class="tech-name">React</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Node.js">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="#3C873A" opacity="0.2"/><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="#3C873A" stroke-width="1.2" fill="none"/><text x="12" y="14" text-anchor="middle" fill="#3C873A" font-size="6" font-weight="700" font-family="sans-serif">N</text></svg>
+          </span>
+          <span class="tech-name">Node.js</span>
+        </div>
+        <div class="tech-item" role="listitem" title="TypeScript">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3" fill="#3178C6" opacity="0.85"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="10" font-weight="700" font-family="sans-serif">TS</text></svg>
+          </span>
+          <span class="tech-name">TypeScript</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Python">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="#FFD43B" stroke-width="1.2"/><path d="M12 3v8h6" stroke="#306998" stroke-width="1.5" fill="none"/><path d="M12 21v-8H6" stroke="#FFD43B" stroke-width="1.5" fill="none"/><circle cx="9" cy="7" r="1.2" fill="#306998"/><circle cx="15" cy="17" r="1.2" fill="#FFD43B"/></svg>
+          </span>
+          <span class="tech-name">Python</span>
+        </div>
+        <div class="tech-item" role="listitem" title="AWS">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24"><path d="M4 16c0 2 3.5 3 8 3s8-1 8-3" stroke="#FF9900" stroke-width="1.3" fill="none"/><path d="M6 12l6-7 6 7" stroke="#FF9900" stroke-width="1.3" fill="none"/><path d="M12 5v13" stroke="#FF9900" stroke-width="1.3" fill="none" stroke-dasharray="2 2"/></svg>
+          </span>
+          <span class="tech-name">AWS</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Docker">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="10" width="18" height="10" rx="2" stroke="#2496ED" stroke-width="1.2"/><rect x="6" y="7" width="4" height="3" stroke="#2496ED" stroke-width="0.8"/><rect x="11" y="7" width="4" height="3" stroke="#2496ED" stroke-width="0.8"/><rect x="6" y="12" width="3" height="3" stroke="#2496ED" stroke-width="0.6"/><rect x="10" y="12" width="3" height="3" stroke="#2496ED" stroke-width="0.6"/><rect x="14" y="12" width="3" height="3" stroke="#2496ED" stroke-width="0.6"/></svg>
+          </span>
+          <span class="tech-name">Docker</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Next.js">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.7"/><text x="12" y="15.5" text-anchor="middle" fill="#ffffff" font-size="8" font-weight="700" font-family="sans-serif" opacity="0.8">N</text></svg>
+          </span>
+          <span class="tech-name">Next.js</span>
+        </div>
+        <div class="tech-item" role="listitem" title="PostgreSQL">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="7" rx="8" ry="3" stroke="#336791" stroke-width="1.2"/><path d="M4 7v10c0 1.66 3.58 3 8 3s8-1.34 8-3V7" stroke="#336791" stroke-width="1.2"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" stroke="#336791" stroke-width="0.8" opacity="0.5"/></svg>
+          </span>
+          <span class="tech-name">PostgreSQL</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Go">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24"><text x="12" y="16" text-anchor="middle" fill="#00ADD8" font-size="11" font-weight="700" font-family="sans-serif">Go</text></svg>
+          </span>
+          <span class="tech-name">Go</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Kubernetes">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z" stroke="#326CE5" stroke-width="1.2"/><circle cx="12" cy="12" r="3" stroke="#326CE5" stroke-width="1"/><line x1="12" y1="9" x2="12" y2="4" stroke="#326CE5" stroke-width="0.8"/><line x1="14.6" y1="10.5" x2="18" y2="7" stroke="#326CE5" stroke-width="0.8"/><line x1="14.6" y1="13.5" x2="18" y2="17" stroke="#326CE5" stroke-width="0.8"/><line x1="12" y1="15" x2="12" y2="20" stroke="#326CE5" stroke-width="0.8"/><line x1="9.4" y1="13.5" x2="6" y2="17" stroke="#326CE5" stroke-width="0.8"/><line x1="9.4" y1="10.5" x2="6" y2="7" stroke="#326CE5" stroke-width="0.8"/></svg>
+          </span>
+          <span class="tech-name">K8s</span>
+        </div>
+        <div class="tech-item" role="listitem" title="GraphQL">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><polygon points="12,3 21,8 21,16 12,21 3,16 3,8" stroke="#E535AB" stroke-width="1.2" fill="none"/><circle cx="12" cy="3" r="1.5" fill="#E535AB"/><circle cx="21" cy="8" r="1.5" fill="#E535AB"/><circle cx="21" cy="16" r="1.5" fill="#E535AB"/><circle cx="12" cy="21" r="1.5" fill="#E535AB"/><circle cx="3" cy="16" r="1.5" fill="#E535AB"/><circle cx="3" cy="8" r="1.5" fill="#E535AB"/></svg>
+          </span>
+          <span class="tech-name">GraphQL</span>
+        </div>
+        <div class="tech-item" role="listitem" title="Redis">
+          <span class="tech-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="7" rx="9" ry="3.5" stroke="#DC382D" stroke-width="1.2" fill="none"/><path d="M3 7v5c0 1.93 4.03 3.5 9 3.5s9-1.57 9-3.5V7" stroke="#DC382D" stroke-width="1.2"/><path d="M3 12v5c0 1.93 4.03 3.5 9 3.5s9-1.57 9-3.5v-5" stroke="#DC382D" stroke-width="1.2"/></svg>
+          </span>
+          <span class="tech-name">Redis</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3. YEARS CARD -->
+    <article class="card card-years" tabindex="0" aria-label="4 plus years building software" style="--delay: 2;">
+      <div class="card-glow"></div>
+      <p class="card-label">Experience</p>
+      <div class="years-number">
+        <span class="counter" data-target="4">0</span><span class="accent-plus">+</span>
+      </div>
+      <p class="years-label">Years Building Software</p>
+    </article>
+
+    <!-- 4. GITHUB STATS CARD -->
+    <article class="card card-github" tabindex="0" aria-label="GitHub statistics" style="--delay: 3;">
+      <div class="card-glow"></div>
+      <p class="card-label">GitHub</p>
+      <div class="github-stat-row">
+        <div class="github-stat">
+          <span class="github-stat-number"><span class="counter" data-target="500">0</span>+</span>
+          <span class="github-stat-label">Contributions</span>
+        </div>
+        <div class="github-stat">
+          <span class="github-stat-number"><span class="counter" data-target="30">0</span>+</span>
+          <span class="github-stat-label">Repositories</span>
+        </div>
+      </div>
+      <div class="github-mini-chart" aria-hidden="true">
+        <div class="github-bar" style="height: 40%"></div>
+        <div class="github-bar active" style="height: 65%"></div>
+        <div class="github-bar" style="height: 30%"></div>
+        <div class="github-bar active" style="height: 85%"></div>
+        <div class="github-bar" style="height: 50%"></div>
+        <div class="github-bar" style="height: 70%"></div>
+        <div class="github-bar active" style="height: 95%"></div>
+        <div class="github-bar" style="height: 55%"></div>
+        <div class="github-bar active" style="height: 75%"></div>
+        <div class="github-bar" style="height: 45%"></div>
+        <div class="github-bar" style="height: 60%"></div>
+        <div class="github-bar active" style="height: 80%"></div>
+        <div class="github-bar" style="height: 35%"></div>
+        <div class="github-bar active" style="height: 90%"></div>
+        <div class="github-bar" style="height: 50%"></div>
+        <div class="github-bar" style="height: 65%"></div>
+        <div class="github-bar active" style="height: 70%"></div>
+        <div class="github-bar" style="height: 40%"></div>
+        <div class="github-bar" style="height: 55%"></div>
+        <div class="github-bar active" style="height: 100%"></div>
+      </div>
+    </article>
+
+    <!-- 5. FEATURED PROJECT 1 -->
+    <article class="card card-project-1 tilt-card" tabindex="0" aria-label="Featured project: Checkout Optimization Engine" style="--delay: 4;">
+      <div class="card-glow"></div>
+      <p class="project-eyebrow">Featured Project</p>
+      <h2 class="project-title">Checkout Optimization Engine</h2>
+      <p class="project-desc">
+        Architected and shipped a high-throughput checkout pipeline at Walmart scale,
+        reducing page load times by 40% and increasing conversion rates.
+        Handles millions of daily transactions with sub-200ms response times.
+      </p>
+      <div class="project-visual">
+        <div class="project-visual-code">
+<span class="cm">// checkout-optimizer.ts</span>
+<span class="kw">async function</span> <span class="fn">optimizeCheckout</span>(cart: Cart) {
+  <span class="kw">const</span> pipeline = <span class="kw">await</span> <span class="fn">createPipeline</span>({
+    strategy: <span class="str">'parallel'</span>,
+    cache: <span class="str">'edge'</span>,
+    ttl: <span class="str">'15m'</span>
+  });
+
+  <span class="kw">return</span> pipeline
+    .<span class="fn">validate</span>(cart)
+    .<span class="fn">optimize</span>()
+    .<span class="fn">execute</span>();
+}
+        </div>
+      </div>
+      <div class="project-tags">
+        <span class="tag">React</span>
+        <span class="tag">Node.js</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Redis</span>
+        <span class="tag">AWS Lambda</span>
+        <span class="tag">GraphQL</span>
+      </div>
+    </article>
+
+    <!-- 6. FEATURED PROJECT 2 -->
+    <article class="card card-project-2 tilt-card" tabindex="0" aria-label="Project: Internal Component Library" style="--delay: 5;">
+      <div class="card-glow"></div>
+      <p class="project-eyebrow">Open Source</p>
+      <h2 class="project-title">Internal Component Library</h2>
+      <p class="project-desc">
+        Built a design system with 50+ accessible, themeable components adopted
+        across 12 teams. Storybook-driven development with full test coverage.
+      </p>
+      <div class="project-2-visual" aria-hidden="true">
+        <div class="comp-block wide"></div>
+        <div class="comp-block"></div>
+        <div class="comp-block tall"></div>
+        <div class="comp-block"></div>
+        <div class="comp-block"></div>
+        <div class="comp-block wide"></div>
+        <div class="comp-block"></div>
+        <div class="comp-block"></div>
+      </div>
+      <div class="project-tags">
+        <span class="tag">React</span>
+        <span class="tag">Storybook</span>
+        <span class="tag">Tailwind</span>
+        <span class="tag">a11y</span>
+      </div>
+    </article>
+
+    <!-- 7. EXPERIENCE CARD -->
+    <article class="card card-experience" tabindex="0" aria-label="Work experience timeline" style="--delay: 6;">
+      <div class="card-glow"></div>
+      <p class="card-label">Experience</p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot-wrap">
+            <span class="timeline-dot current"></span>
+          </div>
+          <div class="timeline-content">
+            <p class="timeline-company">Walmart Global Tech</p>
+            <p class="timeline-role">Software Developer</p>
+            <p class="timeline-date">2023 - Present</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot-wrap">
+            <span class="timeline-dot"></span>
+          </div>
+          <div class="timeline-content">
+            <p class="timeline-company">Previous Company</p>
+            <p class="timeline-role">Full Stack Engineer</p>
+            <p class="timeline-date">2021 - 2023</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot-wrap">
+            <span class="timeline-dot"></span>
+          </div>
+          <div class="timeline-content">
+            <p class="timeline-company">Startup Inc.</p>
+            <p class="timeline-role">Software Engineer Intern</p>
+            <p class="timeline-date">2020 - 2021</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot-wrap">
+            <span class="timeline-dot"></span>
+          </div>
+          <div class="timeline-content">
+            <p class="timeline-company">University</p>
+            <p class="timeline-role">B.S. Computer Science</p>
+            <p class="timeline-date">2017 - 2021</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8. QUOTE CARD -->
+    <article class="card card-quote" tabindex="0" aria-label="Developer philosophy quote" style="--delay: 7;">
+      <div class="card-glow"></div>
+      <span class="quote-mark" aria-hidden="true">"</span>
+      <blockquote>
+        <p class="quote-text">"The best code is the code that doesn't need to exist. Simplify the problem before you simplify the code."</p>
+        <footer class="quote-author">-- Engineering Philosophy</footer>
+      </blockquote>
+    </article>
+
+    <!-- 9. LOCATION CARD -->
+    <article class="card card-location" tabindex="0" aria-label="Location and current time" style="--delay: 8;">
+      <div class="card-glow"></div>
+      <div>
+        <p class="card-label">Location</p>
+        <p class="location-city">Bentonville, AR</p>
+        <p class="location-region">United States</p>
+      </div>
+      <div class="location-time-wrap">
+        <p class="location-time-label">Local Time</p>
+        <p class="location-time" aria-live="polite">
+          <span id="time-hours">--</span>:<span id="time-minutes">--</span><span class="time-seconds" id="time-seconds">:--</span>
+          <span class="time-period" id="time-period">--</span>
+        </p>
+        <div class="location-map-dots" aria-hidden="true">
+          <span class="map-dot"></span>
+          <span class="map-dot"></span>
+          <span class="map-dot"></span>
+          <span class="map-dot active"></span>
+          <span class="map-dot"></span>
+          <span class="map-dot"></span>
+          <span class="map-dot"></span>
+          <span class="map-dot"></span>
+          <span class="map-dot"></span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10. CONTACT CTA CARD -->
+    <article class="card card-contact" tabindex="0" role="link" aria-label="Contact - Let's build something together" style="--delay: 9;"
+             onclick="window.location.href='mailto:anshull.garg@gmail.com'">
+      <div class="card-glow"></div>
+      <div class="contact-text">
+        <h3>Let's build something together</h3>
+        <p>Always interested in new challenges and collaborations</p>
+      </div>
+      <div class="contact-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </div>
+    </article>
+
+  </main>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ============================================================
+     STAGGERED CARD ENTRANCE
+     ============================================================ */
+  const cards = document.querySelectorAll('.card');
+
+  function revealCards() {
+    cards.forEach(function(card, index) {
+      const delay = index * 90 + 200;
+      setTimeout(function() {
+        card.classList.add('visible');
+      }, delay);
+    });
+  }
+
+  // Observe cards that might be below the fold
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    cards.forEach(function(card) {
+      observer.observe(card);
+    });
+  }
+
+  // Initial reveal with stagger
+  revealCards();
+
+
+  /* ============================================================
+     COUNTER ANIMATION (IntersectionObserver)
+     ============================================================ */
+  const counters = document.querySelectorAll('.counter');
+
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-target'), 10);
+    const duration = 1800;
+    const startTime = performance.now();
+
+    function easeOutQuart(t) {
+      return 1 - Math.pow(1 - t, 4);
+    }
+
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutQuart(progress);
+      const current = Math.round(easedProgress * target);
+
+      el.textContent = current;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target;
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  if ('IntersectionObserver' in window) {
+    const counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(function(counter) {
+      counterObserver.observe(counter);
+    });
+  } else {
+    counters.forEach(animateCounter);
+  }
+
+
+  /* ============================================================
+     LIVE TIME DISPLAY
+     ============================================================ */
+  const hoursEl = document.getElementById('time-hours');
+  const minutesEl = document.getElementById('time-minutes');
+  const secondsEl = document.getElementById('time-seconds');
+  const periodEl = document.getElementById('time-period');
+
+  function updateTime() {
+    // Use Central Time (America/Chicago) for Bentonville, AR
+    const options = {
+      timeZone: 'America/Chicago',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    };
+
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+
+    let hours = '', minutes = '', seconds = '', period = '';
+    parts.forEach(function(part) {
+      if (part.type === 'hour') hours = part.value;
+      if (part.type === 'minute') minutes = part.value;
+      if (part.type === 'second') seconds = part.value;
+      if (part.type === 'dayPeriod') period = part.value;
+    });
+
+    hoursEl.textContent = hours;
+    minutesEl.textContent = minutes;
+    secondsEl.textContent = ':' + seconds;
+    periodEl.textContent = period;
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+
+
+  /* ============================================================
+     PERSPECTIVE TILT ON FEATURE CARDS
+     ============================================================ */
+  const tiltCards = document.querySelectorAll('.tilt-card');
+
+  tiltCards.forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = ((y - centerY) / centerY) * -2.5;
+      const rotateY = ((x - centerX) / centerX) * 2.5;
+
+      card.style.transform =
+        'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-3px)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+    });
+  });
+
+
+  /* ============================================================
+     CARD GLOW FOLLOW CURSOR
+     ============================================================ */
+  const allCards = document.querySelectorAll('.card');
+
+  allCards.forEach(function(card) {
+    const glow = card.querySelector('.card-glow');
+    if (!glow) return;
+
+    card.addEventListener('mousemove', function(e) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      glow.style.left = x + 'px';
+      glow.style.top = y + 'px';
+    });
+  });
+
+
+  /* ============================================================
+     KEYBOARD SHORTCUT HINT (Cmd+K mock)
+     ============================================================ */
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      // In a real app this would open a command palette.
+      // For demo, flash the kbd hint
+      const hint = document.querySelector('.kbd-hint');
+      if (hint) {
+        hint.style.borderColor = 'var(--accent)';
+        hint.style.color = 'var(--accent)';
+        setTimeout(function() {
+          hint.style.borderColor = '';
+          hint.style.color = '';
+        }, 600);
+      }
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

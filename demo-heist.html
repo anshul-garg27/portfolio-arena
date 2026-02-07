@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE ANSHULL GARG HEIST - Portfolio Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0B1426;
+  --bg-light: #0F1B33;
+  --grid: #1E3A5F;
+  --gold: #D4A853;
+  --gold-dim: #A07B30;
+  --red: #CC2936;
+  --red-dark: #8B1A23;
+  --text: #E8E0D0;
+  --text-dim: #8A9BB5;
+  --green: #2ECC71;
+  --blue-line: rgba(30, 58, 95, 0.4);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Custom cursor */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.1s;
+  mix-blend-mode: screen;
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+  opacity: 0.5;
+}
+
+/* Spotlight overlay */
+.spotlight-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), transparent 0%, rgba(11,20,38,0.3) 100%);
+}
+
+/* Blueprint grid background */
+.blueprint-grid {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--blue-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blue-line) 1px, transparent 1px),
+    linear-gradient(rgba(30,58,95,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,58,95,0.15) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+}
+
+/* Security camera */
+.security-camera {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+}
+
+.camera-body {
+  fill: #2a2a3a;
+  stroke: var(--text-dim);
+  stroke-width: 1;
+}
+
+.camera-lens {
+  fill: var(--red);
+  animation: cameraBlink 2s infinite;
+}
+
+@keyframes cameraBlink {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0.2; }
+}
+
+/* Laser scan lines */
+.laser-line {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--red) 20%, var(--red) 80%, transparent 100%);
+  opacity: 0.15;
+  z-index: 3;
+  pointer-events: none;
+  animation: laserScan 8s linear infinite;
+}
+
+.laser-line:nth-child(2) {
+  animation-delay: -3s;
+  opacity: 0.1;
+}
+
+@keyframes laserScan {
+  0% { top: -2px; }
+  100% { top: 100vh; }
+}
+
+/* Vertical laser */
+.laser-vertical {
+  position: fixed;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent 0%, rgba(204,41,54,0.2) 50%, transparent 100%);
+  z-index: 3;
+  pointer-events: none;
+  animation: laserScanV 12s linear infinite;
+}
+
+@keyframes laserScanV {
+  0% { left: -1px; }
+  100% { left: 100vw; }
+}
+
+/* Countdown bar */
+.countdown-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  background: rgba(11, 20, 38, 0.95);
+  border-bottom: 1px solid var(--grid);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  backdrop-filter: blur(10px);
+}
+
+.countdown-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.countdown-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  color: var(--red);
+  letter-spacing: 2px;
+}
+
+.countdown-timer .colon {
+  animation: colonBlink 1s steps(1) infinite;
+}
+
+@keyframes colonBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.2; }
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--green); }
+  50% { opacity: 0.4; box-shadow: none; }
+}
+
+/* Section base */
+section {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+  padding: 120px 60px 80px;
+}
+
+@media (max-width: 768px) {
+  section { padding: 100px 24px 60px; }
+}
+
+/* Section header */
+.section-header {
+  margin-bottom: 60px;
+}
+
+.section-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-tag::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.section-title span {
+  color: var(--gold);
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212,168,83,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-classified {
+  position: absolute;
+  top: 100px;
+  right: 60px;
+  transform: rotate(12deg);
+  opacity: 0;
+  animation: stampSlam 0.6s 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stampSlam {
+  0% { opacity: 0; transform: rotate(12deg) scale(3); }
+  60% { opacity: 1; transform: rotate(12deg) scale(0.9); }
+  80% { transform: rotate(12deg) scale(1.05); }
+  100% { opacity: 0.9; transform: rotate(12deg) scale(1); }
+}
+
+.classified-stamp {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--red);
+  border: 4px solid var(--red);
+  padding: 8px 24px;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  position: relative;
+}
+
+.classified-stamp::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  right: -10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #e55, var(--red-dark) 60%, #5a1015);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.hero-pretitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(40px, 7vw, 90px);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.hero-title .gold { color: var(--gold); }
+.hero-title .white { color: var(--text); }
+
+.hero-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(14px, 2vw, 18px);
+  color: var(--text-dim);
+  max-width: 600px;
+  margin-bottom: 50px;
+  min-height: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+
+.hero-subtitle .typed-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--gold);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursorBlink 0.7s steps(1) infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--gold);
+  padding: 16px 40px;
+  border: none;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.6s forwards;
+}
+
+.hero-cta:hover {
+  background: #e8bc6a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212,168,83,0.3);
+}
+
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.hero-cta:hover::before { left: 100%; }
+
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s 2.5s forwards;
+}
+
+.hero-scroll-indicator span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2s infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 1; height: 40px; }
+  50% { opacity: 0.3; height: 20px; }
+}
+
+/* Corner decorations */
+.corner-deco {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-color: var(--grid);
+  border-style: solid;
+  opacity: 0.5;
+}
+
+.corner-deco.tl { top: 80px; left: 40px; border-width: 1px 0 0 1px; }
+.corner-deco.tr { top: 80px; right: 40px; border-width: 1px 1px 0 0; }
+.corner-deco.bl { bottom: 40px; left: 40px; border-width: 0 0 1px 1px; }
+.corner-deco.br { bottom: 40px; right: 40px; border-width: 0 1px 1px 0; }
+
+/* ===== DOSSIER SECTION ===== */
+.dossier {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-light) 50%, var(--bg) 100%);
+}
+
+.dossier-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .dossier-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.dossier-left {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.mugshot {
+  width: 260px;
+  height: 320px;
+  border: 1px solid var(--grid);
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-light), var(--bg));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mugshot::before {
+  content: 'PHOTO\AREDACTED';
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  letter-spacing: 3px;
+  white-space: pre-line;
+}
+
+.mugshot-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(11,20,38,0.9);
+  border-top: 1px solid var(--grid);
+}
+
+.mugshot-overlay span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+/* Silhouette SVG */
+.silhouette-svg {
+  position: absolute;
+  top: 20px;
+  width: 180px;
+  height: 240px;
+  opacity: 0.15;
+}
+
+.fingerprint-container {
+  text-align: center;
+}
+
+.fingerprint-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.fingerprint-svg {
+  width: 120px;
+  height: 140px;
+  opacity: 0.6;
+}
+
+.fingerprint-svg path {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 0.8;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawFingerprint 4s 1s forwards;
+}
+
+@keyframes drawFingerprint {
+  to { stroke-dashoffset: 0; }
+}
+
+.dossier-right {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.dossier-field {
+  border-bottom: 1px solid rgba(30,58,95,0.3);
+  padding-bottom: 20px;
+}
+
+.dossier-field-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dossier-field-label::before {
+  content: '//';
+  color: var(--text-dim);
+}
+
+.dossier-field-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.dossier-field-value.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--gold);
+}
+
+.aliases-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.aliases-list li {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  padding: 6px 14px;
+  border: 1px solid var(--gold-dim);
+  background: rgba(212,168,83,0.05);
+}
+
+/* Threat level meter */
+.threat-meter {
+  margin-top: 10px;
+}
+
+.threat-meter-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+
+.threat-meter-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(30,58,95,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.threat-meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--red));
+  transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.threat-meter-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -2px;
+  width: 2px;
+  height: 12px;
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red);
+}
+
+.threat-level-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 6px;
+  text-align: right;
+  letter-spacing: 2px;
+}
+
+/* ===== CREW SECTION ===== */
+.crew {
+  background: var(--bg);
+}
+
+.crew-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.crew-card {
+  background: linear-gradient(135deg, rgba(15,27,51,0.9), rgba(11,20,38,0.9));
+  border: 1px solid var(--grid);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.crew-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.crew-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.crew-card:hover::before { opacity: 1; }
+
+.crew-card:hover {
+  border-color: var(--gold-dim);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.crew-card-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+.crew-card-icon {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--gold-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 22px;
+}
+
+.crew-card-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.crew-card-alias {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.crew-card-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.crew-card-clearance {
+  margin-top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clearance-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--green);
+  border-radius: 50%;
+}
+
+/* ===== JOBS SECTION ===== */
+.jobs {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-light) 50%, var(--bg) 100%);
+}
+
+.jobs-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.job-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  border: 1px solid var(--grid);
+  padding: 40px;
+  position: relative;
+  background: rgba(11,20,38,0.6);
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.6s;
+}
+
+.job-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .job-card { grid-template-columns: 1fr; }
+}
+
+.job-card::before {
+  content: 'TOP SECRET';
+  position: absolute;
+  top: -12px;
+  left: 30px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--red);
+  background: var(--bg);
+  padding: 2px 12px;
+  letter-spacing: 3px;
+  border: 1px solid var(--red);
+}
+
+.job-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.job-codename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.job-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.2;
+}
+
+.job-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.job-detail-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--red);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.job-detail-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.job-crew-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.job-crew-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  padding: 4px 10px;
+  border: 1px solid var(--gold-dim);
+  background: rgba(212,168,83,0.05);
+}
+
+.job-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.job-status.completed {
+  color: var(--green);
+}
+
+.job-status-icon {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.job-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Blueprint wireframe */
+.blueprint-wireframe {
+  width: 100%;
+  height: 250px;
+  border: 1px solid rgba(30,58,95,0.4);
+  position: relative;
+  overflow: hidden;
+  background: rgba(11,20,38,0.5);
+}
+
+.blueprint-wireframe svg {
+  width: 100%;
+  height: 100%;
+}
+
+.bp-line {
+  stroke: rgba(30,58,95,0.6);
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+}
+
+.bp-line.animate {
+  animation: drawLine 2s forwards;
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+.bp-line-gold {
+  stroke: rgba(212,168,83,0.4);
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
+
+.bp-line-gold.animate {
+  animation: drawLine 2s 0.5s forwards;
+}
+
+.bp-fill {
+  fill: rgba(30,58,95,0.15);
+  opacity: 0;
+}
+
+.bp-fill.animate {
+  animation: bpFadeIn 1s 1s forwards;
+}
+
+@keyframes bpFadeIn {
+  to { opacity: 1; }
+}
+
+/* ===== VAULT SECTION ===== */
+.vault {
+  background: var(--bg);
+  text-align: center;
+  overflow: hidden;
+}
+
+.vault-door-container {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto 60px;
+  position: relative;
+}
+
+.vault-door-svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.vault-door-svg.open .vault-handle {
+  transform-origin: center;
+  transform: rotate(var(--vault-rotation, 0deg));
+  transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.vault-timeline {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  padding-left: 60px;
+  text-align: left;
+}
+
+.vault-timeline::before {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--gold), var(--grid), transparent);
+}
+
+.vault-box {
+  position: relative;
+  margin-bottom: 50px;
+  padding: 30px;
+  border: 1px solid var(--grid);
+  background: rgba(15,27,51,0.5);
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.6s;
+}
+
+.vault-box.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.vault-box::before {
+  content: '';
+  position: absolute;
+  left: -38px;
+  top: 35px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--gold);
+  background: var(--bg);
+  transform: rotate(45deg);
+}
+
+.vault-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vault-box-company {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.vault-box-dates {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.vault-box-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.vault-box-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.vault-box-deposit {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  background: var(--bg);
+  padding: 2px 8px;
+  border: 1px solid var(--grid);
+  letter-spacing: 2px;
+}
+
+/* ===== EXTRACTION SECTION ===== */
+.extraction {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-light) 100%);
+  text-align: center;
+}
+
+.extraction-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.secure-channel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--green);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.secure-channel .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: statusPulse 1.5s infinite;
+}
+
+.comm-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 50px;
+}
+
+.comm-link {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--grid);
+  background: rgba(15,27,51,0.4);
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: none;
+}
+
+.comm-link:hover {
+  border-color: var(--gold-dim);
+  background: rgba(212,168,83,0.05);
+  transform: translateX(6px);
+}
+
+.comm-freq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  min-width: 90px;
+  text-align: left;
+}
+
+.comm-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  text-align: left;
+}
+
+.comm-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  margin-left: auto;
+}
+
+/* Self-destruct form */
+.destruct-form {
+  border: 1px solid var(--grid);
+  padding: 30px;
+  position: relative;
+}
+
+.destruct-form-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.destruct-form-header::before,
+.destruct-form-header::after {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--red);
+}
+
+.form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(11,20,38,0.8);
+  border: 1px solid var(--grid);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s;
+  cursor: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--gold);
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-submit {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  cursor: none;
+  transition: all 0.3s;
+  margin-top: 8px;
+}
+
+.form-submit:hover {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+/* Self-destruct message */
+.destruct-message {
+  display: none;
+  padding: 40px;
+  text-align: center;
+}
+
+.destruct-message.show {
+  display: block;
+  animation: fadeUp 0.5s forwards;
+}
+
+.destruct-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 48px;
+  color: var(--red);
+  margin-bottom: 16px;
+  letter-spacing: 4px;
+}
+
+.destruct-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Footer */
+.footer {
+  padding: 30px 60px;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+  border-top: 1px solid rgba(30,58,95,0.3);
+}
+
+.footer-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+/* Scroll reveal utility */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Navigation dots */
+.nav-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--text-dim);
+  background: transparent;
+  cursor: none;
+  transition: all 0.3s;
+  padding: 0;
+  position: relative;
+}
+
+.nav-dot.active {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.nav-dot-label {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.nav-dot:hover .nav-dot-label { opacity: 1; }
+
+@media (max-width: 768px) {
+  .nav-dots { display: none; }
+}
+
+/* Noise overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 150px;
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Overlays -->
+<div class="spotlight-overlay" id="spotlightOverlay"></div>
+<div class="blueprint-grid"></div>
+<div class="noise-overlay"></div>
+
+<!-- Laser scan lines -->
+<div class="laser-line"></div>
+<div class="laser-line"></div>
+<div class="laser-vertical"></div>
+
+<!-- Security Camera -->
+<svg class="security-camera" id="securityCamera" viewBox="0 0 50 50">
+  <g id="cameraGroup" style="transform-origin: 25px 12px;">
+    <rect class="camera-body" x="10" y="4" width="30" height="16" rx="3"/>
+    <polygon class="camera-body" points="8,10 16,7 16,17 8,14" style="fill:#2a2a3a;stroke:var(--text-dim);stroke-width:1"/>
+    <circle class="camera-lens" cx="11" cy="12" r="2"/>
+    <rect class="camera-body" x="20" y="20" width="10" height="20" rx="1"/>
+    <rect class="camera-body" x="14" y="40" width="22" height="4" rx="1"/>
+  </g>
+</svg>
+
+<!-- Countdown Bar -->
+<div class="countdown-bar">
+  <div class="countdown-label">Operation Timer</div>
+  <div class="countdown-timer" id="countdownTimer">
+    00<span class="colon">:</span>59<span class="colon">:</span>59
+  </div>
+  <div class="status-indicator">
+    <div class="status-dot"></div>
+    Briefing Active
+  </div>
+</div>
+
+<!-- Navigation Dots -->
+<nav class="nav-dots" id="navDots">
+  <button class="nav-dot active" data-target="hero">
+    <span class="nav-dot-label">Briefing</span>
+  </button>
+  <button class="nav-dot" data-target="dossier">
+    <span class="nav-dot-label">Dossier</span>
+  </button>
+  <button class="nav-dot" data-target="crew">
+    <span class="nav-dot-label">Crew</span>
+  </button>
+  <button class="nav-dot" data-target="jobs">
+    <span class="nav-dot-label">Jobs</span>
+  </button>
+  <button class="nav-dot" data-target="vault">
+    <span class="nav-dot-label">Vault</span>
+  </button>
+  <button class="nav-dot" data-target="extraction">
+    <span class="nav-dot-label">Extraction</span>
+  </button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-spotlight"></div>
+
+  <div class="corner-deco tl"></div>
+  <div class="corner-deco tr"></div>
+  <div class="corner-deco bl"></div>
+  <div class="corner-deco br"></div>
+
+  <div class="hero-classified">
+    <div class="classified-stamp">CLASSIFIED</div>
+  </div>
+
+  <div class="hero-pretitle">// Operation Codename</div>
+
+  <h1 class="hero-title">
+    <span class="white">THE</span><br>
+    <span class="gold">ANSHULL GARG</span><br>
+    <span class="white">HEIST</span>
+  </h1>
+
+  <div class="hero-subtitle" id="heroSubtitle">
+    <span id="typedText"></span><span class="typed-cursor">|</span>
+  </div>
+
+  <a href="#dossier" class="hero-cta">
+    <span>Begin Briefing</span>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </a>
+
+  <div class="hero-scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===== DOSSIER ===== -->
+<section class="dossier" id="dossier">
+  <div class="section-header reveal">
+    <div class="section-tag">Section 01 // Intelligence File</div>
+    <h2 class="section-title">THE <span>DOSSIER</span></h2>
+  </div>
+
+  <div class="dossier-container">
+    <div class="dossier-left reveal">
+      <div class="mugshot">
+        <!-- Silhouette -->
+        <svg class="silhouette-svg" viewBox="0 0 120 160">
+          <ellipse cx="60" cy="45" rx="28" ry="35" fill="#1E3A5F"/>
+          <ellipse cx="60" cy="140" rx="50" ry="45" fill="#1E3A5F"/>
+        </svg>
+        <div class="mugshot-overlay">
+          <span>SUBJECT #AG-2024 // SDE</span>
+        </div>
+      </div>
+
+      <div class="fingerprint-container">
+        <div class="fingerprint-label">Biometric ID</div>
+        <svg class="fingerprint-svg" viewBox="0 0 100 120">
+          <path d="M50 10 C20 10, 10 40, 10 60 C10 80, 20 110, 50 110 C80 110, 90 80, 90 60 C90 40, 80 10, 50 10"/>
+          <path d="M50 20 C30 20, 20 42, 20 60 C20 78, 30 100, 50 100 C70 100, 80 78, 80 60 C80 42, 70 20, 50 20"/>
+          <path d="M50 30 C38 30, 30 45, 30 60 C30 75, 38 90, 50 90 C62 90, 70 75, 70 60 C70 45, 62 30, 50 30"/>
+          <path d="M50 40 C44 40, 40 48, 40 60 C40 72, 44 80, 50 80 C56 80, 60 72, 60 60 C60 48, 56 40, 50 40"/>
+          <path d="M50 50 C48 50, 46 54, 46 60 C46 66, 48 70, 50 70 C52 70, 54 66, 54 60 C54 54, 52 50, 50 50"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="dossier-right">
+      <div class="dossier-field reveal">
+        <div class="dossier-field-label">Subject Name</div>
+        <div class="dossier-field-value mono">ANSHULL GARG</div>
+      </div>
+
+      <div class="dossier-field reveal">
+        <div class="dossier-field-label">Current Affiliation</div>
+        <div class="dossier-field-value mono">WALMART GLOBAL TECH -- SOFTWARE DEVELOPMENT ENGINEER</div>
+      </div>
+
+      <div class="dossier-field reveal">
+        <div class="dossier-field-label">Known Aliases</div>
+        <ul class="aliases-list">
+          <li>Full-Stack Developer</li>
+          <li>Systems Architect</li>
+          <li>Performance Engineer</li>
+          <li>Cloud Operative</li>
+        </ul>
+      </div>
+
+      <div class="dossier-field reveal">
+        <div class="dossier-field-label">Background Intel</div>
+        <div class="dossier-field-value">
+          Subject demonstrates exceptional proficiency in designing and deploying large-scale distributed systems. Known to operate across the full technology stack with surgical precision. Has been observed architecting high-throughput backend services, crafting pixel-perfect interfaces, and orchestrating cloud infrastructure with minimal detection. Subject's code has been found running in production environments serving millions of users. Approach is methodical, performance-obsessed, and alarmingly efficient. Classified as a Tier-1 engineering asset.
+        </div>
+      </div>
+
+      <div class="dossier-field reveal">
+        <div class="dossier-field-label">Threat Assessment</div>
+        <div class="threat-meter">
+          <div class="threat-meter-bar">
+            <div class="threat-meter-fill" id="threatFill" style="width: 0%"></div>
+          </div>
+          <div class="threat-level-text">CRITICAL // 92%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CREW ===== -->
+<section class="crew" id="crew">
+  <div class="section-header reveal">
+    <div class="section-tag">Section 02 // Assembled Team</div>
+    <h2 class="section-title">THE <span>CREW</span></h2>
+  </div>
+
+  <div class="crew-grid">
+    <div class="crew-card" data-delay="0">
+      <div class="crew-card-number">AGENT-001</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="crew-card-name">React</div>
+      <div class="crew-card-alias">"The Infiltrator"</div>
+      <div class="crew-card-desc">Penetrates any UI requirement. Builds component-based interfaces that are impossible to distinguish from native experiences. Masters of state management and virtual DOM manipulation.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: Maximum</div>
+    </div>
+
+    <div class="crew-card" data-delay="100">
+      <div class="crew-card-number">AGENT-002</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+      </div>
+      <div class="crew-card-name">Node.js</div>
+      <div class="crew-card-alias">"The Muscle"</div>
+      <div class="crew-card-desc">Handles the heavy lifting on the server side. Async operations, API endpoints, real-time connections -- nothing is too demanding. Brute force meets elegant architecture.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: Maximum</div>
+    </div>
+
+    <div class="crew-card" data-delay="200">
+      <div class="crew-card-number">AGENT-003</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="crew-card-name">AWS</div>
+      <div class="crew-card-alias">"The Getaway Driver"</div>
+      <div class="crew-card-desc">When the job is done, AWS ensures the clean exit. Scalable infrastructure, serverless functions, and container orchestration. The cloud is the ultimate escape route.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: Maximum</div>
+    </div>
+
+    <div class="crew-card" data-delay="300">
+      <div class="crew-card-number">AGENT-004</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="crew-card-name">Java / Spring</div>
+      <div class="crew-card-alias">"The Architect"</div>
+      <div class="crew-card-desc">Designs the master blueprint. Enterprise-grade backend systems with robust frameworks, clean OOP patterns, and battle-tested reliability. Every heist needs a solid plan.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: High</div>
+    </div>
+
+    <div class="crew-card" data-delay="400">
+      <div class="crew-card-number">AGENT-005</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      </div>
+      <div class="crew-card-name">PostgreSQL / MongoDB</div>
+      <div class="crew-card-alias">"The Vault Keeper"</div>
+      <div class="crew-card-desc">Guards the most valuable asset: data. Relational and document stores, complex queries, indexing strategies, and rock-solid data integrity. Nothing gets lost on their watch.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: High</div>
+    </div>
+
+    <div class="crew-card" data-delay="500">
+      <div class="crew-card-number">AGENT-006</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      </div>
+      <div class="crew-card-name">Docker / K8s</div>
+      <div class="crew-card-alias">"The Disguise Expert"</div>
+      <div class="crew-card-desc">Containerization and orchestration. Every service runs in its own secure environment, deployable anywhere, scalable on demand. The ultimate in operational flexibility.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: High</div>
+    </div>
+
+    <div class="crew-card" data-delay="600">
+      <div class="crew-card-number">AGENT-007</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="crew-card-name">TypeScript</div>
+      <div class="crew-card-alias">"The Strategist"</div>
+      <div class="crew-card-desc">Type safety is the strategy. Catches errors before they happen, enforces contracts, and ensures the entire operation runs without unexpected failures. Precision tooling.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: Maximum</div>
+    </div>
+
+    <div class="crew-card" data-delay="700">
+      <div class="crew-card-number">AGENT-008</div>
+      <div class="crew-card-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A853" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/></svg>
+      </div>
+      <div class="crew-card-name">Python</div>
+      <div class="crew-card-alias">"The Hacker"</div>
+      <div class="crew-card-desc">Rapid prototyping, automation scripts, data analysis, and ML pipelines. When you need something done fast and done right, Python is the first call. Versatile and deadly efficient.</div>
+      <div class="crew-card-clearance"><span class="clearance-dot"></span> Clearance: High</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== JOBS ===== -->
+<section class="jobs" id="jobs">
+  <div class="section-header reveal">
+    <div class="section-tag">Section 03 // Completed Operations</div>
+    <h2 class="section-title">THE <span>JOBS</span></h2>
+  </div>
+
+  <div class="jobs-container">
+    <!-- Job 1 -->
+    <div class="job-card">
+      <div class="job-left">
+        <div class="job-codename">Operation // Titan Scale</div>
+        <h3 class="job-title">High-Traffic E-Commerce Platform</h3>
+
+        <div class="job-detail">
+          <div class="job-detail-label">Target:</div>
+          <div class="job-detail-value">Build a scalable e-commerce backend capable of handling millions of concurrent users during peak sale events without degradation.</div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Plan:</div>
+          <div class="job-detail-value">Microservices architecture with event-driven communication, distributed caching layers, and auto-scaling container orchestration.</div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Crew:</div>
+          <div class="job-crew-tags">
+            <span class="job-crew-tag">Java</span>
+            <span class="job-crew-tag">Spring Boot</span>
+            <span class="job-crew-tag">Kafka</span>
+            <span class="job-crew-tag">Redis</span>
+            <span class="job-crew-tag">K8s</span>
+          </div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Take:</div>
+          <div class="job-detail-value">99.99% uptime during peak events. 3x throughput improvement. Sub-200ms P99 latency.</div>
+        </div>
+
+        <div class="job-status completed">
+          <div class="job-status-icon">&#10003;</div>
+          Status: Completed
+        </div>
+      </div>
+
+      <div class="job-right">
+        <div class="blueprint-wireframe">
+          <svg viewBox="0 0 400 250">
+            <!-- Blueprint grid lines -->
+            <line class="bp-line" x1="0" y1="125" x2="400" y2="125"/>
+            <line class="bp-line" x1="200" y1="0" x2="200" y2="250"/>
+            <!-- Architecture diagram -->
+            <rect class="bp-line-gold" x="160" y="20" width="80" height="40" rx="4"/>
+            <text x="200" y="44" text-anchor="middle" fill="rgba(212,168,83,0.5)" font-size="8" font-family="JetBrains Mono">API GW</text>
+            <line class="bp-line-gold" x1="200" y1="60" x2="200" y2="90"/>
+            <!-- Microservices -->
+            <rect class="bp-line-gold" x="40" y="90" width="70" height="35" rx="3"/>
+            <text x="75" y="112" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">SVC-A</text>
+            <rect class="bp-line-gold" x="165" y="90" width="70" height="35" rx="3"/>
+            <text x="200" y="112" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">SVC-B</text>
+            <rect class="bp-line-gold" x="290" y="90" width="70" height="35" rx="3"/>
+            <text x="325" y="112" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">SVC-C</text>
+            <!-- Lines down from gateway -->
+            <line class="bp-line-gold" x1="200" y1="60" x2="75" y2="90"/>
+            <line class="bp-line-gold" x1="200" y1="60" x2="325" y2="90"/>
+            <!-- Message bus -->
+            <rect class="bp-fill" x="40" y="150" width="320" height="25" rx="3"/>
+            <rect class="bp-line-gold" x="40" y="150" width="320" height="25" rx="3"/>
+            <text x="200" y="167" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">KAFKA EVENT BUS</text>
+            <!-- DB layer -->
+            <ellipse class="bp-line-gold" cx="100" cy="210" rx="40" ry="15"/>
+            <text x="100" y="214" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">PG</text>
+            <ellipse class="bp-line-gold" cx="300" cy="210" rx="40" ry="15"/>
+            <text x="300" y="214" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">REDIS</text>
+            <line class="bp-line-gold" x1="100" y1="175" x2="100" y2="195"/>
+            <line class="bp-line-gold" x1="300" y1="175" x2="300" y2="195"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job 2 -->
+    <div class="job-card">
+      <div class="job-left">
+        <div class="job-codename">Operation // Ghost Protocol</div>
+        <h3 class="job-title">Real-Time Analytics Dashboard</h3>
+
+        <div class="job-detail">
+          <div class="job-detail-label">Target:</div>
+          <div class="job-detail-value">Create a real-time data visualization platform processing millions of events per minute with live updates and interactive drill-downs.</div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Plan:</div>
+          <div class="job-detail-value">WebSocket-driven frontend with server-side aggregation pipelines, time-series optimized storage, and progressive data loading.</div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Crew:</div>
+          <div class="job-crew-tags">
+            <span class="job-crew-tag">React</span>
+            <span class="job-crew-tag">TypeScript</span>
+            <span class="job-crew-tag">D3.js</span>
+            <span class="job-crew-tag">Node.js</span>
+            <span class="job-crew-tag">ClickHouse</span>
+          </div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Take:</div>
+          <div class="job-detail-value">Real-time updates with less than 500ms lag. 40% reduction in decision-making time for stakeholders. Zero data loss.</div>
+        </div>
+
+        <div class="job-status completed">
+          <div class="job-status-icon">&#10003;</div>
+          Status: Completed
+        </div>
+      </div>
+
+      <div class="job-right">
+        <div class="blueprint-wireframe">
+          <svg viewBox="0 0 400 250">
+            <line class="bp-line" x1="0" y1="125" x2="400" y2="125"/>
+            <line class="bp-line" x1="200" y1="0" x2="200" y2="250"/>
+            <!-- Dashboard wireframe -->
+            <rect class="bp-line-gold" x="30" y="20" width="340" height="210" rx="4"/>
+            <!-- Top nav -->
+            <rect class="bp-fill" x="30" y="20" width="340" height="30"/>
+            <rect class="bp-line-gold" x="30" y="20" width="340" height="30" rx="4"/>
+            <!-- Chart areas -->
+            <rect class="bp-line-gold" x="45" y="65" width="150" height="80" rx="3"/>
+            <!-- Line chart inside -->
+            <polyline class="bp-line-gold" points="55,130 80,105 110,115 140,85 170,95 185,75" style="stroke-width:1.5"/>
+            <!-- Bar chart -->
+            <rect class="bp-line-gold" x="210" y="65" width="145" height="80" rx="3"/>
+            <rect class="bp-fill" x="225" y="100" width="15" height="35"/>
+            <rect class="bp-fill" x="250" y="85" width="15" height="50"/>
+            <rect class="bp-fill" x="275" y="95" width="15" height="40"/>
+            <rect class="bp-fill" x="300" y="78" width="15" height="57"/>
+            <rect class="bp-fill" x="325" y="90" width="15" height="45"/>
+            <!-- Bottom panels -->
+            <rect class="bp-line-gold" x="45" y="158" width="95" height="55" rx="3"/>
+            <rect class="bp-line-gold" x="155" y="158" width="95" height="55" rx="3"/>
+            <rect class="bp-line-gold" x="265" y="158" width="90" height="55" rx="3"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job 3 -->
+    <div class="job-card">
+      <div class="job-left">
+        <div class="job-codename">Operation // Blackout</div>
+        <h3 class="job-title">CI/CD Pipeline Overhaul</h3>
+
+        <div class="job-detail">
+          <div class="job-detail-label">Target:</div>
+          <div class="job-detail-value">Transform legacy deployment processes into a fully automated, zero-downtime CI/CD pipeline supporting 50+ microservices.</div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Plan:</div>
+          <div class="job-detail-value">GitOps workflow with automated testing gates, canary deployments, infrastructure as code, and comprehensive observability.</div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Crew:</div>
+          <div class="job-crew-tags">
+            <span class="job-crew-tag">GitHub Actions</span>
+            <span class="job-crew-tag">Docker</span>
+            <span class="job-crew-tag">Terraform</span>
+            <span class="job-crew-tag">ArgoCD</span>
+            <span class="job-crew-tag">Grafana</span>
+          </div>
+        </div>
+
+        <div class="job-detail">
+          <div class="job-detail-label">The Take:</div>
+          <div class="job-detail-value">Deployment frequency increased 10x. Mean time to recovery reduced by 80%. Build times cut from 45 min to 8 min.</div>
+        </div>
+
+        <div class="job-status completed">
+          <div class="job-status-icon">&#10003;</div>
+          Status: Completed
+        </div>
+      </div>
+
+      <div class="job-right">
+        <div class="blueprint-wireframe">
+          <svg viewBox="0 0 400 250">
+            <line class="bp-line" x1="0" y1="125" x2="400" y2="125"/>
+            <line class="bp-line" x1="200" y1="0" x2="200" y2="250"/>
+            <!-- Pipeline flow -->
+            <rect class="bp-line-gold" x="20" y="100" width="60" height="50" rx="4"/>
+            <text x="50" y="130" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">GIT</text>
+            <line class="bp-line-gold" x1="80" y1="125" x2="110" y2="125"/>
+            <polygon class="bp-line-gold" points="105,120 115,125 105,130"/>
+            <rect class="bp-line-gold" x="115" y="100" width="60" height="50" rx="4"/>
+            <text x="145" y="130" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">BUILD</text>
+            <line class="bp-line-gold" x1="175" y1="125" x2="205" y2="125"/>
+            <polygon class="bp-line-gold" points="200,120 210,125 200,130"/>
+            <rect class="bp-line-gold" x="210" y="100" width="60" height="50" rx="4"/>
+            <text x="240" y="130" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">TEST</text>
+            <line class="bp-line-gold" x1="270" y1="125" x2="300" y2="125"/>
+            <polygon class="bp-line-gold" points="295,120 305,125 295,130"/>
+            <rect class="bp-line-gold" x="305" y="100" width="70" height="50" rx="4"/>
+            <text x="340" y="130" text-anchor="middle" fill="rgba(212,168,83,0.4)" font-size="7" font-family="JetBrains Mono">DEPLOY</text>
+            <!-- Monitoring layer -->
+            <rect class="bp-line" x="60" y="180" width="280" height="40" rx="4"/>
+            <text x="200" y="205" text-anchor="middle" fill="rgba(30,58,95,0.6)" font-size="8" font-family="JetBrains Mono">OBSERVABILITY LAYER</text>
+            <!-- Env labels -->
+            <text x="50" y="45" text-anchor="middle" fill="rgba(212,168,83,0.3)" font-size="8" font-family="JetBrains Mono">DEV</text>
+            <text x="200" y="45" text-anchor="middle" fill="rgba(212,168,83,0.3)" font-size="8" font-family="JetBrains Mono">STAGING</text>
+            <text x="340" y="45" text-anchor="middle" fill="rgba(212,168,83,0.3)" font-size="8" font-family="JetBrains Mono">PROD</text>
+            <line class="bp-line" x1="50" y1="50" x2="50" y2="95"/>
+            <line class="bp-line" x1="200" y1="50" x2="200" y2="95"/>
+            <line class="bp-line" x1="340" y1="50" x2="340" y2="95"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VAULT ===== -->
+<section class="vault" id="vault">
+  <div class="section-header reveal">
+    <div class="section-tag">Section 04 // Classified Records</div>
+    <h2 class="section-title">THE <span>VAULT</span></h2>
+  </div>
+
+  <div class="vault-door-container reveal">
+    <svg class="vault-door-svg" id="vaultDoor" viewBox="0 0 300 300">
+      <!-- Outer ring -->
+      <circle cx="150" cy="150" r="145" fill="none" stroke="#1E3A5F" stroke-width="2"/>
+      <circle cx="150" cy="150" r="130" fill="none" stroke="#1E3A5F" stroke-width="1"/>
+      <!-- Bolts -->
+      <circle cx="150" cy="25" r="6" fill="#1E3A5F"/>
+      <circle cx="150" cy="275" r="6" fill="#1E3A5F"/>
+      <circle cx="25" cy="150" r="6" fill="#1E3A5F"/>
+      <circle cx="275" cy="150" r="6" fill="#1E3A5F"/>
+      <circle cx="60" cy="60" r="5" fill="#1E3A5F"/>
+      <circle cx="240" cy="60" r="5" fill="#1E3A5F"/>
+      <circle cx="60" cy="240" r="5" fill="#1E3A5F"/>
+      <circle cx="240" cy="240" r="5" fill="#1E3A5F"/>
+      <!-- Inner circle -->
+      <circle cx="150" cy="150" r="80" fill="none" stroke="var(--gold-dim)" stroke-width="1.5"/>
+      <circle cx="150" cy="150" r="60" fill="none" stroke="var(--grid)" stroke-width="1"/>
+      <!-- Handle / Spokes -->
+      <g class="vault-handle" id="vaultHandle">
+        <line x1="150" y1="80" x2="150" y2="220" stroke="var(--gold-dim)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="80" y1="150" x2="220" y2="150" stroke="var(--gold-dim)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="100" y1="100" x2="200" y2="200" stroke="var(--gold-dim)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="200" y1="100" x2="100" y2="200" stroke="var(--gold-dim)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="150" cy="150" r="15" fill="var(--bg)" stroke="var(--gold)" stroke-width="2"/>
+        <circle cx="150" cy="150" r="5" fill="var(--gold-dim)"/>
+      </g>
+      <!-- Tick marks around outer ring -->
+      <g stroke="#1E3A5F" stroke-width="1" id="vaultTicks"></g>
+    </svg>
+  </div>
+
+  <div class="vault-timeline">
+    <div class="vault-box">
+      <div class="vault-box-deposit">DEPOSIT BOX #001</div>
+      <div class="vault-box-header">
+        <div class="vault-box-company">Walmart Global Tech</div>
+        <div class="vault-box-dates">2023 -- PRESENT</div>
+      </div>
+      <div class="vault-box-role">Software Development Engineer</div>
+      <div class="vault-box-desc">Designing and building large-scale distributed systems powering e-commerce operations for millions of users. Architecting microservices, optimizing performance-critical paths, and driving technical decisions across cross-functional teams. Working on high-availability systems that handle peak traffic events with zero downtime.</div>
+    </div>
+
+    <div class="vault-box">
+      <div class="vault-box-deposit">DEPOSIT BOX #002</div>
+      <div class="vault-box-header">
+        <div class="vault-box-company">Previous Engagement</div>
+        <div class="vault-box-dates">2021 -- 2023</div>
+      </div>
+      <div class="vault-box-role">Software Engineer</div>
+      <div class="vault-box-desc">Developed full-stack web applications and RESTful APIs serving production traffic. Implemented automated testing pipelines, contributed to cloud migration initiatives, and mentored junior developers. Reduced application load times by 60% through strategic optimization and caching strategies.</div>
+    </div>
+
+    <div class="vault-box">
+      <div class="vault-box-deposit">DEPOSIT BOX #003</div>
+      <div class="vault-box-header">
+        <div class="vault-box-company">Early Operations</div>
+        <div class="vault-box-dates">2019 -- 2021</div>
+      </div>
+      <div class="vault-box-role">Junior Developer / Intern</div>
+      <div class="vault-box-desc">Initiated career in software development with hands-on experience building web applications, learning enterprise patterns, and contributing to production codebases. Rapidly advanced from intern to full-time contributor through demonstrated technical aptitude and relentless drive to learn.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EXTRACTION ===== -->
+<section class="extraction" id="extraction">
+  <div class="section-header reveal">
+    <div class="section-tag">Section 05 // Secure Communications</div>
+    <h2 class="section-title">THE <span>EXTRACTION</span></h2>
+  </div>
+
+  <div class="extraction-container">
+    <div class="secure-channel reveal">
+      <span class="dot"></span>
+      Secure Channel Established
+      <span class="dot"></span>
+    </div>
+
+    <div class="comm-links reveal">
+      <a href="mailto:anshull.garg@example.com" class="comm-link">
+        <div class="comm-freq">FREQ-001</div>
+        <div class="comm-label">Encrypted Mail</div>
+        <div class="comm-value">anshull.garg@email.com</div>
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" class="comm-link">
+        <div class="comm-freq">FREQ-002</div>
+        <div class="comm-label">Secure Network</div>
+        <div class="comm-value">linkedin.com/in/anshullgarg</div>
+      </a>
+      <a href="https://github.com/anshullgarg" target="_blank" class="comm-link">
+        <div class="comm-freq">FREQ-003</div>
+        <div class="comm-label">Operations Log</div>
+        <div class="comm-value">github.com/anshullgarg</div>
+      </a>
+    </div>
+
+    <div class="destruct-form reveal" id="destructForm">
+      <div class="destruct-form-header">Self-Destructing Message</div>
+
+      <form id="contactForm">
+        <div class="form-group">
+          <label class="form-label" for="codename">Codename</label>
+          <input class="form-input" type="text" id="codename" placeholder="Enter your alias..." autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="freq">Communication Frequency</label>
+          <input class="form-input" type="email" id="freq" placeholder="your.email@secure.channel" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="message">Encoded Message</label>
+          <textarea class="form-textarea" id="message" placeholder="This message will self-destruct..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">Transmit Message</button>
+      </form>
+    </div>
+
+    <div class="destruct-message" id="destructMessage">
+      <div class="destruct-timer" id="destructTimer">05</div>
+      <div class="destruct-text">Message transmitted. This communication<br>will self-destruct in <span id="destructCountText">5</span> seconds.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-text">// END OF BRIEFING // OPERATION ANSHULL GARG // ALL INTEL CLASSIFIED //</div>
+</footer>
+
+<script>
+// ===== CUSTOM CURSOR =====
+const cursorDot = document.getElementById('cursorDot');
+const cursorRing = document.getElementById('cursorRing');
+const spotlightOverlay = document.getElementById('spotlightOverlay');
+let mouseX = 0, mouseY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursorDot.style.left = mouseX - 4 + 'px';
+  cursorDot.style.top = mouseY - 4 + 'px';
+  cursorRing.style.left = mouseX - 20 + 'px';
+  cursorRing.style.top = mouseY - 20 + 'px';
+
+  // Spotlight
+  spotlightOverlay.style.setProperty('--mx', mouseX + 'px');
+  spotlightOverlay.style.setProperty('--my', mouseY + 'px');
+
+  // Security camera tracking
+  const camera = document.getElementById('cameraGroup');
+  const cameraRect = document.querySelector('.security-camera').getBoundingClientRect();
+  const cameraCenterX = cameraRect.left + cameraRect.width / 2;
+  const cameraCenterY = cameraRect.top + 12;
+  const angle = Math.atan2(mouseY - cameraCenterY, mouseX - cameraCenterX) * (180 / Math.PI);
+  const clampedAngle = Math.max(-60, Math.min(60, angle));
+  camera.style.transform = `rotate(${clampedAngle}deg)`;
+  camera.style.transformOrigin = '25px 12px';
+  camera.style.transition = 'transform 0.2s ease-out';
+});
+
+// Hover states
+document.querySelectorAll('a, button, .comm-link').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursorRing.style.width = '60px';
+    cursorRing.style.height = '60px';
+    cursorRing.style.left = mouseX - 30 + 'px';
+    cursorRing.style.top = mouseY - 30 + 'px';
+    cursorRing.style.borderColor = 'var(--gold)';
+    cursorRing.style.opacity = '0.8';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorRing.style.width = '40px';
+    cursorRing.style.height = '40px';
+    cursorRing.style.borderColor = 'var(--gold)';
+    cursorRing.style.opacity = '0.5';
+  });
+});
+
+// ===== COUNTDOWN TIMER =====
+let totalSeconds = 3599; // 59:59
+
+function updateCountdown() {
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('countdownTimer').innerHTML =
+    `${pad(hrs)}<span class="colon">:</span>${pad(mins)}<span class="colon">:</span>${pad(secs)}`;
+  if (totalSeconds > 0) totalSeconds--;
+}
+
+setInterval(updateCountdown, 1000);
+
+// ===== TYPING ANIMATION =====
+const phrases = [
+  'Target: Build world-class software.',
+  'Crew: Assembled.',
+  'Status: Ready for deployment.',
+  'Location: Walmart Global Tech.'
+];
+let phraseIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+const typedText = document.getElementById('typedText');
+
+function typeEffect() {
+  const current = phrases[phraseIndex];
+
+  if (!isDeleting) {
+    typedText.textContent = current.substring(0, charIndex + 1);
+    charIndex++;
+    if (charIndex === current.length) {
+      setTimeout(() => { isDeleting = true; typeEffect(); }, 2000);
+      return;
+    }
+  } else {
+    typedText.textContent = current.substring(0, charIndex - 1);
+    charIndex--;
+    if (charIndex === 0) {
+      isDeleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+    }
+  }
+
+  const speed = isDeleting ? 30 : 60;
+  setTimeout(typeEffect, speed);
+}
+
+setTimeout(typeEffect, 2000);
+
+// ===== SCROLL REVEAL =====
+const revealElements = document.querySelectorAll('.reveal, .crew-card, .job-card, .vault-box');
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const delay = entry.target.dataset.delay || 0;
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, delay);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+revealElements.forEach(el => revealObserver.observe(el));
+
+// ===== THREAT METER =====
+const threatFill = document.getElementById('threatFill');
+const threatObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      threatFill.style.width = '92%';
+    }
+  });
+}, { threshold: 0.5 });
+
+threatObserver.observe(threatFill);
+
+// ===== BLUEPRINT LINE DRAWING =====
+const blueprintObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const lines = entry.target.querySelectorAll('.bp-line, .bp-line-gold, .bp-fill');
+      lines.forEach((line, i) => {
+        setTimeout(() => {
+          line.classList.add('animate');
+        }, i * 150);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.blueprint-wireframe').forEach(el => blueprintObserver.observe(el));
+
+// ===== VAULT DOOR ROTATION =====
+const vaultDoor = document.getElementById('vaultDoor');
+const vaultHandle = document.getElementById('vaultHandle');
+const vaultSection = document.getElementById('vault');
+
+// Generate tick marks
+const ticksGroup = document.getElementById('vaultTicks');
+for (let i = 0; i < 60; i++) {
+  const angle = (i * 6) * Math.PI / 180;
+  const r1 = 140;
+  const r2 = i % 5 === 0 ? 130 : 135;
+  const x1 = 150 + r1 * Math.cos(angle);
+  const y1 = 150 + r1 * Math.sin(angle);
+  const x2 = 150 + r2 * Math.cos(angle);
+  const y2 = 150 + r2 * Math.sin(angle);
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', x1);
+  line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2);
+  line.setAttribute('y2', y2);
+  ticksGroup.appendChild(line);
+}
+
+window.addEventListener('scroll', () => {
+  const rect = vaultSection.getBoundingClientRect();
+  const sectionTop = rect.top;
+  const windowHeight = window.innerHeight;
+
+  if (sectionTop < windowHeight && sectionTop > -rect.height) {
+    const progress = Math.max(0, Math.min(1, (windowHeight - sectionTop) / (windowHeight + rect.height / 2)));
+    const rotation = progress * 720; // Two full rotations
+    vaultHandle.style.transform = `rotate(${rotation}deg)`;
+    vaultHandle.style.transformOrigin = '150px 150px';
+  }
+});
+
+// ===== NAV DOTS =====
+const sections = document.querySelectorAll('section');
+const navDots = document.querySelectorAll('.nav-dot');
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navDots.forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.target === id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(section => sectionObserver.observe(section));
+
+navDots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    document.getElementById(dot.dataset.target).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ===== SELF-DESTRUCT FORM =====
+document.getElementById('contactForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const form = document.getElementById('contactForm');
+  const destructForm = document.getElementById('destructForm');
+  const destructMessage = document.getElementById('destructMessage');
+  const destructTimer = document.getElementById('destructTimer');
+  const destructCountText = document.getElementById('destructCountText');
+
+  form.style.display = 'none';
+  destructForm.querySelector('.destruct-form-header').style.display = 'none';
+  destructMessage.classList.add('show');
+
+  let count = 5;
+  const interval = setInterval(() => {
+    count--;
+    destructTimer.textContent = '0' + count;
+    destructCountText.textContent = count;
+    if (count <= 0) {
+      clearInterval(interval);
+      destructForm.innerHTML = `
+        <div style="padding:40px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">
+            Message Delivered
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;">
+            This communication has been destroyed.
+          </div>
+          <div style="margin-top:20px;font-size:32px;color:var(--text-dim);opacity:0.3;">&#128165;</div>
+        </div>
+      `;
+    }
+  }, 1000);
+});
+
+// ===== TOUCH DEVICE FALLBACK =====
+if ('ontouchstart' in window) {
+  document.body.style.cursor = 'auto';
+  cursorDot.style.display = 'none';
+  cursorRing.style.display = 'none';
+  document.querySelectorAll('a, button, .comm-link, .form-input, .form-textarea, .form-submit').forEach(el => {
+    el.style.cursor = 'pointer';
+  });
+}
+</script>
+</body>
+</html>

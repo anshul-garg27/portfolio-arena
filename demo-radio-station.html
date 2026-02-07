@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE RADIO STATION | Anshull Garg - Software Developer @ Walmart</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. An interactive radio station portfolio experience.">
+<meta name="theme-color" content="#1A1208">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================ */
+:root {
+  --bg-deep: #1A1208;
+  --bg-wood: #231A0E;
+  --radio-body: #2A2A2A;
+  --radio-body-light: #3A3A3A;
+  --radio-body-dark: #1E1E1E;
+  --metal-silver: #B0B0B0;
+  --metal-highlight: #D0D0D0;
+  --metal-shadow: #707070;
+  --copper: #C87941;
+  --copper-light: #E09960;
+  --copper-dark: #A05A28;
+  --amber: #FFB000;
+  --amber-dim: #CC8C00;
+  --amber-glow: rgba(255, 176, 0, 0.3);
+  --lcd-bg: #1A1608;
+  --lcd-border: #0E0D08;
+  --vu-green: #33FF66;
+  --vu-yellow: #FFDD33;
+  --vu-red: #FF3333;
+  --led-red: #FF2222;
+  --led-green: #22FF44;
+  --text-light: #E0E0E0;
+  --text-dim: #888888;
+  --font-display: 'VT323', monospace;
+  --font-label: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Wood texture background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(40, 30, 15, 0.15) 2px,
+      rgba(40, 30, 15, 0.15) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(30, 20, 10, 0.1) 40px,
+      rgba(30, 20, 10, 0.1) 42px
+    ),
+    radial-gradient(ellipse at 30% 20%, rgba(60, 40, 15, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(50, 30, 10, 0.2) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Noise texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   LAYOUT WRAPPER
+   ============================================================ */
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px 80px;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   STATION BRANDING HEADER
+   ============================================================ */
+.station-brand {
+  text-align: center;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeInDown 0.8s ease 0.3s forwards;
+}
+
+.station-brand h1 {
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--copper);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(200, 121, 65, 0.3);
+}
+
+.station-brand .tagline {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   ANTENNA
+   ============================================================ */
+.antenna-container {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -10px;
+  z-index: 10;
+}
+
+.antenna {
+  width: 3px;
+  height: 80px;
+  background: linear-gradient(to top, var(--metal-shadow), var(--metal-silver), var(--metal-highlight));
+  border-radius: 2px;
+  transform-origin: bottom center;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.antenna::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--metal-highlight), var(--metal-shadow));
+}
+
+.antenna::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 6px;
+  background: var(--radio-body-light);
+  border-radius: 3px 3px 0 0;
+}
+
+/* ============================================================
+   RADIO BODY
+   ============================================================ */
+.radio {
+  width: 100%;
+  max-width: 780px;
+  background: linear-gradient(160deg, var(--radio-body-light) 0%, var(--radio-body) 40%, var(--radio-body-dark) 100%);
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 0.5s forwards;
+}
+
+/* Brushed metal texture */
+.radio::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.01) 1px,
+    rgba(255, 255, 255, 0.01) 2px
+  );
+  pointer-events: none;
+}
+
+/* Corner screws */
+.screw {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #999, #555, #333);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.screw::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(35deg);
+  width: 8px;
+  height: 1.5px;
+  background: #222;
+  border-radius: 1px;
+}
+
+.screw::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-55deg);
+  width: 8px;
+  height: 1.5px;
+  background: #222;
+  border-radius: 1px;
+}
+
+.screw--tl { top: 12px; left: 12px; }
+.screw--tr { top: 12px; right: 12px; }
+.screw--bl { bottom: 12px; left: 12px; }
+.screw--br { bottom: 12px; right: 12px; }
+
+/* ============================================================
+   TOP SECTION: LCD + VU METERS
+   ============================================================ */
+.radio-top {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+/* VU Meters */
+.vu-meter {
+  background: var(--lcd-bg);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 10px 8px;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.vu-meter .vu-label {
+  font-family: var(--font-label);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.vu-bar-container {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+  align-items: flex-end;
+  width: 100%;
+  justify-content: center;
+}
+
+.vu-bar {
+  width: 6px;
+  border-radius: 2px;
+  transition: height 0.1s ease;
+  min-height: 3px;
+}
+
+.vu-bar.green { background: var(--vu-green); box-shadow: 0 0 4px rgba(51, 255, 102, 0.4); }
+.vu-bar.yellow { background: var(--vu-yellow); box-shadow: 0 0 4px rgba(255, 221, 51, 0.4); }
+.vu-bar.red { background: var(--vu-red); box-shadow: 0 0 4px rgba(255, 51, 51, 0.4); }
+
+/* LCD Display */
+.lcd-display {
+  background: var(--lcd-bg);
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* LCD scanline effect */
+.lcd-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.lcd-display::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255, 176, 0, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.lcd-frequency {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: var(--amber);
+  text-align: center;
+  text-shadow: 0 0 10px var(--amber-glow), 0 0 30px rgba(255, 176, 0, 0.15);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.1s;
+}
+
+.lcd-station-name {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--amber-dim);
+  text-align: center;
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.2);
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.lcd-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.lcd-stereo {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--amber-dim);
+  opacity: 0.6;
+}
+
+.lcd-rec {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--led-red);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lcd-rec.active {
+  opacity: 1;
+  animation: blink 1s ease infinite;
+}
+
+.lcd-rec::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-red);
+  box-shadow: 0 0 6px var(--led-red);
+}
+
+.lcd-signal {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.lcd-signal span {
+  width: 3px;
+  background: var(--amber-dim);
+  opacity: 0.5;
+  border-radius: 1px;
+}
+
+.lcd-signal span:nth-child(1) { height: 4px; }
+.lcd-signal span:nth-child(2) { height: 7px; }
+.lcd-signal span:nth-child(3) { height: 10px; }
+.lcd-signal span:nth-child(4) { height: 13px; }
+
+/* ============================================================
+   FREQUENCY BAND / TUNING DIAL
+   ============================================================ */
+.tuning-section {
+  margin-bottom: 24px;
+}
+
+.freq-band {
+  background: #1A1A1A;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px 24px 16px;
+  position: relative;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.freq-band-label {
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  font-family: var(--font-label);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--copper);
+  background: var(--radio-body);
+  padding: 0 8px;
+}
+
+.freq-scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+  padding: 0 10px;
+  margin-bottom: 14px;
+}
+
+.freq-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 2;
+}
+
+.freq-mark:hover .freq-number {
+  color: var(--amber);
+  text-shadow: 0 0 8px var(--amber-glow);
+}
+
+.freq-mark:hover .freq-tick {
+  background: var(--amber);
+  box-shadow: 0 0 4px var(--amber-glow);
+}
+
+.freq-mark.active .freq-number {
+  color: var(--amber);
+  text-shadow: 0 0 10px var(--amber-glow);
+  transform: scale(1.1);
+}
+
+.freq-mark.active .freq-channel {
+  color: var(--amber);
+  opacity: 1;
+}
+
+.freq-number {
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2vw, 1.3rem);
+  color: var(--metal-silver);
+  transition: all 0.3s;
+  margin-bottom: 4px;
+}
+
+.freq-channel {
+  font-family: var(--font-label);
+  font-size: clamp(0.45rem, 1vw, 0.6rem);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.6;
+  transition: all 0.3s;
+  margin-bottom: 6px;
+}
+
+.freq-tick {
+  width: 2px;
+  height: 12px;
+  background: var(--metal-shadow);
+  border-radius: 1px;
+  transition: all 0.3s;
+}
+
+/* Sub-ticks between stations */
+.freq-subticks {
+  position: absolute;
+  top: calc(100% - 12px);
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.freq-subtick {
+  width: 1px;
+  height: 6px;
+  background: rgba(112, 112, 112, 0.3);
+  border-radius: 1px;
+}
+
+/* Tuning slider track */
+.tuning-track {
+  position: relative;
+  height: 20px;
+  margin: 0 10px;
+}
+
+.tuning-track-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #333;
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+.tuning-indicator {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 20px;
+  background: linear-gradient(180deg, var(--copper-light), var(--copper), var(--copper-dark));
+  border-radius: 3px;
+  transform: translate(-50%, -50%);
+  transition: left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  cursor: grab;
+  z-index: 3;
+}
+
+.tuning-indicator::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: calc(100% - 8px);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 1px;
+}
+
+/* ============================================================
+   CONTROLS ROW
+   ============================================================ */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 10px;
+}
+
+/* Power Button */
+.power-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.power-btn-switch {
+  width: 44px;
+  height: 24px;
+  background: #222;
+  border: 2px solid #444;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.power-btn-switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #888, #555);
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.power-btn.on .power-btn-switch {
+  border-color: var(--led-green);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(34, 255, 68, 0.2);
+}
+
+.power-btn.on .power-btn-switch::before {
+  left: 22px;
+  background: linear-gradient(135deg, #aaa, #777);
+}
+
+.power-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #333;
+  transition: all 0.3s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.power-btn.on .power-led {
+  background: var(--led-green);
+  box-shadow: 0 0 8px var(--led-green), 0 0 20px rgba(34, 255, 68, 0.3);
+}
+
+.power-label {
+  font-family: var(--font-label);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Knobs */
+.knob-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.knob {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--metal-highlight), var(--metal-silver) 40%, var(--metal-shadow) 100%);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.knob:hover {
+  transform: scale(1.05);
+}
+
+.knob::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--copper);
+  opacity: 0.4;
+}
+
+.knob::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 10px;
+  background: var(--copper);
+  border-radius: 1px;
+}
+
+.knob-label {
+  font-family: var(--font-label);
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Preset Buttons */
+.preset-group {
+  display: flex;
+  gap: 6px;
+}
+
+.preset-btn {
+  width: 32px;
+  height: 24px;
+  background: linear-gradient(180deg, #444, #2A2A2A);
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preset-btn:hover {
+  background: linear-gradient(180deg, #555, #333);
+  color: var(--amber);
+}
+
+.preset-btn.active {
+  background: linear-gradient(180deg, #333, #222);
+  border-color: var(--copper);
+  color: var(--amber);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    inset 0 1px 3px rgba(0, 0, 0, 0.3),
+    0 0 6px rgba(200, 121, 65, 0.2);
+}
+
+/* ============================================================
+   SPEAKER GRILLE
+   ============================================================ */
+.speaker-grille {
+  height: 50px;
+  background:
+    radial-gradient(circle, #222 1.5px, transparent 1.5px);
+  background-size: 10px 10px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.speaker-grille::before {
+  content: 'GARG AUDIO SYSTEMS';
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-label);
+  font-size: 0.5rem;
+  letter-spacing: 4px;
+  color: var(--metal-shadow);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   STATIC / NOISE TRANSITION
+   ============================================================ */
+.static-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.05s;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.03) 1px,
+    rgba(255, 255, 255, 0.03) 2px
+  );
+}
+
+.static-overlay.active {
+  opacity: 1;
+  animation: staticNoise 0.15s steps(4) 3;
+}
+
+@keyframes staticNoise {
+  0% { background-position: 0 0; filter: brightness(1.2) contrast(1.5); }
+  25% { background-position: -5px 3px; filter: brightness(0.9) contrast(1.8); }
+  50% { background-position: 3px -2px; filter: brightness(1.1) contrast(1.3); }
+  75% { background-position: -3px 5px; filter: brightness(0.95) contrast(1.6); }
+  100% { background-position: 0 0; filter: brightness(1) contrast(1); }
+}
+
+/* ============================================================
+   CONTENT AREA
+   ============================================================ */
+.content-area {
+  width: 100%;
+  max-width: 780px;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 0.8s forwards;
+}
+
+.content-panel {
+  background: rgba(26, 18, 8, 0.8);
+  border: 1px solid rgba(200, 121, 65, 0.15);
+  border-radius: 12px;
+  padding: 36px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.content-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--copper), transparent);
+  opacity: 0.4;
+}
+
+/* Content transitions */
+.channel-content {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.channel-content.active {
+  display: block;
+}
+
+.channel-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Channel header */
+.channel-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(200, 121, 65, 0.15);
+}
+
+.channel-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, rgba(200, 121, 65, 0.2), rgba(200, 121, 65, 0.05));
+  border: 1px solid rgba(200, 121, 65, 0.3);
+  flex-shrink: 0;
+}
+
+.channel-title {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  color: var(--amber);
+}
+
+.channel-freq {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--copper);
+  opacity: 0.7;
+}
+
+/* Content typography */
+.content-text {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-light);
+  opacity: 0.85;
+}
+
+.content-text p {
+  margin-bottom: 16px;
+}
+
+.content-text strong {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* Experience timeline */
+.schedule-list {
+  list-style: none;
+}
+
+.schedule-item {
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(200, 121, 65, 0.1);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.schedule-item:last-child {
+  border-bottom: none;
+}
+
+.schedule-time {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--copper);
+  white-space: nowrap;
+  padding-top: 2px;
+  min-width: 100px;
+}
+
+.schedule-show {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.schedule-desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* Projects as shows */
+.show-card {
+  background: rgba(42, 42, 42, 0.4);
+  border: 1px solid rgba(200, 121, 65, 0.12);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 14px;
+  transition: all 0.3s;
+}
+
+.show-card:hover {
+  border-color: rgba(200, 121, 65, 0.3);
+  background: rgba(42, 42, 42, 0.6);
+}
+
+.show-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.show-name {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--amber);
+}
+
+.show-badge {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  color: var(--copper);
+  background: rgba(200, 121, 65, 0.1);
+  border: 1px solid rgba(200, 121, 65, 0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.show-desc {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.show-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.show-tag {
+  font-family: var(--font-label);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--copper);
+  background: rgba(200, 121, 65, 0.08);
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(200, 121, 65, 0.15);
+}
+
+/* Skills as equipment */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.equipment-rack {
+  background: rgba(42, 42, 42, 0.3);
+  border: 1px solid rgba(200, 121, 65, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.equipment-category {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.equipment-category::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-green);
+  box-shadow: 0 0 4px rgba(34, 255, 68, 0.4);
+}
+
+.equipment-list {
+  list-style: none;
+}
+
+.equipment-list li {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-light);
+  opacity: 0.8;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.equipment-list li:last-child {
+  border-bottom: none;
+}
+
+/* Contact section */
+.request-line {
+  text-align: center;
+  padding: 30px;
+}
+
+.request-line .phone-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.request-line h3 {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.request-line p {
+  font-family: var(--font-body);
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid rgba(200, 121, 65, 0.3);
+  border-radius: 8px;
+  color: var(--text-light);
+  text-decoration: none;
+  font-family: var(--font-label);
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  background: rgba(200, 121, 65, 0.05);
+}
+
+.contact-link:hover {
+  border-color: var(--copper);
+  background: rgba(200, 121, 65, 0.15);
+  color: var(--amber);
+  transform: translateY(-2px);
+}
+
+.contact-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ============================================================
+   NOW PLAYING TICKER
+   ============================================================ */
+.now-playing {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: linear-gradient(180deg, #1A1A1A, #111111);
+  border-top: 1px solid #333;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.now-playing-label {
+  flex-shrink: 0;
+  font-family: var(--font-label);
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #111;
+  background: var(--amber);
+  padding: 4px 12px;
+  font-weight: 600;
+}
+
+.now-playing-ticker {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.now-playing-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--amber-dim);
+  padding-left: 100%;
+  animation: ticker 25s linear infinite;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.now-playing-eq {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  padding: 0 14px;
+  height: 16px;
+}
+
+.eq-bar {
+  width: 3px;
+  background: var(--amber);
+  border-radius: 1px;
+  animation: eqPulse 0.8s ease infinite alternate;
+}
+
+.eq-bar:nth-child(1) { animation-duration: 0.6s; height: 4px; }
+.eq-bar:nth-child(2) { animation-duration: 0.8s; height: 8px; animation-delay: 0.1s; }
+.eq-bar:nth-child(3) { animation-duration: 0.5s; height: 12px; animation-delay: 0.2s; }
+.eq-bar:nth-child(4) { animation-duration: 0.7s; height: 6px; animation-delay: 0.15s; }
+.eq-bar:nth-child(5) { animation-duration: 0.55s; height: 10px; animation-delay: 0.05s; }
+
+@keyframes eqPulse {
+  0% { height: 3px; }
+  100% { height: 16px; }
+}
+
+/* ============================================================
+   POWER OFF STATE
+   ============================================================ */
+.radio.off .lcd-display {
+  background: #0E0D08;
+}
+
+.radio.off .lcd-frequency,
+.radio.off .lcd-station-name,
+.radio.off .lcd-stereo,
+.radio.off .lcd-signal span {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.radio.off .lcd-display::after {
+  opacity: 0;
+}
+
+.radio.off .vu-bar {
+  height: 3px !important;
+  opacity: 0.2;
+}
+
+.radio.off .freq-mark.active .freq-number {
+  color: var(--metal-silver);
+  text-shadow: none;
+}
+
+.radio.off .tuning-indicator {
+  opacity: 0.5;
+}
+
+.content-area.off {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+
+.now-playing.off {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.now-playing.off .eq-bar {
+  animation-play-state: paused;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes lcdFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+  .radio {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .radio-top {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .vu-meter {
+    flex-direction: row;
+    justify-content: center;
+    padding: 8px 14px;
+  }
+
+  .vu-meter .vu-label {
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
+
+  .vu-bar-container {
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+  }
+
+  .vu-bar {
+    height: 14px !important;
+    min-height: unset;
+    width: 6px;
+  }
+
+  .controls-row {
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .freq-channel {
+    display: none;
+  }
+
+  .content-panel {
+    padding: 24px 18px;
+  }
+
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 16px 10px 80px;
+  }
+
+  .radio {
+    padding: 16px 12px;
+  }
+
+  .lcd-display {
+    padding: 12px 14px;
+  }
+
+  .freq-band {
+    padding: 16px 10px 12px;
+  }
+
+  .preset-group {
+    display: none;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .now-playing-text {
+    animation: none;
+    padding-left: 20px;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.freq-mark:focus-visible,
+.power-btn:focus-visible,
+.preset-btn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- Static overlay for channel transitions -->
+<div class="static-overlay" id="staticOverlay" aria-hidden="true"></div>
+
+<div class="app">
+
+  <!-- Station Branding -->
+  <header class="station-brand">
+    <h1>The Radio Station</h1>
+    <p class="tagline">Broadcasting the portfolio of Anshull Garg</p>
+  </header>
+
+  <!-- Antenna -->
+  <div class="antenna-container" aria-hidden="true">
+    <div class="antenna" id="antenna"></div>
+  </div>
+
+  <!-- ============================================================
+       THE RADIO UNIT
+       ============================================================ -->
+  <main class="radio" id="radio" role="region" aria-label="Radio tuner - navigate between portfolio sections">
+
+    <!-- Corner screws -->
+    <div class="screw screw--tl" aria-hidden="true"></div>
+    <div class="screw screw--tr" aria-hidden="true"></div>
+    <div class="screw screw--bl" aria-hidden="true"></div>
+    <div class="screw screw--br" aria-hidden="true"></div>
+
+    <!-- Top section: VU + LCD + VU -->
+    <div class="radio-top">
+
+      <!-- Left VU Meter -->
+      <div class="vu-meter" aria-hidden="true">
+        <span class="vu-label">L</span>
+        <div class="vu-bar-container" id="vuLeft">
+          <div class="vu-bar green" style="height:20px"></div>
+          <div class="vu-bar green" style="height:35px"></div>
+          <div class="vu-bar green" style="height:50px"></div>
+          <div class="vu-bar green" style="height:40px"></div>
+          <div class="vu-bar yellow" style="height:30px"></div>
+          <div class="vu-bar yellow" style="height:20px"></div>
+          <div class="vu-bar red" style="height:10px"></div>
+        </div>
+      </div>
+
+      <!-- LCD Display -->
+      <div class="lcd-display" role="status" aria-live="polite">
+        <div class="lcd-frequency" id="lcdFreq">87.5 FM</div>
+        <div class="lcd-station-name" id="lcdStation">ABOUT</div>
+        <div class="lcd-status-row">
+          <span class="lcd-stereo">STEREO</span>
+          <span class="lcd-rec" id="lcdRec">REC</span>
+          <div class="lcd-signal" aria-label="Signal strength">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right VU Meter -->
+      <div class="vu-meter" aria-hidden="true">
+        <span class="vu-label">R</span>
+        <div class="vu-bar-container" id="vuRight">
+          <div class="vu-bar green" style="height:25px"></div>
+          <div class="vu-bar green" style="height:40px"></div>
+          <div class="vu-bar green" style="height:45px"></div>
+          <div class="vu-bar green" style="height:35px"></div>
+          <div class="vu-bar yellow" style="height:25px"></div>
+          <div class="vu-bar yellow" style="height:15px"></div>
+          <div class="vu-bar red" style="height:8px"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Frequency Band / Tuning Dial -->
+    <div class="tuning-section">
+      <div class="freq-band">
+        <span class="freq-band-label">FM Tuning</span>
+
+        <nav class="freq-scale" role="tablist" aria-label="Radio station channels">
+          <div class="freq-mark active" role="tab" tabindex="0" aria-selected="true" aria-controls="ch-about" data-freq="87.5" data-channel="about" data-name="ABOUT">
+            <span class="freq-channel">About</span>
+            <span class="freq-number">87.5</span>
+            <span class="freq-tick"></span>
+          </div>
+          <div class="freq-mark" role="tab" tabindex="0" aria-selected="false" aria-controls="ch-experience" data-freq="92.0" data-channel="experience" data-name="EXPERIENCE">
+            <span class="freq-channel">Experience</span>
+            <span class="freq-number">92.0</span>
+            <span class="freq-tick"></span>
+          </div>
+          <div class="freq-mark" role="tab" tabindex="0" aria-selected="false" aria-controls="ch-projects" data-freq="96.5" data-channel="projects" data-name="PROJECTS">
+            <span class="freq-channel">Projects</span>
+            <span class="freq-number">96.5</span>
+            <span class="freq-tick"></span>
+          </div>
+          <div class="freq-mark" role="tab" tabindex="0" aria-selected="false" aria-controls="ch-skills" data-freq="101.0" data-channel="skills" data-name="SKILLS">
+            <span class="freq-channel">Skills</span>
+            <span class="freq-number">101.0</span>
+            <span class="freq-tick"></span>
+          </div>
+          <div class="freq-mark" role="tab" tabindex="0" aria-selected="false" aria-controls="ch-contact" data-freq="105.5" data-channel="contact" data-name="CONTACT">
+            <span class="freq-channel">Contact</span>
+            <span class="freq-number">105.5</span>
+            <span class="freq-tick"></span>
+          </div>
+        </nav>
+
+        <!-- Tuning indicator track -->
+        <div class="tuning-track">
+          <div class="tuning-track-line"></div>
+          <div class="tuning-indicator" id="tuningIndicator" style="left: 0%" aria-hidden="true"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Controls Row -->
+    <div class="controls-row">
+
+      <!-- Power Button -->
+      <div class="power-btn on" id="powerBtn" role="switch" tabindex="0" aria-checked="true" aria-label="Power switch">
+        <div class="power-led"></div>
+        <div class="power-btn-switch"></div>
+        <span class="power-label">Power</span>
+      </div>
+
+      <!-- Volume Knob -->
+      <div class="knob-group">
+        <div class="knob" id="volumeKnob" role="slider" tabindex="0" aria-label="Volume" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+        <span class="knob-label">Volume</span>
+      </div>
+
+      <!-- Preset Buttons -->
+      <div class="preset-group" aria-label="Station presets">
+        <button class="preset-btn active" data-preset="0" aria-label="Preset 1 - About">1</button>
+        <button class="preset-btn" data-preset="1" aria-label="Preset 2 - Experience">2</button>
+        <button class="preset-btn" data-preset="2" aria-label="Preset 3 - Projects">3</button>
+        <button class="preset-btn" data-preset="3" aria-label="Preset 4 - Skills">4</button>
+        <button class="preset-btn" data-preset="4" aria-label="Preset 5 - Contact">5</button>
+      </div>
+
+      <!-- Tone Knob -->
+      <div class="knob-group">
+        <div class="knob" id="toneKnob" role="slider" tabindex="0" aria-label="Tone" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        <span class="knob-label">Tone</span>
+      </div>
+
+    </div>
+
+    <!-- Speaker Grille -->
+    <div class="speaker-grille" aria-hidden="true"></div>
+
+  </main>
+
+  <!-- ============================================================
+       CONTENT DISPLAY
+       ============================================================ -->
+  <section class="content-area" id="contentArea">
+    <div class="content-panel">
+
+      <!-- ABOUT Channel -->
+      <div class="channel-content active visible" id="ch-about" role="tabpanel" aria-labelledby="tab-about">
+        <div class="channel-header">
+          <div class="channel-icon">&#127908;</div>
+          <div>
+            <div class="channel-title">About Me</div>
+            <div class="channel-freq">87.5 FM -- Your Morning Host</div>
+          </div>
+        </div>
+        <div class="content-text">
+          <p>Hello and welcome to the station! I am <strong>Anshull Garg</strong>, a Software Developer currently broadcasting from <strong>Walmart Global Tech</strong>. I craft scalable, performant, and user-centric applications that serve millions of users every day.</p>
+          <p>With a passion for clean architecture, intuitive interfaces, and robust backend systems, I turn complex requirements into elegant software solutions. I thrive in fast-paced, collaborative environments where technology meets real-world impact.</p>
+          <p>When I am not writing code, you will find me exploring new technologies, contributing to open-source, or fine-tuning the perfect development workflow. Think of me as your go-to DJ for full-stack engineering -- always on the right frequency.</p>
+        </div>
+      </div>
+
+      <!-- EXPERIENCE Channel -->
+      <div class="channel-content" id="ch-experience" role="tabpanel" aria-labelledby="tab-experience">
+        <div class="channel-header">
+          <div class="channel-icon">&#128197;</div>
+          <div>
+            <div class="channel-title">Programming Schedule</div>
+            <div class="channel-freq">92.0 FM -- Career Broadcast</div>
+          </div>
+        </div>
+        <ul class="schedule-list">
+          <li class="schedule-item">
+            <div>
+              <span class="schedule-time">2022 - Present</span>
+            </div>
+            <div>
+              <div class="schedule-show">Software Developer @ Walmart Global Tech</div>
+              <div class="schedule-desc">Building and maintaining large-scale e-commerce platforms that handle millions of transactions. Developing microservices, optimizing frontend performance, and collaborating with cross-functional teams to deliver high-impact features across Walmart's digital ecosystem.</div>
+            </div>
+          </li>
+          <li class="schedule-item">
+            <div>
+              <span class="schedule-time">2021 - 2022</span>
+            </div>
+            <div>
+              <div class="schedule-show">Software Engineering Intern @ Walmart</div>
+              <div class="schedule-desc">Contributed to internal tools and services during an intensive internship. Gained hands-on experience with enterprise-scale distributed systems, CI/CD pipelines, and agile development methodologies. Delivered a key feature that improved internal workflow efficiency.</div>
+            </div>
+          </li>
+          <li class="schedule-item">
+            <div>
+              <span class="schedule-time">2020 - 2021</span>
+            </div>
+            <div>
+              <div class="schedule-show">Freelance Developer & Open Source Contributor</div>
+              <div class="schedule-desc">Built web applications for clients across diverse industries. Contributed to open-source projects, sharpened full-stack skills, and developed a deep understanding of modern JavaScript frameworks, cloud deployment, and responsive design principles.</div>
+            </div>
+          </li>
+          <li class="schedule-item">
+            <div>
+              <span class="schedule-time">2018 - 2022</span>
+            </div>
+            <div>
+              <div class="schedule-show">B.Tech Computer Science</div>
+              <div class="schedule-desc">Studied computer science fundamentals including data structures, algorithms, operating systems, databases, and software engineering. Participated in hackathons, coding competitions, and technical societies that fueled a passion for building software.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- PROJECTS Channel -->
+      <div class="channel-content" id="ch-projects" role="tabpanel" aria-labelledby="tab-projects">
+        <div class="channel-header">
+          <div class="channel-icon">&#127911;</div>
+          <div>
+            <div class="channel-title">Featured Shows</div>
+            <div class="channel-freq">96.5 FM -- The Project Hour</div>
+          </div>
+        </div>
+
+        <div class="show-card">
+          <div class="show-card-header">
+            <span class="show-name">Supply Chain Dashboard</span>
+            <span class="show-badge">LIVE</span>
+          </div>
+          <div class="show-desc">A real-time analytics dashboard for supply chain visibility at enterprise scale. Built with React, Node.js, and GraphQL, processing millions of data points to give stakeholders actionable insights into inventory, logistics, and fulfillment operations.</div>
+          <div class="show-tags">
+            <span class="show-tag">React</span>
+            <span class="show-tag">Node.js</span>
+            <span class="show-tag">GraphQL</span>
+            <span class="show-tag">D3.js</span>
+            <span class="show-tag">Kafka</span>
+          </div>
+        </div>
+
+        <div class="show-card">
+          <div class="show-card-header">
+            <span class="show-name">Marketplace Search Optimizer</span>
+            <span class="show-badge">FEATURED</span>
+          </div>
+          <div class="show-desc">An intelligent search and ranking system enhancing product discoverability for e-commerce. Implemented advanced filtering, autocomplete, and relevance scoring that improved click-through rates and user engagement metrics significantly.</div>
+          <div class="show-tags">
+            <span class="show-tag">TypeScript</span>
+            <span class="show-tag">Elasticsearch</span>
+            <span class="show-tag">React</span>
+            <span class="show-tag">Redis</span>
+          </div>
+        </div>
+
+        <div class="show-card">
+          <div class="show-card-header">
+            <span class="show-name">DevOps Pipeline Toolkit</span>
+            <span class="show-badge">SYNDICATED</span>
+          </div>
+          <div class="show-desc">An automated CI/CD toolkit that streamlined deployment processes across multiple teams. Reduced deployment times by 60% through containerization, automated testing gates, and infrastructure-as-code templates.</div>
+          <div class="show-tags">
+            <span class="show-tag">Docker</span>
+            <span class="show-tag">Kubernetes</span>
+            <span class="show-tag">Jenkins</span>
+            <span class="show-tag">Terraform</span>
+          </div>
+        </div>
+
+        <div class="show-card">
+          <div class="show-card-header">
+            <span class="show-name">Notification Service</span>
+            <span class="show-badge">ON AIR</span>
+          </div>
+          <div class="show-desc">A scalable notification microservice handling push, email, and SMS communications for millions of users. Built with event-driven architecture ensuring reliable delivery with graceful retry mechanisms and priority queuing.</div>
+          <div class="show-tags">
+            <span class="show-tag">Java</span>
+            <span class="show-tag">Spring Boot</span>
+            <span class="show-tag">Kafka</span>
+            <span class="show-tag">AWS SNS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKILLS Channel -->
+      <div class="channel-content" id="ch-skills" role="tabpanel" aria-labelledby="tab-skills">
+        <div class="channel-header">
+          <div class="channel-icon">&#127899;</div>
+          <div>
+            <div class="channel-title">Station Equipment</div>
+            <div class="channel-freq">101.0 FM -- Technical Inventory</div>
+          </div>
+        </div>
+
+        <div class="equipment-grid">
+          <div class="equipment-rack">
+            <div class="equipment-category">Languages</div>
+            <ul class="equipment-list">
+              <li>JavaScript / TypeScript</li>
+              <li>Java</li>
+              <li>Python</li>
+              <li>SQL</li>
+              <li>HTML / CSS</li>
+            </ul>
+          </div>
+
+          <div class="equipment-rack">
+            <div class="equipment-category">Frontend</div>
+            <ul class="equipment-list">
+              <li>React / Next.js</li>
+              <li>Redux / Zustand</li>
+              <li>Tailwind CSS</li>
+              <li>Webpack / Vite</li>
+              <li>Jest / RTL</li>
+            </ul>
+          </div>
+
+          <div class="equipment-rack">
+            <div class="equipment-category">Backend</div>
+            <ul class="equipment-list">
+              <li>Node.js / Express</li>
+              <li>Spring Boot</li>
+              <li>GraphQL / REST</li>
+              <li>Kafka / RabbitMQ</li>
+              <li>Microservices</li>
+            </ul>
+          </div>
+
+          <div class="equipment-rack">
+            <div class="equipment-category">Data & Cloud</div>
+            <ul class="equipment-list">
+              <li>PostgreSQL / MySQL</li>
+              <li>MongoDB / Redis</li>
+              <li>AWS / Azure / GCP</li>
+              <li>Elasticsearch</li>
+              <li>Docker / Kubernetes</li>
+            </ul>
+          </div>
+
+          <div class="equipment-rack">
+            <div class="equipment-category">DevOps & Tools</div>
+            <ul class="equipment-list">
+              <li>Git / GitHub Actions</li>
+              <li>Jenkins / CI-CD</li>
+              <li>Terraform</li>
+              <li>Datadog / Grafana</li>
+              <li>Jira / Confluence</li>
+            </ul>
+          </div>
+
+          <div class="equipment-rack">
+            <div class="equipment-category">Practices</div>
+            <ul class="equipment-list">
+              <li>Agile / Scrum</li>
+              <li>TDD / BDD</li>
+              <li>System Design</li>
+              <li>Code Review</li>
+              <li>Performance Tuning</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACT Channel -->
+      <div class="channel-content" id="ch-contact" role="tabpanel" aria-labelledby="tab-contact">
+        <div class="channel-header">
+          <div class="channel-icon">&#128222;</div>
+          <div>
+            <div class="channel-title">Request Line</div>
+            <div class="channel-freq">105.5 FM -- Call The Station</div>
+          </div>
+        </div>
+
+        <div class="request-line">
+          <span class="phone-icon">&#128225;</span>
+          <h3>The lines are open!</h3>
+          <p>Got a project idea, collaboration opportunity, or just want to say hello? Pick up the phone and reach out. I am always tuned in and ready to connect.</p>
+
+          <div class="contact-links">
+            <a href="mailto:anshull@email.com" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              anshull@email.com
+            </a>
+            <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+              LinkedIn
+            </a>
+            <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 002 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/></svg>
+              GitHub
+            </a>
+            <a href="https://anshullgarg.dev" target="_blank" rel="noopener noreferrer" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              Website
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<!-- Now Playing Ticker -->
+<div class="now-playing" id="nowPlaying">
+  <div class="now-playing-label">Now Playing</div>
+  <div class="now-playing-ticker">
+    <span class="now-playing-text" id="tickerText">
+      NOW PLAYING: Anshull Garg -- Software Developer @ Walmart Global Tech &nbsp;&nbsp;|&nbsp;&nbsp; CURRENTLY TUNED: 87.5 FM - ABOUT &nbsp;&nbsp;|&nbsp;&nbsp; FEATURED SHOWS: Supply Chain Dashboard, Marketplace Search Optimizer, DevOps Pipeline Toolkit &nbsp;&nbsp;|&nbsp;&nbsp; REQUEST LINE: anshull@email.com &nbsp;&nbsp;|&nbsp;&nbsp; BROADCASTING 24/7 ON ALL FREQUENCIES &nbsp;&nbsp;|&nbsp;&nbsp;
+    </span>
+  </div>
+  <div class="now-playing-eq" aria-hidden="true">
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ============================================================
+  // State
+  // ============================================================
+  const state = {
+    powerOn: true,
+    currentChannel: 0,
+    channels: [
+      { freq: '87.5', name: 'ABOUT', id: 'ch-about' },
+      { freq: '92.0', name: 'EXPERIENCE', id: 'ch-experience' },
+      { freq: '96.5', name: 'PROJECTS', id: 'ch-projects' },
+      { freq: '101.0', name: 'SKILLS', id: 'ch-skills' },
+      { freq: '105.5', name: 'CONTACT', id: 'ch-contact' }
+    ],
+    vuAnimationId: null,
+    isTransitioning: false
+  };
+
+  // ============================================================
+  // DOM References
+  // ============================================================
+  const radio = document.getElementById('radio');
+  const lcdFreq = document.getElementById('lcdFreq');
+  const lcdStation = document.getElementById('lcdStation');
+  const lcdRec = document.getElementById('lcdRec');
+  const tuningIndicator = document.getElementById('tuningIndicator');
+  const staticOverlay = document.getElementById('staticOverlay');
+  const contentArea = document.getElementById('contentArea');
+  const powerBtn = document.getElementById('powerBtn');
+  const nowPlaying = document.getElementById('nowPlaying');
+  const tickerText = document.getElementById('tickerText');
+  const antenna = document.getElementById('antenna');
+  const vuLeftBars = document.querySelectorAll('#vuLeft .vu-bar');
+  const vuRightBars = document.querySelectorAll('#vuRight .vu-bar');
+  const freqMarks = document.querySelectorAll('.freq-mark');
+  const presetBtns = document.querySelectorAll('.preset-btn');
+  const channelContents = document.querySelectorAll('.channel-content');
+
+  // ============================================================
+  // Tuning positions (percentage along the track)
+  // ============================================================
+  const tuningPositions = [0, 25, 50, 75, 100];
+
+  // ============================================================
+  // Channel Switching
+  // ============================================================
+  function tuneToChannel(index, skipAnimation) {
+    if (state.isTransitioning || index === state.currentChannel || !state.powerOn) return;
+    if (index < 0 || index >= state.channels.length) return;
+
+    state.isTransitioning = true;
+    const channel = state.channels[index];
+    const prevIndex = state.currentChannel;
+
+    // Trigger static effect
+    if (!skipAnimation) {
+      staticOverlay.classList.add('active');
+      // Scramble LCD during transition
+      lcdFreq.style.opacity = '0.3';
+      lcdStation.textContent = '---';
+    }
+
+    // Move tuning indicator
+    tuningIndicator.style.left = tuningPositions[index] + '%';
+
+    // Update frequency marks
+    freqMarks.forEach((m, i) => {
+      m.classList.toggle('active', i === index);
+      m.setAttribute('aria-selected', i === index ? 'true' : 'false');
+    });
+
+    // Update preset buttons
+    presetBtns.forEach((btn, i) => {
+      btn.classList.toggle('active', i === index);
+    });
+
+    // REC indicator for Projects channel
+    lcdRec.classList.toggle('active', index === 2);
+
+    // After static clears, update content
+    const delay = skipAnimation ? 0 : 450;
+    setTimeout(() => {
+      // Update LCD
+      lcdFreq.textContent = channel.freq + ' FM';
+      lcdFreq.style.opacity = '1';
+      lcdStation.textContent = channel.name;
+
+      // Swap content
+      channelContents.forEach(c => {
+        c.classList.remove('active', 'visible');
+      });
+
+      const newContent = document.getElementById(channel.id);
+      newContent.classList.add('active');
+
+      // Force reflow for transition
+      void newContent.offsetWidth;
+      requestAnimationFrame(() => {
+        newContent.classList.add('visible');
+      });
+
+      // Remove static
+      staticOverlay.classList.remove('active');
+
+      // Update ticker
+      updateTicker(channel);
+
+      state.currentChannel = index;
+      state.isTransitioning = false;
+    }, delay);
+  }
+
+  function updateTicker(channel) {
+    tickerText.textContent =
+      'NOW PLAYING: Anshull Garg -- Software Developer @ Walmart Global Tech \u00a0\u00a0|\u00a0\u00a0 ' +
+      'CURRENTLY TUNED: ' + channel.freq + ' FM - ' + channel.name + ' \u00a0\u00a0|\u00a0\u00a0 ' +
+      'FEATURED SHOWS: Supply Chain Dashboard, Marketplace Search Optimizer, DevOps Pipeline Toolkit \u00a0\u00a0|\u00a0\u00a0 ' +
+      'REQUEST LINE: anshull@email.com \u00a0\u00a0|\u00a0\u00a0 ' +
+      'BROADCASTING 24/7 ON ALL FREQUENCIES \u00a0\u00a0|\u00a0\u00a0';
+  }
+
+  // ============================================================
+  // Event Listeners - Frequency Marks
+  // ============================================================
+  freqMarks.forEach((mark, i) => {
+    mark.addEventListener('click', () => tuneToChannel(i));
+    mark.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        tuneToChannel(i);
+      }
+      // Arrow key navigation
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = Math.min(i + 1, state.channels.length - 1);
+        freqMarks[next].focus();
+        tuneToChannel(next);
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = Math.max(i - 1, 0);
+        freqMarks[prev].focus();
+        tuneToChannel(prev);
+      }
+    });
+  });
+
+  // ============================================================
+  // Event Listeners - Preset Buttons
+  // ============================================================
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.preset, 10);
+      tuneToChannel(idx);
+    });
+  });
+
+  // ============================================================
+  // Power Button
+  // ============================================================
+  function togglePower() {
+    state.powerOn = !state.powerOn;
+    powerBtn.classList.toggle('on', state.powerOn);
+    powerBtn.setAttribute('aria-checked', state.powerOn ? 'true' : 'false');
+    radio.classList.toggle('off', !state.powerOn);
+    contentArea.classList.toggle('off', !state.powerOn);
+    nowPlaying.classList.toggle('off', !state.powerOn);
+
+    if (state.powerOn) {
+      // "Boot up" effect
+      lcdFreq.textContent = '---.-';
+      lcdStation.textContent = 'TUNING...';
+      setTimeout(() => {
+        const ch = state.channels[state.currentChannel];
+        lcdFreq.textContent = ch.freq + ' FM';
+        lcdStation.textContent = ch.name;
+        startVUAnimation();
+      }, 800);
+    } else {
+      stopVUAnimation();
+      lcdRec.classList.remove('active');
+    }
+  }
+
+  powerBtn.addEventListener('click', togglePower);
+  powerBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      togglePower();
+    }
+  });
+
+  // ============================================================
+  // VU Meter Animation
+  // ============================================================
+  function animateVUBars(bars, time, offset) {
+    bars.forEach((bar, i) => {
+      const base = 8;
+      const maxH = i < 4 ? 55 : (i < 6 ? 35 : 18);
+      const speed = 1.5 + i * 0.4 + offset;
+      const h = base + (maxH - base) * (0.5 + 0.5 * Math.sin(time * speed + i * 1.2));
+      bar.style.height = h + 'px';
+    });
+  }
+
+  function vuLoop(timestamp) {
+    if (!state.powerOn) return;
+    const time = timestamp / 1000;
+    animateVUBars(vuLeftBars, time, 0);
+    animateVUBars(vuRightBars, time, 0.7);
+    state.vuAnimationId = requestAnimationFrame(vuLoop);
+  }
+
+  function startVUAnimation() {
+    if (state.vuAnimationId) cancelAnimationFrame(state.vuAnimationId);
+    state.vuAnimationId = requestAnimationFrame(vuLoop);
+  }
+
+  function stopVUAnimation() {
+    if (state.vuAnimationId) {
+      cancelAnimationFrame(state.vuAnimationId);
+      state.vuAnimationId = null;
+    }
+  }
+
+  // ============================================================
+  // Antenna Mouse Tracking
+  // ============================================================
+  document.addEventListener('mousemove', (e) => {
+    const centerX = window.innerWidth / 2;
+    const deltaX = (e.clientX - centerX) / centerX;
+    const tilt = deltaX * 12; // max 12 degree tilt
+    antenna.style.transform = 'rotate(' + tilt + 'deg)';
+  });
+
+  // ============================================================
+  // Knob Rotation (decorative but interactive)
+  // ============================================================
+  let activeKnob = null;
+  let knobStartAngle = 0;
+  let knobCurrentRotation = 0;
+
+  function getAngle(knob, clientX, clientY) {
+    const rect = knob.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    return Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI);
+  }
+
+  document.querySelectorAll('.knob').forEach(knob => {
+    let rotation = 0;
+
+    knob.addEventListener('mousedown', (e) => {
+      activeKnob = knob;
+      knobStartAngle = getAngle(knob, e.clientX, e.clientY);
+      knobCurrentRotation = rotation;
+      e.preventDefault();
+    });
+
+    knob.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      rotation = Math.max(-135, Math.min(135, rotation + (e.deltaY > 0 ? -10 : 10)));
+      knob.style.transform = 'rotate(' + rotation + 'deg)';
+    });
+
+    // Store rotation ref
+    knob._getRotation = () => rotation;
+    knob._setRotation = (r) => { rotation = r; };
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!activeKnob) return;
+    const angle = getAngle(activeKnob, e.clientX, e.clientY);
+    let delta = angle - knobStartAngle;
+    let newRotation = Math.max(-135, Math.min(135, knobCurrentRotation + delta));
+    activeKnob._setRotation(newRotation);
+    activeKnob.style.transform = 'rotate(' + newRotation + 'deg)';
+  });
+
+  document.addEventListener('mouseup', () => {
+    activeKnob = null;
+  });
+
+  // ============================================================
+  // Keyboard Shortcuts
+  // ============================================================
+  document.addEventListener('keydown', (e) => {
+    // Number keys 1-5 for channels
+    const num = parseInt(e.key, 10);
+    if (num >= 1 && num <= 5) {
+      tuneToChannel(num - 1);
+    }
+
+    // P for power
+    if (e.key === 'p' || e.key === 'P') {
+      togglePower();
+    }
+  });
+
+  // ============================================================
+  // Tuning Indicator Drag
+  // ============================================================
+  let isDraggingTuner = false;
+  const tuningTrack = document.querySelector('.tuning-track');
+
+  tuningIndicator.addEventListener('mousedown', (e) => {
+    isDraggingTuner = true;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDraggingTuner || !state.powerOn) return;
+    const trackRect = tuningTrack.getBoundingClientRect();
+    const x = e.clientX - trackRect.left;
+    const pct = Math.max(0, Math.min(100, (x / trackRect.width) * 100));
+
+    // Snap to nearest station
+    let nearestIdx = 0;
+    let nearestDist = Infinity;
+    tuningPositions.forEach((pos, i) => {
+      const dist = Math.abs(pct - pos);
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestIdx = i;
+      }
+    });
+
+    // Only snap if within 10% range
+    if (nearestDist < 14) {
+      tuneToChannel(nearestIdx);
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDraggingTuner = false;
+  });
+
+  // ============================================================
+  // Touch Support for Tuning
+  // ============================================================
+  tuningIndicator.addEventListener('touchstart', (e) => {
+    isDraggingTuner = true;
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDraggingTuner || !state.powerOn) return;
+    const touch = e.touches[0];
+    const trackRect = tuningTrack.getBoundingClientRect();
+    const x = touch.clientX - trackRect.left;
+    const pct = Math.max(0, Math.min(100, (x / trackRect.width) * 100));
+
+    let nearestIdx = 0;
+    let nearestDist = Infinity;
+    tuningPositions.forEach((pos, i) => {
+      const dist = Math.abs(pct - pos);
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestIdx = i;
+      }
+    });
+
+    if (nearestDist < 14) {
+      tuneToChannel(nearestIdx);
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    isDraggingTuner = false;
+  });
+
+  // ============================================================
+  // Initialize
+  // ============================================================
+  function init() {
+    // Set initial state
+    tuningIndicator.style.left = tuningPositions[0] + '%';
+    startVUAnimation();
+
+    // LCD flicker effect
+    setInterval(() => {
+      if (!state.powerOn) return;
+      if (Math.random() > 0.95) {
+        lcdFreq.style.opacity = '0.7';
+        setTimeout(() => { lcdFreq.style.opacity = '1'; }, 80);
+      }
+    }, 2000);
+  }
+
+  init();
+
+})();
+</script>
+
+</body>
+</html>

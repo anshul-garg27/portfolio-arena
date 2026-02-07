@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | The Archaeological Dig</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --golden-dirt: #8B6914;
+    --dark-soil: #5C4033;
+    --sand: #D4A76A;
+    --deep-earth: #2C1810;
+    --copper: #C87941;
+    --artifact-glow: #FFD700;
+    --bone-white: #F5E6C8;
+  }
+
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    background: var(--deep-earth);
+    color: var(--bone-white);
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #custom-cursor {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s, height 0.15s, border-color 0.15s;
+    mix-blend-mode: difference;
+  }
+  #custom-cursor.digging {
+    width: 90px;
+    height: 90px;
+    border-color: rgba(255, 215, 0, 0.9);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  #custom-cursor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 215, 0, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Main dig site container */
+  #dig-site {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 99px,
+        rgba(255, 215, 0, 0.06) 99px,
+        rgba(255, 215, 0, 0.06) 100px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 99px,
+        rgba(255, 215, 0, 0.06) 99px,
+        rgba(255, 215, 0, 0.06) 100px
+      ),
+      radial-gradient(ellipse at 20% 30%, #6B4226 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 70%, #4A2E1C 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 50%, #3D2418 0%, var(--deep-earth) 100%);
+    overflow: hidden;
+  }
+
+  /* Grid overlay */
+  #grid-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 199px,
+        rgba(255, 215, 0, 0.08) 199px,
+        rgba(255, 215, 0, 0.08) 200px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 199px,
+        rgba(255, 215, 0, 0.08) 199px,
+        rgba(255, 215, 0, 0.08) 200px
+      );
+  }
+
+  /* Grid labels */
+  .grid-label {
+    position: absolute;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    color: rgba(255, 215, 0, 0.15);
+    pointer-events: none;
+    z-index: 2;
+    letter-spacing: 1px;
+  }
+
+  /* Dirt canvas overlay */
+  #dirt-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 5;
+    touch-action: none;
+  }
+
+  /* Content layer (below dirt) */
+  #content-layer {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    z-index: 0;
+    padding: 40px;
+  }
+
+  /* Artifact base styles */
+  .artifact {
+    position: absolute;
+    transition: box-shadow 0.8s ease, transform 0.5s ease;
+  }
+  .artifact.revealed {
+    animation: artifactReveal 1s ease forwards;
+  }
+  .artifact .carbon-date {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(44, 24, 16, 0.9);
+    border: 1px solid var(--copper);
+    padding: 2px 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    color: var(--copper);
+    white-space: nowrap;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.6s ease 0.3s;
+  }
+  .artifact.revealed .carbon-date {
+    opacity: 1;
+  }
+
+  @keyframes artifactReveal {
+    0% { filter: brightness(0.5) sepia(1); }
+    50% { filter: brightness(1.3) sepia(0.3); box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); }
+    100% { filter: brightness(1) sepia(0); box-shadow: 0 0 25px rgba(255, 215, 0, 0.25); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.05); }
+    50% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.35), inset 0 0 30px rgba(255, 215, 0, 0.1); }
+  }
+
+  /* ----- ARTIFACT 1: Bronze Tablet (Skills) ----- */
+  #artifact-skills {
+    top: 8%;
+    left: 5%;
+    width: 340px;
+    background: linear-gradient(145deg, #8B6914, #6B4E0A, #8B6914);
+    border: 3px solid var(--copper);
+    border-radius: 8px;
+    padding: 28px 24px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+  }
+  #artifact-skills.revealed {
+    animation: artifactReveal 1s ease forwards, glowPulse 3s ease infinite 1s;
+  }
+  #artifact-skills h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--bone-white);
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(245, 230, 200, 0.3);
+    padding-bottom: 10px;
+  }
+  #artifact-skills .skill-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  #artifact-skills .skill-item {
+    font-size: 12px;
+    color: var(--bone-white);
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 4px;
+    border-left: 2px solid var(--copper);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  /* Engraved lines decoration */
+  #artifact-skills::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px solid rgba(245, 230, 200, 0.15);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  /* ----- ARTIFACT 2: Fossilized Code (Project) ----- */
+  #artifact-code {
+    top: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 420px;
+    background: linear-gradient(160deg, #3D2418, #2C1810, #3D2418);
+    border: 2px solid var(--dark-soil);
+    border-radius: 6px;
+    padding: 24px;
+    font-family: 'Courier New', monospace;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+  }
+  #artifact-code.revealed {
+    animation: artifactReveal 1s ease forwards, glowPulse 3s ease infinite 1s;
+  }
+  #artifact-code h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--copper);
+    margin-bottom: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  #artifact-code .fossil-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    color: var(--sand);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+  #artifact-code pre {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--sand);
+    white-space: pre-wrap;
+    text-shadow: 0 0 8px rgba(200, 121, 65, 0.2);
+  }
+  #artifact-code .code-keyword { color: var(--copper); }
+  #artifact-code .code-string { color: #D4A76A; }
+  #artifact-code .code-comment { color: #7A6040; font-style: italic; }
+  /* Crack lines */
+  #artifact-code::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    right: -1px;
+    width: 40px;
+    height: 60%;
+    border-right: 1px solid rgba(139, 105, 20, 0.3);
+    clip-path: polygon(100% 0%, 60% 15%, 100% 25%, 40% 45%, 100% 55%, 70% 70%, 100% 85%, 80% 100%);
+    pointer-events: none;
+  }
+
+  /* ----- ARTIFACT 3: Pottery Shard (Testimonial) ----- */
+  #artifact-testimonial {
+    top: 10%;
+    right: 5%;
+    width: 300px;
+    background: linear-gradient(135deg, #A0724E, #8B6240, #A0724E);
+    border-radius: 40% 8% 35% 12% / 10% 40% 12% 35%;
+    padding: 30px 24px;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.35);
+    border: 2px solid rgba(160, 114, 78, 0.6);
+  }
+  #artifact-testimonial.revealed {
+    animation: artifactReveal 1s ease forwards, glowPulse 3s ease infinite 1s;
+  }
+  #artifact-testimonial h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--deep-earth);
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  #artifact-testimonial blockquote {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--deep-earth);
+    font-style: italic;
+    font-weight: 500;
+  }
+  #artifact-testimonial .attribution {
+    margin-top: 12px;
+    font-size: 11px;
+    color: rgba(44, 24, 16, 0.7);
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* ----- ARTIFACT 4: Golden Medallion (Experience) ----- */
+  #artifact-medallion {
+    bottom: 28%;
+    left: 6%;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle at 40% 35%, #FFD700, #C8A000, #8B6914, #6B4E0A);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 4px solid #8B6914;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.15);
+  }
+  #artifact-medallion.revealed {
+    animation: artifactReveal 1s ease forwards, glowPulse 3s ease infinite 1s;
+  }
+  #artifact-medallion::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px; right: 10px; bottom: 10px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    pointer-events: none;
+  }
+  #artifact-medallion::after {
+    content: '';
+    position: absolute;
+    top: 18px; left: 18px; right: 18px; bottom: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    pointer-events: none;
+  }
+  #artifact-medallion .big-number {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--deep-earth);
+    line-height: 1;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+  }
+  #artifact-medallion .label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--deep-earth);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  #artifact-medallion .sub-label {
+    font-size: 10px;
+    color: rgba(44, 24, 16, 0.6);
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ----- ARTIFACT 5: Scroll (About/Bio) ----- */
+  #artifact-scroll {
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    background: linear-gradient(180deg, #D4A76A, #C8976A, #D4A76A, #C8976A, #D4A76A);
+    border-radius: 8px;
+    padding: 32px 28px;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.2);
+    border: 1px solid rgba(139, 105, 20, 0.4);
+    position: relative;
+  }
+  #artifact-scroll.revealed {
+    animation: artifactReveal 1s ease forwards, glowPulse 3s ease infinite 1s;
+  }
+  /* Scroll roll tops */
+  #artifact-scroll::before, #artifact-scroll::after {
+    content: '';
+    position: absolute;
+    left: -8px; right: -8px;
+    height: 20px;
+    background: linear-gradient(90deg, #8B6914, #A07830, #8B6914);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  #artifact-scroll::before { top: -10px; }
+  #artifact-scroll::after { bottom: -10px; }
+  #artifact-scroll h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--deep-earth);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  #artifact-scroll p {
+    font-size: 13px;
+    line-height: 1.75;
+    color: #3D2418;
+    font-weight: 400;
+    text-align: justify;
+  }
+  #artifact-scroll .scroll-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--dark-soil);
+    margin: 12px auto;
+    opacity: 0.4;
+  }
+
+  /* ----- ARTIFACT 6: Compass (Contact) ----- */
+  #artifact-compass {
+    bottom: 10%;
+    right: 5%;
+    width: 260px;
+    background: linear-gradient(145deg, #5C4033, #3D2418);
+    border: 3px solid var(--copper);
+    border-radius: 50%;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+  }
+  #artifact-compass.revealed {
+    animation: artifactReveal 1s ease forwards, glowPulse 3s ease infinite 1s;
+  }
+  #artifact-compass::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 121, 65, 0.3);
+    pointer-events: none;
+  }
+  /* Compass needle */
+  #artifact-compass .compass-needle {
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to bottom, #FF4444 50%, var(--bone-white) 50%);
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-25deg);
+    transform-origin: bottom center;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  #artifact-compass h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--copper);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  #artifact-compass .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  #artifact-compass .contact-links a {
+    font-size: 12px;
+    color: var(--sand);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+    font-weight: 500;
+  }
+  #artifact-compass .contact-links a:hover {
+    color: var(--artifact-glow);
+  }
+  #artifact-compass .cardinal {
+    position: absolute;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    color: rgba(200, 121, 65, 0.4);
+    font-weight: 700;
+    pointer-events: none;
+  }
+  #artifact-compass .cardinal.n { top: 14px; left: 50%; transform: translateX(-50%); }
+  #artifact-compass .cardinal.s { bottom: 14px; left: 50%; transform: translateX(-50%); }
+  #artifact-compass .cardinal.e { right: 14px; top: 50%; transform: translateY(-50%); }
+  #artifact-compass .cardinal.w { left: 14px; top: 50%; transform: translateY(-50%); }
+
+  /* ----- HUD (Heads Up Display) ----- */
+  #hud {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: linear-gradient(180deg, rgba(44, 24, 16, 0.95), rgba(44, 24, 16, 0));
+    pointer-events: none;
+  }
+  #hud > * { pointer-events: auto; }
+
+  .hud-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--copper);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .hud-title span {
+    color: var(--sand);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 1px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .hud-stats {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .hud-stat {
+    text-align: center;
+  }
+  .hud-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(212, 167, 106, 0.6);
+    margin-bottom: 2px;
+  }
+  .hud-stat .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--sand);
+  }
+  .hud-stat .stat-value .unit {
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(212, 167, 106, 0.5);
+  }
+
+  #reset-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--copper);
+    color: var(--copper);
+    padding: 8px 18px;
+    cursor: none;
+    transition: all 0.3s;
+    border-radius: 3px;
+  }
+  #reset-btn:hover {
+    background: var(--copper);
+    color: var(--deep-earth);
+  }
+
+  /* ----- MINIMAP ----- */
+  #minimap-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(44, 24, 16, 0.9);
+    border: 1px solid var(--copper);
+    border-radius: 4px;
+    padding: 4px;
+  }
+  #minimap-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--copper);
+    text-align: center;
+    margin-bottom: 3px;
+  }
+  #minimap {
+    width: 120px;
+    height: 80px;
+    display: block;
+    border-radius: 2px;
+  }
+
+  /* ----- INSTRUCTIONS OVERLAY ----- */
+  #instructions {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+  }
+  #instructions.hidden { opacity: 0; }
+  #instructions h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--sand);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+  }
+  #instructions p {
+    font-size: 14px;
+    color: rgba(212, 167, 106, 0.7);
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  }
+  #instructions .brush-hint {
+    margin-top: 24px;
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 50%;
+    margin: 24px auto 0;
+    animation: brushPulse 2s ease infinite;
+  }
+  @keyframes brushPulse {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+  }
+
+  /* ----- DEPTH INDICATOR ----- */
+  #depth-indicator {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .depth-bar {
+    width: 8px;
+    height: 60px;
+    border-radius: 4px;
+    position: relative;
+    opacity: 0.6;
+  }
+  .depth-bar.surface { background: var(--sand); }
+  .depth-bar.mid { background: var(--dark-soil); }
+  .depth-bar.deep { background: var(--deep-earth); border: 1px solid var(--dark-soil); }
+  .depth-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(212, 167, 106, 0.4);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    margin-top: 6px;
+  }
+
+  /* ----- RESPONSIVE ----- */
+  @media (max-width: 900px) {
+    #content-layer { padding: 20px; }
+    #custom-cursor { display: none; }
+    body { cursor: default; }
+
+    .artifact { position: relative !important; top: auto !important; left: auto !important; right: auto !important; bottom: auto !important; transform: none !important; margin: 30px auto; width: 90% !important; max-width: 420px; }
+    #artifact-medallion, #artifact-compass { width: 200px !important; height: 200px !important; }
+
+    #hud { padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
+    .hud-title { font-size: 11px; }
+    .hud-stats { gap: 14px; }
+    .hud-stat .stat-value { font-size: 14px; }
+
+    #depth-indicator { display: none; }
+    #minimap-container { bottom: 10px; left: 10px; }
+    #minimap { width: 80px; height: 53px; }
+
+    #instructions h1 { font-size: 22px; letter-spacing: 3px; }
+    #instructions p { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="custom-cursor"></div>
+
+<!-- Instructions Overlay -->
+<div id="instructions">
+  <h1>The Archaeological Dig</h1>
+  <p>Click and drag to excavate artifacts</p>
+  <div class="brush-hint"></div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-title">
+    Site AG-2024
+    <span>Anshull Garg | Software Developer</span>
+  </div>
+  <div class="hud-stats">
+    <div class="hud-stat">
+      <div class="stat-label">Excavated</div>
+      <div class="stat-value"><span id="excavation-pct">0</span><span class="unit">%</span></div>
+    </div>
+    <div class="hud-stat">
+      <div class="stat-label">Artifacts</div>
+      <div class="stat-value"><span id="artifact-count">0</span><span class="unit">/6</span></div>
+    </div>
+    <div class="hud-stat">
+      <div class="stat-label">Depth</div>
+      <div class="stat-value"><span id="depth-value">0</span><span class="unit">cm</span></div>
+    </div>
+  </div>
+  <button id="reset-btn">Reset Dig</button>
+</div>
+
+<!-- Depth Indicator (right side) -->
+<div id="depth-indicator">
+  <div class="depth-bar surface"></div>
+  <div class="depth-bar mid"></div>
+  <div class="depth-bar deep"></div>
+  <div class="depth-label">Stratigraphy</div>
+</div>
+
+<!-- Minimap -->
+<div id="minimap-container">
+  <div id="minimap-label">Survey Map</div>
+  <canvas id="minimap" width="120" height="80"></canvas>
+</div>
+
+<!-- Dig Site -->
+<div id="dig-site">
+  <div id="grid-overlay"></div>
+
+  <!-- Content Layer (artifacts) -->
+  <div id="content-layer">
+
+    <!-- ARTIFACT 1: Bronze Tablet - Skills -->
+    <div class="artifact" id="artifact-skills" data-artifact="skills">
+      <h2>Inscribed Skills</h2>
+      <div class="skill-grid">
+        <div class="skill-item">JavaScript / TS</div>
+        <div class="skill-item">React / Next.js</div>
+        <div class="skill-item">Node.js</div>
+        <div class="skill-item">Python</div>
+        <div class="skill-item">Java / Spring</div>
+        <div class="skill-item">SQL / NoSQL</div>
+        <div class="skill-item">AWS / GCP</div>
+        <div class="skill-item">Docker / K8s</div>
+        <div class="skill-item">REST / GraphQL</div>
+        <div class="skill-item">CI/CD Pipelines</div>
+        <div class="skill-item">System Design</div>
+        <div class="skill-item">Agile / Scrum</div>
+      </div>
+      <div class="carbon-date">C-14 Dating: Layer II -- circa 2020</div>
+    </div>
+
+    <!-- ARTIFACT 2: Fossilized Code - Project -->
+    <div class="artifact" id="artifact-code" data-artifact="code">
+      <div class="fossil-label">Fossilized Source Code</div>
+      <h2>E-Commerce Platform @ Walmart</h2>
+      <pre><span class="code-comment">// Unearthed from production layer</span>
+<span class="code-keyword">const</span> platform = {
+  name: <span class="code-string">"Walmart E-Commerce"</span>,
+  scale: <span class="code-string">"Millions of daily users"</span>,
+  stack: [<span class="code-string">"React"</span>, <span class="code-string">"Node.js"</span>, <span class="code-string">"GCP"</span>],
+  impact: {
+    performance: <span class="code-string">"+40% page load speed"</span>,
+    conversion: <span class="code-string">"+15% checkout rate"</span>,
+    uptime: <span class="code-string">"99.99% availability"</span>
+  }
+};
+
+<span class="code-comment">// Micro-frontend architecture</span>
+<span class="code-keyword">export</span> { platform };</pre>
+      <div class="carbon-date">C-14 Dating: Layer I -- circa 2022</div>
+    </div>
+
+    <!-- ARTIFACT 3: Pottery Shard - Testimonial -->
+    <div class="artifact" id="artifact-testimonial" data-artifact="testimonial">
+      <h2>Pottery Fragment</h2>
+      <blockquote>
+        "Anshull consistently delivers high-quality, scalable solutions. His ability to architect systems that handle massive traffic while maintaining clean code is exceptional. A true asset to any engineering team."
+      </blockquote>
+      <div class="attribution">-- Engineering Lead, Walmart</div>
+      <div class="carbon-date">C-14 Dating: Layer I -- circa 2023</div>
+    </div>
+
+    <!-- ARTIFACT 4: Golden Medallion - Experience -->
+    <div class="artifact" id="artifact-medallion" data-artifact="medallion">
+      <div class="big-number">4+</div>
+      <div class="label">Years</div>
+      <div class="sub-label">Software Engineering</div>
+      <div class="carbon-date">C-14 Dating: Ongoing Stratum</div>
+    </div>
+
+    <!-- ARTIFACT 5: Scroll - About/Bio -->
+    <div class="artifact" id="artifact-scroll" data-artifact="scroll">
+      <h2>The Chronicle of Anshull Garg</h2>
+      <div class="scroll-divider"></div>
+      <p>
+        Software Developer at Walmart, specializing in building large-scale,
+        high-performance web applications that serve millions of users daily.
+        With a deep passion for clean architecture and elegant solutions, Anshull
+        brings a meticulous approach to every line of code -- treating software
+        development as both engineering discipline and creative craft.
+      </p>
+      <div class="scroll-divider"></div>
+      <p>
+        From crafting micro-frontend architectures to optimizing critical rendering
+        paths, his work spans the full stack -- with particular expertise in React
+        ecosystems, cloud infrastructure, and distributed systems. Every project is
+        an excavation: digging through complexity to uncover the simplest, most
+        robust solution buried beneath.
+      </p>
+      <div class="carbon-date">C-14 Dating: Origin Layer -- circa 2020</div>
+    </div>
+
+    <!-- ARTIFACT 6: Compass - Contact -->
+    <div class="artifact" id="artifact-compass" data-artifact="compass">
+      <div class="compass-needle"></div>
+      <span class="cardinal n">N</span>
+      <span class="cardinal s">S</span>
+      <span class="cardinal e">E</span>
+      <span class="cardinal w">W</span>
+      <h2>Navigate</h2>
+      <div class="contact-links">
+        <a href="mailto:anshullgarg@gmail.com">anshullgarg@gmail.com</a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank">LinkedIn</a>
+        <a href="https://github.com/anshullgarg" target="_blank">GitHub</a>
+      </div>
+      <div class="carbon-date">C-14 Dating: Present Day</div>
+    </div>
+
+  </div>
+
+  <!-- Dirt Canvas (overlay) -->
+  <canvas id="dirt-canvas"></canvas>
+</div>
+
+<!-- Grid labels (generated by JS) -->
+
+<script>
+(function() {
+  'use strict';
+
+  // ========== CONFIGURATION ==========
+  const BRUSH_RADIUS = 50;
+  const MOBILE_BRUSH = 40;
+  const REVEAL_THRESHOLD = 0.30; // 30% of artifact area uncovered = revealed
+  const SAMPLE_INTERVAL = 20000; // recalculate excavation % every N pixels cleared (approx)
+
+  // ========== STATE ==========
+  let isDigging = false;
+  let hasStarted = false;
+  let totalPixelsCleared = 0;
+  let artifactsRevealed = new Set();
+  let canvasW, canvasH;
+  let isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  // ========== DOM REFS ==========
+  const canvas = document.getElementById('dirt-canvas');
+  const ctx = canvas.getContext('2d');
+  const minimapCanvas = document.getElementById('minimap');
+  const minimapCtx = minimapCanvas.getContext('2d');
+  const cursor = document.getElementById('custom-cursor');
+  const instructions = document.getElementById('instructions');
+  const excavationPct = document.getElementById('excavation-pct');
+  const artifactCount = document.getElementById('artifact-count');
+  const depthValue = document.getElementById('depth-value');
+  const resetBtn = document.getElementById('reset-btn');
+
+  const artifacts = document.querySelectorAll('.artifact');
+
+  // ========== CANVAS SETUP ==========
+  function setupCanvas() {
+    const digSite = document.getElementById('dig-site');
+    canvasW = digSite.scrollWidth;
+    canvasH = digSite.scrollHeight;
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    canvas.style.width = canvasW + 'px';
+    canvas.style.height = canvasH + 'px';
+    drawDirt();
+    updateMinimap();
+  }
+
+  function drawDirt() {
+    // Multi-layer dirt effect
+    // Layer 1: Deep earth base
+    ctx.fillStyle = '#2C1810';
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    // Layer 2: Dark soil patches
+    for (let i = 0; i < 30; i++) {
+      const x = Math.random() * canvasW;
+      const y = Math.random() * canvasH;
+      const r = 80 + Math.random() * 200;
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+      grad.addColorStop(0, 'rgba(92, 64, 51, 0.6)');
+      grad.addColorStop(1, 'rgba(92, 64, 51, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+
+    // Layer 3: Sandy surface patches
+    for (let i = 0; i < 20; i++) {
+      const x = Math.random() * canvasW;
+      const y = Math.random() * canvasH;
+      const r = 60 + Math.random() * 150;
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+      grad.addColorStop(0, 'rgba(139, 105, 20, 0.5)');
+      grad.addColorStop(1, 'rgba(139, 105, 20, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+
+    // Layer 4: Light dust spots
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * canvasW;
+      const y = Math.random() * canvasH;
+      const r = 40 + Math.random() * 100;
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+      grad.addColorStop(0, 'rgba(212, 167, 106, 0.25)');
+      grad.addColorStop(1, 'rgba(212, 167, 106, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+
+    // Texture: small particles
+    for (let i = 0; i < 3000; i++) {
+      const x = Math.random() * canvasW;
+      const y = Math.random() * canvasH;
+      const size = Math.random() * 3 + 0.5;
+      const brightness = Math.random();
+      const alpha = 0.1 + Math.random() * 0.3;
+      if (brightness > 0.7) {
+        ctx.fillStyle = `rgba(212, 167, 106, ${alpha})`;
+      } else if (brightness > 0.4) {
+        ctx.fillStyle = `rgba(139, 105, 20, ${alpha})`;
+      } else {
+        ctx.fillStyle = `rgba(92, 64, 51, ${alpha})`;
+      }
+      ctx.fillRect(x, y, size, size);
+    }
+
+    // Horizontal strata lines (subtle)
+    for (let y = 0; y < canvasH; y += 100 + Math.random() * 150) {
+      ctx.strokeStyle = `rgba(0, 0, 0, ${0.05 + Math.random() * 0.1})`;
+      ctx.lineWidth = 1 + Math.random() * 2;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      let cx = 0;
+      while (cx < canvasW) {
+        cx += 50 + Math.random() * 80;
+        ctx.lineTo(cx, y + (Math.random() - 0.5) * 10);
+      }
+      ctx.stroke();
+    }
+  }
+
+  // ========== DIGGING MECHANIC ==========
+  function dig(x, y) {
+    const brushR = isMobile ? MOBILE_BRUSH : BRUSH_RADIUS;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+
+    // Main brush (soft edges)
+    const gradient = ctx.createRadialGradient(x, y, brushR * 0.2, x, y, brushR);
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+    gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.8)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, brushR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Scatter particles for rougher edge effect
+    for (let i = 0; i < 5; i++) {
+      const px = x + (Math.random() - 0.5) * brushR * 1.5;
+      const py = y + (Math.random() - 0.5) * brushR * 1.5;
+      const pr = 3 + Math.random() * 10;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+
+    totalPixelsCleared += Math.PI * brushR * brushR;
+    updateStats();
+    checkArtifactReveal();
+  }
+
+  let lastX = null, lastY = null;
+  function digLine(x, y) {
+    if (lastX !== null && lastY !== null) {
+      const dx = x - lastX;
+      const dy = y - lastY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const steps = Math.max(1, Math.floor(dist / 15));
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        dig(lastX + dx * t, lastY + dy * t);
+      }
+    } else {
+      dig(x, y);
+    }
+    lastX = x;
+    lastY = y;
+  }
+
+  // ========== EVENT HANDLERS ==========
+  function getCanvasPos(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  // Mouse events
+  canvas.addEventListener('mousedown', function(e) {
+    isDigging = true;
+    hideInstructions();
+    const pos = getCanvasPos(e.clientX, e.clientY);
+    lastX = null; lastY = null;
+    digLine(pos.x, pos.y);
+    cursor.classList.add('digging');
+  });
+
+  window.addEventListener('mousemove', function(e) {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+
+    if (isDigging) {
+      const pos = getCanvasPos(e.clientX, e.clientY);
+      digLine(pos.x, pos.y);
+    }
+  });
+
+  window.addEventListener('mouseup', function() {
+    isDigging = false;
+    lastX = null; lastY = null;
+    cursor.classList.remove('digging');
+    updateMinimap();
+  });
+
+  // Touch events
+  canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    isDigging = true;
+    hideInstructions();
+    const touch = e.touches[0];
+    const pos = getCanvasPos(touch.clientX, touch.clientY);
+    lastX = null; lastY = null;
+    digLine(pos.x, pos.y);
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (!isDigging) return;
+    const touch = e.touches[0];
+    const pos = getCanvasPos(touch.clientX, touch.clientY);
+    digLine(pos.x, pos.y);
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', function() {
+    isDigging = false;
+    lastX = null; lastY = null;
+    updateMinimap();
+  });
+
+  // ========== INSTRUCTIONS ==========
+  function hideInstructions() {
+    if (!hasStarted) {
+      hasStarted = true;
+      instructions.classList.add('hidden');
+      setTimeout(() => { instructions.style.display = 'none'; }, 1500);
+    }
+  }
+
+  // ========== STATS ==========
+  function updateStats() {
+    const totalArea = canvasW * canvasH;
+    let pct = Math.min(100, Math.round((totalPixelsCleared / totalArea) * 100));
+    // The overlapping brush makes the real percentage lower, adjust estimate
+    pct = Math.min(100, Math.round(pct * 0.45));
+    excavationPct.textContent = pct;
+
+    // Depth is based on how much has been cleared
+    const depth = Math.min(200, Math.round(pct * 2));
+    depthValue.textContent = depth;
+  }
+
+  // ========== ARTIFACT DETECTION ==========
+  function checkArtifactReveal() {
+    artifacts.forEach(function(artifact) {
+      if (artifactsRevealed.has(artifact.id)) return;
+
+      const rect = artifact.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+
+      // Convert artifact position to canvas coordinates
+      const scaleX = canvas.width / canvasRect.width;
+      const scaleY = canvas.height / canvasRect.height;
+      const ax = (rect.left - canvasRect.left) * scaleX;
+      const ay = (rect.top - canvasRect.top) * scaleY;
+      const aw = rect.width * scaleX;
+      const ah = rect.height * scaleY;
+
+      // Sample the canvas area over the artifact
+      const sampleStep = 20;
+      let totalSamples = 0;
+      let clearSamples = 0;
+
+      for (let sx = ax; sx < ax + aw; sx += sampleStep) {
+        for (let sy = ay; sy < ay + ah; sy += sampleStep) {
+          if (sx >= 0 && sx < canvasW && sy >= 0 && sy < canvasH) {
+            totalSamples++;
+            const pixel = ctx.getImageData(Math.floor(sx), Math.floor(sy), 1, 1).data;
+            if (pixel[3] < 50) {
+              clearSamples++;
+            }
+          }
+        }
+      }
+
+      if (totalSamples > 0 && (clearSamples / totalSamples) >= REVEAL_THRESHOLD) {
+        revealArtifact(artifact);
+      }
+    });
+  }
+
+  function revealArtifact(artifact) {
+    artifactsRevealed.add(artifact.id);
+    artifact.classList.add('revealed');
+    artifactCount.textContent = artifactsRevealed.size;
+
+    // Flash effect on the HUD artifact counter
+    const counter = document.querySelector('.hud-stat:nth-child(2) .stat-value');
+    counter.style.color = '#FFD700';
+    counter.style.textShadow = '0 0 15px rgba(255, 215, 0, 0.8)';
+    setTimeout(() => {
+      counter.style.color = '';
+      counter.style.textShadow = '';
+    }, 1000);
+  }
+
+  // ========== MINIMAP ==========
+  function updateMinimap() {
+    const mmW = minimapCanvas.width;
+    const mmH = minimapCanvas.height;
+
+    minimapCtx.clearRect(0, 0, mmW, mmH);
+
+    // Background
+    minimapCtx.fillStyle = '#3D2418';
+    minimapCtx.fillRect(0, 0, mmW, mmH);
+
+    // Sample the main canvas and draw cleared areas
+    const sampleStep = Math.max(1, Math.floor(canvasW / mmW));
+
+    const imageData = ctx.getImageData(0, 0, canvasW, canvasH);
+    const data = imageData.data;
+
+    minimapCtx.fillStyle = 'rgba(212, 167, 106, 0.7)';
+
+    for (let mx = 0; mx < mmW; mx++) {
+      for (let my = 0; my < mmH; my++) {
+        const srcX = Math.floor((mx / mmW) * canvasW);
+        const srcY = Math.floor((my / mmH) * canvasH);
+        const idx = (srcY * canvasW + srcX) * 4;
+        if (data[idx + 3] < 80) {
+          minimapCtx.fillRect(mx, my, 1, 1);
+        }
+      }
+    }
+
+    // Draw artifact markers
+    artifacts.forEach(function(artifact) {
+      const rect = artifact.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / canvasRect.width;
+      const scaleY = canvas.height / canvasRect.height;
+      const ax = ((rect.left - canvasRect.left) * scaleX + rect.width * scaleX / 2) / canvasW * mmW;
+      const ay = ((rect.top - canvasRect.top) * scaleY + rect.height * scaleY / 2) / canvasH * mmH;
+
+      minimapCtx.fillStyle = artifactsRevealed.has(artifact.id) ? '#FFD700' : '#C87941';
+      minimapCtx.beginPath();
+      minimapCtx.arc(ax, ay, 2.5, 0, Math.PI * 2);
+      minimapCtx.fill();
+    });
+
+    // Border
+    minimapCtx.strokeStyle = 'rgba(200, 121, 65, 0.4)';
+    minimapCtx.lineWidth = 0.5;
+    minimapCtx.strokeRect(0, 0, mmW, mmH);
+  }
+
+  // Periodic minimap update during digging
+  let minimapTimer = null;
+  function startMinimapUpdates() {
+    if (!minimapTimer) {
+      minimapTimer = setInterval(() => {
+        if (isDigging) updateMinimap();
+      }, 500);
+    }
+  }
+
+  // ========== RESET ==========
+  resetBtn.addEventListener('click', function() {
+    // Redraw dirt
+    ctx.globalCompositeOperation = 'source-over';
+    drawDirt();
+
+    // Reset state
+    totalPixelsCleared = 0;
+    artifactsRevealed.clear();
+    hasStarted = false;
+
+    // Reset artifacts
+    artifacts.forEach(function(a) {
+      a.classList.remove('revealed');
+    });
+
+    // Reset HUD
+    excavationPct.textContent = '0';
+    artifactCount.textContent = '0';
+    depthValue.textContent = '0';
+
+    // Show instructions again
+    instructions.style.display = '';
+    instructions.classList.remove('hidden');
+
+    updateMinimap();
+  });
+
+  // ========== GRID LABELS ==========
+  function generateGridLabels() {
+    const digSite = document.getElementById('dig-site');
+    const cols = Math.ceil(canvasW / 200);
+    const rows = Math.ceil(canvasH / 200);
+
+    // Remove old labels
+    document.querySelectorAll('.grid-label').forEach(el => el.remove());
+
+    for (let c = 0; c < cols; c++) {
+      for (let r = 0; r < rows; r++) {
+        const label = document.createElement('div');
+        label.className = 'grid-label';
+        label.style.left = (c * 200 + 4) + 'px';
+        label.style.top = (r * 200 + 4) + 'px';
+        label.textContent = String.fromCharCode(65 + r) + (c + 1);
+        digSite.appendChild(label);
+      }
+    }
+  }
+
+  // ========== RESIZE ==========
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      setupCanvas();
+      generateGridLabels();
+    }, 300);
+  });
+
+  // ========== INIT ==========
+  function init() {
+    setupCanvas();
+    generateGridLabels();
+    startMinimapUpdates();
+
+    // Pre-hide cursor on mobile
+    if (isMobile) {
+      cursor.style.display = 'none';
+    }
+  }
+
+  // Wait for fonts to load
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(init);
+  } else {
+    window.addEventListener('load', init);
+  }
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLASSIFIED // PERSONNEL DOSSIER: GARG, ANSHULL K.</title>
+<meta name="description" content="Classified Intelligence Dossier - Personnel File for Anshull Garg, Software Developer at Walmart Global Tech.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================ */
+:root {
+  --bg-dark: #1A1F16;
+  --bg-darker: #0D0F0B;
+  --bg-terminal: #0A0D08;
+  --manila: #D4C5A9;
+  --manila-dark: #B8A882;
+  --manila-light: #E8DCC4;
+  --text-dark: #1A1A1A;
+  --text-green: #33FF00;
+  --text-green-dim: #1A8A00;
+  --text-green-ghost: #0D4400;
+  --red-classified: #CC0000;
+  --red-bright: #FF0000;
+  --amber: #FFB000;
+  --amber-dim: #8A6000;
+  --white-dim: #8A8A7A;
+  --font-doc: 'Courier Prime', 'Courier New', monospace;
+  --font-ui: 'Space Grotesk', sans-serif;
+  --font-typewriter: 'Special Elite', cursive;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(51, 255, 0, 0.25);
+  color: var(--text-green);
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-green-dim) var(--bg-dark);
+}
+
+body {
+  font-family: var(--font-doc);
+  background: var(--bg-dark);
+  color: var(--text-green);
+  overflow-x: hidden;
+  cursor: crosshair;
+  line-height: 1.6;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--text-green-dim); border-radius: 3px; }
+
+/* ============================================================
+   CUSTOM CURSOR - SURVEILLANCE RETICLE
+   ============================================================ */
+body {
+  cursor: crosshair;
+}
+
+#reticle {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  z-index: 100000;
+  transform: translate(-50%, -50%);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  display: none;
+}
+
+body.loaded #reticle { display: block; }
+
+#reticle svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 4px rgba(51, 255, 0, 0.5));
+}
+
+/* ============================================================
+   GLOBAL SCAN LINES OVERLAY
+   ============================================================ */
+#scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 99998;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+#scan-sweep {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(180deg, transparent, rgba(51, 255, 0, 0.12), transparent);
+  pointer-events: none;
+  z-index: 99997;
+  animation: sweepDown 4s linear infinite;
+  box-shadow: 0 0 20px rgba(51, 255, 0, 0.08), 0 0 60px rgba(51, 255, 0, 0.04);
+}
+
+@keyframes sweepDown {
+  0% { top: -4px; }
+  100% { top: 100vh; }
+}
+
+/* ============================================================
+   STATIC NOISE OVERLAY
+   ============================================================ */
+#noise {
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  pointer-events: none;
+  z-index: 99996;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: noiseShift 0.5s steps(10) infinite;
+}
+
+@keyframes noiseShift {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -5%); }
+  20% { transform: translate(3%, 7%); }
+  30% { transform: translate(7%, -3%); }
+  40% { transform: translate(-3%, 5%); }
+  50% { transform: translate(5%, -7%); }
+  60% { transform: translate(-7%, 3%); }
+  70% { transform: translate(3%, -5%); }
+  80% { transform: translate(-5%, 7%); }
+  90% { transform: translate(7%, 5%); }
+  100% { transform: translate(-3%, -3%); }
+}
+
+/* ============================================================
+   SCREEN FLICKER
+   ============================================================ */
+.screen-flicker {
+  animation: flicker 0.15s ease-in-out;
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  20% { opacity: 0.6; }
+  40% { opacity: 1; }
+  60% { opacity: 0.7; }
+  80% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* ============================================================
+   ENTRY SCREEN - CRT BOOT SEQUENCE
+   ============================================================ */
+#entry-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+  overflow: hidden;
+}
+
+#entry-screen.dismissed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#entry-screen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, rgba(51, 255, 0, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.crt-vignette {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
+  pointer-events: none;
+}
+
+#entry-scan-line {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 5%, rgba(51,255,0,0.25) 20%, rgba(51,255,0,0.4) 50%, rgba(51,255,0,0.25) 80%, transparent 95%);
+  box-shadow: 0 0 15px rgba(51,255,0,0.15);
+  animation: entryScan 2.5s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes entryScan {
+  0% { top: -3px; }
+  100% { top: 100%; }
+}
+
+.entry-text {
+  font-family: var(--font-doc);
+  color: var(--text-green);
+  font-size: 14px;
+  max-width: 600px;
+  width: 90%;
+  z-index: 3;
+  text-shadow: 0 0 8px rgba(51,255,0,0.4);
+}
+
+.entry-line {
+  opacity: 0;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.entry-line.visible {
+  opacity: 1;
+  animation: typeIn 0.5s steps(40) forwards;
+}
+
+@keyframes typeIn {
+  from { max-width: 0; }
+  to { max-width: 100%; }
+}
+
+.entry-line.blink-cursor::after {
+  content: '_';
+  animation: cursorBlink 0.6s infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.entry-prompt {
+  margin-top: 30px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  text-align: center;
+}
+
+.entry-prompt.visible { opacity: 1; }
+
+.entry-prompt .action-text {
+  color: var(--amber);
+  font-size: 16px;
+  letter-spacing: 2px;
+  animation: pulseGlow 2s ease-in-out infinite;
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(255,176,0,0.4);
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.entry-warning {
+  position: absolute;
+  bottom: 30px;
+  color: var(--red-classified);
+  font-size: 11px;
+  letter-spacing: 3px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.entry-warning.visible { opacity: 0.6; }
+
+/* ============================================================
+   TOP STATUS BAR
+   ============================================================ */
+#status-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 42px;
+  background: rgba(10, 13, 8, 0.95);
+  border-bottom: 1px solid var(--text-green-dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 9999;
+  font-family: var(--font-doc);
+  font-size: 11px;
+  letter-spacing: 1px;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.6s ease;
+}
+
+#status-bar.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.status-left, .status-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.status-label {
+  color: var(--text-green-dim);
+}
+
+.status-value {
+  color: var(--text-green);
+  text-shadow: 0 0 6px rgba(51,255,0,0.3);
+}
+
+.status-value.amber {
+  color: var(--amber);
+  text-shadow: 0 0 6px rgba(255,176,0,0.3);
+}
+
+.threat-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.threat-segment {
+  width: 12px;
+  height: 8px;
+  background: var(--text-green-ghost);
+  border: 1px solid var(--text-green-dim);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.threat-segment.active-green {
+  background: var(--text-green);
+  border-color: var(--text-green);
+  box-shadow: 0 0 4px rgba(51,255,0,0.5);
+}
+
+.threat-segment.active-amber {
+  background: var(--amber);
+  border-color: var(--amber);
+  box-shadow: 0 0 4px rgba(255,176,0,0.5);
+}
+
+.threat-segment.active-red {
+  background: var(--red-classified);
+  border-color: var(--red-bright);
+  box-shadow: 0 0 4px rgba(255,0,0,0.5);
+}
+
+.status-time {
+  color: var(--text-green-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   MAIN CONTENT CONTAINER
+   ============================================================ */
+#main-content {
+  display: none;
+  padding-top: 42px;
+}
+
+#main-content.active {
+  display: block;
+}
+
+/* ============================================================
+   CCTV SIDEBAR
+   ============================================================ */
+#cctv-sidebar {
+  position: fixed;
+  top: 42px;
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 42px);
+  background: var(--bg-darker);
+  border-right: 1px solid var(--text-green-ghost);
+  z-index: 9990;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cctv-feed {
+  width: 100%;
+  height: 250px;
+  background: #000;
+  position: relative;
+  border-bottom: 1px solid var(--text-green-ghost);
+  overflow: hidden;
+}
+
+.cctv-feed::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0,0,0,0.15) 1px,
+    rgba(0,0,0,0.15) 2px
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cctv-overlay-text {
+  position: absolute;
+  top: 8px; left: 10px;
+  font-family: var(--font-doc);
+  font-size: 10px;
+  color: var(--text-green);
+  text-shadow: 0 0 4px rgba(51,255,0,0.5);
+  z-index: 3;
+  letter-spacing: 1px;
+}
+
+.cctv-overlay-text .rec-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--red-classified);
+  border-radius: 50%;
+  margin-right: 4px;
+  animation: recBlink 1s infinite;
+  vertical-align: middle;
+}
+
+@keyframes recBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cctv-timestamp {
+  position: absolute;
+  bottom: 8px; right: 10px;
+  font-family: var(--font-doc);
+  font-size: 9px;
+  color: var(--text-green-dim);
+  z-index: 3;
+  font-variant-numeric: tabular-nums;
+}
+
+.cctv-camera-svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.camera-body {
+  transition: transform 0.1s ease-out;
+  transform-origin: 70px 60px;
+}
+
+/* Sidebar nav */
+.sidebar-nav {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.sidebar-nav-title {
+  font-family: var(--font-doc);
+  font-size: 9px;
+  color: var(--text-green-dim);
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--text-green-ghost);
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  font-family: var(--font-doc);
+  font-size: 11px;
+  color: var(--text-green-dim);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: crosshair;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav-item:hover {
+  color: var(--text-green);
+  border-color: var(--text-green-ghost);
+  background: rgba(51,255,0,0.03);
+  text-shadow: 0 0 6px rgba(51,255,0,0.3);
+}
+
+.sidebar-nav-item.active {
+  color: var(--text-green);
+  border-color: var(--text-green-dim);
+  background: rgba(51,255,0,0.06);
+}
+
+.nav-marker {
+  font-size: 10px;
+  color: var(--text-green-dim);
+}
+
+.sidebar-classification {
+  padding: 12px 15px;
+  border-top: 1px solid var(--text-green-ghost);
+  text-align: center;
+}
+
+.classification-stamp {
+  font-family: var(--font-doc);
+  font-size: 10px;
+  color: var(--red-classified);
+  letter-spacing: 4px;
+  border: 2px solid var(--red-classified);
+  padding: 4px 12px;
+  display: inline-block;
+  transform: rotate(-2deg);
+  opacity: 0.8;
+}
+
+/* ============================================================
+   DOCUMENT AREA
+   ============================================================ */
+.document-area {
+  margin-left: 280px;
+  min-height: 100vh;
+  padding: 30px 40px 80px;
+}
+
+/* ============================================================
+   SECTION STYLES
+   ============================================================ */
+.dossier-section {
+  margin-bottom: 60px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.dossier-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--text-green-dim);
+}
+
+.section-number {
+  font-family: var(--font-doc);
+  font-size: 11px;
+  color: var(--bg-dark);
+  background: var(--text-green);
+  padding: 2px 8px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.section-title {
+  font-family: var(--font-ui);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-green);
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(51,255,0,0.3);
+}
+
+.section-class {
+  margin-left: auto;
+  font-family: var(--font-doc);
+  font-size: 10px;
+  color: var(--red-classified);
+  letter-spacing: 2px;
+  border: 1px solid var(--red-classified);
+  padding: 2px 8px;
+}
+
+/* ============================================================
+   PERSONNEL FILE (ABOUT) - MANILA FOLDER
+   ============================================================ */
+.manila-folder {
+  background: var(--manila);
+  color: var(--text-dark);
+  padding: 35px;
+  position: relative;
+  box-shadow: 4px 4px 15px rgba(0,0,0,0.4), inset 0 0 80px rgba(0,0,0,0.05);
+  border: 1px solid var(--manila-dark);
+  max-width: 800px;
+}
+
+/* Folder tab */
+.manila-folder::before {
+  content: 'PERSONNEL FILE';
+  position: absolute;
+  top: -26px;
+  left: 30px;
+  background: var(--manila);
+  border: 1px solid var(--manila-dark);
+  border-bottom: none;
+  padding: 4px 20px;
+  font-family: var(--font-doc);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-dark);
+}
+
+/* Coffee stain */
+.manila-folder::after {
+  content: '';
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(139, 90, 43, 0.12) 0%,
+    rgba(139, 90, 43, 0.06) 40%,
+    transparent 70%
+  );
+  border: 1px solid rgba(139, 90, 43, 0.08);
+  pointer-events: none;
+}
+
+.file-row {
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.file-label {
+  min-width: 180px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #4A4A3A;
+}
+
+.file-value {
+  flex: 1;
+}
+
+/* Redacted text */
+.redacted {
+  position: relative;
+  cursor: crosshair;
+}
+
+.redacted .hidden-text {
+  color: transparent;
+  transition: color 0.4s ease;
+}
+
+.redacted .cover {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--text-dark);
+  transition: opacity 0.4s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.redacted:hover .hidden-text {
+  color: var(--text-dark);
+}
+
+.redacted:hover .cover {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.redacted-hint {
+  font-size: 9px;
+  color: var(--manila-dark);
+  display: block;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* Photo area */
+.photo-area {
+  width: 160px;
+  height: 200px;
+  border: 2px solid #8A8A6A;
+  background: #C0B090;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  float: right;
+  margin: 0 0 15px 25px;
+  position: relative;
+}
+
+.photo-silhouette {
+  width: 80px;
+  height: 100px;
+  background: #7A7A5A;
+  border-radius: 50% 50% 0 0;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.photo-stamp {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-family: var(--font-doc);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--red-classified);
+  border: 3px solid var(--red-classified);
+  padding: 4px 10px;
+  letter-spacing: 2px;
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+/* Stamps */
+.stamp {
+  display: inline-block;
+  font-family: var(--font-doc);
+  font-weight: 700;
+  padding: 4px 14px;
+  border: 3px solid;
+  letter-spacing: 3px;
+  transform: rotate(-3deg);
+  margin: 5px 10px 5px 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.stamp.slammed {
+  opacity: 0.75;
+  animation: stampSlam 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes stampSlam {
+  0% { transform: rotate(-3deg) scale(2); opacity: 0; }
+  50% { transform: rotate(-3deg) scale(0.95); opacity: 0.85; }
+  100% { transform: rotate(-3deg) scale(1); opacity: 0.75; }
+}
+
+.stamp-verified {
+  color: #1A6B1A;
+  border-color: #1A6B1A;
+  font-size: 14px;
+}
+
+.stamp-topsecret {
+  color: var(--red-classified);
+  border-color: var(--red-classified);
+  font-size: 16px;
+  transform: rotate(-6deg);
+}
+
+.stamp-eyesonly {
+  color: var(--amber);
+  border-color: #8A6000;
+  font-size: 12px;
+  transform: rotate(2deg);
+}
+
+/* Paper clip note */
+.paper-clip-note {
+  position: relative;
+  background: #FFFDE8;
+  border: 1px solid #DDD8B0;
+  padding: 15px 20px 15px 30px;
+  margin-top: 20px;
+  font-family: var(--font-typewriter);
+  font-size: 15px;
+  color: #3A3A2A;
+  max-width: 450px;
+  transform: rotate(1deg);
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+}
+
+.paper-clip-note::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  width: 20px;
+  height: 50px;
+  border: 2px solid #AAA;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  transform: rotate(10deg);
+}
+
+/* ============================================================
+   EVIDENCE ROOM (PROJECTS)
+   ============================================================ */
+.evidence-item {
+  border: 2px dashed var(--text-green-dim);
+  padding: 25px;
+  margin-bottom: 30px;
+  position: relative;
+  background: rgba(51,255,0,0.02);
+  max-width: 800px;
+}
+
+.evidence-tag {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: var(--bg-dark);
+  border: 1px solid var(--text-green-dim);
+  padding: 2px 15px;
+  font-family: var(--font-doc);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-green);
+  letter-spacing: 2px;
+}
+
+.evidence-title {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-green);
+  margin-bottom: 4px;
+  text-shadow: 0 0 8px rgba(51,255,0,0.2);
+}
+
+.evidence-subtitle {
+  font-size: 12px;
+  color: var(--text-green-dim);
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.evidence-description {
+  font-size: 13px;
+  color: var(--white-dim);
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.evidence-chain {
+  font-size: 11px;
+  color: var(--text-green-dim);
+  border-top: 1px solid var(--text-green-ghost);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.evidence-chain-label {
+  color: var(--amber-dim);
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.tech-tag {
+  background: rgba(51,255,0,0.08);
+  border: 1px solid var(--text-green-ghost);
+  color: var(--text-green-dim);
+  padding: 2px 10px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  font-family: var(--font-doc);
+}
+
+.impact-row {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(255,176,0,0.05);
+  border-left: 3px solid var(--amber-dim);
+}
+
+.impact-label {
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.impact-text {
+  font-size: 12px;
+  color: var(--amber-dim);
+}
+
+/* ============================================================
+   INTERCEPTED COMMUNICATIONS (SKILLS)
+   ============================================================ */
+.intercept-block {
+  background: var(--bg-terminal);
+  border: 1px solid var(--text-green-ghost);
+  padding: 20px;
+  margin-bottom: 20px;
+  max-width: 800px;
+  font-family: var(--font-doc);
+  font-size: 12px;
+  position: relative;
+}
+
+.intercept-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--text-green-ghost);
+}
+
+.channel-badge {
+  background: var(--text-green);
+  color: var(--bg-dark);
+  padding: 1px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.channel-name {
+  color: var(--text-green);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.channel-freq {
+  margin-left: auto;
+  color: var(--text-green-dim);
+  font-size: 10px;
+}
+
+.intercept-line {
+  margin-bottom: 5px;
+  line-height: 1.6;
+  color: var(--text-green-dim);
+}
+
+.intercept-time {
+  color: var(--text-green-ghost);
+  margin-right: 8px;
+  font-size: 10px;
+}
+
+.intercept-tag {
+  color: var(--amber-dim);
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+.intercept-content {
+  color: var(--text-green);
+  text-shadow: 0 0 4px rgba(51,255,0,0.2);
+}
+
+/* ============================================================
+   KNOWN ASSOCIATES (EXPERIENCE) - SURVEILLANCE LOG
+   ============================================================ */
+.surveillance-timeline {
+  position: relative;
+  padding-left: 30px;
+  max-width: 800px;
+}
+
+.surveillance-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10px;
+  width: 2px;
+  height: 100%;
+  background: var(--red-classified);
+  opacity: 0.4;
+}
+
+.surveillance-entry {
+  position: relative;
+  margin-bottom: 35px;
+  padding: 20px;
+  border: 1px solid var(--text-green-ghost);
+  background: rgba(51,255,0,0.02);
+}
+
+.surveillance-entry::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 25px;
+  width: 10px;
+  height: 10px;
+  background: var(--red-classified);
+  border-radius: 50%;
+  border: 2px solid var(--bg-dark);
+  box-shadow: 0 0 6px rgba(204,0,0,0.4);
+}
+
+.surveillance-entry-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.associate-name {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-green);
+  text-shadow: 0 0 6px rgba(51,255,0,0.2);
+}
+
+.associate-role {
+  font-size: 12px;
+  color: var(--amber);
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.last-seen {
+  font-size: 10px;
+  color: var(--text-green-dim);
+  letter-spacing: 1px;
+  text-align: right;
+  border: 1px solid var(--text-green-ghost);
+  padding: 4px 10px;
+}
+
+.last-seen-label {
+  color: var(--text-green-ghost);
+  display: block;
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+
+.surveillance-notes {
+  font-size: 12px;
+  color: var(--white-dim);
+  line-height: 1.7;
+}
+
+.surveillance-notes li {
+  margin-bottom: 4px;
+  list-style: none;
+  padding-left: 15px;
+  position: relative;
+}
+
+.surveillance-notes li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--text-green-dim);
+}
+
+/* ============================================================
+   MAKE CONTACT - SECURE CHANNEL
+   ============================================================ */
+.secure-channel {
+  max-width: 700px;
+}
+
+.encrypted-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 18px;
+  margin-bottom: 10px;
+  border: 1px solid var(--text-green-ghost);
+  background: rgba(51,255,0,0.02);
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: crosshair;
+}
+
+.encrypted-link:hover {
+  border-color: var(--text-green-dim);
+  background: rgba(51,255,0,0.05);
+}
+
+.freq-label {
+  font-size: 10px;
+  color: var(--amber-dim);
+  letter-spacing: 2px;
+  min-width: 100px;
+}
+
+.encrypted-text {
+  font-size: 13px;
+  color: var(--text-green-dim);
+  letter-spacing: 1px;
+  transition: all 0.4s;
+  font-family: var(--font-doc);
+}
+
+.encrypted-link:hover .encrypted-text {
+  color: var(--text-green);
+  text-shadow: 0 0 6px rgba(51,255,0,0.3);
+}
+
+.decoded-text {
+  display: none;
+  font-size: 13px;
+  color: var(--text-green);
+  letter-spacing: 1px;
+}
+
+.encrypted-link:hover .encrypted-text { display: none; }
+.encrypted-link:hover .decoded-text { display: inline; text-shadow: 0 0 6px rgba(51,255,0,0.4); }
+
+/* Dead drop form */
+.dead-drop-form {
+  margin-top: 30px;
+  padding: 25px;
+  border: 1px solid var(--text-green-ghost);
+  background: rgba(10,13,8,0.6);
+}
+
+.dead-drop-title {
+  font-family: var(--font-doc);
+  font-size: 12px;
+  color: var(--amber);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--text-green-ghost);
+}
+
+.form-field {
+  margin-bottom: 15px;
+}
+
+.form-field label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-green-dim);
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  background: rgba(51,255,0,0.03);
+  border: 1px solid var(--text-green-ghost);
+  color: var(--text-green);
+  font-family: var(--font-doc);
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--text-green-dim);
+  box-shadow: 0 0 8px rgba(51,255,0,0.1);
+}
+
+.form-field textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.submit-btn {
+  background: transparent;
+  border: 2px solid var(--text-green-dim);
+  color: var(--text-green);
+  font-family: var(--font-doc);
+  font-size: 12px;
+  letter-spacing: 3px;
+  padding: 10px 30px;
+  cursor: crosshair;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.submit-btn:hover {
+  background: var(--text-green);
+  color: var(--bg-dark);
+  box-shadow: 0 0 15px rgba(51,255,0,0.3);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.dossier-footer {
+  margin-top: 60px;
+  padding-top: 25px;
+  border-top: 2px solid var(--text-green-ghost);
+  text-align: center;
+  max-width: 800px;
+}
+
+.footer-classification {
+  font-size: 10px;
+  color: var(--red-classified);
+  letter-spacing: 5px;
+  margin-bottom: 10px;
+}
+
+.footer-text {
+  font-size: 11px;
+  color: var(--text-green-ghost);
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   TYPEWRITER EFFECT
+   ============================================================ */
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--text-green);
+  animation: typewriterCursor 0.7s infinite;
+  width: 0;
+}
+
+.typewriter.typing {
+  animation: typewriterExpand var(--tw-duration, 2s) steps(var(--tw-steps, 40)) forwards, typewriterCursor 0.7s infinite;
+}
+
+@keyframes typewriterExpand {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes typewriterCursor {
+  0%, 50% { border-color: var(--text-green); }
+  51%, 100% { border-color: transparent; }
+}
+
+/* ============================================================
+   SECTION TRANSITION FLASH
+   ============================================================ */
+.section-flash {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(51,255,0,0.03);
+  pointer-events: none;
+  z-index: 9995;
+  opacity: 0;
+}
+
+.section-flash.active {
+  animation: sectionFlashAnim 0.3s ease;
+}
+
+@keyframes sectionFlashAnim {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  #cctv-sidebar {
+    display: none;
+  }
+  .document-area {
+    margin-left: 0;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .status-left { font-size: 9px; gap: 10px; }
+  .status-right { display: none; }
+  #status-bar { padding: 0 10px; height: 36px; }
+  #main-content { padding-top: 36px; }
+  .document-area { padding: 15px; }
+  .manila-folder { padding: 20px; }
+  .photo-area { float: none; margin: 0 auto 20px; }
+  .file-row { flex-direction: column; }
+  .file-label { min-width: auto; margin-bottom: 2px; }
+  .section-title { font-size: 17px; }
+  .evidence-item { padding: 15px; }
+  .intercept-block { padding: 12px; }
+  .surveillance-entry { padding: 12px; }
+  .entry-text { font-size: 12px; }
+  .surveillance-entry-header { flex-direction: column; gap: 8px; }
+}
+
+@media (max-width: 480px) {
+  .section-header { flex-wrap: wrap; }
+  .section-class { margin-left: 0; margin-top: 5px; }
+  .stamps-row { text-align: center; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     SURVEILLANCE RETICLE CURSOR
+     ============================================================ -->
+<div id="reticle">
+  <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="14" stroke="#33FF00" stroke-width="1" stroke-opacity="0.6"/>
+    <circle cx="20" cy="20" r="8" stroke="#33FF00" stroke-width="0.5" stroke-opacity="0.3"/>
+    <line x1="20" y1="0" x2="20" y2="12" stroke="#33FF00" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="20" y1="28" x2="20" y2="40" stroke="#33FF00" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="0" y1="20" x2="12" y2="20" stroke="#33FF00" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="28" y1="20" x2="40" y2="20" stroke="#33FF00" stroke-width="1" stroke-opacity="0.5"/>
+    <circle cx="20" cy="20" r="2" fill="#33FF00" fill-opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ============================================================
+     OVERLAYS
+     ============================================================ -->
+<div id="scanlines"></div>
+<div id="scan-sweep"></div>
+<div id="noise"></div>
+<div id="section-flash" class="section-flash"></div>
+
+<!-- ============================================================
+     ENTRY SCREEN
+     ============================================================ -->
+<div id="entry-screen">
+  <div class="crt-vignette"></div>
+  <div id="entry-scan-line"></div>
+
+  <div class="entry-text">
+    <div class="entry-line" id="el1">SIGNAL DETECTED...</div>
+    <div class="entry-line" id="el2">ESTABLISHING SECURE CONNECTION... OK</div>
+    <div class="entry-line" id="el3">DECRYPTING CHANNEL... AES-256-GCM... VERIFIED</div>
+    <div class="entry-line" id="el4">AUTHENTICATION: BIOMETRIC SCAN... ACCEPTED</div>
+    <div class="entry-line" id="el5">&nbsp;</div>
+    <div class="entry-line" id="el6">ACCESSING PERSONNEL FILE: <span style="color:#FFB000">GARG, ANSHULL K.</span></div>
+    <div class="entry-line" id="el7">CLASSIFICATION: <span style="color:#CC0000">TOP SECRET // NOFORN</span></div>
+    <div class="entry-line" id="el8">CLEARANCE LEVEL: [VISITOR]</div>
+    <div class="entry-line" id="el9">&nbsp;</div>
+
+    <div class="entry-prompt" id="entry-prompt">
+      <div class="action-text" id="entry-action">[ PRESS ENTER OR CLICK TO ACCESS DOSSIER ]</div>
+    </div>
+  </div>
+
+  <div class="entry-warning" id="entry-warning">
+    UNAUTHORIZED ACCESS WILL BE PROSECUTED UNDER FEDERAL LAW
+  </div>
+</div>
+
+<!-- ============================================================
+     STATUS BAR
+     ============================================================ -->
+<div id="status-bar">
+  <div class="status-left">
+    <span><span class="status-label">OPERATION:</span> <span class="status-value">TALENT ACQUISITION</span></span>
+    <span><span class="status-label">STATUS:</span> <span class="status-value amber">ACTIVE</span></span>
+    <span class="status-label">THREAT LEVEL:</span>
+    <div class="threat-bar" id="threat-bar">
+      <div class="threat-segment" data-level="1"></div>
+      <div class="threat-segment" data-level="2"></div>
+      <div class="threat-segment" data-level="3"></div>
+      <div class="threat-segment" data-level="4"></div>
+      <div class="threat-segment" data-level="5"></div>
+      <div class="threat-segment" data-level="6"></div>
+      <div class="threat-segment" data-level="7"></div>
+      <div class="threat-segment" data-level="8"></div>
+    </div>
+    <span id="threat-label" class="status-value" style="font-size:10px;">LOW</span>
+  </div>
+  <div class="status-right">
+    <span class="status-time" id="status-time">00:00:00</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div id="main-content">
+
+  <!-- CCTV SIDEBAR -->
+  <div id="cctv-sidebar">
+    <div class="cctv-feed">
+      <div class="cctv-overlay-text">
+        <span class="rec-dot"></span> REC &nbsp; CAM-01 LOBBY
+      </div>
+      <svg class="cctv-camera-svg" viewBox="0 0 140 120" width="140" height="120">
+        <g class="camera-body" id="camera-body">
+          <!-- Camera mount arm -->
+          <line x1="70" y1="0" x2="70" y2="30" stroke="#33FF00" stroke-width="2" opacity="0.5"/>
+          <!-- Camera body -->
+          <rect x="40" y="30" width="60" height="35" rx="4" fill="none" stroke="#33FF00" stroke-width="1.5" opacity="0.6"/>
+          <!-- Lens -->
+          <circle cx="70" cy="47" r="12" fill="none" stroke="#33FF00" stroke-width="1.5" opacity="0.7"/>
+          <circle cx="70" cy="47" r="6" fill="none" stroke="#33FF00" stroke-width="1" opacity="0.4"/>
+          <circle cx="70" cy="47" r="2" fill="#33FF00" opacity="0.5"/>
+          <!-- Indicator light -->
+          <circle cx="90" cy="38" r="2" fill="#CC0000">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Vision cone -->
+          <path d="M58 65 L30 110 L110 110 L82 65" fill="rgba(51,255,0,0.04)" stroke="rgba(51,255,0,0.15)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        </g>
+      </svg>
+      <div class="cctv-timestamp" id="cctv-timestamp">2026-02-08 00:00:00</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-title">DOSSIER CONTENTS</div>
+      <a href="#personnel" class="sidebar-nav-item active" data-section="personnel">
+        <span class="nav-marker">01</span> PERSONNEL FILE
+      </a>
+      <a href="#evidence" class="sidebar-nav-item" data-section="evidence">
+        <span class="nav-marker">02</span> EVIDENCE ROOM
+      </a>
+      <a href="#intercepts" class="sidebar-nav-item" data-section="intercepts">
+        <span class="nav-marker">03</span> INTERCEPTED COMMS
+      </a>
+      <a href="#associates" class="sidebar-nav-item" data-section="associates">
+        <span class="nav-marker">04</span> KNOWN ASSOCIATES
+      </a>
+      <a href="#contact" class="sidebar-nav-item" data-section="contact">
+        <span class="nav-marker">05</span> MAKE CONTACT
+      </a>
+    </nav>
+
+    <div class="sidebar-classification">
+      <div class="classification-stamp">TOP SECRET</div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT AREA -->
+  <div class="document-area">
+
+    <!-- ======== SECTION 1: PERSONNEL FILE (ABOUT) ======== -->
+    <section id="personnel" class="dossier-section">
+      <div class="section-header">
+        <span class="section-number">SEC. 01</span>
+        <span class="section-title">PERSONNEL FILE</span>
+        <span class="section-class">CLASSIFIED</span>
+      </div>
+
+      <div class="manila-folder">
+        <div class="photo-area">
+          <div class="photo-silhouette"></div>
+          <div class="photo-stamp">PHOTO<br>CLASSIFIED</div>
+        </div>
+
+        <div class="file-row">
+          <span class="file-label">Full Name:</span>
+          <span class="file-value">GARG, Anshull K.</span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Date of Birth:</span>
+          <span class="file-value">
+            <span class="redacted"><span class="hidden-text">[INFORMATION RESTRICTED]</span><span class="cover"></span></span>
+          </span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Nationality:</span>
+          <span class="file-value">Indian</span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Occupation:</span>
+          <span class="file-value">Software Developer</span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Current Employer:</span>
+          <span class="file-value" style="font-weight:700;">Walmart Inc. (Fortune #1)</span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Division:</span>
+          <span class="file-value">Walmart Global Tech</span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Clearance:</span>
+          <span class="file-value" style="color:var(--red-classified); font-weight:700;">LEVEL 5 - FULL STACK ACCESS</span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Users Impacted:</span>
+          <span class="file-value">
+            Has deployed code to <span class="redacted"><span class="hidden-text">240 million</span><span class="cover" style="letter-spacing:2px; font-size:12px; color:#888;">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span></span> users
+            <span class="redacted-hint">[HOVER TO DECLASSIFY]</span>
+          </span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Specialty:</span>
+          <span class="file-value">
+            Building <span class="redacted"><span class="hidden-text">scalable, high-performance enterprise applications</span><span class="cover" style="letter-spacing:2px; font-size:12px; color:#888;">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span></span>
+            <span class="redacted-hint">[HOVER TO DECLASSIFY]</span>
+          </span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Known Traits:</span>
+          <span class="file-value">
+            <span class="redacted"><span class="hidden-text">Obsesses over clean architecture and code quality</span><span class="cover" style="letter-spacing:2px; font-size:12px; color:#888;">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span></span>
+            <span class="redacted-hint">[HOVER TO DECLASSIFY]</span>
+          </span>
+        </div>
+        <div class="file-row">
+          <span class="file-label">Assessment:</span>
+          <span class="file-value">Subject demonstrates capacity for <span class="redacted"><span class="hidden-text">full-stack engineering at Fortune 1 scale</span><span class="cover" style="letter-spacing:2px; font-size:12px; color:#888;">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span></span>
+            <span class="redacted-hint">[HOVER TO DECLASSIFY]</span>
+          </span>
+        </div>
+
+        <div style="clear:both;"></div>
+
+        <div class="paper-clip-note">
+          "Subject demonstrates exceptional technical ability. Recommend immediate recruitment. Do NOT let this one get away."
+          <br><br>
+          <span style="font-size:12px; color:#7A7A5A;">-- Field Agent M. Rodriguez, Talent Acquisition Division</span>
+        </div>
+
+        <div style="margin-top:25px; clear:both;" class="stamps-row">
+          <span class="stamp stamp-verified" data-stamp>VERIFIED</span>
+          <span class="stamp stamp-topsecret" data-stamp>TOP SECRET</span>
+          <span class="stamp stamp-eyesonly" data-stamp>EYES ONLY</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== SECTION 2: EVIDENCE ROOM (PROJECTS) ======== -->
+    <section id="evidence" class="dossier-section">
+      <div class="section-header">
+        <span class="section-number">SEC. 02</span>
+        <span class="section-title">EVIDENCE ROOM</span>
+        <span class="section-class">RESTRICTED</span>
+      </div>
+
+      <div class="evidence-item">
+        <div class="evidence-tag">EXHIBIT A</div>
+        <div class="evidence-title">Enterprise E-Commerce Platform</div>
+        <div class="evidence-subtitle">RECOVERED FROM: Walmart Global Tech Production Servers | DATE: 2023-Present</div>
+        <div class="evidence-description">
+          Subject was observed architecting and shipping production-grade features for one of the world's largest digital retail platforms. The system handles peak-season traffic spikes serving hundreds of millions of sessions. Subject displayed mastery of performance optimization and scalable frontend architecture under extreme load.
+        </div>
+        <div class="impact-row">
+          <span class="impact-label">IMPACT ASSESSMENT:</span>
+          <span class="impact-text">Code deployed to production serving 240M+ weekly customers. Performance optimizations contributed to measurable improvements in Core Web Vitals across high-traffic pages.</span>
+        </div>
+        <div class="evidence-chain">
+          <span class="evidence-chain-label">CHAIN OF CUSTODY (TECH STACK):</span>
+          <div class="tech-tags">
+            <span class="tech-tag">REACT</span>
+            <span class="tech-tag">NEXT.JS</span>
+            <span class="tech-tag">TYPESCRIPT</span>
+            <span class="tech-tag">NODE.JS</span>
+            <span class="tech-tag">GRAPHQL</span>
+            <span class="tech-tag">MICRO-FRONTENDS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="evidence-item">
+        <div class="evidence-tag">EXHIBIT B</div>
+        <div class="evidence-title">Internal Developer Tooling Platform</div>
+        <div class="evidence-subtitle">RECOVERED FROM: Internal Infrastructure | DATE: 2023-2024</div>
+        <div class="evidence-description">
+          Intelligence indicates subject designed and built internal tooling used by 500+ engineers across the organization. The platform automated previously manual workflows, standardized development practices, and reduced onboarding friction for new team members. Evidence suggests significant improvement to engineering velocity.
+        </div>
+        <div class="impact-row">
+          <span class="impact-label">IMPACT ASSESSMENT:</span>
+          <span class="impact-text">Automated manual processes saving estimated 200+ engineering hours per quarter. Adoption across multiple teams confirmed.</span>
+        </div>
+        <div class="evidence-chain">
+          <span class="evidence-chain-label">CHAIN OF CUSTODY (TECH STACK):</span>
+          <div class="tech-tags">
+            <span class="tech-tag">REACT</span>
+            <span class="tech-tag">NODE.JS</span>
+            <span class="tech-tag">EXPRESS</span>
+            <span class="tech-tag">POSTGRESQL</span>
+            <span class="tech-tag">DOCKER</span>
+            <span class="tech-tag">CI/CD</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="evidence-item">
+        <div class="evidence-tag">EXHIBIT C</div>
+        <div class="evidence-title">Performance Optimization Initiative</div>
+        <div class="evidence-subtitle">RECOVERED FROM: Web Performance Audit Logs | DATE: 2024</div>
+        <div class="evidence-description">
+          Subject spearheaded a performance optimization initiative targeting key user-facing pages. Implemented code splitting, lazy loading, and bundle size reduction strategies. Surveillance footage shows subject conducting deep-dive analysis of rendering pipelines and strategically eliminating bottlenecks in critical paths.
+        </div>
+        <div class="impact-row">
+          <span class="impact-label">IMPACT ASSESSMENT:</span>
+          <span class="impact-text">Reduced page load times by an estimated 35%. Achieved measurable improvements in Lighthouse scores. Patterns adopted as team standard.</span>
+        </div>
+        <div class="evidence-chain">
+          <span class="evidence-chain-label">CHAIN OF CUSTODY (TECH STACK):</span>
+          <div class="tech-tags">
+            <span class="tech-tag">WEBPACK</span>
+            <span class="tech-tag">LIGHTHOUSE</span>
+            <span class="tech-tag">REACT PROFILER</span>
+            <span class="tech-tag">CODE SPLITTING</span>
+            <span class="tech-tag">LAZY LOADING</span>
+            <span class="tech-tag">CDN OPTIMIZATION</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="evidence-item">
+        <div class="evidence-tag">EXHIBIT D</div>
+        <div class="evidence-title">Scalable API Gateway Architecture</div>
+        <div class="evidence-subtitle">RECOVERED FROM: Microservice Infrastructure | DATE: 2024-Present</div>
+        <div class="evidence-description">
+          Intercepted communications reveal subject played a key role in designing a microservice gateway that serves as a critical integration layer between frontend applications and backend services. Evidence of robust error handling, intelligent caching strategies, and graceful degradation patterns.
+        </div>
+        <div class="impact-row">
+          <span class="impact-label">IMPACT ASSESSMENT:</span>
+          <span class="impact-text">Reduced API latency across downstream services. Improved system reliability during high-traffic events. Architecture adopted as reference implementation.</span>
+        </div>
+        <div class="evidence-chain">
+          <span class="evidence-chain-label">CHAIN OF CUSTODY (TECH STACK):</span>
+          <div class="tech-tags">
+            <span class="tech-tag">NODE.JS</span>
+            <span class="tech-tag">GRAPHQL</span>
+            <span class="tech-tag">REST</span>
+            <span class="tech-tag">REDIS</span>
+            <span class="tech-tag">KUBERNETES</span>
+            <span class="tech-tag">MONITORING</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== SECTION 3: INTERCEPTED COMMUNICATIONS (SKILLS) ======== -->
+    <section id="intercepts" class="dossier-section">
+      <div class="section-header">
+        <span class="section-number">SEC. 03</span>
+        <span class="section-title">INTERCEPTED COMMUNICATIONS</span>
+        <span class="section-class">SIGINT</span>
+      </div>
+
+      <div class="intercept-block">
+        <div class="intercept-header">
+          <span class="channel-badge">CH-01</span>
+          <span class="channel-name">FRONTEND ENGINEERING</span>
+          <span class="channel-freq">FREQ: 147.300 MHz</span>
+        </div>
+        <div class="intercept-line"><span class="intercept-time">08:14:22</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Subject proficient in React, Next.js, TypeScript -- production-grade</span></div>
+        <div class="intercept-line"><span class="intercept-time">08:14:23</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Advanced state management: Redux, Zustand, Context API</span></div>
+        <div class="intercept-line"><span class="intercept-time">08:14:25</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">CSS mastery: Tailwind CSS, Styled Components, CSS Modules</span></div>
+        <div class="intercept-line"><span class="intercept-time">08:14:27</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Performance optimization: Code splitting, lazy loading, memoization</span></div>
+        <div class="intercept-line"><span class="intercept-time">08:14:28</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Testing: Jest, React Testing Library, Cypress, Playwright</span></div>
+        <div class="intercept-line"><span class="intercept-time">08:14:30</span><span class="intercept-tag">[ANALYSIS]</span><span class="intercept-content" style="color:var(--amber);">THREAT LEVEL: HIGH. Subject's frontend capabilities are enterprise-grade.</span></div>
+      </div>
+
+      <div class="intercept-block">
+        <div class="intercept-header">
+          <span class="channel-badge">CH-02</span>
+          <span class="channel-name">BACKEND & APIS</span>
+          <span class="channel-freq">FREQ: 223.500 MHz</span>
+        </div>
+        <div class="intercept-line"><span class="intercept-time">09:02:11</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Node.js and Express -- RESTful and GraphQL API design confirmed</span></div>
+        <div class="intercept-line"><span class="intercept-time">09:02:14</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Database proficiency: PostgreSQL, MongoDB, Redis caching layers</span></div>
+        <div class="intercept-line"><span class="intercept-time">09:02:17</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Python scripting and automation capabilities detected</span></div>
+        <div class="intercept-line"><span class="intercept-time">09:02:20</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Microservice architecture -- design, deployment, monitoring</span></div>
+        <div class="intercept-line"><span class="intercept-time">09:02:22</span><span class="intercept-tag">[ANALYSIS]</span><span class="intercept-content" style="color:var(--amber);">Full-stack capabilities confirmed. Subject is not limited to any single layer.</span></div>
+      </div>
+
+      <div class="intercept-block">
+        <div class="intercept-header">
+          <span class="channel-badge">CH-03</span>
+          <span class="channel-name">DEVOPS & INFRASTRUCTURE</span>
+          <span class="channel-freq">FREQ: 311.000 MHz</span>
+        </div>
+        <div class="intercept-line"><span class="intercept-time">10:45:03</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Docker and Kubernetes -- container orchestration in production</span></div>
+        <div class="intercept-line"><span class="intercept-time">10:45:06</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">CI/CD pipelines: GitHub Actions, Jenkins -- automated deployments</span></div>
+        <div class="intercept-line"><span class="intercept-time">10:45:08</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Cloud platforms: AWS, GCP -- deployment and monitoring</span></div>
+        <div class="intercept-line"><span class="intercept-time">10:45:11</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Monitoring: Datadog, Grafana, custom alerting systems</span></div>
+        <div class="intercept-line"><span class="intercept-time">10:45:13</span><span class="intercept-tag">[ANALYSIS]</span><span class="intercept-content" style="color:var(--amber);">Subject understands full deployment lifecycle. Dangerous.</span></div>
+      </div>
+
+      <div class="intercept-block">
+        <div class="intercept-header">
+          <span class="channel-badge">CH-04</span>
+          <span class="channel-name">PRACTICES & PRINCIPLES</span>
+          <span class="channel-freq">FREQ: 462.575 MHz</span>
+        </div>
+        <div class="intercept-line"><span class="intercept-time">14:22:01</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Agile/Scrum practitioner -- sprint planning, retros, standups</span></div>
+        <div class="intercept-line"><span class="intercept-time">14:22:04</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Code review culture advocate -- thorough PR reviews, constructive feedback</span></div>
+        <div class="intercept-line"><span class="intercept-time">14:22:07</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Accessibility (WCAG compliance) and semantic HTML standards</span></div>
+        <div class="intercept-line"><span class="intercept-time">14:22:10</span><span class="intercept-tag">[INTERCEPT]</span><span class="intercept-content">Test-driven development -- unit, integration, and e2e coverage</span></div>
+        <div class="intercept-line"><span class="intercept-time">14:22:13</span><span class="intercept-tag">[ANALYSIS]</span><span class="intercept-content" style="color:var(--amber);">Subject's engineering discipline exceeds normal parameters. Proceed with caution.</span></div>
+      </div>
+    </section>
+
+    <!-- ======== SECTION 4: KNOWN ASSOCIATES (EXPERIENCE) ======== -->
+    <section id="associates" class="dossier-section">
+      <div class="section-header">
+        <span class="section-number">SEC. 04</span>
+        <span class="section-title">KNOWN ASSOCIATES</span>
+        <span class="section-class">SURVEILLANCE LOG</span>
+      </div>
+
+      <div class="surveillance-timeline">
+        <div class="surveillance-entry">
+          <div class="surveillance-entry-header">
+            <div>
+              <div class="associate-name">WALMART GLOBAL TECH</div>
+              <div class="associate-role">Software Developer</div>
+            </div>
+            <div class="last-seen">
+              <span class="last-seen-label">LAST SEEN</span>
+              2023 - PRESENT
+            </div>
+          </div>
+          <ul class="surveillance-notes">
+            <li>Subject currently embedded within Walmart Global Tech, the technology division of the world's largest company by revenue (Fortune #1)</li>
+            <li>Engineers production-grade applications serving 240M+ weekly customers across the digital retail platform</li>
+            <li>Architects scalable frontend solutions using React, Next.js, and TypeScript in a micro-frontend ecosystem</li>
+            <li>Collaborates cross-functionally with product, design, and backend teams to ship high-impact features</li>
+            <li>Leads performance optimization efforts, contributing to measurable improvements in Core Web Vitals</li>
+            <li>Conducts thorough code reviews and mentors junior engineers on best practices</li>
+          </ul>
+        </div>
+
+        <div class="surveillance-entry">
+          <div class="surveillance-entry-header">
+            <div>
+              <div class="associate-name">PREVIOUS ENGAGEMENTS</div>
+              <div class="associate-role">Software Engineering Roles</div>
+            </div>
+            <div class="last-seen">
+              <span class="last-seen-label">PERIOD</span>
+              Prior to 2023
+            </div>
+          </div>
+          <ul class="surveillance-notes">
+            <li>Subject has a documented history of software development across multiple organizations</li>
+            <li>Demonstrated progressive growth in technical complexity and scope of responsibility</li>
+            <li>Early career marked by rapid acquisition of full-stack capabilities</li>
+            <li>Built foundational expertise in JavaScript ecosystems and modern web development</li>
+            <li>Contributed to projects that sharpened skills in system design and scalable architecture</li>
+          </ul>
+        </div>
+
+        <div class="surveillance-entry">
+          <div class="surveillance-entry-header">
+            <div>
+              <div class="associate-name">ACADEMIC BACKGROUND</div>
+              <div class="associate-role">Education & Training</div>
+            </div>
+            <div class="last-seen">
+              <span class="last-seen-label">STATUS</span>
+              COMPLETED
+            </div>
+          </div>
+          <ul class="surveillance-notes">
+            <li>Formal education in Computer Science / Engineering</li>
+            <li>Coursework provided foundation in algorithms, data structures, and system design principles</li>
+            <li>Supplemented academic training with continuous self-directed learning</li>
+            <li>Active participation in technical communities, hackathons, and open-source contributions</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== SECTION 5: MAKE CONTACT ======== -->
+    <section id="contact" class="dossier-section">
+      <div class="section-header">
+        <span class="section-number">SEC. 05</span>
+        <span class="section-title">MAKE CONTACT</span>
+        <span class="section-class">SECURE CHANNEL</span>
+      </div>
+
+      <div class="secure-channel">
+        <p style="font-size:12px; color:var(--text-green-dim); margin-bottom:20px; letter-spacing:0.5px; line-height:1.8;">
+          To initiate contact with the subject, use one of the following encrypted channels.<br>
+          All communications are monitored. Hover to decrypt channel identifiers.
+        </p>
+
+        <a href="mailto:anshullgarg@gmail.com" class="encrypted-link">
+          <span class="freq-label">FREQ: EMAIL</span>
+          <span class="encrypted-text">61 6E 73 68 75 6C 6C 67 61 72 67 40 67 6D 61 69 6C</span>
+          <span class="decoded-text">anshullgarg@gmail.com</span>
+        </a>
+
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="encrypted-link">
+          <span class="freq-label">FREQ: LNKDN</span>
+          <span class="encrypted-text">6C 69 6E 6B 65 64 69 6E 2E 63 6F 6D 2F 69 6E 2F</span>
+          <span class="decoded-text">linkedin.com/in/anshullgarg</span>
+        </a>
+
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="encrypted-link">
+          <span class="freq-label">FREQ: GTHUB</span>
+          <span class="encrypted-text">67 69 74 68 75 62 2E 63 6F 6D 2F 61 6E 73 68 75 6C</span>
+          <span class="decoded-text">github.com/anshullgarg</span>
+        </a>
+
+        <a href="https://twitter.com/anshullgarg" target="_blank" rel="noopener" class="encrypted-link">
+          <span class="freq-label">FREQ: X/TWR</span>
+          <span class="encrypted-text">78 2E 63 6F 6D 2F 61 6E 73 68 75 6C 6C 67 61 72</span>
+          <span class="decoded-text">x.com/anshullgarg</span>
+        </a>
+
+        <div class="dead-drop-form">
+          <div class="dead-drop-title">LEAVE DEAD DROP MESSAGE</div>
+
+          <div class="form-field">
+            <label>AGENT IDENTIFIER (NAME)</label>
+            <input type="text" placeholder="Your name or callsign..." autocomplete="off">
+          </div>
+          <div class="form-field">
+            <label>RETURN CHANNEL (EMAIL)</label>
+            <input type="email" placeholder="your.email@domain.com" autocomplete="off">
+          </div>
+          <div class="form-field">
+            <label>ENCRYPTED MESSAGE</label>
+            <textarea placeholder="Enter your message here. All transmissions are encrypted end-to-end..."></textarea>
+          </div>
+
+          <button class="submit-btn" type="button" id="send-btn">TRANSMIT MESSAGE</button>
+          <div id="send-confirmation" style="display:none; margin-top:12px; font-size:11px; color:var(--text-green); letter-spacing:1px;">
+            > MESSAGE TRANSMITTED SUCCESSFULLY. AWAIT RESPONSE ON SECURE CHANNEL.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="dossier-footer">
+      <div class="footer-classification">
+        // TOP SECRET // NOFORN // ORCON //
+      </div>
+      <div class="footer-text">
+        PERSONNEL DOSSIER: GARG, ANSHULL K. | OPERATION: TALENT ACQUISITION<br>
+        This document contains information classified at the TOP SECRET level.<br>
+        Unauthorized disclosure is subject to criminal penalties.<br><br>
+        <span style="color:var(--text-green-ghost);">Built by Anshull Garg | 2026 | All rights reserved</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  /* ==========================================================
+     STATE
+     ========================================================== */
+  let entryDismissed = false;
+  let mouseX = 0, mouseY = 0;
+  const startTime = Date.now();
+
+  /* ==========================================================
+     ENTRY SCREEN BOOT SEQUENCE
+     ========================================================== */
+  const entryLines = [
+    { id: 'el1', delay: 400 },
+    { id: 'el2', delay: 1200 },
+    { id: 'el3', delay: 2200 },
+    { id: 'el4', delay: 3000 },
+    { id: 'el5', delay: 3500 },
+    { id: 'el6', delay: 4000 },
+    { id: 'el7', delay: 5000 },
+    { id: 'el8', delay: 5800 },
+  ];
+
+  entryLines.forEach(line => {
+    setTimeout(() => {
+      const el = document.getElementById(line.id);
+      if (el) {
+        el.classList.add('visible');
+        if (line.id === 'el8') el.classList.add('blink-cursor');
+      }
+    }, line.delay);
+  });
+
+  // Show prompt and warning
+  setTimeout(() => {
+    const prompt = document.getElementById('entry-prompt');
+    const warning = document.getElementById('entry-warning');
+    if (prompt) prompt.classList.add('visible');
+    if (warning) warning.classList.add('visible');
+  }, 6500);
+
+  /* ==========================================================
+     DISMISS ENTRY SCREEN
+     ========================================================== */
+  function dismissEntry() {
+    if (entryDismissed) return;
+    entryDismissed = true;
+
+    const screen = document.getElementById('entry-screen');
+    screen.classList.add('dismissed');
+
+    setTimeout(() => {
+      screen.style.display = 'none';
+      document.getElementById('main-content').classList.add('active');
+      document.getElementById('status-bar').classList.add('active');
+      document.body.classList.add('loaded');
+
+      // Trigger section reveals
+      revealSections();
+      // Trigger stamp animations
+      triggerStamps();
+    }, 800);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') dismissEntry();
+  });
+
+  const entryAction = document.getElementById('entry-action');
+  if (entryAction) entryAction.addEventListener('click', dismissEntry);
+
+  const entryScreen = document.getElementById('entry-screen');
+  if (entryScreen) entryScreen.addEventListener('click', function(e) {
+    if (e.target === entryScreen || e.target.classList.contains('crt-vignette')) {
+      dismissEntry();
+    }
+  });
+
+  /* ==========================================================
+     RETICLE CURSOR
+     ========================================================== */
+  const reticle = document.getElementById('reticle');
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (reticle) {
+      reticle.style.left = mouseX + 'px';
+      reticle.style.top = mouseY + 'px';
+    }
+  });
+
+  /* ==========================================================
+     CCTV CAMERA TRACKING
+     ========================================================== */
+  const cameraBody = document.getElementById('camera-body');
+
+  function updateCamera() {
+    if (!cameraBody || !entryDismissed) {
+      requestAnimationFrame(updateCamera);
+      return;
+    }
+
+    const sidebar = document.getElementById('cctv-sidebar');
+    if (!sidebar) {
+      requestAnimationFrame(updateCamera);
+      return;
+    }
+
+    const rect = sidebar.getBoundingClientRect();
+    const feedCenterX = rect.left + rect.width / 2;
+    const feedCenterY = rect.top + 125; // center of the feed area
+
+    const dx = mouseX - feedCenterX;
+    const dy = mouseY - feedCenterY;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    // Limit rotation range
+    const clampedAngle = Math.max(-35, Math.min(35, angle * 0.3));
+    cameraBody.style.transform = 'rotate(' + clampedAngle + 'deg)';
+
+    requestAnimationFrame(updateCamera);
+  }
+  requestAnimationFrame(updateCamera);
+
+  /* ==========================================================
+     CCTV TIMESTAMP
+     ========================================================== */
+  function updateTimestamps() {
+    const now = new Date();
+    const ts = now.getFullYear() + '-' +
+      String(now.getMonth()+1).padStart(2,'0') + '-' +
+      String(now.getDate()).padStart(2,'0') + ' ' +
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
+
+    const cctvTs = document.getElementById('cctv-timestamp');
+    if (cctvTs) cctvTs.textContent = ts;
+
+    // Status bar elapsed time
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+    const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+
+    const statusTime = document.getElementById('status-time');
+    if (statusTime) statusTime.textContent = h + ':' + m + ':' + s;
+  }
+
+  setInterval(updateTimestamps, 1000);
+  updateTimestamps();
+
+  /* ==========================================================
+     THREAT LEVEL BAR (based on scroll)
+     ========================================================== */
+  function updateThreatLevel() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+
+    const level = Math.ceil(progress * 8);
+    const segments = document.querySelectorAll('.threat-segment');
+    const label = document.getElementById('threat-label');
+
+    segments.forEach((seg, i) => {
+      seg.className = 'threat-segment';
+      if (i < level) {
+        if (i < 3) seg.classList.add('active-green');
+        else if (i < 6) seg.classList.add('active-amber');
+        else seg.classList.add('active-red');
+      }
+    });
+
+    if (label) {
+      if (level <= 2) { label.textContent = 'LOW'; label.style.color = 'var(--text-green)'; }
+      else if (level <= 4) { label.textContent = 'MODERATE'; label.style.color = 'var(--text-green)'; }
+      else if (level <= 6) { label.textContent = 'ELEVATED'; label.style.color = 'var(--amber)'; }
+      else { label.textContent = 'CRITICAL'; label.style.color = 'var(--red-classified)'; }
+    }
+  }
+
+  window.addEventListener('scroll', updateThreatLevel, { passive: true });
+
+  /* ==========================================================
+     SECTION REVEAL ON SCROLL
+     ========================================================== */
+  function revealSections() {
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+
+          // Flash effect on section change
+          const flash = document.getElementById('section-flash');
+          flash.classList.remove('active');
+          void flash.offsetWidth; // reflow
+          flash.classList.add('active');
+
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.dossier-section').forEach(function(section) {
+      observer.observe(section);
+    });
+  }
+
+  /* ==========================================================
+     STAMP SLAM ANIMATION
+     ========================================================== */
+  function triggerStamps() {
+    const stamps = document.querySelectorAll('[data-stamp]');
+    stamps.forEach(function(stamp, i) {
+      setTimeout(function() {
+        stamp.classList.add('slammed');
+      }, 1500 + (i * 400));
+    });
+  }
+
+  /* ==========================================================
+     SIDEBAR NAV ACTIVE STATE
+     ========================================================== */
+  function updateSidebarNav() {
+    const sections = ['personnel', 'evidence', 'intercepts', 'associates', 'contact'];
+    const navItems = document.querySelectorAll('.sidebar-nav-item');
+
+    let currentSection = sections[0];
+
+    sections.forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= 200) currentSection = id;
+      }
+    });
+
+    navItems.forEach(function(item) {
+      item.classList.toggle('active', item.getAttribute('data-section') === currentSection);
+    });
+  }
+
+  window.addEventListener('scroll', updateSidebarNav, { passive: true });
+
+  /* ==========================================================
+     SIDEBAR NAV SMOOTH SCROLL
+     ========================================================== */
+  document.querySelectorAll('.sidebar-nav-item').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('data-section');
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* ==========================================================
+     DEAD DROP FORM SUBMIT
+     ========================================================== */
+  const sendBtn = document.getElementById('send-btn');
+  if (sendBtn) {
+    sendBtn.addEventListener('click', function() {
+      const confirmation = document.getElementById('send-confirmation');
+
+      // Simulate transmission
+      sendBtn.textContent = 'ENCRYPTING...';
+      sendBtn.disabled = true;
+
+      setTimeout(function() {
+        sendBtn.textContent = 'TRANSMITTING...';
+      }, 600);
+
+      setTimeout(function() {
+        sendBtn.textContent = 'TRANSMITTED';
+        sendBtn.style.borderColor = 'var(--text-green)';
+        if (confirmation) confirmation.style.display = 'block';
+      }, 1500);
+
+      setTimeout(function() {
+        sendBtn.textContent = 'TRANSMIT MESSAGE';
+        sendBtn.disabled = false;
+        sendBtn.style.borderColor = '';
+        if (confirmation) confirmation.style.display = 'none';
+      }, 5000);
+    });
+  }
+
+  /* ==========================================================
+     PERIODIC SCREEN FLICKER (SUBTLE)
+     ========================================================== */
+  function randomFlicker() {
+    const delay = 8000 + Math.random() * 15000; // every 8-23 seconds
+    setTimeout(function() {
+      document.body.classList.add('screen-flicker');
+      setTimeout(function() {
+        document.body.classList.remove('screen-flicker');
+      }, 200);
+      randomFlicker();
+    }, delay);
+  }
+  randomFlicker();
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG | Software Developer | The Corruption</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A portfolio that breaks its own facade to reveal something real.">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Tenor+Sans&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   CSS CUSTOM PROPERTIES
+   ======================================================================== */
+:root {
+  /* Clean Layer */
+  --clean-bg: #FFFFFF;
+  --clean-surface: #F8F9FA;
+  --clean-border: #E2E8F0;
+  --clean-text: #1A1A2E;
+  --clean-text-muted: #64748B;
+  --clean-accent: #0066CC;
+  --clean-accent-light: #E8F0FE;
+  --clean-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Corrupt Layer */
+  --corrupt-bg: #0A0A0F;
+  --corrupt-surface: #141418;
+  --corrupt-elevated: #1E1E24;
+  --corrupt-border: #2A2A32;
+  --corrupt-text: #E8E0D0;
+  --corrupt-text-muted: #A8A3B3;
+  --corrupt-accent: #C87941;
+  --corrupt-accent-glow: #E8A76C;
+  --corrupt-red: #FF3333;
+  --corrupt-green: #00FF88;
+  --corrupt-font-display: 'Tenor Sans', serif;
+  --corrupt-font-heading: 'Space Grotesk', sans-serif;
+  --corrupt-font-body: 'Inter', sans-serif;
+  --corrupt-font-hand: 'Caveat', cursive;
+  --corrupt-font-code: 'JetBrains Mono', monospace;
+}
+
+/* ========================================================================
+   RESET & BASE
+   ======================================================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  overflow-x: hidden;
+  line-height: 1.7;
+  position: relative;
+}
+
+::selection {
+  background: rgba(0, 102, 204, 0.2);
+  color: var(--clean-text);
+}
+
+body.corrupted ::selection {
+  background: rgba(200, 121, 65, 0.3);
+  color: var(--corrupt-text);
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+/* ========================================================================
+   PREFERS-REDUCED-MOTION: Instant switch, no animation
+   ======================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+  .scanlines, .vhs-overlay, #glitch-canvas { display: none !important; }
+  .clean-layer { opacity: 0 !important; pointer-events: none !important; }
+  .corrupt-layer { opacity: 1 !important; pointer-events: all !important; }
+  body { background: var(--corrupt-bg) !important; }
+}
+
+/* ========================================================================
+   SCANLINE / VHS OVERLAY (during corruption)
+   ======================================================================== */
+.scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+.scanlines.active {
+  opacity: 1;
+  animation: scanlineFlicker 0.1s infinite;
+}
+
+@keyframes scanlineFlicker {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.6; }
+}
+
+.vhs-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0;
+  mix-blend-mode: overlay;
+}
+
+.vhs-overlay.active {
+  opacity: 0.15;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 0, 0, 0.1) 0%,
+    rgba(0, 255, 0, 0.05) 33%,
+    rgba(0, 0, 255, 0.1) 66%,
+    rgba(255, 0, 0, 0.05) 100%
+  );
+  animation: vhsShift 0.5s infinite;
+}
+
+@keyframes vhsShift {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-2px); }
+  50% { transform: translateY(1px); }
+  75% { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
+
+/* ========================================================================
+   GLITCH CANVAS (pixel displacement)
+   ======================================================================== */
+#glitch-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9996;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* ========================================================================
+   SCREEN TEAR EFFECT
+   ======================================================================== */
+.screen-tear {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--corrupt-red), var(--corrupt-green), var(--corrupt-red));
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 20px rgba(255, 51, 51, 0.5), 0 0 40px rgba(0, 255, 136, 0.3);
+}
+
+.screen-tear.tear-1 { top: 30%; }
+.screen-tear.tear-2 { top: 55%; }
+.screen-tear.tear-3 { top: 75%; }
+
+.screen-tear.active {
+  animation: tearSlide 0.4s ease-out forwards;
+}
+
+@keyframes tearSlide {
+  0% { opacity: 0; transform: scaleX(0); }
+  20% { opacity: 1; transform: scaleX(1.05); }
+  40% { transform: scaleX(0.98) translateX(5px); }
+  60% { transform: scaleX(1.02) translateX(-3px); }
+  80% { opacity: 0.7; }
+  100% { opacity: 0; transform: scaleX(1); }
+}
+
+/* ========================================================================
+   CLEAN LAYER
+   ======================================================================== */
+.clean-layer {
+  position: relative;
+  z-index: 100;
+  background: var(--clean-bg);
+  font-family: var(--clean-font);
+  color: var(--clean-text);
+  min-height: 100vh;
+  transition: opacity 0.6s ease, transform 0.8s ease;
+}
+
+.clean-layer.glitching {
+  animation: cleanGlitch 0.15s infinite;
+}
+
+@keyframes cleanGlitch {
+  0% { transform: translate(0); filter: none; }
+  20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+  40% { transform: translate(2px, -1px); filter: saturate(2) contrast(1.2); }
+  60% { transform: translate(-1px, 3px); filter: hue-rotate(-90deg) brightness(1.3); }
+  80% { transform: translate(3px, -2px); filter: invert(0.1); }
+  100% { transform: translate(0); filter: none; }
+}
+
+.clean-layer.fragmenting {
+  animation: fragment 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes fragment {
+  0% {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0) translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+  30% {
+    opacity: 0.9;
+    transform: perspective(1000px) rotateX(2deg) translateY(10px);
+    clip-path: inset(0 0 0 0);
+  }
+  50% {
+    opacity: 0.6;
+    transform: perspective(1000px) rotateX(8deg) translateY(40px);
+    clip-path: polygon(0 0, 100% 0, 98% 45%, 2% 50%, 100% 55%, 100% 100%, 0 100%);
+  }
+  70% {
+    opacity: 0.3;
+    transform: perspective(1000px) rotateX(15deg) translateY(120px) scale(0.95);
+    filter: blur(2px) brightness(1.5);
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(25deg) translateY(300px) scale(0.9);
+    filter: blur(8px) brightness(2);
+    pointer-events: none;
+  }
+}
+
+/* Clean Nav */
+.clean-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid var(--clean-border);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.clean-nav-logo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--clean-text);
+  letter-spacing: -0.02em;
+}
+
+.clean-nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.clean-nav-links a {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--clean-text-muted);
+  transition: color 0.2s;
+}
+
+.clean-nav-links a:hover { color: var(--clean-accent); }
+
+/* Clean Hero */
+.clean-hero {
+  padding: 120px 48px 100px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.clean-hero-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clean-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.clean-hero h1 {
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: var(--clean-text);
+}
+
+.clean-hero h1 .hero-name {
+  color: var(--clean-accent);
+}
+
+.clean-hero p {
+  font-size: 1.15rem;
+  color: var(--clean-text-muted);
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto 36px;
+}
+
+.clean-hero-cta {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.clean-btn-primary {
+  padding: 14px 32px;
+  background: var(--clean-accent);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.clean-btn-primary:hover {
+  background: #0052A3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.clean-btn-secondary {
+  padding: 14px 32px;
+  border: 2px solid var(--clean-border);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--clean-text);
+  transition: all 0.2s;
+}
+
+.clean-btn-secondary:hover {
+  border-color: var(--clean-accent);
+  color: var(--clean-accent);
+}
+
+/* Clean Skills */
+.clean-section {
+  padding: 80px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.clean-section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--clean-text);
+}
+
+.clean-section-subtitle {
+  font-size: 1rem;
+  color: var(--clean-text-muted);
+  margin-bottom: 48px;
+}
+
+.clean-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.clean-skill-card {
+  background: var(--clean-surface);
+  border: 1px solid var(--clean-border);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.clean-skill-card:hover {
+  border-color: var(--clean-accent);
+  box-shadow: 0 4px 16px rgba(0, 102, 204, 0.08);
+}
+
+.clean-skill-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.clean-skill-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clean-text);
+}
+
+/* Clean Projects */
+.clean-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+}
+
+.clean-project-card {
+  background: var(--clean-surface);
+  border: 1px solid var(--clean-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.clean-project-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.clean-project-img {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--clean-accent-light), #f0f4ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.clean-project-body {
+  padding: 24px;
+}
+
+.clean-project-body h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--clean-text);
+}
+
+.clean-project-body p {
+  font-size: 0.9rem;
+  color: var(--clean-text-muted);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.clean-project-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.clean-project-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: var(--clean-accent-light);
+  color: var(--clean-accent);
+  border-radius: 20px;
+}
+
+/* Clean Experience */
+.clean-experience-item {
+  border-left: 3px solid var(--clean-accent);
+  padding: 0 0 40px 28px;
+  position: relative;
+}
+
+.clean-experience-item::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  background: var(--clean-accent);
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+.clean-experience-item h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--clean-text);
+}
+
+.clean-experience-item .role {
+  font-size: 0.95rem;
+  color: var(--clean-accent);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.clean-experience-item .period {
+  font-size: 0.8rem;
+  color: var(--clean-text-muted);
+  margin-bottom: 12px;
+}
+
+.clean-experience-item p {
+  font-size: 0.9rem;
+  color: var(--clean-text-muted);
+  line-height: 1.7;
+}
+
+/* Clean Contact */
+.clean-contact {
+  text-align: center;
+  padding: 80px 48px;
+  background: var(--clean-surface);
+  border-top: 1px solid var(--clean-border);
+}
+
+.clean-contact h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.clean-contact p {
+  font-size: 1rem;
+  color: var(--clean-text-muted);
+  margin-bottom: 32px;
+}
+
+.clean-contact-links {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.clean-contact-link {
+  padding: 12px 24px;
+  border: 1px solid var(--clean-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--clean-text-muted);
+  transition: all 0.2s;
+}
+
+.clean-contact-link:hover {
+  border-color: var(--clean-accent);
+  color: var(--clean-accent);
+}
+
+/* ========================================================================
+   GLITCH EFFECTS ON CLEAN ELEMENTS
+   ======================================================================== */
+.rgb-split {
+  animation: rgbSplit 0.15s infinite;
+}
+
+@keyframes rgbSplit {
+  0% {
+    text-shadow:
+      -2px 0 rgba(255, 51, 51, 0.7),
+      2px 0 rgba(0, 255, 136, 0.7);
+  }
+  25% {
+    text-shadow:
+      2px -1px rgba(255, 51, 51, 0.7),
+      -2px 1px rgba(0, 255, 136, 0.7);
+  }
+  50% {
+    text-shadow:
+      -1px 2px rgba(255, 51, 51, 0.7),
+      1px -2px rgba(0, 255, 136, 0.7);
+  }
+  75% {
+    text-shadow:
+      3px 1px rgba(255, 51, 51, 0.7),
+      -3px -1px rgba(0, 255, 136, 0.7);
+  }
+  100% {
+    text-shadow:
+      -2px 0 rgba(255, 51, 51, 0.7),
+      2px 0 rgba(0, 255, 136, 0.7);
+  }
+}
+
+.invert-patch {
+  animation: invertPatch 0.3s ease-in-out;
+}
+
+@keyframes invertPatch {
+  0%, 100% { filter: none; }
+  50% { filter: invert(1) hue-rotate(180deg); }
+}
+
+.pixel-glitch {
+  animation: pixelGlitch 0.2s steps(2) infinite;
+}
+
+@keyframes pixelGlitch {
+  0% { clip-path: inset(0 0 95% 0); transform: translateX(0); }
+  25% { clip-path: inset(20% 0 60% 0); transform: translateX(-5px); }
+  50% { clip-path: inset(60% 0 20% 0); transform: translateX(5px); }
+  75% { clip-path: inset(80% 0 5% 0); transform: translateX(-3px); }
+  100% { clip-path: inset(0 0 95% 0); transform: translateX(0); }
+}
+
+/* Corner pixel glitch */
+.corner-glitch {
+  position: fixed;
+  width: 80px;
+  height: 60px;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--corrupt-red) 0px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.corner-glitch.active {
+  animation: cornerPulse 0.5s ease-out;
+}
+
+@keyframes cornerPulse {
+  0% { opacity: 0; }
+  30% { opacity: 0.8; }
+  50% { opacity: 0.3; }
+  70% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* ========================================================================
+   CORRUPT LAYER
+   ======================================================================== */
+.corrupt-layer {
+  position: relative;
+  z-index: 50;
+  background: var(--corrupt-bg);
+  font-family: var(--corrupt-font-body);
+  color: var(--corrupt-text);
+  min-height: 100vh;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.corrupt-layer.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Corrupt Nav */
+.corrupt-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 48px;
+  border-bottom: 1px dashed var(--corrupt-border);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.corrupt-nav-logo {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.95rem;
+  color: var(--corrupt-accent);
+}
+
+.corrupt-nav-logo .blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.corrupt-nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+
+.corrupt-nav-links a {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.8rem;
+  color: var(--corrupt-text-muted);
+  transition: color 0.3s;
+  letter-spacing: 0.02em;
+}
+
+.corrupt-nav-links a:hover {
+  color: var(--corrupt-accent);
+}
+
+/* Corrupt Hero */
+.corrupt-hero {
+  padding: 140px 48px 120px;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.corrupt-hero-tag {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.8rem;
+  color: var(--corrupt-accent);
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+
+.corrupt-hero h1 {
+  font-family: var(--corrupt-font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1.2;
+  margin-bottom: 24px;
+  color: var(--corrupt-text);
+  position: relative;
+}
+
+.corrupt-hero h1 .accent {
+  color: var(--corrupt-accent);
+  position: relative;
+}
+
+.corrupt-hero h1 .accent::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--corrupt-accent);
+  opacity: 0.5;
+}
+
+.corrupt-hero .subtitle {
+  font-family: var(--corrupt-font-hand);
+  font-size: 1.6rem;
+  color: var(--corrupt-accent-glow);
+  margin-bottom: 32px;
+  opacity: 0.8;
+}
+
+.corrupt-hero p {
+  font-size: 1.05rem;
+  color: var(--corrupt-text-muted);
+  line-height: 1.9;
+  max-width: 650px;
+  margin-bottom: 40px;
+}
+
+.corrupt-hero p .honest {
+  color: var(--corrupt-text);
+  font-weight: 500;
+  border-bottom: 1px dashed var(--corrupt-accent);
+}
+
+.corrupt-hero-cta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.corrupt-btn-primary {
+  padding: 14px 32px;
+  background: transparent;
+  border: 2px solid var(--corrupt-accent);
+  color: var(--corrupt-accent);
+  font-family: var(--corrupt-font-code);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.corrupt-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: var(--corrupt-accent);
+  transition: left 0.3s;
+  z-index: -1;
+}
+
+.corrupt-btn-primary:hover {
+  color: var(--corrupt-bg);
+}
+
+.corrupt-btn-primary:hover::before {
+  left: 0;
+}
+
+.corrupt-btn-secondary {
+  padding: 14px 32px;
+  border: 1px dashed var(--corrupt-border);
+  color: var(--corrupt-text-muted);
+  font-family: var(--corrupt-font-code);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+}
+
+.corrupt-btn-secondary:hover {
+  border-color: var(--corrupt-text-muted);
+  color: var(--corrupt-text);
+}
+
+/* Corrupt Divider */
+.corrupt-divider {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 48px;
+  opacity: 0.2;
+}
+
+.corrupt-divider hr {
+  border: none;
+  border-top: 1px dashed var(--corrupt-border);
+}
+
+/* Corrupt Section */
+.corrupt-section {
+  padding: 80px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.corrupt-section-label {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.75rem;
+  color: var(--corrupt-accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.corrupt-section-title {
+  font-family: var(--corrupt-font-display);
+  font-size: 1.8rem;
+  color: var(--corrupt-text);
+  margin-bottom: 12px;
+}
+
+.corrupt-section-desc {
+  font-size: 0.95rem;
+  color: var(--corrupt-text-muted);
+  margin-bottom: 48px;
+  max-width: 600px;
+}
+
+/* Corrupt Skills - Honest statements */
+.corrupt-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.corrupt-skill-item {
+  padding: 24px;
+  border: 1px dashed var(--corrupt-border);
+  background: var(--corrupt-surface);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.corrupt-skill-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--corrupt-accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.corrupt-skill-item:hover::before {
+  opacity: 1;
+}
+
+.corrupt-skill-item:hover {
+  border-color: var(--corrupt-accent);
+  background: var(--corrupt-elevated);
+}
+
+.corrupt-skill-name {
+  font-family: var(--corrupt-font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--corrupt-text);
+  margin-bottom: 6px;
+}
+
+.corrupt-skill-honest {
+  font-size: 0.85rem;
+  color: var(--corrupt-text-muted);
+  line-height: 1.6;
+}
+
+.corrupt-skill-honest .years {
+  font-family: var(--corrupt-font-code);
+  color: var(--corrupt-accent);
+  font-size: 0.8rem;
+}
+
+.corrupt-skill-aside {
+  font-family: var(--corrupt-font-hand);
+  font-size: 1rem;
+  color: var(--corrupt-accent-glow);
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* Corrupt Projects */
+.corrupt-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+}
+
+.corrupt-project-card {
+  border: 1px dashed var(--corrupt-border);
+  background: var(--corrupt-surface);
+  overflow: hidden;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.corrupt-project-card:hover {
+  border-color: var(--corrupt-accent);
+  transform: translateY(-3px);
+}
+
+.corrupt-project-header {
+  padding: 28px 28px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.corrupt-project-number {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.7rem;
+  color: var(--corrupt-accent);
+  letter-spacing: 0.1em;
+}
+
+.corrupt-project-status {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border: 1px solid;
+}
+
+.corrupt-project-status.shipped {
+  color: var(--corrupt-green);
+  border-color: var(--corrupt-green);
+}
+
+.corrupt-project-status.wip {
+  color: var(--corrupt-accent);
+  border-color: var(--corrupt-accent);
+}
+
+.corrupt-project-body {
+  padding: 20px 28px 28px;
+}
+
+.corrupt-project-body h3 {
+  font-family: var(--corrupt-font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--corrupt-text);
+  margin-bottom: 12px;
+}
+
+.corrupt-project-body p {
+  font-size: 0.9rem;
+  color: var(--corrupt-text-muted);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.corrupt-project-failure {
+  background: rgba(255, 51, 51, 0.05);
+  border-left: 2px solid var(--corrupt-red);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: var(--corrupt-text-muted);
+  line-height: 1.6;
+}
+
+.corrupt-project-failure strong {
+  color: var(--corrupt-red);
+  font-family: var(--corrupt-font-code);
+  font-size: 0.75rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.corrupt-project-lesson {
+  background: rgba(0, 255, 136, 0.03);
+  border-left: 2px solid var(--corrupt-green);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: var(--corrupt-text-muted);
+  line-height: 1.6;
+}
+
+.corrupt-project-lesson strong {
+  color: var(--corrupt-green);
+  font-family: var(--corrupt-font-code);
+  font-size: 0.75rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.corrupt-project-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.corrupt-project-tag {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border: 1px dashed var(--corrupt-border);
+  color: var(--corrupt-text-muted);
+}
+
+/* Corrupt Experience */
+.corrupt-experience-item {
+  padding: 32px;
+  border: 1px dashed var(--corrupt-border);
+  background: var(--corrupt-surface);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.corrupt-experience-item::after {
+  content: '';
+  position: absolute;
+  top: -1px; right: -1px;
+  width: 20px; height: 20px;
+  border-top: 2px solid var(--corrupt-accent);
+  border-right: 2px solid var(--corrupt-accent);
+}
+
+.corrupt-experience-item::before {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: -1px;
+  width: 20px; height: 20px;
+  border-bottom: 2px solid var(--corrupt-accent);
+  border-left: 2px solid var(--corrupt-accent);
+}
+
+.corrupt-experience-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.corrupt-experience-item h3 {
+  font-family: var(--corrupt-font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--corrupt-text);
+}
+
+.corrupt-experience-item .period {
+  font-family: var(--corrupt-font-code);
+  font-size: 0.75rem;
+  color: var(--corrupt-accent);
+  letter-spacing: 0.05em;
+}
+
+.corrupt-experience-item .role {
+  font-size: 0.95rem;
+  color: var(--corrupt-accent-glow);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.corrupt-experience-item p {
+  font-size: 0.9rem;
+  color: var(--corrupt-text-muted);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.corrupt-experience-honest {
+  font-family: var(--corrupt-font-hand);
+  font-size: 1.1rem;
+  color: var(--corrupt-accent-glow);
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+/* Corrupt Contact */
+.corrupt-contact {
+  padding: 100px 48px;
+  text-align: center;
+  border-top: 1px dashed var(--corrupt-border);
+  position: relative;
+}
+
+.corrupt-contact h2 {
+  font-family: var(--corrupt-font-display);
+  font-size: 2.2rem;
+  color: var(--corrupt-text);
+  margin-bottom: 16px;
+}
+
+.corrupt-contact p {
+  font-size: 1rem;
+  color: var(--corrupt-text-muted);
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.corrupt-contact-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.corrupt-contact-item {
+  padding: 16px 28px;
+  border: 1px dashed var(--corrupt-border);
+  font-family: var(--corrupt-font-code);
+  font-size: 0.8rem;
+  color: var(--corrupt-text-muted);
+  transition: all 0.3s;
+  letter-spacing: 0.03em;
+}
+
+.corrupt-contact-item:hover {
+  border-color: var(--corrupt-accent);
+  color: var(--corrupt-accent);
+  background: var(--corrupt-surface);
+}
+
+/* Corrupt Footer */
+.corrupt-footer {
+  padding: 32px 48px;
+  text-align: center;
+  font-family: var(--corrupt-font-code);
+  font-size: 0.7rem;
+  color: var(--corrupt-text-muted);
+  opacity: 0.5;
+  border-top: 1px dashed var(--corrupt-border);
+}
+
+/* ========================================================================
+   TOGGLE BUTTON
+   ======================================================================== */
+.corruption-toggle {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 10001;
+  padding: 12px 24px;
+  font-family: var(--corrupt-font-code);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  border: 2px solid;
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--corrupt-accent);
+  border-color: var(--corrupt-accent);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.corruption-toggle:hover {
+  background: var(--corrupt-accent);
+  color: var(--corrupt-bg);
+}
+
+.corruption-toggle.clean-state {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--clean-accent);
+  border-color: var(--clean-accent);
+}
+
+.corruption-toggle.clean-state:hover {
+  background: var(--clean-accent);
+  color: white;
+}
+
+/* Replay button */
+.replay-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 200px;
+  z-index: 10001;
+  padding: 12px 24px;
+  font-family: var(--corrupt-font-code);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  border: 1px dashed var(--corrupt-border);
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--corrupt-text-muted);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.replay-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.replay-btn:hover {
+  border-color: var(--corrupt-accent);
+  color: var(--corrupt-accent);
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 768px) {
+  .clean-nav, .corrupt-nav {
+    padding: 16px 20px;
+  }
+
+  .clean-nav-links, .corrupt-nav-links {
+    display: none;
+  }
+
+  .clean-hero, .corrupt-hero {
+    padding: 80px 20px 60px;
+  }
+
+  .clean-section, .corrupt-section {
+    padding: 60px 20px;
+  }
+
+  .clean-skills-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+  }
+
+  .clean-projects-grid, .corrupt-projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .corrupt-skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clean-contact, .corrupt-contact {
+    padding: 60px 20px;
+  }
+
+  .corruption-toggle {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 0.7rem;
+  }
+
+  .replay-btn {
+    bottom: 16px;
+    right: 150px;
+    padding: 10px 16px;
+    font-size: 0.7rem;
+  }
+
+  .clean-hero h1 {
+    font-size: 2rem;
+  }
+
+  .corrupt-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .corrupt-experience-meta {
+    flex-direction: column;
+  }
+
+  .corrupt-project-body {
+    padding: 16px 20px 20px;
+  }
+
+  .corrupt-project-header {
+    padding: 20px 20px 0;
+  }
+
+  .corrupt-experience-item {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .clean-hero-cta, .corrupt-hero-cta {
+    flex-direction: column;
+  }
+
+  .clean-btn-primary, .clean-btn-secondary,
+  .corrupt-btn-primary, .corrupt-btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .replay-btn {
+    bottom: 60px;
+    right: 16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     OVERLAYS
+     ================================================================ -->
+<div class="scanlines" id="scanlines"></div>
+<div class="vhs-overlay" id="vhsOverlay"></div>
+<canvas id="glitch-canvas"></canvas>
+
+<div class="screen-tear tear-1" id="tear1"></div>
+<div class="screen-tear tear-2" id="tear2"></div>
+<div class="screen-tear tear-3" id="tear3"></div>
+
+<div class="corner-glitch" id="cornerGlitch" style="top: 20px; right: 30px;"></div>
+
+<!-- ================================================================
+     CLEAN LAYER (The Mask)
+     ================================================================ -->
+<div class="clean-layer" id="cleanLayer">
+
+  <!-- Nav -->
+  <nav class="clean-nav" role="navigation" aria-label="Clean portfolio navigation">
+    <div class="clean-nav-logo">Anshull Garg</div>
+    <ul class="clean-nav-links">
+      <li><a href="#clean-about">About</a></li>
+      <li><a href="#clean-skills">Skills</a></li>
+      <li><a href="#clean-projects">Projects</a></li>
+      <li><a href="#clean-experience">Experience</a></li>
+      <li><a href="#clean-contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="clean-hero" aria-label="Introduction">
+    <div class="clean-hero-label">Software Developer</div>
+    <h1 id="cleanHeroTitle">Hi, I'm <span class="hero-name">Anshull Garg</span></h1>
+    <p>I'm a Software Engineer at Walmart Global Tech. I build scalable, high-performance applications that power enterprise e-commerce at Fortune 1 scale. Passionate about clean code and great user experiences.</p>
+    <div class="clean-hero-cta">
+      <a href="#clean-projects" class="clean-btn-primary">View My Work</a>
+      <a href="#clean-contact" class="clean-btn-secondary">Get in Touch</a>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="clean-section" id="clean-skills" aria-label="Skills">
+    <h2 class="clean-section-title">Technical Skills</h2>
+    <p class="clean-section-subtitle">Technologies and tools I work with daily.</p>
+    <div class="clean-skills-grid">
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#9883;</div>
+        <div class="clean-skill-name">React</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#9881;</div>
+        <div class="clean-skill-name">Node.js</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#128218;</div>
+        <div class="clean-skill-name">TypeScript</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#9729;</div>
+        <div class="clean-skill-name">AWS</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#128003;</div>
+        <div class="clean-skill-name">PostgreSQL</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#128295;</div>
+        <div class="clean-skill-name">Docker</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#128202;</div>
+        <div class="clean-skill-name">GraphQL</div>
+      </div>
+      <div class="clean-skill-card">
+        <div class="clean-skill-icon">&#9889;</div>
+        <div class="clean-skill-name">Next.js</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="clean-section" id="clean-projects" aria-label="Projects">
+    <h2 class="clean-section-title">Featured Projects</h2>
+    <p class="clean-section-subtitle">A selection of my recent work.</p>
+    <div class="clean-projects-grid">
+      <div class="clean-project-card">
+        <div class="clean-project-img">&#128722;</div>
+        <div class="clean-project-body">
+          <h3>E-Commerce Platform</h3>
+          <p>A full-stack e-commerce solution with real-time inventory management, payment processing, and analytics dashboard.</p>
+          <div class="clean-project-tags">
+            <span class="clean-project-tag">React</span>
+            <span class="clean-project-tag">Node.js</span>
+            <span class="clean-project-tag">PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-project-card">
+        <div class="clean-project-img">&#128200;</div>
+        <div class="clean-project-body">
+          <h3>Analytics Dashboard</h3>
+          <p>Real-time data visualization platform with customizable widgets and automated reporting capabilities.</p>
+          <div class="clean-project-tags">
+            <span class="clean-project-tag">Next.js</span>
+            <span class="clean-project-tag">D3.js</span>
+            <span class="clean-project-tag">GraphQL</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-project-card">
+        <div class="clean-project-img">&#128274;</div>
+        <div class="clean-project-body">
+          <h3>Auth Microservice</h3>
+          <p>Scalable authentication service supporting OAuth 2.0, JWT, and multi-factor authentication.</p>
+          <div class="clean-project-tags">
+            <span class="clean-project-tag">Node.js</span>
+            <span class="clean-project-tag">Redis</span>
+            <span class="clean-project-tag">Docker</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="clean-section" id="clean-experience" aria-label="Experience">
+    <h2 class="clean-section-title">Experience</h2>
+    <p class="clean-section-subtitle">My professional journey.</p>
+    <div class="clean-experience-item">
+      <h3>Walmart Global Tech</h3>
+      <div class="role">Software Engineer</div>
+      <div class="period">2023 - Present</div>
+      <p>Building scalable applications for one of the world's largest digital retail platforms. Working across the full stack to deliver high-impact features serving millions of users daily.</p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="clean-contact" id="clean-contact" aria-label="Contact">
+    <h2>Let's Connect</h2>
+    <p>I'm always open to discussing new projects and opportunities.</p>
+    <div class="clean-contact-links">
+      <a href="mailto:hello@anshullgarg.com" class="clean-contact-link">Email</a>
+      <a href="#" class="clean-contact-link">LinkedIn</a>
+      <a href="#" class="clean-contact-link">GitHub</a>
+      <a href="#" class="clean-contact-link">Resume</a>
+    </div>
+  </section>
+
+</div>
+<!-- END CLEAN LAYER -->
+
+
+<!-- ================================================================
+     CORRUPT LAYER (The Truth)
+     ================================================================ -->
+<div class="corrupt-layer" id="corruptLayer">
+
+  <!-- Nav -->
+  <nav class="corrupt-nav" role="navigation" aria-label="Portfolio navigation">
+    <div class="corrupt-nav-logo">anshull.garg<span class="blink">_</span></div>
+    <ul class="corrupt-nav-links">
+      <li><a href="#corrupt-about">the truth</a></li>
+      <li><a href="#corrupt-skills">what I actually know</a></li>
+      <li><a href="#corrupt-projects">what I built</a></li>
+      <li><a href="#corrupt-experience">the real story</a></li>
+      <li><a href="#corrupt-contact">talk to me</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="corrupt-hero" id="corrupt-about" aria-label="Introduction">
+    <div class="corrupt-hero-tag">// the real version</div>
+    <h1 id="corruptHeroTitle">I build things that <span class="accent">break</span>, then I fix them better</h1>
+    <div class="subtitle">...and I'm still figuring it out, honestly</div>
+    <p>
+      I'm Anshull Garg. Software Engineer at Walmart. The portfolio you just saw? That was the version I thought you wanted to see --
+      <span class="honest">polished, predictable, safe</span>. This is the version that's actually me. I write code that sometimes works on the first try and
+      sometimes sends me down a 4-hour debugging spiral at 2AM. I'm learning every single day, and I think that's the point.
+    </p>
+    <div class="corrupt-hero-cta">
+      <a href="#corrupt-projects" class="corrupt-btn-primary">see what I've actually built</a>
+      <a href="#corrupt-contact" class="corrupt-btn-secondary">let's be real</a>
+    </div>
+  </section>
+
+  <div class="corrupt-divider"><hr></div>
+
+  <!-- Skills - Honest version -->
+  <section class="corrupt-section" id="corrupt-skills" aria-label="Skills">
+    <div class="corrupt-section-label">// what_i_actually_know</div>
+    <h2 class="corrupt-section-title">Honest Skill Assessment</h2>
+    <p class="corrupt-section-desc">No percentage bars. No self-assigned "expert" labels. Just honesty.</p>
+    <div class="corrupt-skills-grid">
+      <div class="corrupt-skill-item">
+        <div class="corrupt-skill-name">React</div>
+        <div class="corrupt-skill-honest">
+          <span class="years">3+ years</span> -- Still learning. I can build complex UIs, manage state without wanting to quit, and debug the virtual DOM. But every new project teaches me something I missed.
+        </div>
+        <div class="corrupt-skill-aside">The docs are my best friend and I'm not ashamed</div>
+      </div>
+      <div class="corrupt-skill-item">
+        <div class="corrupt-skill-name">Node.js</div>
+        <div class="corrupt-skill-honest">
+          <span class="years">3+ years</span> -- I build APIs that work under pressure. I've learned the hard way about event loop blocking, memory leaks, and why you should never trust user input. Ever.
+        </div>
+        <div class="corrupt-skill-aside">I have strong opinions about error handling now</div>
+      </div>
+      <div class="corrupt-skill-item">
+        <div class="corrupt-skill-name">TypeScript</div>
+        <div class="corrupt-skill-honest">
+          <span class="years">2+ years</span> -- Went from "why do I need types" to "how did I ever live without types." Still occasionally defeated by generics. Working on it.
+        </div>
+        <div class="corrupt-skill-aside">'any' is sometimes the answer and that's okay</div>
+      </div>
+      <div class="corrupt-skill-item">
+        <div class="corrupt-skill-name">PostgreSQL</div>
+        <div class="corrupt-skill-honest">
+          <span class="years">2+ years</span> -- I can design schemas, write complex queries, and optimize the ones that make the DBA wince. I've also written queries that made production sweat.
+        </div>
+        <div class="corrupt-skill-aside">That one N+1 query still haunts me</div>
+      </div>
+      <div class="corrupt-skill-item">
+        <div class="corrupt-skill-name">AWS / Cloud</div>
+        <div class="corrupt-skill-honest">
+          <span class="years">2+ years</span> -- EC2, S3, Lambda, RDS, CloudFormation. I can deploy things without burning money. Usually. The billing dashboard is always open in another tab.
+        </div>
+        <div class="corrupt-skill-aside">I check the bill more than my bank account</div>
+      </div>
+      <div class="corrupt-skill-item">
+        <div class="corrupt-skill-name">Docker / CI/CD</div>
+        <div class="corrupt-skill-honest">
+          <span class="years">2+ years</span> -- Containerization, GitHub Actions, deployment pipelines. I've broken staging more times than I'd like to admit, but production stays clean.
+        </div>
+        <div class="corrupt-skill-aside">"Works on my machine" is not a deployment strategy</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="corrupt-divider"><hr></div>
+
+  <!-- Projects - with failure stories -->
+  <section class="corrupt-section" id="corrupt-projects" aria-label="Projects">
+    <div class="corrupt-section-label">// things_i_shipped</div>
+    <h2 class="corrupt-section-title">Projects, Failures Included</h2>
+    <p class="corrupt-section-desc">Every project has a story. Most of those stories include at least one moment of "oh no."</p>
+    <div class="corrupt-projects-grid">
+      <div class="corrupt-project-card">
+        <div class="corrupt-project-header">
+          <span class="corrupt-project-number">PRJ_001</span>
+          <span class="corrupt-project-status shipped">SHIPPED</span>
+        </div>
+        <div class="corrupt-project-body">
+          <h3>E-Commerce Platform</h3>
+          <p>A full-stack commerce engine with real-time inventory, Stripe integration, and an admin dashboard that doesn't make you want to throw your laptop. Built because I wanted to understand every layer of a transaction.</p>
+          <div class="corrupt-project-failure">
+            <strong>WHAT WENT WRONG:</strong>
+            First version had a race condition in the cart service. Two users could "buy" the last item simultaneously. Discovered this during a demo. The silence was deafening.
+          </div>
+          <div class="corrupt-project-lesson">
+            <strong>WHAT I LEARNED:</strong>
+            Optimistic locking, database transactions, and the importance of load testing before you show anyone anything. Also: always have a backup demo plan.
+          </div>
+          <div class="corrupt-project-tags">
+            <span class="corrupt-project-tag">react</span>
+            <span class="corrupt-project-tag">node.js</span>
+            <span class="corrupt-project-tag">postgresql</span>
+            <span class="corrupt-project-tag">stripe</span>
+            <span class="corrupt-project-tag">redis</span>
+          </div>
+        </div>
+      </div>
+      <div class="corrupt-project-card">
+        <div class="corrupt-project-header">
+          <span class="corrupt-project-number">PRJ_002</span>
+          <span class="corrupt-project-status shipped">SHIPPED</span>
+        </div>
+        <div class="corrupt-project-body">
+          <h3>Real-Time Analytics Dashboard</h3>
+          <p>WebSocket-powered data viz that actually updates without you refreshing the page like it's 2005. Custom chart components because D3 is powerful but also wants to hurt you.</p>
+          <div class="corrupt-project-failure">
+            <strong>WHAT WENT WRONG:</strong>
+            Memory leak. The WebSocket connections weren't being cleaned up on component unmount. After 30 minutes, the browser tab was using 2GB of RAM. Chrome was not happy. Neither was I.
+          </div>
+          <div class="corrupt-project-lesson">
+            <strong>WHAT I LEARNED:</strong>
+            useEffect cleanup functions aren't optional. Memory profiling in Chrome DevTools. The importance of disconnect handlers. Basically: clean up after yourself.
+          </div>
+          <div class="corrupt-project-tags">
+            <span class="corrupt-project-tag">next.js</span>
+            <span class="corrupt-project-tag">d3.js</span>
+            <span class="corrupt-project-tag">websockets</span>
+            <span class="corrupt-project-tag">graphql</span>
+          </div>
+        </div>
+      </div>
+      <div class="corrupt-project-card">
+        <div class="corrupt-project-header">
+          <span class="corrupt-project-number">PRJ_003</span>
+          <span class="corrupt-project-status wip">EVOLVING</span>
+        </div>
+        <div class="corrupt-project-body">
+          <h3>Auth Microservice</h3>
+          <p>Because "just use Firebase" felt like cheating, and I wanted to truly understand OAuth flows, JWT refresh token rotation, and why security is so much harder than it looks.</p>
+          <div class="corrupt-project-failure">
+            <strong>WHAT WENT WRONG:</strong>
+            V1 stored refresh tokens in localStorage. Yes, I know. I know now. XSS vulnerability waiting to happen. A security-minded friend reviewed it and the code review was... educational.
+          </div>
+          <div class="corrupt-project-lesson">
+            <strong>WHAT I LEARNED:</strong>
+            HttpOnly cookies, token rotation, the OWASP Top 10, and humility. Rewrote the entire token management layer. Twice. It's actually solid now.
+          </div>
+          <div class="corrupt-project-tags">
+            <span class="corrupt-project-tag">node.js</span>
+            <span class="corrupt-project-tag">redis</span>
+            <span class="corrupt-project-tag">docker</span>
+            <span class="corrupt-project-tag">jwt</span>
+            <span class="corrupt-project-tag">oauth2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="corrupt-divider"><hr></div>
+
+  <!-- Experience - Honest version -->
+  <section class="corrupt-section" id="corrupt-experience" aria-label="Experience">
+    <div class="corrupt-section-label">// the_real_story</div>
+    <h2 class="corrupt-section-title">Where I've Been</h2>
+    <p class="corrupt-section-desc">The version that doesn't sound like a LinkedIn post.</p>
+
+    <div class="corrupt-experience-item">
+      <div class="corrupt-experience-meta">
+        <h3>Walmart Global Tech</h3>
+        <span class="period">2023 -- PRESENT</span>
+      </div>
+      <div class="role">Software Engineer</div>
+      <p>
+        I build features that serve millions of people. That sounds impressive on paper, and it is -- but it also means every bug I write has the potential to affect a lot of humans buying groceries at 11PM. The pressure is real and it makes you better.
+      </p>
+      <p>
+        Day-to-day: I work across the full stack. React on the front, Node on the back, PostgreSQL for data, all of it containerized and deployed through CI/CD pipelines. I've shipped features that reduced page load times, built internal tools that other engineers actually wanted to use, and spent more time in code reviews than I expected -- which turned out to be where I learned the most.
+      </p>
+      <p>
+        The honest part: I was terrified on my first day. The codebase was enormous. The systems were complex. I asked a lot of questions and got comfortable with not knowing things. That shift -- from "I should already know this" to "I'm going to figure this out" -- changed everything.
+      </p>
+      <div class="corrupt-experience-honest">The imposter syndrome fades, but never fully. And that keeps you sharp.</div>
+    </div>
+  </section>
+
+  <div class="corrupt-divider"><hr></div>
+
+  <!-- Contact - Honest version -->
+  <section class="corrupt-contact" id="corrupt-contact" aria-label="Contact">
+    <div class="corrupt-section-label">// let's_talk</div>
+    <h2>No Contact Form. Just Humans.</h2>
+    <p>I read every message. If you want to talk about code, collaborate on something, or just say hi -- here's where to find me.</p>
+    <div class="corrupt-contact-grid">
+      <a href="mailto:hello@anshullgarg.com" class="corrupt-contact-item">hello@anshullgarg.com</a>
+      <a href="#" class="corrupt-contact-item">github/anshullgarg</a>
+      <a href="#" class="corrupt-contact-item">linkedin/anshullgarg</a>
+    </div>
+  </section>
+
+  <footer class="corrupt-footer">
+    <p>built with too much coffee, late nights, and the belief that honesty &gt; polish &mdash; anshull garg, 2025</p>
+  </footer>
+
+</div>
+<!-- END CORRUPT LAYER -->
+
+
+<!-- ================================================================
+     CONTROLS
+     ================================================================ -->
+<button class="corruption-toggle clean-state" id="corruptionToggle" aria-label="Toggle between clean and corrupt portfolio views">
+  see the truth
+</button>
+
+<button class="replay-btn" id="replayBtn" aria-label="Replay the corruption animation">
+  replay corruption
+</button>
+
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ---- STATE ----
+  let isCorrupted = false;
+  let corruptionInProgress = false;
+  let corruptionHasPlayed = false;
+
+  // ---- ELEMENTS ----
+  const cleanLayer = document.getElementById('cleanLayer');
+  const corruptLayer = document.getElementById('corruptLayer');
+  const scanlines = document.getElementById('scanlines');
+  const vhsOverlay = document.getElementById('vhsOverlay');
+  const glitchCanvas = document.getElementById('glitch-canvas');
+  const cornerGlitch = document.getElementById('cornerGlitch');
+  const tear1 = document.getElementById('tear1');
+  const tear2 = document.getElementById('tear2');
+  const tear3 = document.getElementById('tear3');
+  const toggleBtn = document.getElementById('corruptionToggle');
+  const replayBtn = document.getElementById('replayBtn');
+  const cleanHeroTitle = document.getElementById('cleanHeroTitle');
+
+  // ---- CANVAS SETUP ----
+  const ctx = glitchCanvas.getContext('2d');
+  function resizeCanvas() {
+    glitchCanvas.width = window.innerWidth;
+    glitchCanvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // ---- REDUCED MOTION CHECK ----
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (prefersReducedMotion) {
+    // Instant switch: show corrupt, hide clean
+    cleanLayer.style.opacity = '0';
+    cleanLayer.style.pointerEvents = 'none';
+    corruptLayer.classList.add('active');
+    document.body.style.background = 'var(--corrupt-bg)';
+    document.body.classList.add('corrupted');
+    isCorrupted = true;
+    corruptionHasPlayed = true;
+    toggleBtn.textContent = 'put the mask back on';
+    toggleBtn.classList.remove('clean-state');
+    replayBtn.classList.add('visible');
+    return; // Exit -- no animations
+  }
+
+  // ---- TEXT SCRAMBLE ----
+  class TextScrambler {
+    constructor(el) {
+      this.el = el;
+      this.chars = '!<>-_\\/[]{}--=+*^?#_______';
+      this.frame = 0;
+      this.queue = [];
+      this.resolve = null;
+    }
+
+    setText(newText) {
+      const oldText = this.el.innerText;
+      const length = Math.max(oldText.length, newText.length);
+      return new Promise((resolve) => {
+        this.resolve = resolve;
+        this.queue = [];
+        for (let i = 0; i < length; i++) {
+          const from = oldText[i] || '';
+          const to = newText[i] || '';
+          const start = Math.floor(Math.random() * 20);
+          const end = start + Math.floor(Math.random() * 20);
+          this.queue.push({ from, to, start, end });
+        }
+        cancelAnimationFrame(this.frameRequest);
+        this.frame = 0;
+        this.update();
+      });
+    }
+
+    update() {
+      let output = '';
+      let complete = 0;
+      for (let i = 0, n = this.queue.length; i < n; i++) {
+        let { from, to, start, end, char } = this.queue[i];
+        if (this.frame >= end) {
+          complete++;
+          output += to;
+        } else if (this.frame >= start) {
+          if (!char || Math.random() < 0.28) {
+            char = this.chars[Math.floor(Math.random() * this.chars.length)];
+            this.queue[i].char = char;
+          }
+          output += '<span style="color:var(--corrupt-red);opacity:0.8">' + char + '</span>';
+        } else {
+          output += from;
+        }
+      }
+      this.el.innerHTML = output;
+      if (complete === this.queue.length) {
+        if (this.resolve) this.resolve();
+      } else {
+        this.frameRequest = requestAnimationFrame(() => this.update());
+        this.frame++;
+      }
+    }
+  }
+
+  // ---- PIXEL DISPLACEMENT ON CANVAS ----
+  function drawPixelGlitch(intensity) {
+    ctx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+    const w = glitchCanvas.width;
+    const h = glitchCanvas.height;
+    const slices = Math.floor(5 + intensity * 15);
+
+    for (let i = 0; i < slices; i++) {
+      const y = Math.random() * h;
+      const sliceH = Math.random() * (2 + intensity * 20);
+      const offset = (Math.random() - 0.5) * intensity * 60;
+
+      ctx.fillStyle = Math.random() > 0.5
+        ? `rgba(255, 51, 51, ${0.05 + Math.random() * 0.1})`
+        : `rgba(0, 255, 136, ${0.05 + Math.random() * 0.1})`;
+      ctx.fillRect(offset, y, w, sliceH);
+    }
+
+    // Random block displacement
+    const blocks = Math.floor(intensity * 8);
+    for (let i = 0; i < blocks; i++) {
+      const bx = Math.random() * w;
+      const by = Math.random() * h;
+      const bw = 20 + Math.random() * 100;
+      const bh = 2 + Math.random() * 10;
+      ctx.fillStyle = `rgba(${Math.random() > 0.5 ? '255,51,51' : '0,255,136'}, ${0.1 + Math.random() * 0.15})`;
+      ctx.fillRect(bx, by, bw, bh);
+    }
+  }
+
+  let glitchAnimFrame = null;
+  function startCanvasGlitch(intensity, duration) {
+    glitchCanvas.style.opacity = '1';
+    const startTime = Date.now();
+
+    function animate() {
+      const elapsed = Date.now() - startTime;
+      if (elapsed > duration) {
+        ctx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+        glitchCanvas.style.opacity = '0';
+        return;
+      }
+      const progress = elapsed / duration;
+      const currentIntensity = intensity * (progress < 0.5 ? progress * 2 : 2 - progress * 2);
+      drawPixelGlitch(currentIntensity);
+      glitchAnimFrame = requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // ---- CORRUPTION SEQUENCE ----
+  function runCorruptionSequence() {
+    if (corruptionInProgress) return;
+    corruptionInProgress = true;
+
+    // Ensure scroll to top for the show
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    const timeline = [
+      // Step 1 (0ms / 8s mark): Small pixel glitch in corner
+      {
+        delay: 0,
+        action: () => {
+          cornerGlitch.classList.add('active');
+          setTimeout(() => cornerGlitch.classList.remove('active'), 500);
+        }
+      },
+      // Step 2 (1000ms / 9s): Hero text flickers with RGB split
+      {
+        delay: 1000,
+        action: () => {
+          cleanHeroTitle.classList.add('rgb-split');
+          setTimeout(() => cleanHeroTitle.classList.remove('rgb-split'), 600);
+          // Brief canvas glitch
+          startCanvasGlitch(0.3, 400);
+        }
+      },
+      // Step 3 (2000ms / 10s): Horizontal tear across screen
+      {
+        delay: 2000,
+        action: () => {
+          tear1.classList.add('active');
+          scanlines.classList.add('active');
+          // Random skill cards start inverting
+          const cards = document.querySelectorAll('.clean-skill-card');
+          const randomCard = cards[Math.floor(Math.random() * cards.length)];
+          if (randomCard) randomCard.classList.add('invert-patch');
+          setTimeout(() => {
+            tear1.classList.remove('active');
+            if (randomCard) randomCard.classList.remove('invert-patch');
+          }, 500);
+        }
+      },
+      // Step 4 (3000ms / 11s): Colors invert in patches
+      {
+        delay: 3000,
+        action: () => {
+          const elements = document.querySelectorAll('.clean-project-card, .clean-skill-card');
+          elements.forEach((el, i) => {
+            setTimeout(() => {
+              el.classList.add('invert-patch');
+              setTimeout(() => el.classList.remove('invert-patch'), 300);
+            }, i * 100);
+          });
+          vhsOverlay.classList.add('active');
+          startCanvasGlitch(0.5, 800);
+        }
+      },
+      // Step 5 (4000ms / 12s): Typography scrambles
+      {
+        delay: 4000,
+        action: () => {
+          const scrambler = new TextScrambler(cleanHeroTitle);
+          scrambler.setText('I build things that break');
+          cleanHeroTitle.classList.add('rgb-split');
+          tear2.classList.add('active');
+          setTimeout(() => tear2.classList.remove('active'), 500);
+        }
+      },
+      // Step 6 (5000ms / 13s): Major glitch - clean layer starts shaking
+      {
+        delay: 5000,
+        action: () => {
+          cleanLayer.classList.add('glitching');
+          startCanvasGlitch(0.9, 1500);
+          tear1.classList.add('active');
+          tear3.classList.add('active');
+          setTimeout(() => {
+            tear1.classList.remove('active');
+            tear3.classList.remove('active');
+          }, 600);
+        }
+      },
+      // Step 7 (6500ms / 14s): Clean layer fragments and falls
+      {
+        delay: 6500,
+        action: () => {
+          cleanLayer.classList.remove('glitching');
+          cleanLayer.classList.add('fragmenting');
+          document.body.style.background = 'var(--corrupt-bg)';
+
+          // Start revealing corrupt layer
+          setTimeout(() => {
+            corruptLayer.classList.add('active');
+          }, 400);
+        }
+      },
+      // Step 8 (7800ms / 15s): Full reveal
+      {
+        delay: 7800,
+        action: () => {
+          scanlines.classList.remove('active');
+          vhsOverlay.classList.remove('active');
+          cleanHeroTitle.classList.remove('rgb-split');
+
+          cleanLayer.style.display = 'none';
+          isCorrupted = true;
+          corruptionInProgress = false;
+          corruptionHasPlayed = true;
+          document.body.classList.add('corrupted');
+
+          toggleBtn.textContent = 'put the mask back on';
+          toggleBtn.classList.remove('clean-state');
+          replayBtn.classList.add('visible');
+
+          // Settle canvas
+          ctx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+          glitchCanvas.style.opacity = '0';
+        }
+      }
+    ];
+
+    timeline.forEach(step => {
+      setTimeout(step.action, step.delay);
+    });
+  }
+
+  // ---- INSTANT TOGGLE (after first play) ----
+  function showClean() {
+    cleanLayer.style.display = '';
+    cleanLayer.classList.remove('fragmenting', 'glitching');
+    cleanLayer.style.opacity = '1';
+    cleanLayer.style.transform = 'none';
+    cleanLayer.style.filter = 'none';
+    cleanLayer.style.pointerEvents = 'all';
+
+    corruptLayer.classList.remove('active');
+    document.body.style.background = 'var(--clean-bg)';
+    document.body.classList.remove('corrupted');
+
+    // Reset hero text
+    cleanHeroTitle.innerHTML = 'Hi, I\'m <span class="hero-name">Anshull Garg</span>';
+    cleanHeroTitle.classList.remove('rgb-split');
+
+    scanlines.classList.remove('active');
+    vhsOverlay.classList.remove('active');
+    glitchCanvas.style.opacity = '0';
+    ctx.clearRect(0, 0, glitchCanvas.width, glitchCanvas.height);
+
+    isCorrupted = false;
+    toggleBtn.textContent = 'see the truth';
+    toggleBtn.classList.add('clean-state');
+  }
+
+  function showCorrupt() {
+    cleanLayer.style.display = 'none';
+    corruptLayer.classList.add('active');
+    document.body.style.background = 'var(--corrupt-bg)';
+    document.body.classList.add('corrupted');
+
+    isCorrupted = true;
+    toggleBtn.textContent = 'put the mask back on';
+    toggleBtn.classList.remove('clean-state');
+  }
+
+  // ---- REPLAY ----
+  function replayCorruption() {
+    if (corruptionInProgress) return;
+
+    // Reset everything to clean state first
+    showClean();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    // Wait a beat then run the sequence
+    setTimeout(() => {
+      runCorruptionSequence();
+    }, 500);
+  }
+
+  // ---- EVENT LISTENERS ----
+  toggleBtn.addEventListener('click', () => {
+    if (corruptionInProgress) return;
+
+    if (!corruptionHasPlayed) {
+      // First time: run the full animation
+      runCorruptionSequence();
+    } else {
+      // After first play: instant toggle
+      if (isCorrupted) {
+        showClean();
+        replayBtn.classList.add('visible');
+      } else {
+        showCorrupt();
+        replayBtn.classList.add('visible');
+      }
+    }
+  });
+
+  replayBtn.addEventListener('click', replayCorruption);
+
+  // ---- AUTO-START CORRUPTION after 8 seconds ----
+  setTimeout(() => {
+    if (!isCorrupted && !corruptionInProgress) {
+      runCorruptionSequence();
+    }
+  }, 8000);
+
+  // ---- KEYBOARD ACCESSIBILITY ----
+  document.addEventListener('keydown', (e) => {
+    // Press 'T' to toggle
+    if (e.key === 't' || e.key === 'T') {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      toggleBtn.click();
+    }
+    // Press 'R' to replay
+    if (e.key === 'r' || e.key === 'R') {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (corruptionHasPlayed) replayCorruption();
+    }
+  });
+
+  // ---- SMOOTH SCROLL FOR ANCHOR LINKS ----
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ---- INTERSECTION OBSERVER for corrupt layer reveal animations ----
+  const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+
+  // Apply reveal animation to corrupt layer sections
+  document.querySelectorAll('.corrupt-section, .corrupt-contact').forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    revealObserver.observe(section);
+  });
+
+})();
+</script>
+
+</body>
+</html>

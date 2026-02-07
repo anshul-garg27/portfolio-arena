@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MAINFRAME v2.1.0 | Anshull Garg - Software Developer</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. An interactive terminal portfolio experience.">
+<meta name="theme-color" content="#0C0A06">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   CSS CUSTOM PROPERTIES - THEME SYSTEM
+   ============================================================ */
+:root {
+  /* Amber Mainframe (Default) */
+  --bg-deep: #0C0A06;
+  --bg-surface: #1A1608;
+  --bg-panel: #1A1610;
+  --text-primary: #FFB000;
+  --text-body: #CC8C00;
+  --text-dim: #665800;
+  --text-ghost: #3D2B00;
+  --accent-hot: #FF6B00;
+  --accent-cream: #FFE0A0;
+  --accent-error: #FF4444;
+  --success: #33FF66;
+  --border-color: #332E1A;
+  --glow-color: rgba(255, 176, 0, 0.15);
+  --glow-strong: rgba(255, 176, 0, 0.4);
+  --selection-bg: rgba(255, 176, 0, 0.2);
+  --scanline-opacity: 0.04;
+  --theme-name: 'amber';
+
+  /* Typography */
+  --font-terminal: 'Space Mono', monospace;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-retro: 'VT323', monospace;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* Sizing */
+  --terminal-max-width: 900px;
+}
+
+/* Green Theme */
+[data-theme="green"] {
+  --bg-deep: #0A0E0A;
+  --bg-surface: #0D120D;
+  --bg-panel: #111A11;
+  --text-primary: #33FF66;
+  --text-body: #2BCC52;
+  --text-dim: #1A7A33;
+  --text-ghost: #0D3D1A;
+  --accent-hot: #66FF99;
+  --accent-cream: #AAFFBB;
+  --accent-error: #FF3333;
+  --success: #33FF66;
+  --border-color: #1A3D1A;
+  --glow-color: rgba(51, 255, 102, 0.12);
+  --glow-strong: rgba(51, 255, 102, 0.35);
+  --selection-bg: rgba(51, 255, 102, 0.2);
+  --theme-name: 'green';
+}
+
+/* Blue Theme */
+[data-theme="blue"] {
+  --bg-deep: #080B12;
+  --bg-surface: #0C1019;
+  --bg-panel: #111825;
+  --text-primary: #7EB8DA;
+  --text-body: #5A9BBF;
+  --text-dim: #3A6B8A;
+  --text-ghost: #1E3A4D;
+  --accent-hot: #A0D4F0;
+  --accent-cream: #C8D8E8;
+  --accent-error: #E84855;
+  --success: #33CC66;
+  --border-color: #1E3A4D;
+  --glow-color: rgba(126, 184, 218, 0.12);
+  --glow-strong: rgba(126, 184, 218, 0.35);
+  --selection-bg: rgba(126, 184, 218, 0.2);
+  --theme-name: 'blue';
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--text-primary);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  font-family: var(--font-terminal);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-body);
+  background: var(--bg-deep);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   BOOT SEQUENCE
+   ============================================================ */
+#boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 40px;
+  overflow: hidden;
+  font-family: var(--font-retro);
+  font-size: 18px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+#boot-screen.hidden {
+  display: none;
+}
+
+#boot-content {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+#boot-skip {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  font-family: var(--font-retro);
+  font-size: 16px;
+  color: var(--text-dim);
+  opacity: 0;
+  animation: fadeIn 0.5s ease 1.2s forwards;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* ============================================================
+   CRT MONITOR CONTAINER
+   ============================================================ */
+#crt-container {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#crt-container.active {
+  opacity: 1;
+}
+
+#crt-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  background: var(--bg-deep);
+  overflow: hidden;
+}
+
+/* Desktop: show CRT bezel */
+@media (min-width: 900px) {
+  #crt-screen {
+    width: 92%;
+    height: 90%;
+    max-width: 1200px;
+    border-radius: 18px;
+    box-shadow:
+      0 0 80px var(--glow-color),
+      0 0 160px var(--glow-color),
+      inset 0 0 60px rgba(0,0,0,0.5);
+    border: 2px solid var(--border-color);
+  }
+}
+
+/* Scanlines overlay */
+#crt-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 1px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 2px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Screen glow / vignette */
+#crt-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+  z-index: 101;
+}
+
+/* CRT Flicker */
+@keyframes crtFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.985; }
+}
+
+#crt-screen {
+  animation: crtFlicker 0.1s infinite;
+}
+
+/* Noise overlay via SVG filter */
+#noise-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  pointer-events: none;
+  opacity: 0.025;
+  filter: url(#noiseFilter);
+  background: var(--text-primary);
+  mix-blend-mode: overlay;
+}
+
+/* ============================================================
+   TERMINAL MODE
+   ============================================================ */
+#terminal-mode {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+#terminal-mode.hidden {
+  display: none;
+}
+
+/* Title bar */
+#terminal-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titlebar-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.titlebar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+}
+
+.titlebar-dot.red { background: #FF5F57; border-color: #E14640; }
+.titlebar-dot.yellow { background: #FEBC2E; border-color: #D4A528; }
+.titlebar-dot.green { background: #28C840; border-color: #1AAB29; }
+
+.titlebar-title {
+  font-family: var(--font-terminal);
+  letter-spacing: 0.1em;
+  color: var(--text-body);
+}
+
+.titlebar-right {
+  display: flex;
+  gap: 12px;
+}
+
+.titlebar-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-dim);
+  font-family: var(--font-terminal);
+  font-size: 11px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.titlebar-btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-deep);
+  border-color: var(--text-primary);
+}
+
+/* Terminal output area */
+#terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 20px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-ghost) transparent;
+}
+
+#terminal-output::-webkit-scrollbar {
+  width: 6px;
+}
+
+#terminal-output::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#terminal-output::-webkit-scrollbar-thumb {
+  background: var(--text-ghost);
+  border-radius: 3px;
+}
+
+/* Terminal output styling */
+.output-block {
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.output-block .prompt-line {
+  color: var(--text-primary);
+  text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color);
+}
+
+.prompt-symbol {
+  color: var(--accent-hot);
+}
+
+.output-text {
+  color: var(--text-body);
+}
+
+.output-heading {
+  color: var(--text-primary);
+  text-shadow: 0 0 6px var(--glow-color);
+  font-weight: 700;
+}
+
+.output-accent {
+  color: var(--accent-hot);
+}
+
+.output-success {
+  color: var(--success);
+}
+
+.output-dim {
+  color: var(--text-dim);
+}
+
+.output-error {
+  color: var(--accent-error);
+}
+
+.output-cream {
+  color: var(--accent-cream);
+}
+
+.clickable-cmd {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--text-ghost);
+  cursor: pointer;
+  transition: text-shadow 0.2s;
+}
+
+.clickable-cmd:hover {
+  text-shadow: 0 0 8px var(--glow-color);
+  text-decoration-color: var(--text-primary);
+}
+
+/* Input area */
+#terminal-input-area {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px 12px 20px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+#input-prompt {
+  color: var(--accent-hot);
+  font-family: var(--font-terminal);
+  font-size: 14px;
+  text-shadow: 0 0 6px var(--glow-color);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+#terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-terminal);
+  font-size: 14px;
+  caret-color: var(--text-primary);
+  text-shadow: 0 0 4px var(--glow-color);
+}
+
+#terminal-input::placeholder {
+  color: var(--text-ghost);
+}
+
+#tab-hint {
+  color: var(--text-ghost);
+  font-size: 12px;
+  font-family: var(--font-terminal);
+  flex-shrink: 0;
+}
+
+/* Status bar */
+#status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-color);
+  font-size: 11px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.status-left, .status-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 4px var(--success);
+}
+
+/* ============================================================
+   GUI MODE
+   ============================================================ */
+#gui-mode {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  z-index: 10;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+#gui-mode.active {
+  display: flex;
+}
+
+/* GUI scanline (lighter) */
+#gui-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 0, 0, 0.02) 1px,
+    rgba(0, 0, 0, 0.02) 2px
+  );
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* GUI Navigation */
+#gui-nav {
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(8px);
+}
+
+.gui-nav-brand {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-primary);
+  text-shadow: 0 0 8px var(--glow-color);
+  letter-spacing: 0.08em;
+}
+
+.gui-nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.gui-nav-links a {
+  color: var(--text-body);
+  text-decoration: none;
+  font-family: var(--font-terminal);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s, text-shadow 0.2s;
+  padding: 4px 0;
+}
+
+.gui-nav-links a:hover,
+.gui-nav-links a:focus {
+  color: var(--text-primary);
+  text-shadow: 0 0 6px var(--glow-color);
+  outline: none;
+}
+
+#btn-switch-terminal {
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  font-family: var(--font-terminal);
+  font-size: 11px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#btn-switch-terminal:hover {
+  background: var(--text-primary);
+  color: var(--bg-deep);
+}
+
+/* GUI Sections */
+.gui-section {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+.gui-section-title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 0 10px var(--glow-color);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.gui-section-divider {
+  color: var(--text-ghost);
+  font-family: var(--font-terminal);
+  font-size: 12px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* GUI Hero */
+#gui-hero {
+  text-align: center;
+  padding: 100px 24px 60px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#gui-hero h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 7vw, 56px);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+#gui-hero .subtitle {
+  font-family: var(--font-terminal);
+  font-size: 16px;
+  color: var(--text-body);
+  margin-bottom: 24px;
+}
+
+#gui-hero .tagline {
+  font-family: var(--font-terminal);
+  font-size: 13px;
+  color: var(--text-dim);
+  max-width: 500px;
+  margin: 0 auto 32px;
+  line-height: 1.8;
+}
+
+/* GUI cards */
+.gui-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.gui-card-header {
+  font-family: var(--font-terminal);
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gui-card h3 {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.gui-card p {
+  color: var(--text-body);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.gui-card .tech-tag {
+  display: inline-block;
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--accent-hot);
+  border: 1px solid var(--border-color);
+  padding: 2px 8px;
+  margin: 4px 4px 0 0;
+}
+
+/* Skill bars for GUI */
+.gui-skill-bar {
+  margin-bottom: 12px;
+}
+
+.gui-skill-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-terminal);
+  font-size: 12px;
+  color: var(--text-body);
+  margin-bottom: 4px;
+}
+
+.gui-skill-track {
+  height: 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.gui-skill-fill {
+  height: 100%;
+  background: var(--text-primary);
+  box-shadow: 0 0 6px var(--glow-color);
+  transition: width 1s ease;
+}
+
+/* Git log in GUI */
+.gui-timeline-item {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 32px;
+  border-left: 2px solid var(--border-color);
+  margin-left: 8px;
+}
+
+.gui-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+.gui-timeline-dot {
+  position: absolute;
+  left: -7px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  box-shadow: 0 0 8px var(--glow-color);
+  border: 2px solid var(--bg-deep);
+}
+
+.gui-timeline-item h4 {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.gui-timeline-date {
+  font-family: var(--font-terminal);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.gui-timeline-item ul {
+  list-style: none;
+  padding: 0;
+}
+
+.gui-timeline-item li {
+  font-size: 13px;
+  color: var(--text-body);
+  padding: 2px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.gui-timeline-item li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--text-dim);
+}
+
+/* GUI contact */
+.gui-contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: var(--text-body);
+  font-family: var(--font-terminal);
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.gui-contact-link:hover {
+  background: var(--bg-surface);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  text-shadow: 0 0 4px var(--glow-color);
+}
+
+.gui-contact-label {
+  color: var(--text-dim);
+  font-size: 11px;
+  min-width: 80px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* GUI footer */
+#gui-footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-family: var(--font-terminal);
+  font-size: 12px;
+  color: var(--text-ghost);
+  border-top: 1px solid var(--border-color);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  #crt-screen {
+    animation: none !important;
+  }
+  #crt-screen::before {
+    display: none !important;
+  }
+  .output-block {
+    animation: none !important;
+  }
+  #boot-screen {
+    display: none !important;
+  }
+  #crt-container {
+    opacity: 1 !important;
+  }
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  body { font-size: 13px; }
+
+  #terminal-output { padding: 12px 12px; }
+  #terminal-input-area { padding: 8px 12px; }
+  #status-bar { padding: 4px 8px; font-size: 10px; }
+
+  .titlebar-right { display: none; }
+
+  .gui-nav-links {
+    gap: 12px;
+  }
+
+  .gui-nav-links a {
+    font-size: 10px;
+  }
+
+  #gui-hero h1 {
+    font-size: 32px;
+  }
+
+  .gui-section {
+    padding: 40px 16px;
+  }
+
+  #boot-screen {
+    padding: 20px;
+    font-size: 14px;
+  }
+}
+
+/* ============================================================
+   BLINKING CURSOR ANIMATION
+   ============================================================ */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '\2588';
+  animation: blink 1s step-end infinite;
+  color: var(--text-primary);
+}
+
+/* Power-on effect */
+@keyframes powerOn {
+  0% {
+    transform: scaleY(0.005) scaleX(0.3);
+    filter: brightness(10);
+  }
+  10% {
+    transform: scaleY(0.005) scaleX(1);
+    filter: brightness(3);
+  }
+  30% {
+    transform: scaleY(1) scaleX(1);
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+    filter: brightness(1);
+  }
+}
+
+.power-on {
+  animation: powerOn 0.6s ease-out forwards;
+}
+
+/* Hire me animation */
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 6px var(--glow-color); }
+  50% { text-shadow: 0 0 20px var(--glow-strong), 0 0 40px var(--glow-color); }
+}
+
+.glow-pulse {
+  animation: glowPulse 1.5s ease-in-out infinite;
+}
+
+/* Barrel roll */
+@keyframes barrelRoll {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.barrel-roll {
+  animation: barrelRoll 1s ease-in-out;
+}
+</style>
+</head>
+<body>
+
+<!-- SVG Noise Filter -->
+<svg style="position:absolute;width:0;height:0">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+</svg>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen">
+  <div id="boot-content"></div>
+  <div id="boot-skip">Press any key to skip...</div>
+</div>
+
+<!-- CRT CONTAINER -->
+<div id="crt-container">
+  <div id="crt-screen">
+    <div id="noise-overlay"></div>
+
+    <!-- TERMINAL MODE -->
+    <div id="terminal-mode">
+      <div id="terminal-titlebar">
+        <div class="titlebar-left">
+          <div class="titlebar-dots">
+            <span class="titlebar-dot red"></span>
+            <span class="titlebar-dot yellow"></span>
+            <span class="titlebar-dot green"></span>
+          </div>
+          <span class="titlebar-title">MAINFRAME v2.1.0 &mdash; anshull@portfolio-dev</span>
+        </div>
+        <div class="titlebar-right">
+          <button class="titlebar-btn" onclick="executeCommand('gui')" title="Switch to GUI mode">[GUI]</button>
+          <button class="titlebar-btn" onclick="executeCommand('clear')" title="Clear terminal">[CLR]</button>
+        </div>
+      </div>
+
+      <div id="terminal-output" role="log" aria-live="polite" aria-label="Terminal output"></div>
+
+      <div id="terminal-input-area">
+        <span id="input-prompt">anshull@mainframe:~$</span>
+        <input
+          type="text"
+          id="terminal-input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-label="Terminal command input"
+          placeholder="Type a command..."
+        >
+        <span id="tab-hint">TAB</span>
+      </div>
+
+      <div id="status-bar">
+        <div class="status-left">
+          <span class="status-item"><span class="status-dot"></span> ONLINE</span>
+          <span class="status-item" id="status-theme">THEME: AMBER</span>
+          <span class="status-item" id="status-visitor"></span>
+        </div>
+        <div class="status-right">
+          <span class="status-item" id="status-time"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUI MODE -->
+    <div id="gui-mode">
+      <nav id="gui-nav">
+        <span class="gui-nav-brand">&lt;/MAINFRAME&gt;</span>
+        <div class="gui-nav-links">
+          <a href="#gui-about">About</a>
+          <a href="#gui-experience">Experience</a>
+          <a href="#gui-skills">Skills</a>
+          <a href="#gui-projects">Projects</a>
+          <a href="#gui-contact">Contact</a>
+          <button id="btn-switch-terminal" onclick="switchToTerminal()">&gt;_ Terminal</button>
+        </div>
+      </nav>
+
+      <div id="gui-hero">
+        <h1>ANSHULL GARG</h1>
+        <div class="subtitle">Software Developer @ Walmart</div>
+        <div class="tagline">I build systems that serve millions. I care about performance, reliability, and the craft of engineering.</div>
+        <div style="color:var(--text-ghost); font-family:var(--font-terminal); font-size:12px;">
+          // this portfolio is also a terminal &mdash; try it
+        </div>
+      </div>
+
+      <section class="gui-section" id="gui-about">
+        <h2 class="gui-section-title">About</h2>
+        <div class="gui-section-divider">// =========================================================</div>
+        <div class="gui-card">
+          <p>I'm Anshull Garg -- a software developer at Walmart who believes great engineering is equal parts science and craft. I build performant, scalable systems that handle real-world complexity at enterprise scale.</p>
+          <br>
+          <p>My approach: clean code that the next developer will thank you for, systems thinking over feature thinking, and treating performance as a first-class feature rather than an afterthought.</p>
+          <br>
+          <p style="color:var(--text-dim); font-size:13px;">
+            <strong style="color:var(--text-primary);">Currently:</strong> Software Developer @ Walmart<br>
+            <strong style="color:var(--text-primary);">Focus:</strong> Distributed Systems, Frontend Architecture, Performance<br>
+            <strong style="color:var(--text-primary);">Status:</strong> Open to interesting conversations
+          </p>
+        </div>
+      </section>
+
+      <section class="gui-section" id="gui-experience">
+        <h2 class="gui-section-title">Experience</h2>
+        <div class="gui-section-divider">// git log --oneline --graph</div>
+
+        <div class="gui-timeline-item">
+          <div class="gui-timeline-dot"></div>
+          <h4>Software Developer @ Walmart</h4>
+          <div class="gui-timeline-date">2023 &mdash; Present | HEAD -> main</div>
+          <ul>
+            <li>Architecting and building microservices handling millions of daily requests</li>
+            <li>Driving frontend performance optimizations across critical user flows</li>
+            <li>Collaborating on design systems used by multiple product teams</li>
+            <li>Mentoring junior engineers and conducting thorough code reviews</li>
+          </ul>
+        </div>
+
+        <div class="gui-timeline-item">
+          <div class="gui-timeline-dot"></div>
+          <h4>Software Engineering Intern</h4>
+          <div class="gui-timeline-date">2022 &mdash; 2023</div>
+          <ul>
+            <li>Developed internal tooling for data pipeline monitoring</li>
+            <li>Built React components for customer-facing applications</li>
+            <li>Participated in agile sprints and contributed to production releases</li>
+          </ul>
+        </div>
+
+        <div class="gui-timeline-item">
+          <div class="gui-timeline-dot" style="background:var(--text-dim);box-shadow:none;"></div>
+          <h4>init: Started Building Things</h4>
+          <div class="gui-timeline-date">tag: v1.0.0</div>
+          <ul>
+            <li>Discovered the magic of turning ideas into working software</li>
+            <li>First line of code. No looking back.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="gui-section" id="gui-skills">
+        <h2 class="gui-section-title">Skills</h2>
+        <div class="gui-section-divider">// cat skills/languages.json | sort --by-proficiency</div>
+
+        <div class="gui-card">
+          <h3>Languages</h3>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>JavaScript / TypeScript</span><span>92%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:92%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>Python</span><span>80%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:80%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>Java</span><span>75%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:75%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>SQL</span><span>78%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:78%"></div></div></div>
+        </div>
+
+        <div class="gui-card">
+          <h3>Frameworks & Libraries</h3>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>React / Next.js</span><span>90%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:90%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>Node.js / Express</span><span>88%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:88%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>Spring Boot</span><span>70%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:70%"></div></div></div>
+        </div>
+
+        <div class="gui-card">
+          <h3>Tools & Platforms</h3>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>AWS / Cloud Services</span><span>82%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:82%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>Docker / Containers</span><span>78%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:78%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>CI/CD Pipelines</span><span>85%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:85%"></div></div></div>
+          <div class="gui-skill-bar"><div class="gui-skill-label"><span>Git / Version Control</span><span>92%</span></div><div class="gui-skill-track"><div class="gui-skill-fill" style="width:92%"></div></div></div>
+        </div>
+      </section>
+
+      <section class="gui-section" id="gui-projects">
+        <h2 class="gui-section-title">Projects</h2>
+        <div class="gui-section-divider">// ls -la ~/projects/</div>
+
+        <div class="gui-card">
+          <div class="gui-card-header">Featured Project</div>
+          <h3>Microservice Orchestration Platform</h3>
+          <p>A distributed system for managing and monitoring microservice deployments at scale. Built with event-driven architecture and real-time health monitoring dashboards.</p>
+          <div style="margin-top:12px">
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">Kafka</span>
+            <span class="tech-tag">Docker</span>
+            <span class="tech-tag">AWS</span>
+          </div>
+        </div>
+
+        <div class="gui-card">
+          <div class="gui-card-header">Side Project</div>
+          <h3>Real-Time Analytics Dashboard</h3>
+          <p>Interactive data visualization platform with WebSocket-powered live updates, custom charting engine, and configurable alert thresholds.</p>
+          <div style="margin-top:12px">
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">Next.js</span>
+            <span class="tech-tag">D3.js</span>
+            <span class="tech-tag">PostgreSQL</span>
+          </div>
+        </div>
+
+        <div class="gui-card">
+          <div class="gui-card-header">Open Source</div>
+          <h3>CLI Developer Toolkit</h3>
+          <p>A command-line utility suite for automating common development workflows -- project scaffolding, environment management, and deployment scripts.</p>
+          <div style="margin-top:12px">
+            <span class="tech-tag">Go</span>
+            <span class="tech-tag">Cobra</span>
+            <span class="tech-tag">Shell</span>
+          </div>
+        </div>
+
+        <div class="gui-card">
+          <div class="gui-card-header">Experiment</div>
+          <h3>This Portfolio (MAINFRAME)</h3>
+          <p>A fully interactive retro terminal portfolio with CRT effects, command parsing, tab completion, theme switching, and dual GUI/terminal modes. You're looking at it right now.</p>
+          <div style="margin-top:12px">
+            <span class="tech-tag">HTML</span>
+            <span class="tech-tag">CSS</span>
+            <span class="tech-tag">Vanilla JS</span>
+            <span class="tech-tag">Love</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="gui-section" id="gui-contact">
+        <h2 class="gui-section-title">Contact</h2>
+        <div class="gui-section-divider">// SECURE CHANNEL ESTABLISHED</div>
+
+        <a class="gui-contact-link" href="mailto:anshullgarg@example.com">
+          <span class="gui-contact-label">Email</span>
+          <span>anshullgarg@example.com</span>
+        </a>
+        <a class="gui-contact-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+          <span class="gui-contact-label">GitHub</span>
+          <span>github.com/anshullgarg</span>
+        </a>
+        <a class="gui-contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+          <span class="gui-contact-label">LinkedIn</span>
+          <span>linkedin.com/in/anshullgarg</span>
+        </a>
+      </section>
+
+      <footer id="gui-footer">
+        <p>MAINFRAME v2.1.0 &mdash; Built with craft by Anshull Garg</p>
+        <p style="margin-top:4px;">// No frameworks were harmed in the making of this portfolio</p>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// MAINFRAME TERMINAL - Complete JavaScript Engine
+// ============================================================
+
+(function() {
+  'use strict';
+
+  // ---- STATE ----
+  const state = {
+    commandHistory: [],
+    historyIndex: -1,
+    currentTheme: localStorage.getItem('mainframe-theme') || 'amber',
+    visitCount: parseInt(localStorage.getItem('mainframe-visits') || '0', 10) + 1,
+    lastVisit: localStorage.getItem('mainframe-last-visit'),
+    isTerminalMode: true,
+    bootComplete: false,
+    isTyping: false
+  };
+
+  // Persist visit
+  localStorage.setItem('mainframe-visits', state.visitCount);
+  localStorage.setItem('mainframe-last-visit', new Date().toISOString());
+
+  // ---- DOM REFS ----
+  const $boot = document.getElementById('boot-screen');
+  const $bootContent = document.getElementById('boot-content');
+  const $crt = document.getElementById('crt-container');
+  const $screen = document.getElementById('crt-screen');
+  const $terminalMode = document.getElementById('terminal-mode');
+  const $guiMode = document.getElementById('gui-mode');
+  const $output = document.getElementById('terminal-output');
+  const $input = document.getElementById('terminal-input');
+  const $statusTheme = document.getElementById('status-theme');
+  const $statusVisitor = document.getElementById('status-visitor');
+  const $statusTime = document.getElementById('status-time');
+
+  // ---- AVAILABLE COMMANDS (for tab completion) ----
+  const COMMANDS = [
+    'help', 'about', 'skills', 'experience', 'projects', 'contact',
+    'whoami', 'clear', 'gui', 'neofetch', 'coffee', 'theme',
+    'history', 'date', 'echo', 'ls', 'pwd', 'cat',
+    'sudo', 'rm', 'do', 'man', 'interview', 'fortune'
+  ];
+
+  // ---- THEME ----
+  function applyTheme(name) {
+    const valid = ['amber', 'green', 'blue'];
+    if (!valid.includes(name)) return false;
+    document.documentElement.setAttribute('data-theme', name === 'amber' ? '' : name);
+    if (name === 'amber') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', name);
+    state.currentTheme = name;
+    localStorage.setItem('mainframe-theme', name);
+    $statusTheme.textContent = 'THEME: ' + name.toUpperCase();
+    return true;
+  }
+
+  applyTheme(state.currentTheme);
+
+  // ---- STATUS BAR CLOCK ----
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    $statusTime.textContent = h + ':' + m + ':' + s;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Visitor count
+  $statusVisitor.textContent = 'SESSION #' + state.visitCount;
+
+  // ---- UTILITY: HTML escape ----
+  function esc(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---- PRINT TO TERMINAL ----
+  function printHTML(html) {
+    const block = document.createElement('div');
+    block.className = 'output-block';
+    block.innerHTML = html;
+    $output.appendChild(block);
+    $output.scrollTop = $output.scrollHeight;
+  }
+
+  function printLine(text, className) {
+    const cls = className || '';
+    printHTML('<span class="' + cls + '">' + esc(text) + '</span>');
+  }
+
+  function printPrompt(cmd) {
+    printHTML('<span class="prompt-line"><span class="prompt-symbol">anshull@mainframe:~$ </span>' + esc(cmd) + '</span>');
+  }
+
+  // ---- COMMAND: help ----
+  function cmdHelp() {
+    printHTML([
+      '<span class="output-heading">Available Commands</span>',
+      '<span class="output-dim">====================================</span>',
+      '',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'about\')">about</span>        Who I am and what I do',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'skills\')">skills</span>       Technical competencies',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'experience\')">experience</span>   Work history (git log style)',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'projects\')">projects</span>     Things I\'ve built',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'contact\')">contact</span>      Get in touch',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'whoami\')">whoami</span>       Display identity',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'neofetch\')">neofetch</span>     System info display',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'coffee\')">coffee</span>       Brew a cup',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'theme amber\')">theme</span>       Switch color theme [amber|green|blue]',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'gui\')">gui</span>          Switch to GUI mode',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'clear\')">clear</span>        Clear terminal',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'history\')">history</span>      Command history',
+      '  <span class="clickable-cmd" onclick="executeCommand(\'date\')">date</span>         Current date/time',
+      '',
+      '<span class="output-dim">  Tip: Use Tab for auto-complete, Up/Down for history</span>',
+      '<span class="output-dim">  Try: sudo hire me</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: about ----
+  function cmdAbout() {
+    printHTML([
+      '<span class="output-dim">Loading personal data...</span>',
+      '',
+      '<span class="output-heading">WHO I AM</span>',
+      '<span class="output-dim">--------</span>',
+      'I\'m Anshull Garg -- a software developer at <span class="output-accent">Walmart</span> who',
+      'believes great engineering is equal parts science and craft.',
+      '',
+      'I build performant, scalable systems that handle real-world',
+      'complexity at enterprise scale. Every day I get to work on',
+      'technology that touches millions of people.',
+      '',
+      '<span class="output-heading">WHAT I BELIEVE IN</span>',
+      '<span class="output-dim">-----------------</span>',
+      '<span class="output-accent">&gt;</span> Clean code that the next developer will thank you for',
+      '<span class="output-accent">&gt;</span> Systems thinking over feature thinking',
+      '<span class="output-accent">&gt;</span> Performance is a feature, not an afterthought',
+      '<span class="output-accent">&gt;</span> Documentation is love',
+      '',
+      '<span class="output-heading">CURRENTLY</span>',
+      '<span class="output-dim">---------</span>',
+      'Role:     <span class="output-accent">Software Developer @ Walmart</span>',
+      'Focus:    Distributed Systems, Frontend Architecture',
+      'Status:   <span class="output-success">Open to interesting conversations</span>',
+      '',
+      '<span class="output-dim">Try: </span><span class="clickable-cmd" onclick="executeCommand(\'skills\')">skills</span><span class="output-dim"> | </span><span class="clickable-cmd" onclick="executeCommand(\'experience\')">experience</span><span class="output-dim"> | </span><span class="clickable-cmd" onclick="executeCommand(\'projects\')">projects</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: skills ----
+  function cmdSkills() {
+    function bar(name, pct, padName) {
+      const filled = Math.round(pct / 5);
+      const empty = 20 - filled;
+      const nameStr = name.padEnd(padName || 18);
+      return nameStr + ' [' + '='.repeat(filled) + (filled < 20 ? '>' : '=') + ' '.repeat(Math.max(0, empty - 1)) + '] ' + String(pct).padStart(3) + '%';
+    }
+    printHTML([
+      '<span class="output-heading">LANGUAGES</span>',
+      '  <span class="output-accent">' + esc(bar('JavaScript/TS', 92)) + '</span>',
+      '  ' + esc(bar('Python', 80)),
+      '  ' + esc(bar('Java', 75)),
+      '  ' + esc(bar('SQL', 78)),
+      '',
+      '<span class="output-heading">FRAMEWORKS & LIBRARIES</span>',
+      '  <span class="output-accent">' + esc(bar('React / Next.js', 90)) + '</span>',
+      '  ' + esc(bar('Node.js / Express', 88)),
+      '  ' + esc(bar('Spring Boot', 70)),
+      '',
+      '<span class="output-heading">TOOLS & PLATFORMS</span>',
+      '  ' + esc(bar('AWS / Cloud', 82)),
+      '  ' + esc(bar('Docker', 78)),
+      '  <span class="output-accent">' + esc(bar('CI/CD Pipelines', 85)) + '</span>',
+      '  <span class="output-accent">' + esc(bar('Git', 92)) + '</span>',
+      '',
+      '<span class="output-dim">Try: </span><span class="clickable-cmd" onclick="executeCommand(\'experience\')">experience</span><span class="output-dim"> | </span><span class="clickable-cmd" onclick="executeCommand(\'projects\')">projects</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: experience ----
+  function cmdExperience() {
+    printHTML([
+      '<span class="output-dim">$ git log --oneline --graph</span>',
+      '',
+      '<span class="output-accent">*</span> <span class="output-dim">e8f2a1c</span> <span class="output-success">(HEAD -> main)</span> <span class="output-heading">Software Developer @ Walmart</span>',
+      '<span class="output-accent">|</span>   <span class="output-dim">2023 - Present</span>',
+      '<span class="output-accent">|</span>',
+      '<span class="output-accent">|</span>   - Architecting microservices handling millions of daily requests',
+      '<span class="output-accent">|</span>   - Driving frontend performance across critical user flows',
+      '<span class="output-accent">|</span>   - Contributing to design systems used by multiple teams',
+      '<span class="output-accent">|</span>   - Mentoring junior engineers & thorough code reviews',
+      '<span class="output-accent">|</span>',
+      '<span class="output-accent">*</span> <span class="output-dim">b4d7e9a</span> <span class="output-heading">Software Engineering Intern</span>',
+      '<span class="output-accent">|</span>   <span class="output-dim">2022 - 2023</span>',
+      '<span class="output-accent">|</span>',
+      '<span class="output-accent">|</span>   - Developed internal tooling for data pipeline monitoring',
+      '<span class="output-accent">|</span>   - Built React components for customer-facing applications',
+      '<span class="output-accent">|</span>   - Participated in agile sprints, contributed to prod releases',
+      '<span class="output-accent">|</span>',
+      '<span class="output-accent">*</span> <span class="output-dim">0000001</span> <span class="output-dim">(tag: v1.0)</span> init: Born, started breaking things',
+      '',
+      '<span class="output-dim">Try: </span><span class="clickable-cmd" onclick="executeCommand(\'projects\')">projects</span><span class="output-dim"> | </span><span class="clickable-cmd" onclick="executeCommand(\'contact\')">contact</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: projects ----
+  function cmdProjects() {
+    printHTML([
+      '<span class="output-dim">$ ls -la ~/projects/</span>',
+      '',
+      '<span class="output-heading">drwxr-xr-x  microservice-platform/</span>',
+      '  "Distributed system for managing microservice deployments at scale"',
+      '  <span class="output-accent">Stack:</span> Node.js, React, Kafka, Docker, AWS',
+      '  <span class="output-accent">Impact:</span> Event-driven architecture, real-time health monitoring',
+      '',
+      '<span class="output-heading">drwxr-xr-x  analytics-dashboard/</span>',
+      '  "Interactive data visualization with live WebSocket updates"',
+      '  <span class="output-accent">Stack:</span> TypeScript, Next.js, D3.js, PostgreSQL',
+      '  <span class="output-accent">Impact:</span> Custom charting engine, configurable alert thresholds',
+      '',
+      '<span class="output-heading">drwxr-xr-x  cli-toolkit/</span>',
+      '  "Command-line utility suite for dev workflow automation"',
+      '  <span class="output-accent">Stack:</span> Go, Cobra, Shell',
+      '  <span class="output-accent">Impact:</span> Project scaffolding, environment mgmt, deploy scripts',
+      '',
+      '<span class="output-heading">-rw-r--r--  mainframe-portfolio/</span>',
+      '  "This portfolio. Yes, it\'s a project too."',
+      '  <span class="output-accent">Stack:</span> HTML, CSS, Vanilla JS, Love',
+      '  <span class="output-accent">Impact:</span> You\'re looking at it.',
+      '',
+      '<span class="output-dim">Try: </span><span class="clickable-cmd" onclick="executeCommand(\'contact\')">contact</span><span class="output-dim"> | </span><span class="clickable-cmd" onclick="executeCommand(\'about\')">about</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: contact ----
+  function cmdContact() {
+    printHTML([
+      '<span class="output-dim">ESTABLISHING SECURE CONNECTION...</span>',
+      '<span class="output-dim">Encryption: AES-256 | Protocol: HTTPS/TLS 1.3</span>',
+      '',
+      '<span class="output-success">CONNECTION ESTABLISHED.</span>',
+      '',
+      '<span class="output-heading">AVAILABLE CHANNELS</span>',
+      '<span class="output-dim">==================</span>',
+      '  Email:    <span class="output-accent">anshullgarg@example.com</span>     <span class="output-success">[OPEN]</span>',
+      '  GitHub:   <span class="output-accent">github.com/anshullgarg</span>      <span class="output-success">[OPEN]</span>',
+      '  LinkedIn: <span class="output-accent">linkedin.com/in/anshullgarg</span> <span class="output-success">[OPEN]</span>',
+      '',
+      '<span class="output-dim">Or try: </span><span class="clickable-cmd" onclick="executeCommand(\'sudo hire me\')">sudo hire me</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: whoami ----
+  function cmdWhoami() {
+    printHTML([
+      '',
+      '<span class="output-heading glow-pulse">' + esc('\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551                                                  \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551   ANSHULL GARG                                   \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551   Software Developer @ Walmart                   \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551                                                  \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551   I build systems that serve millions.            \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551   I care about performance, reliability,          \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551   and the craft of engineering.                   \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u2551                                                  \u2551') + '</span>',
+      '<span class="output-heading glow-pulse">' + esc('\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D') + '</span>',
+      '',
+      '<span class="output-dim">Type </span><span class="clickable-cmd" onclick="executeCommand(\'help\')">help</span><span class="output-dim"> to explore. Click any command to run it.</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: neofetch ----
+  function cmdNeofetch() {
+    const now = new Date();
+    const thName = state.currentTheme.charAt(0).toUpperCase() + state.currentTheme.slice(1) + ' Mainframe';
+    printHTML([
+      '<span class="output-accent">        .--------.</span>         <span class="output-heading">anshull</span><span class="output-dim">@</span><span class="output-heading">mainframe</span>',
+      '<span class="output-accent">       / .------. \\</span>        <span class="output-dim">-----------------</span>',
+      '<span class="output-accent">      / /        \\ \\</span>       <span class="output-heading">OS:</span> PORTFOLIO_OS 2.1.0 arm64',
+      '<span class="output-accent">     | |  .--.   | |</span>       <span class="output-heading">Host:</span> The Internet',
+      '<span class="output-accent">     | | | AG | | |</span>       <span class="output-heading">Kernel:</span> Vanilla JS (no frameworks)',
+      '<span class="output-accent">     | |  \'--\'   | |</span>       <span class="output-heading">Shell:</span> custom-terminal 2.1',
+      '<span class="output-accent">      \\ \\        / /</span>       <span class="output-heading">Resolution:</span> Responsive',
+      '<span class="output-accent">       \\ \'------\' /</span>        <span class="output-heading">Theme:</span> ' + esc(thName),
+      '<span class="output-accent">        \'--------\'</span>         <span class="output-heading">Terminal:</span> MAINFRAME v2.1.0',
+      '<span class="output-accent">       __|________|__</span>      <span class="output-heading">CPU:</span> Caffeine-Powered Brain',
+      '<span class="output-accent">      |              |</span>     <span class="output-heading">GPU:</span> Creative Vision 3080',
+      '<span class="output-accent">       \\____________/</span>      <span class="output-heading">Memory:</span> Many Tabs Open',
+      '                            <span class="output-heading">Uptime:</span> Since session #1',
+      '                            <span class="output-heading">Languages:</span> JS, TS, Python, Java, Go',
+      '                            <span class="output-heading">Current Quest:</span> Building the future',
+      '                            <span class="output-heading">Local Time:</span> ' + esc(now.toLocaleString()),
+      '',
+      '  <span class="output-accent">\u2588\u2588</span><span class="output-success">\u2588\u2588</span><span class="output-error">\u2588\u2588</span><span class="output-heading">\u2588\u2588</span><span class="output-cream">\u2588\u2588</span><span class="output-dim">\u2588\u2588</span><span style="color:var(--text-ghost)">\u2588\u2588</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: coffee ----
+  function cmdCoffee() {
+    printHTML([
+      '<span class="output-dim">Brewing...</span>',
+      '',
+      '<span class="output-accent">        )  )   )</span>',
+      '<span class="output-accent">       (  (  (</span>',
+      '<span class="output-heading">     .--------.</span>',
+      '<span class="output-heading">     |        |]</span>',
+      '<span class="output-heading">     \\        /</span>',
+      '<span class="output-heading">      \'------\'</span>',
+      '',
+      '    <span class="output-success">COFFEE READY</span>',
+      '    Fuel level: <span class="output-accent">[==========]</span> 100%',
+      '',
+      '    <span class="output-dim">Fun fact: This portfolio was fueled by mass coffee.</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: sudo hire me ----
+  function cmdSudoHireMe() {
+    printHTML([
+      '<span class="output-dim">[sudo] password for visitor: ********</span>',
+      '<span class="output-dim">Verifying credentials...</span>',
+      '<span class="output-dim">Checking references...</span>',
+      '<span class="output-dim">Analyzing cultural fit...</span>',
+      '<span class="output-dim">Running background check on your good taste in portfolios...</span>',
+      '',
+      '<span class="output-success glow-pulse">ACCESS GRANTED.</span>',
+      '',
+      'Congratulations. You have been granted <span class="output-accent">Level 5 clearance</span>.',
+      'Opening secure channel to anshull@contact...',
+      '',
+      '<span class="output-heading">\u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510</span>',
+      '<span class="output-heading">\u2502</span>  <span class="output-success">SECURE CHANNEL OPEN</span>                         <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>                                              <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>  Subject: <span class="output-cream">"I found the sudo command"</span>       <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>                                              <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>  Email:    <span class="output-accent">anshullgarg@example.com</span>        <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>  GitHub:   <span class="output-accent">github.com/anshullgarg</span>         <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>  LinkedIn: <span class="output-accent">linkedin.com/in/anshullgarg</span>    <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>                                              <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2502</span>  <span class="output-dim">Let\'s talk. I\'m ready.</span>                     <span class="output-heading">\u2502</span>',
+      '<span class="output-heading">\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: theme ----
+  function cmdTheme(args) {
+    const name = (args[0] || '').toLowerCase();
+    if (!name) {
+      printHTML([
+        '<span class="output-heading">Theme Switcher</span>',
+        '<span class="output-dim">Usage: theme [name]</span>',
+        '',
+        '  <span class="clickable-cmd" onclick="executeCommand(\'theme amber\')">theme amber</span>   Warm Hercules monitor (default)',
+        '  <span class="clickable-cmd" onclick="executeCommand(\'theme green\')">theme green</span>   Classic P1 phosphor',
+        '  <span class="clickable-cmd" onclick="executeCommand(\'theme blue\')">theme blue</span>    IBM 3270 terminal',
+        '',
+        '  Current: <span class="output-accent">' + esc(state.currentTheme) + '</span>'
+      ].join('\n'));
+      return;
+    }
+    if (applyTheme(name)) {
+      printHTML('<span class="output-success">Theme switched to: ' + esc(name.toUpperCase()) + '</span>\n<span class="output-dim">CRT phosphor recalibrated. Enjoy the glow.</span>');
+    } else {
+      printHTML('<span class="output-error">Unknown theme: ' + esc(name) + '</span>\n<span class="output-dim">Available: amber, green, blue</span>');
+    }
+  }
+
+  // ---- COMMAND: clear ----
+  function cmdClear() {
+    $output.innerHTML = '';
+  }
+
+  // ---- COMMAND: history ----
+  function cmdHistory() {
+    if (state.commandHistory.length === 0) {
+      printLine('No command history yet.', 'output-dim');
+      return;
+    }
+    let lines = ['<span class="output-heading">Command History</span>', '<span class="output-dim">====================================</span>'];
+    state.commandHistory.forEach(function(cmd, i) {
+      lines.push('  <span class="output-dim">' + String(i + 1).padStart(4) + '</span>  ' + esc(cmd));
+    });
+    printHTML(lines.join('\n'));
+  }
+
+  // ---- COMMAND: date ----
+  function cmdDate() {
+    printLine(new Date().toString());
+  }
+
+  // ---- COMMAND: echo ----
+  function cmdEcho(args) {
+    printLine(args.join(' '));
+  }
+
+  // ---- COMMAND: ls ----
+  function cmdLs() {
+    printHTML([
+      '<span class="output-dim">total 7</span>',
+      '<span class="output-heading">drwxr-xr-x</span>  about/',
+      '<span class="output-heading">drwxr-xr-x</span>  experience/',
+      '<span class="output-heading">drwxr-xr-x</span>  projects/',
+      '<span class="output-heading">drwxr-xr-x</span>  skills/',
+      '<span class="output-heading">drwxr-xr-x</span>  contact/',
+      '<span class="output-accent">-rw-r--r--</span>  resume.pdf',
+      '<span class="output-dim">drwx------</span>  .secret/',
+      '',
+      '<span class="output-dim">Try: cat resume.pdf | about | skills | experience | projects</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: pwd ----
+  function cmdPwd() {
+    printLine('/home/anshull');
+  }
+
+  // ---- COMMAND: cat ----
+  function cmdCat(args) {
+    const file = (args[0] || '').toLowerCase();
+    if (!file) {
+      printHTML('<span class="output-error">cat: missing operand</span>');
+      return;
+    }
+    if (file === 'resume.pdf' || file === 'resume.txt') {
+      printHTML([
+        '<span class="output-heading">ANSHULL GARG</span>',
+        '<span class="output-accent">Software Developer @ Walmart</span>',
+        '',
+        '<span class="output-dim">For the full resume, run </span><span class="clickable-cmd" onclick="executeCommand(\'contact\')">contact</span><span class="output-dim"> and reach out.</span>',
+        '<span class="output-dim">Or explore: </span><span class="clickable-cmd" onclick="executeCommand(\'experience\')">experience</span><span class="output-dim"> | </span><span class="clickable-cmd" onclick="executeCommand(\'skills\')">skills</span>'
+      ].join('\n'));
+    } else if (file === 'fun-facts.txt' || file.includes('secret')) {
+      printHTML([
+        '<span class="output-heading">FUN FACTS ABOUT THE DEVELOPER</span>',
+        '<span class="output-dim">==============================</span>',
+        '1. Favorite editor: VS Code (sorry, vim purists)',
+        '2. Tabs vs spaces: Spaces. Fight me.',
+        '3. Most proud bug fix: That one race condition at 2 AM',
+        '4. This portfolio has ~1500 lines of hand-written code',
+        '5. You are visitor <span class="output-accent">#' + state.visitCount + '</span> to find this file',
+        '6. Coffee preference: Black, like my terminal background'
+      ].join('\n'));
+    } else {
+      printHTML('<span class="output-error">cat: ' + esc(file) + ': No such file or directory</span>');
+    }
+  }
+
+  // ---- COMMAND: rm -rf / ----
+  function cmdRm() {
+    printHTML([
+      '<span class="output-error">rm: cannot remove \'/\': Permission denied</span>',
+      '',
+      'Nice try. This system has better security than that.',
+      '',
+      '<span class="output-dim">(But seriously, I do take security seriously. Ask me about</span>',
+      '<span class="output-dim"> my approach to secure coding practices.)</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: man ----
+  function cmdMan(args) {
+    const cmd = (args[0] || '').toLowerCase();
+    if (!cmd) {
+      printHTML('<span class="output-dim">What manual page do you want?\nUsage: man [command]</span>');
+      return;
+    }
+    const pages = {
+      about: [
+        '<span class="output-heading">ABOUT(1)                    MAINFRAME Manual                    ABOUT(1)</span>',
+        '',
+        '<span class="output-accent">NAME</span>',
+        '    about - display information about the system operator',
+        '',
+        '<span class="output-accent">DESCRIPTION</span>',
+        '    Displays biographical information about Anshull Garg,',
+        '    including origin story, current role, and what happens',
+        '    when you give a curious kid access to a computer.',
+        '',
+        '<span class="output-accent">BUGS</span>',
+        '    Sometimes talks about distributed systems at parties.'
+      ],
+      help: [
+        '<span class="output-heading">HELP(1)                    MAINFRAME Manual                     HELP(1)</span>',
+        '',
+        '<span class="output-accent">NAME</span>',
+        '    help - show available commands',
+        '',
+        '<span class="output-accent">DESCRIPTION</span>',
+        '    Lists all commands the visitor can use. If you\'re reading',
+        '    the man page for help, you might need more help than help',
+        '    can provide.'
+      ],
+      coffee: [
+        '<span class="output-heading">COFFEE(1)                  MAINFRAME Manual                   COFFEE(1)</span>',
+        '',
+        '<span class="output-accent">NAME</span>',
+        '    coffee - brew a virtual cup of coffee',
+        '',
+        '<span class="output-accent">DESCRIPTION</span>',
+        '    Produces ASCII art of a freshly brewed cup. Does not',
+        '    actually contain caffeine. Developer is not responsible',
+        '    for any disappointment caused.',
+        '',
+        '<span class="output-accent">BUGS</span>',
+        '    The developer behind this command requires the real thing.'
+      ]
+    };
+    if (pages[cmd]) {
+      printHTML(pages[cmd].join('\n'));
+    } else {
+      printHTML('<span class="output-dim">No manual entry for ' + esc(cmd) + '</span>');
+    }
+  }
+
+  // ---- COMMAND: fortune ----
+  function cmdFortune() {
+    const fortunes = [
+      '"Any fool can write code that a computer can understand. Good programmers write code that humans can understand." - Martin Fowler',
+      '"First, solve the problem. Then, write the code." - John Johnson',
+      '"The best error message is the one that never shows up." - Thomas Fuchs',
+      '"Code is like humor. When you have to explain it, it\'s bad." - Cory House',
+      '"Simplicity is the soul of efficiency." - Austin Freeman',
+      '"Make it work, make it right, make it fast." - Kent Beck',
+      '"Talk is cheap. Show me the code." - Linus Torvalds',
+      '"Programs must be written for people to read, and only incidentally for machines to execute." - Harold Abelson'
+    ];
+    const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    printHTML('<span class="output-cream">' + esc(fortune) + '</span>');
+  }
+
+  // ---- COMMAND: interview ----
+  function cmdInterview() {
+    printHTML([
+      '<span class="output-heading">Pop quiz!</span> What\'s the time complexity of finding the',
+      'best candidate for your open position?',
+      '',
+      '  <span class="output-success">A)</span> O(1)  -- You already found them. (Type: <span class="clickable-cmd" onclick="executeCommand(\'contact\')">contact</span>)',
+      '  <span class="output-accent">B)</span> O(n)  -- Keep looking at portfolios.',
+      '  <span class="output-error">C)</span> O(n!) -- Try every permutation. Life is short.',
+      '',
+      '<span class="output-dim">Hint: The answer is A.</span>'
+    ].join('\n'));
+  }
+
+  // ---- COMMAND: do a barrel roll ----
+  function cmdBarrelRoll() {
+    $screen.classList.add('barrel-roll');
+    printHTML('<span class="output-success">Wheeeee!</span>');
+    setTimeout(function() {
+      $screen.classList.remove('barrel-roll');
+    }, 1100);
+  }
+
+  // ---- COMMAND: gui ----
+  function cmdGui() {
+    switchToGui();
+  }
+
+  // ---- MODE SWITCHING ----
+  function switchToGui() {
+    state.isTerminalMode = false;
+    $terminalMode.classList.add('hidden');
+    $guiMode.classList.add('active');
+  }
+
+  function switchToTerminal() {
+    state.isTerminalMode = true;
+    $guiMode.classList.remove('active');
+    $terminalMode.classList.remove('hidden');
+    $input.focus();
+  }
+
+  // Make switchToTerminal global for onclick
+  window.switchToTerminal = switchToTerminal;
+
+  // ---- COMMAND PARSER ----
+  function executeCommand(raw) {
+    const input = raw.trim();
+    if (!input) return;
+
+    // Add to history
+    state.commandHistory.push(input);
+    state.historyIndex = state.commandHistory.length;
+
+    // Show prompt
+    printPrompt(input);
+
+    // Parse
+    const parts = input.split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    const fullLower = input.toLowerCase();
+
+    // Route
+    if (cmd === 'help') cmdHelp();
+    else if (cmd === 'about') cmdAbout();
+    else if (cmd === 'skills') cmdSkills();
+    else if (cmd === 'experience') cmdExperience();
+    else if (cmd === 'projects') cmdProjects();
+    else if (cmd === 'contact') cmdContact();
+    else if (cmd === 'whoami') cmdWhoami();
+    else if (cmd === 'clear') cmdClear();
+    else if (cmd === 'gui') cmdGui();
+    else if (cmd === 'neofetch') cmdNeofetch();
+    else if (cmd === 'coffee') cmdCoffee();
+    else if (cmd === 'theme') cmdTheme(args);
+    else if (cmd === 'history') cmdHistory();
+    else if (cmd === 'date') cmdDate();
+    else if (cmd === 'echo') cmdEcho(args);
+    else if (cmd === 'ls') cmdLs();
+    else if (cmd === 'pwd') cmdPwd();
+    else if (cmd === 'cat') cmdCat(args);
+    else if (cmd === 'man') cmdMan(args);
+    else if (cmd === 'fortune') cmdFortune();
+    else if (cmd === 'interview') cmdInterview();
+    else if (fullLower === 'sudo hire me') cmdSudoHireMe();
+    else if (fullLower.startsWith('rm ') && fullLower.includes('-rf')) cmdRm();
+    else if (fullLower === 'do a barrel roll') cmdBarrelRoll();
+    else if (fullLower === 'ping google.com' || fullLower.startsWith('ping ')) {
+      printHTML([
+        '<span class="output-dim">PING ' + esc(args[0] || 'google.com') + ' 56 data bytes</span>',
+        '64 bytes: icmp_seq=1 ttl=118 time=<span class="output-accent">Instant</span> (I\'m that fast)',
+        '64 bytes: icmp_seq=2 ttl=118 time=<span class="output-accent">Still fast</span>',
+        '64 bytes: icmp_seq=3 ttl=118 time=<span class="output-accent">Are you impressed yet?</span>',
+        '',
+        '<span class="output-dim">--- ' + esc(args[0] || 'google.com') + ' ping statistics ---</span>',
+        '3 packets transmitted, 3 received, <span class="output-success">0% packet loss</span>'
+      ].join('\n'));
+    }
+    else if (fullLower === 'git blame') {
+      printHTML([
+        '<span class="output-dim">Running git blame on this portfolio...</span>',
+        '',
+        '<span class="output-accent">e8f2a1c</span> (Anshull Garg ' + new Date().toISOString().slice(0,10) + ')  1) // The entire thing',
+        '<span class="output-accent">e8f2a1c</span> (Anshull Garg ' + new Date().toISOString().slice(0,10) + ')  2) // Every. Single. Line.',
+        '<span class="output-accent">e8f2a1c</span> (Anshull Garg ' + new Date().toISOString().slice(0,10) + ')  3) // Yeah, it was all me.',
+        '',
+        '<span class="output-dim">Blame accepted. With pride.</span>'
+      ].join('\n'));
+    }
+    else if (cmd === 'cd') {
+      const dir = (args[0] || '').toLowerCase().replace(/\//g, '');
+      const sections = ['about', 'skills', 'experience', 'projects', 'contact'];
+      if (dir === '.secret' || dir === 'secret') {
+        printHTML('<span class="output-success">Found the hidden directory.</span>\n<span class="output-dim">Try: </span><span class="clickable-cmd" onclick="executeCommand(\'cat fun-facts.txt\')">cat fun-facts.txt</span>');
+      } else if (sections.includes(dir)) {
+        executeCommand(dir);
+        return;
+      } else if (dir === '~' || dir === '' || dir === '/home/anshull') {
+        printLine('/home/anshull', 'output-dim');
+      } else {
+        printHTML('<span class="output-error">cd: ' + esc(dir) + ': No such directory</span>');
+      }
+    }
+    else {
+      printHTML('<span class="output-error">Command not found: ' + esc(cmd) + '</span>\n<span class="output-dim">Type </span><span class="clickable-cmd" onclick="executeCommand(\'help\')">help</span><span class="output-dim"> for available commands.</span>');
+    }
+
+    // Clear input
+    $input.value = '';
+    $output.scrollTop = $output.scrollHeight;
+  }
+
+  // Expose globally for onclick handlers
+  window.executeCommand = executeCommand;
+
+  // ---- INPUT HANDLING ----
+  $input.addEventListener('keydown', function(e) {
+    // Enter
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      executeCommand($input.value);
+    }
+    // Tab completion
+    else if (e.key === 'Tab') {
+      e.preventDefault();
+      const val = $input.value.trim().toLowerCase();
+      if (!val) return;
+
+      // Check if typing "sudo hire..."
+      if (val.startsWith('sudo h') || val.startsWith('sudo hi') || val.startsWith('sudo hir') || val.startsWith('sudo hire') || val.startsWith('sudo hire ')) {
+        $input.value = 'sudo hire me';
+        return;
+      }
+
+      // Check theme sub-commands
+      if (val.startsWith('theme ')) {
+        const sub = val.slice(6);
+        const themes = ['amber', 'green', 'blue'];
+        const match = themes.filter(function(t) { return t.startsWith(sub); });
+        if (match.length === 1) {
+          $input.value = 'theme ' + match[0];
+        } else if (match.length > 1) {
+          printHTML('<span class="output-dim">' + match.join('  ') + '</span>');
+        }
+        return;
+      }
+
+      const matches = COMMANDS.filter(function(c) { return c.startsWith(val); });
+      if (matches.length === 1) {
+        $input.value = matches[0];
+      } else if (matches.length > 1) {
+        printHTML('<span class="output-dim">' + matches.join('  ') + '</span>');
+      }
+    }
+    // Command history: Up
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (state.commandHistory.length === 0) return;
+      if (state.historyIndex > 0) {
+        state.historyIndex--;
+      }
+      $input.value = state.commandHistory[state.historyIndex] || '';
+    }
+    // Command history: Down
+    else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (state.historyIndex < state.commandHistory.length - 1) {
+        state.historyIndex++;
+        $input.value = state.commandHistory[state.historyIndex] || '';
+      } else {
+        state.historyIndex = state.commandHistory.length;
+        $input.value = '';
+      }
+    }
+  });
+
+  // Focus input when clicking terminal area
+  $output.addEventListener('click', function(e) {
+    if (!e.target.classList.contains('clickable-cmd')) {
+      $input.focus();
+    }
+  });
+
+  document.getElementById('terminal-mode').addEventListener('click', function(e) {
+    if (e.target === e.currentTarget || e.target.id === 'terminal-input-area') {
+      $input.focus();
+    }
+  });
+
+  // ---- BOOT SEQUENCE ----
+  function runBootSequence() {
+    // Check reduced motion preference
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      skipBoot();
+      return;
+    }
+
+    // Returning visitor: abbreviated boot
+    const isReturning = state.visitCount > 1;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', {weekday:'short', year:'numeric', month:'short', day:'numeric'});
+    const timeStr = now.toLocaleTimeString('en-US', {hour12:false});
+
+    const bootLines = isReturning ? [
+      { text: 'MAINFRAME BIOS v2.1.0', delay: 0 },
+      { text: 'Welcome back. Session #' + state.visitCount, delay: 100 },
+      { text: 'Fast boot enabled...', delay: 200 },
+      { text: '', delay: 300 },
+      { text: 'All systems operational.', delay: 500 },
+      { text: '', delay: 600 },
+      { text: 'MAINFRAME login: anshull', delay: 700 },
+      { text: 'Last login: ' + dateStr + ' ' + timeStr, delay: 900 },
+      { text: '', delay: 1000 },
+      { text: 'READY.', delay: 1100 },
+    ] : [
+      { text: 'MAINFRAME BIOS v2.1.0', delay: 0 },
+      { text: 'Copyright (c) 2026 Anshull Garg Systems', delay: 80 },
+      { text: '', delay: 200 },
+      { text: 'Checking memory.......... 16384 MB OK', delay: 350 },
+      { text: 'Detecting drives......... SSD-PORTFOLIO [256GB]', delay: 550 },
+      { text: 'Loading kernel........... CREATIVE_OS 6.1.0-arm64', delay: 750 },
+      { text: 'Initializing display..... [OK]', delay: 950 },
+      { text: '', delay: 1100 },
+      { text: 'Starting services:', delay: 1200 },
+      { text: '  [OK] network.service', delay: 1350 },
+      { text: '  [OK] creativity.daemon', delay: 1500 },
+      { text: '  [OK] portfolio.engine', delay: 1650 },
+      { text: '  [OK] coffee.intake.monitor', delay: 1800 },
+      { text: '', delay: 1950 },
+      { text: 'All systems operational.', delay: 2100 },
+      { text: '', delay: 2300 },
+      { text: 'MAINFRAME login: anshull', delay: 2500 },
+      { text: 'Password: ********', delay: 2800 },
+      { text: '', delay: 3000 },
+      { text: 'Last login: ' + dateStr + ' ' + timeStr, delay: 3200 },
+      { text: 'Welcome to MAINFRAME -- Anshull Garg\'s Portfolio', delay: 3400 },
+      { text: '', delay: 3600 },
+      { text: 'READY.', delay: 3800 },
+    ];
+
+    const totalDuration = isReturning ? 1400 : 4200;
+    let completed = false;
+    let lineIndex = 0;
+
+    function renderLine(idx) {
+      if (idx >= bootLines.length || completed) return;
+      const line = bootLines[idx];
+      $bootContent.textContent += line.text + '\n';
+    }
+
+    // Schedule each line
+    bootLines.forEach(function(line, i) {
+      setTimeout(function() {
+        if (!completed) renderLine(i);
+      }, line.delay);
+    });
+
+    // Auto-finish boot
+    setTimeout(function() {
+      if (!completed) {
+        completed = true;
+        finishBoot();
+      }
+    }, totalDuration);
+
+    // Skip on keypress/click (after 800ms)
+    let canSkip = false;
+    setTimeout(function() { canSkip = true; }, 800);
+
+    function skipHandler(e) {
+      if (canSkip && !completed) {
+        completed = true;
+        document.removeEventListener('keydown', skipHandler);
+        document.removeEventListener('click', skipHandler);
+        finishBoot();
+      }
+    }
+
+    document.addEventListener('keydown', skipHandler);
+    document.addEventListener('click', skipHandler);
+  }
+
+  function skipBoot() {
+    $boot.classList.add('hidden');
+    $crt.classList.add('active');
+    state.bootComplete = true;
+    showWelcomeMessage();
+    $input.focus();
+  }
+
+  function finishBoot() {
+    $boot.style.transition = 'opacity 0.3s ease';
+    $boot.style.opacity = '0';
+    setTimeout(function() {
+      $boot.classList.add('hidden');
+      $crt.classList.add('active');
+      $screen.classList.add('power-on');
+      state.bootComplete = true;
+
+      setTimeout(function() {
+        showWelcomeMessage();
+        $input.focus();
+      }, 700);
+    }, 300);
+  }
+
+  function showWelcomeMessage() {
+    const isReturning = state.visitCount > 1;
+
+    if (isReturning && state.lastVisit) {
+      const lastDate = new Date(state.lastVisit);
+      const daysAgo = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      const timeAgo = daysAgo === 0 ? 'earlier today' : daysAgo === 1 ? 'yesterday' : daysAgo + ' days ago';
+      printHTML([
+        '<span class="output-dim">Welcome back to MAINFRAME v2.1.0</span>',
+        '<span class="output-dim">Last session: ' + esc(timeAgo) + ' | Visit #' + state.visitCount + '</span>',
+        '',
+      ].join('\n'));
+    } else {
+      printHTML([
+        '<span class="output-dim">Welcome to MAINFRAME v2.1.0</span>',
+        '<span class="output-dim">Establishing new session... Session #' + state.visitCount + '</span>',
+        '',
+      ].join('\n'));
+    }
+
+    // Auto-run whoami
+    printPrompt('whoami');
+    cmdWhoami();
+  }
+
+  // ---- KONAMI CODE ----
+  (function() {
+    const code = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let pos = 0;
+    document.addEventListener('keydown', function(e) {
+      if (e.key === code[pos] || e.key.toLowerCase() === code[pos]) {
+        pos++;
+        if (pos === code.length) {
+          pos = 0;
+          // Konami Easter Egg
+          $screen.style.transition = 'filter 0.3s';
+          $screen.style.filter = 'hue-rotate(180deg) saturate(3)';
+          printHTML([
+            '',
+            '<span class="output-success glow-pulse">ACHIEVEMENT UNLOCKED: "Old School"</span>',
+            '<span class="output-accent">You found the Konami Code. You\'re clearly one of us.</span>',
+            ''
+          ].join('\n'));
+          setTimeout(function() {
+            $screen.style.filter = '';
+          }, 3000);
+        }
+      } else {
+        pos = 0;
+      }
+    });
+  })();
+
+  // ---- LAUNCH ----
+  runBootSequence();
+
+})();
+</script>
+</body>
+</html>

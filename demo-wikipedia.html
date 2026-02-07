@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Wikipedia</title>
+<style>
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ========== BASE / WIKIPEDIA TYPOGRAPHY ========== */
+body {
+  font-family: 'Linux Libertine', Georgia, Times, 'Times New Roman', serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #202122;
+  background: #f6f6f6;
+}
+
+a {
+  color: #0645AD;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+a:visited { color: #0B0080; }
+
+/* ========== WIKIPEDIA HEADER ========== */
+.wiki-header {
+  background: #fff;
+  border-bottom: 1px solid #a7d7f9;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.wiki-header-inner {
+  max-width: 1340px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 6px 16px;
+  gap: 12px;
+}
+
+.wiki-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.wiki-logo svg { width: 40px; height: 40px; }
+
+.wiki-logo-text {
+  font-family: 'Linux Libertine', Georgia, serif;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+}
+
+.wiki-logo-text span {
+  display: block;
+  font-size: 10px;
+  color: #54595d;
+  letter-spacing: 0.5px;
+  font-family: sans-serif;
+}
+
+.wiki-search-wrap {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+}
+
+.wiki-search {
+  width: 100%;
+  padding: 6px 32px 6px 10px;
+  border: 1px solid #a2a9b1;
+  border-radius: 2px;
+  font-size: 13px;
+  font-family: sans-serif;
+  outline: none;
+}
+
+.wiki-search:focus { border-color: #36c; box-shadow: inset 0 0 0 1px #36c; }
+
+.wiki-search-btn {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  bottom: 2px;
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  border-radius: 2px;
+  padding: 0 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: sans-serif;
+}
+
+.wiki-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #a2a9b1;
+  border-top: none;
+  display: none;
+  z-index: 200;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.wiki-search-results.active { display: block; }
+
+.wiki-search-result {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: sans-serif;
+  border-bottom: 1px solid #eee;
+}
+
+.wiki-search-result:hover { background: #eaf3ff; }
+
+.wiki-search-result mark {
+  background: #fff3b8;
+  padding: 0 1px;
+}
+
+.wiki-nav-links {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  font-family: sans-serif;
+  flex-shrink: 0;
+}
+
+.wiki-nav-links a { white-space: nowrap; }
+
+/* ========== TABS ========== */
+.wiki-tabs-bar {
+  background: #fff;
+  border-bottom: 1px solid #a7d7f9;
+}
+
+.wiki-tabs-inner {
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 0;
+}
+
+.wiki-tab {
+  padding: 8px 12px 6px;
+  font-size: 12.5px;
+  font-family: sans-serif;
+  color: #0645AD;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+  position: relative;
+  top: 1px;
+  background: transparent;
+  user-select: none;
+}
+
+.wiki-tab:hover { background: #eaf3ff; }
+
+.wiki-tab.active {
+  background: #fff;
+  border-color: #a7d7f9;
+  border-bottom: 1px solid #fff;
+  color: #202122;
+  font-weight: normal;
+}
+
+.wiki-tab-spacer { flex: 1; }
+
+.wiki-tab.right-tab {
+  font-size: 11.5px;
+  color: #54595d;
+}
+
+/* ========== CONTENT AREA ========== */
+.wiki-body {
+  max-width: 1340px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #a7d7f9;
+  border-top: none;
+  min-height: 100vh;
+  padding: 0 24px 40px;
+}
+
+/* ========== TAB PANELS ========== */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ========== ARTICLE TITLE ========== */
+.article-title {
+  font-family: 'Linux Libertine', Georgia, serif;
+  font-size: 28.8px;
+  font-weight: normal;
+  line-height: 1.2;
+  margin: 16px 0 0;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #a2a9b1;
+}
+
+/* ========== ARTICLE ISSUES BANNER ========== */
+.ambox {
+  margin: 12px 0;
+  border: 1px solid #c0c090;
+  background: #fbfbf8;
+  font-size: 13px;
+  font-family: sans-serif;
+}
+
+.ambox-header {
+  padding: 6px 10px;
+  background: #e8e8d0;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ambox-header svg { flex-shrink: 0; }
+
+.ambox-body {
+  padding: 8px 10px;
+  line-height: 1.5;
+}
+
+.ambox-body ul {
+  margin: 4px 0 0 20px;
+}
+
+.ambox-body li { margin-bottom: 2px; }
+
+/* ========== TABLE OF CONTENTS ========== */
+.toc {
+  display: inline-block;
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 13px;
+  font-family: sans-serif;
+  min-width: 200px;
+}
+
+.toc-title {
+  font-weight: bold;
+  text-align: center;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.toc-toggle {
+  font-weight: normal;
+  font-size: 12px;
+  color: #0645AD;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.toc ol {
+  list-style: none;
+  counter-reset: toc-counter;
+  padding-left: 0;
+}
+
+.toc > ol > li {
+  counter-increment: toc-counter;
+  margin: 3px 0;
+}
+
+.toc > ol > li > a::before {
+  content: counter(toc-counter) " ";
+  font-weight: normal;
+}
+
+.toc ol ol {
+  padding-left: 20px;
+  counter-reset: toc-sub;
+}
+
+.toc ol ol > li {
+  counter-increment: toc-sub;
+  margin: 2px 0;
+}
+
+.toc ol ol > li > a::before {
+  content: counter(toc-counter) "." counter(toc-sub) " ";
+}
+
+.toc a { color: #0645AD; }
+
+/* ========== SECTION HEADINGS ========== */
+.section-h2 {
+  font-family: 'Linux Libertine', Georgia, serif;
+  font-size: 22px;
+  font-weight: normal;
+  border-bottom: 1px solid #a2a9b1;
+  margin: 24px 0 8px;
+  padding-bottom: 4px;
+  line-height: 1.3;
+}
+
+.section-h3 {
+  font-family: 'Linux Libertine', Georgia, serif;
+  font-size: 17px;
+  font-weight: bold;
+  margin: 18px 0 6px;
+  line-height: 1.3;
+}
+
+.edit-link {
+  font-size: 12px;
+  font-family: sans-serif;
+  font-weight: normal;
+  color: #0645AD;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.edit-link::before { content: "["; }
+.edit-link::after { content: "]"; }
+
+/* ========== BODY TEXT ========== */
+.wiki-body p {
+  margin: 6px 0 10px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* ========== CITATION NEEDED ========== */
+.citation-needed {
+  font-size: 11px;
+  vertical-align: super;
+  line-height: 0;
+  font-family: sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.citation-needed a {
+  color: #0645AD;
+}
+
+.citation-needed.proof a {
+  color: #0645AD;
+  font-weight: bold;
+}
+
+/* ========== FOOTNOTE REFS ========== */
+.ref {
+  font-size: 11px;
+  vertical-align: super;
+  line-height: 0;
+  font-family: sans-serif;
+}
+
+.ref a { color: #0645AD; }
+
+/* ========== INFOBOX ========== */
+.infobox {
+  float: right;
+  clear: right;
+  width: 280px;
+  margin: 8px 0 12px 20px;
+  border: 1px solid #a2a9b1;
+  border-spacing: 0;
+  font-size: 13px;
+  font-family: sans-serif;
+  line-height: 1.5;
+  background: #f8f9fa;
+}
+
+.infobox-header {
+  background: #b8d4e3;
+  text-align: center;
+  padding: 8px 6px;
+  font-size: 16px;
+  font-family: 'Linux Libertine', Georgia, serif;
+  font-weight: bold;
+  border-bottom: 1px solid #a2a9b1;
+}
+
+.infobox-image {
+  text-align: center;
+  padding: 8px;
+  border-bottom: 1px solid #a2a9b1;
+  background: #f8f9fa;
+}
+
+.infobox-image svg {
+  width: 180px;
+  height: 180px;
+  display: block;
+  margin: 0 auto;
+}
+
+.infobox-caption {
+  font-size: 11.5px;
+  color: #54595d;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.infobox-label {
+  padding: 4px 8px;
+  vertical-align: top;
+  font-weight: bold;
+  width: 100px;
+  border-top: 1px solid #ddd;
+  background: #f8f9fa;
+}
+
+.infobox-data {
+  padding: 4px 8px;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+  background: #fff;
+}
+
+.infobox-sub-header {
+  background: #dce6f0;
+  padding: 4px 8px;
+  font-weight: bold;
+  text-align: center;
+  border-top: 1px solid #a2a9b1;
+}
+
+/* ========== HIGHLIGHTED BOX ========== */
+.highlighted-box {
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  font-family: sans-serif;
+}
+
+.highlighted-box-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ========== SKILLS TABLE ========== */
+.wikitable {
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13px;
+  font-family: sans-serif;
+}
+
+.wikitable th {
+  background: #eaecf0;
+  padding: 6px 10px;
+  border: 1px solid #a2a9b1;
+  text-align: left;
+  font-weight: bold;
+}
+
+.wikitable td {
+  padding: 6px 10px;
+  border: 1px solid #a2a9b1;
+  vertical-align: top;
+}
+
+.wikitable tr:nth-child(even) td { background: #f8f9fa; }
+
+/* ========== REFERENCES / FOOTNOTES ========== */
+.reflist {
+  font-size: 13px;
+  font-family: sans-serif;
+  column-count: 2;
+  column-gap: 24px;
+}
+
+.reflist ol {
+  margin: 0;
+  padding-left: 28px;
+}
+
+.reflist li {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.reflist li:target {
+  background: #def;
+}
+
+/* ========== CATEGORY TAGS ========== */
+.catlinks {
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  font-family: sans-serif;
+  margin: 24px 0 8px;
+}
+
+.catlinks-title {
+  font-weight: bold;
+}
+
+.catlinks a { margin: 0 4px; }
+
+/* ========== LAST EDITED ========== */
+.last-edited {
+  text-align: center;
+  color: #54595d;
+  font-size: 12px;
+  font-family: sans-serif;
+  margin: 16px 0;
+  padding: 8px;
+  border-top: 1px solid #eee;
+}
+
+/* ========== TALK PAGE ========== */
+.talk-thread {
+  border: 1px solid #c8ccd1;
+  margin: 12px 0;
+  padding: 0;
+}
+
+.talk-thread-header {
+  background: #eaecf0;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 15px;
+  font-family: 'Linux Libertine', Georgia, serif;
+  border-bottom: 1px solid #c8ccd1;
+}
+
+.talk-post {
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  font-family: sans-serif;
+  line-height: 1.6;
+}
+
+.talk-post:last-child { border-bottom: none; }
+
+.talk-sig {
+  color: #54595d;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.talk-indent { margin-left: 24px; }
+.talk-indent-2 { margin-left: 48px; }
+
+/* ========== VIEW HISTORY ========== */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: sans-serif;
+  margin: 12px 0;
+}
+
+.history-table th {
+  background: #eaecf0;
+  padding: 6px 10px;
+  text-align: left;
+  border: 1px solid #a2a9b1;
+}
+
+.history-table td {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.history-table tr:nth-child(even) td { background: #f8f9fa; }
+
+.history-hash {
+  font-family: 'Courier New', monospace;
+  color: #0645AD;
+  font-size: 12px;
+}
+
+.history-minor {
+  font-weight: bold;
+  color: #54595d;
+  font-size: 11px;
+}
+
+/* ========== BLOCKQUOTE ========== */
+.wiki-blockquote {
+  border-left: 3px solid #c8ccd1;
+  margin: 10px 0 10px 16px;
+  padding: 4px 12px;
+  color: #54595d;
+  font-style: italic;
+}
+
+/* ========== HATNOTE ========== */
+.hatnote {
+  font-style: italic;
+  font-size: 13px;
+  font-family: sans-serif;
+  padding-left: 24px;
+  margin: 4px 0 8px;
+  color: #54595d;
+}
+
+/* ========== EXTERNAL LINKS LIST ========== */
+.ext-links {
+  list-style: disc;
+  margin: 8px 0 8px 24px;
+  font-size: 13.5px;
+  font-family: sans-serif;
+}
+
+.ext-links li { margin-bottom: 4px; }
+
+.ext-links .ext-icon::after {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%230645ad' d='M1.5 4.518h5.982V10.5H1.5z'/%3E%3Cpath fill='%23fff' d='M2.372 5.39h4.239v4.239H2.372z'/%3E%3Cpath fill='%230645ad' d='M5.09 1.5H10.5v5.518L8.822 5.34l-2.7 2.7-1.26-1.26 2.7-2.7z'/%3E%3C/svg%3E") no-repeat center;
+  vertical-align: text-bottom;
+}
+
+/* ========== SEE ALSO ========== */
+.columns-2 {
+  column-count: 2;
+  column-gap: 24px;
+}
+
+.columns-2 ul {
+  list-style: disc;
+  margin-left: 20px;
+}
+
+.columns-2 li { margin-bottom: 3px; }
+
+/* ========== SEARCH HIGHLIGHT ========== */
+.search-highlight {
+  background: #fff59d;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
+/* ========== TOOLTIP ========== */
+.wiki-tooltip {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #a2a9b1;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: sans-serif;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 300;
+  line-height: 1.5;
+  display: none;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 720px) {
+  .infobox {
+    float: none;
+    width: 100%;
+    margin: 12px 0;
+  }
+  .reflist { column-count: 1; }
+  .columns-2 { column-count: 1; }
+  .wiki-nav-links { display: none; }
+  .wiki-header-inner { flex-wrap: wrap; }
+  .wiki-search-wrap { max-width: 100%; order: 3; width: 100%; }
+}
+
+/* ========== PRINT ========== */
+@media print {
+  .wiki-header, .wiki-tabs-bar, .edit-link, .toc-toggle, .ambox { display: none; }
+  .wiki-body { border: none; }
+  .infobox { break-inside: avoid; }
+}
+
+/* ========== SCROLL PADDING FOR ANCHORS ========== */
+html { scroll-padding-top: 80px; scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="wiki-header">
+  <div class="wiki-header-inner">
+    <div class="wiki-logo" onclick="document.getElementById('panel-article').scrollIntoView({behavior:'smooth'})">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="18" fill="#f8f9fa" stroke="#a2a9b1" stroke-width="1.5"/>
+        <ellipse cx="20" cy="20" rx="10" ry="18" fill="none" stroke="#a2a9b1" stroke-width="1"/>
+        <ellipse cx="20" cy="20" rx="18" ry="7" fill="none" stroke="#a2a9b1" stroke-width="1"/>
+        <line x1="20" y1="2" x2="20" y2="38" stroke="#a2a9b1" stroke-width="1"/>
+        <line x1="2" y1="20" x2="38" y2="20" stroke="#a2a9b1" stroke-width="1"/>
+        <text x="12" y="24" font-size="11" font-family="serif" font-weight="bold" fill="#202122">W</text>
+      </svg>
+      <div class="wiki-logo-text">
+        Wikipedia
+        <span>The Free Encyclopedia</span>
+      </div>
+    </div>
+
+    <div class="wiki-search-wrap">
+      <input type="text" class="wiki-search" id="searchInput" placeholder="Search Anshull Garg" autocomplete="off" aria-label="Search within this article">
+      <button class="wiki-search-btn" onclick="performSearch()" aria-label="Search">Search</button>
+      <div class="wiki-search-results" id="searchResults"></div>
+    </div>
+
+    <nav class="wiki-nav-links" aria-label="Site navigation">
+      <a href="javascript:void(0)" onclick="scrollToRandom()">Random article</a>
+      <a href="#ref-section">References</a>
+      <a href="javascript:void(0)" onclick="switchTab('history')">Contributions</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ========== TABS ========== -->
+<div class="wiki-tabs-bar" role="tablist">
+  <div class="wiki-tabs-inner">
+    <div class="wiki-tab active" role="tab" data-tab="article" onclick="switchTab('article')" tabindex="0">Article</div>
+    <div class="wiki-tab" role="tab" data-tab="talk" onclick="switchTab('talk')" tabindex="0">Talk</div>
+    <div class="wiki-tab-spacer"></div>
+    <div class="wiki-tab right-tab active" role="tab" data-tab="article" onclick="switchTab('article')" tabindex="0">Read</div>
+    <div class="wiki-tab right-tab" role="tab" data-tab="talk" onclick="switchTab('talk')" tabindex="0">Edit</div>
+    <div class="wiki-tab right-tab" role="tab" data-tab="history" onclick="switchTab('history')" tabindex="0">View history</div>
+  </div>
+</div>
+
+<!-- ========== BODY ========== -->
+<main class="wiki-body">
+
+<!-- ============================ -->
+<!-- ARTICLE TAB                  -->
+<!-- ============================ -->
+<div class="tab-panel active" id="panel-article">
+
+<h1 class="article-title">Anshull Garg</h1>
+
+<p class="hatnote">For other uses, see <a href="javascript:void(0)">Anshull Garg (disambiguation)</a>. <em>Not to be confused with a Large Language Model, although the throughput is comparable.</em></p>
+
+<!-- ========== ISSUES BANNER ========== -->
+<div class="ambox" role="note">
+  <div class="ambox-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+    <svg width="20" height="20" viewBox="0 0 20 20"><polygon points="10,2 19,18 1,18" fill="none" stroke="#edab00" stroke-width="2"/><text x="8.5" y="16" font-size="12" font-weight="bold" fill="#edab00">!</text></svg>
+    This article has multiple issues.
+    <span style="font-weight:normal; font-size:11px; color:#54595d;">(click to expand)</span>
+  </div>
+  <div class="ambox-body">
+    Please help <b>improve this article</b> or discuss these issues on the <a href="javascript:void(0)" onclick="switchTab('talk')">talk page</a>.
+    <ul>
+      <li>This article <b>reads like a resume</b>. Please help <a href="javascript:void(0)">rewrite it</a> so it sounds less like a LinkedIn profile. <small>(Tagged since 2024)</small></li>
+      <li>This article's <b>tone or style may not reflect the encyclopedic tone</b> used on Wikipedia. The subject appears unreasonably competent. <small>(Tagged since 2023)</small></li>
+      <li>This article <b>relies excessively on references to primary sources</b>, specifically the subject's own GitHub repositories. <small>(Tagged since 2024)</small></li>
+      <li>The <b>neutrality of this article is disputed</b> because the subject may have written it himself. <small>(Tagged since always)</small></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== INFOBOX ========== -->
+<table class="infobox" role="presentation">
+  <tr><td colspan="2" class="infobox-header">Anshull Garg</td></tr>
+  <tr><td colspan="2" class="infobox-image">
+    <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+      <rect width="180" height="180" fill="#eaecf0"/>
+      <circle cx="90" cy="68" r="36" fill="#c8ccd1"/>
+      <ellipse cx="90" cy="160" rx="52" ry="44" fill="#c8ccd1"/>
+      <text x="90" y="178" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#72777d">Image requested</text>
+    </svg>
+    <div class="infobox-caption">Garg at a whiteboard, allegedly "architecting at scale"<br><small>(Photo pending peer review)</small></div>
+  </td></tr>
+  <tr><td class="infobox-label">Born</td><td class="infobox-data">Anshull Garg<br><small>India</small></td></tr>
+  <tr><td class="infobox-label">Nationality</td><td class="infobox-data">Indian</td></tr>
+  <tr><td class="infobox-label">Occupation</td><td class="infobox-data">Software Developer</td></tr>
+  <tr><td class="infobox-label">Employer</td><td class="infobox-data"><a href="https://tech.walmart.com" target="_blank">Walmart Global Tech</a></td></tr>
+  <tr><td class="infobox-label">Known&nbsp;for</td><td class="infobox-data">Building systems at scale, writing code that other engineers have to maintain</td></tr>
+  <tr><td class="infobox-label">Notable&nbsp;work</td><td class="infobox-data">
+    Large-scale distributed systems<br>
+    E-commerce platform engineering<br>
+    Internal tooling & infrastructure
+  </td></tr>
+  <tr><td colspan="2" class="infobox-sub-header">Online presence</td></tr>
+  <tr><td class="infobox-label">Website</td><td class="infobox-data"><a href="https://anshullgarg.dev" target="_blank" class="ext-icon">anshullgarg.dev</a></td></tr>
+  <tr><td class="infobox-label">GitHub</td><td class="infobox-data"><a href="https://github.com/anshullgarg" target="_blank" class="ext-icon">github.com/anshullgarg</a></td></tr>
+  <tr><td class="infobox-label">LinkedIn</td><td class="infobox-data"><a href="https://linkedin.com/in/anshullgarg" target="_blank" class="ext-icon">linkedin.com/in/anshullgarg</a></td></tr>
+</table>
+
+<!-- ========== TABLE OF CONTENTS ========== -->
+<div class="toc" id="toc" role="navigation" aria-label="Table of Contents">
+  <div class="toc-title">Contents <span class="toc-toggle" id="tocToggle" onclick="toggleTOC()">[hide]</span></div>
+  <ol id="tocList">
+    <li><a href="#early-life">Early life and education</a></li>
+    <li><a href="#career">Career</a>
+      <ol>
+        <li><a href="#early-career">Early career</a></li>
+        <li><a href="#walmart">Walmart Global Tech</a></li>
+      </ol>
+    </li>
+    <li><a href="#notable-works">Notable works</a></li>
+    <li><a href="#technical-expertise">Technical expertise</a></li>
+    <li><a href="#philosophy">Philosophy and approach</a></li>
+    <li><a href="#reception">Reception</a></li>
+    <li><a href="#personal-life">Personal life</a></li>
+    <li><a href="#ref-section">References</a></li>
+    <li><a href="#external-links">External links</a></li>
+    <li><a href="#see-also">See also</a></li>
+  </ol>
+</div>
+
+<p>
+<b>Anshull Garg</b> is an Indian software developer currently employed at <a href="https://tech.walmart.com" target="_blank">Walmart Global Tech</a>, where he works on large-scale distributed systems serving millions of users. He is known in professional circles for building scalable backend architectures and for his persistent belief that "one more refactor" will finally make the codebase perfect.<sup class="ref"><a href="#ref-1">[1]</a></sup>
+</p>
+
+<p>
+Garg has been described as a "full-stack engineer with backend tendencies"<span class="citation-needed"><a href="javascript:void(0)" title="This claim is unverified but spiritually accurate">[<i>citation needed</i>]</a></span> and has contributed to systems processing significant transaction volumes at Walmart. His work primarily involves designing and implementing services that operate at the intersection of high availability, low latency, and occasionally unreasonable deadlines.<sup class="ref"><a href="#ref-2">[2]</a></sup>
+</p>
+
+<!-- ========== EARLY LIFE ========== -->
+<h2 class="section-h2" id="early-life">Early life and education <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<p>
+Anshull Garg was born in India, where he demonstrated an early aptitude for taking things apart and not always putting them back together<span class="citation-needed"><a href="javascript:void(0)" title="Based on anecdotal family reports">[<i>citation needed</i>]</a></span>. Sources close to the subject report that his first interaction with a computer was "formative, if not slightly obsessive."<sup class="ref"><a href="#ref-3">[3]</a></sup>
+</p>
+
+<p>
+He pursued formal education in computer science, during which he reportedly discovered that programming could be both a vocation and a reliable source of existential frustration. Peers from this period describe him as "the person you asked for help debugging at 2 AM"<span class="citation-needed"><a href="javascript:void(0)" title="Multiple unverified eyewitness accounts">[<i>citation needed</i>]</a></span> -- a role he apparently accepted with minimal complaint and maximal caffeine consumption.
+</p>
+
+<p>
+During his academic career, Garg participated in competitive programming and hackathons, an experience that scholars have noted instills either a deep love of algorithms or a permanent aversion to sleep deprivation, and in many cases both simultaneously.<sup class="ref"><a href="#ref-4">[4]</a></sup>
+</p>
+
+<!-- ========== CAREER ========== -->
+<h2 class="section-h2" id="career">Career <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<h3 class="section-h3" id="early-career">Early career <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h3>
+
+<p>
+Garg began his professional career with a focus on backend development and systems design, quickly establishing a pattern that would define his trajectory: identifying bottlenecks, proposing solutions, and then building those solutions before anyone had time to form a committee about them.<sup class="ref"><a href="#ref-5">[5]</a></sup>
+</p>
+
+<p>
+In his early roles, he gained experience with microservices architecture, RESTful API design, and the peculiar art of explaining to product managers why "just adding one more feature" is never as simple as it sounds. His contributions during this period included performance optimizations, database schema redesigns, and what colleagues diplomatically referred to as "aggressive code reviews."<span class="citation-needed"><a href="javascript:void(0)" title="Thorough, but thorough">[<i>citation needed</i>]</a></span>
+</p>
+
+<h3 class="section-h3" id="walmart">Walmart Global Tech <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h3>
+
+<div class="highlighted-box">
+  <div class="highlighted-box-title">
+    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="none" stroke="#36c" stroke-width="1.5"/><rect x="7" y="4" width="2" height="5" rx="1" fill="#36c"/><circle cx="8" cy="11.5" r="1" fill="#36c"/></svg>
+    This section describes the subject's current employment. Information may be subject to corporate NDAs and strategic omission.
+  </div>
+</div>
+
+<p>
+Garg joined <b>Walmart Global Tech</b> as a Software Developer, where he works on e-commerce platform engineering and large-scale distributed systems. Walmart's technology division employs thousands of engineers globally and serves over 240 million customers weekly,<sup class="ref"><a href="#ref-6">[6]</a></sup> a scale that Garg has described as "humbling, and occasionally terrifying during Black Friday."<span class="citation-needed proof"><a href="https://tech.walmart.com" target="_blank" title="Click to visit Walmart Global Tech">[<i>citation needed</i>]</a></span>
+</p>
+
+<p>
+At Walmart, his responsibilities include the design and implementation of backend services, performance optimization of high-traffic systems, and contributing to the platform architecture that supports one of the world's largest retailers. He has worked across multiple domains including inventory management, order processing, and internal tooling -- systems that, by their nature, must fail gracefully or not at all.<sup class="ref"><a href="#ref-7">[7]</a></sup>
+</p>
+
+<p>
+Colleagues at Walmart have noted Garg's ability to navigate complex legacy codebases, a skill that the academic literature on software maintenance describes as "part archaeology, part diplomacy."<sup class="ref"><a href="#ref-8">[8]</a></sup> His contributions to the organization have reportedly improved system reliability and developer productivity, though the exact metrics remain proprietary and, frankly, the subject of some internal debate.
+</p>
+
+<!-- ========== NOTABLE WORKS ========== -->
+<h2 class="section-h2" id="notable-works">Notable works <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<p class="hatnote">Main articles: <a href="javascript:void(0)">Distributed Systems at Walmart</a>, <a href="javascript:void(0)">E-commerce Platform Engineering</a></p>
+
+<p>
+Garg's portfolio of work spans several categories of software engineering, each of which would arguably merit its own Wikipedia article if the notability threshold were somewhat more flexible.
+</p>
+
+<p>
+<b>Scalable Backend Services</b> -- Garg has designed and built backend services handling high-throughput workloads. These systems, described in internal documentation as "the pipes that keep the water running," employ event-driven architectures, distributed caching, and asynchronous processing patterns.<sup class="ref"><a href="#ref-9">[9]</a></sup> The services reportedly maintain sub-100ms response times under peak load, a claim that is either impressive or a rounding error depending on one's perspective.<span class="citation-needed proof"><a href="https://github.com/anshullgarg" target="_blank" title="View projects on GitHub">[<i>citation needed</i>]</a></span>
+</p>
+
+<p>
+<b>Platform Infrastructure & Tooling</b> -- A recurring theme in Garg's work is the development of internal tools that improve developer velocity. These include CI/CD pipeline optimizations, automated testing frameworks, and monitoring dashboards. His philosophy on tooling has been summarized as: "If you have to do it more than twice, automate it. If you have to do it once, consider automating it anyway."<sup class="ref"><a href="#ref-10">[10]</a></sup>
+</p>
+
+<p>
+<b>API Design & Integration</b> -- Garg has contributed to the design of APIs connecting multiple internal and external systems. His approach to API design is reportedly influenced by the RESTful principles outlined by Roy Fielding,<sup class="ref"><a href="#ref-11">[11]</a></sup> combined with a pragmatic willingness to use GraphQL when the situation warrants it, which he has described as "not a betrayal, but an evolution."
+</p>
+
+<!-- ========== TECHNICAL EXPERTISE ========== -->
+<h2 class="section-h2" id="technical-expertise">Technical expertise <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<p>
+The following table represents an academic analysis of Garg's technical proficiencies, compiled from publicly available sources and a moderate amount of inference. The categorization system is borrowed from the Dreyfus model of skill acquisition,<sup class="ref"><a href="#ref-12">[12]</a></sup> though the self-assessment inherent in such models has been noted as a limitation.
+</p>
+
+<table class="wikitable">
+  <tr>
+    <th>Domain</th>
+    <th>Technologies</th>
+    <th>Proficiency Level</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><b>Languages</b></td>
+    <td>Java, JavaScript/TypeScript, Python, SQL</td>
+    <td>Advanced</td>
+    <td>Primary languages; used daily in production systems</td>
+  </tr>
+  <tr>
+    <td><b>Backend Frameworks</b></td>
+    <td>Spring Boot, Node.js, Express</td>
+    <td>Advanced</td>
+    <td>Core of Walmart backend services</td>
+  </tr>
+  <tr>
+    <td><b>Frontend</b></td>
+    <td>React, Next.js, HTML/CSS</td>
+    <td>Proficient</td>
+    <td>"Full-stack with backend tendencies"</td>
+  </tr>
+  <tr>
+    <td><b>Databases</b></td>
+    <td>PostgreSQL, MySQL, MongoDB, Redis, Cassandra</td>
+    <td>Advanced</td>
+    <td>Includes schema design and query optimization</td>
+  </tr>
+  <tr>
+    <td><b>Cloud & DevOps</b></td>
+    <td>Azure, GCP, Docker, Kubernetes, CI/CD</td>
+    <td>Proficient</td>
+    <td>Container orchestration and deployment pipelines</td>
+  </tr>
+  <tr>
+    <td><b>Architecture</b></td>
+    <td>Microservices, Event-driven, REST, GraphQL</td>
+    <td>Advanced</td>
+    <td>System design at scale; distributed systems patterns</td>
+  </tr>
+  <tr>
+    <td><b>Tools</b></td>
+    <td>Git, Kafka, Elasticsearch, Grafana, Jenkins</td>
+    <td>Proficient</td>
+    <td>Monitoring, messaging, and version control</td>
+  </tr>
+</table>
+
+<p>
+Critics of self-reported skill tables have pointed out that the distinction between "Advanced" and "Proficient" is often a matter of how recently one has consulted Stack Overflow on the topic. Garg has not disputed this characterization.<span class="citation-needed"><a href="javascript:void(0)" title="He neither confirmed nor denied">[<i>citation needed</i>]</a></span>
+</p>
+
+<!-- ========== PHILOSOPHY ========== -->
+<h2 class="section-h2" id="philosophy">Philosophy and approach <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<p>
+Garg's engineering philosophy, as synthesized from his public writings, code reviews, and reportedly passionate Slack messages, can be organized into several core tenets:
+</p>
+
+<p>
+<b>On simplicity:</b> Garg has consistently advocated for simplicity in system design, a position that has placed him in occasional tension with proponents of more elaborate architectures. He has been quoted as saying, "The best code is the code you don't have to write,"<sup class="ref"><a href="#ref-13">[13]</a></sup> a sentiment attributed to various luminaries but which Garg applies with what observers describe as "unusual sincerity."
+</p>
+
+<p>
+<b>On reliability:</b> Drawing from the Site Reliability Engineering tradition popularized by Google,<sup class="ref"><a href="#ref-14">[14]</a></sup> Garg emphasizes observability, graceful degradation, and comprehensive error handling. He reportedly considers unhandled exceptions to be a form of "technical debt with interest."
+</p>
+
+<p>
+<b>On collaboration:</b> Garg views software development as an inherently collaborative discipline and has been described as an active participant in code reviews, architecture discussions, and the occasional heated debate about tabs versus spaces (he reportedly has strong opinions on this matter, the details of which are omitted here to preserve editorial neutrality).
+</p>
+
+<div class="wiki-blockquote">
+"The measure of a good engineer is not the code they write, but the code they prevent from being written." -- Attributed to Anshull Garg, though the provenance of this quote is disputed.<sup class="ref"><a href="#ref-15">[15]</a></sup>
+</div>
+
+<p>
+<b>On continuous learning:</b> Garg maintains a practice of exploring emerging technologies and design patterns, a habit that his peers describe as "commendable and occasionally disruptive" when it results in proposals to rewrite existing systems in newer frameworks.<span class="citation-needed"><a href="javascript:void(0)" title="Multiple teams have experienced this phenomenon">[<i>citation needed</i>]</a></span>
+</p>
+
+<!-- ========== RECEPTION ========== -->
+<h2 class="section-h2" id="reception">Reception <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<p class="hatnote">See also: <a href="javascript:void(0)">Peer review in software engineering</a></p>
+
+<p>
+Critical reception of Garg's work has been broadly positive, though as with all biographical articles, the following assessments should be read with an awareness of selection bias.
+</p>
+
+<div class="wiki-blockquote">
+"Anshull has a rare ability to take a complex problem, break it down into manageable pieces, and then build a solution that actually works in production -- not just in a demo." <br>-- Engineering colleague, Walmart Global Tech<sup class="ref"><a href="#ref-16">[16]</a></sup>
+</div>
+
+<div class="wiki-blockquote">
+"One of the most thorough code reviewers I've worked with. Sometimes too thorough, if I'm being honest." <br>-- Anonymous peer (identity withheld at their request)<sup class="ref"><a href="#ref-17">[17]</a></sup>
+</div>
+
+<div class="wiki-blockquote">
+"Anshull doesn't just solve the problem in front of him -- he solves the three problems that would have come next. It's annoying how often he's right about that." <br>-- Former team lead<sup class="ref"><a href="#ref-18">[18]</a></sup>
+</div>
+
+<p>
+A quantitative analysis of his professional trajectory is complicated by the proprietary nature of his primary employer's metrics. However, proxies such as peer recognition, scope of responsibilities, and the number of Slack channels in which he is a "required member" suggest a pattern of expanding influence.<span class="citation-needed"><a href="javascript:void(0)" title="This is admittedly a weak metric">[<i>citation needed</i>]</a></span>
+</p>
+
+<p>
+His work has been described as "widely regarded as exceptional"<span class="citation-needed proof"><a href="https://linkedin.com/in/anshullgarg" target="_blank" title="View endorsements on LinkedIn -- or just take our word for it">[<i>citation needed</i>]</a></span> by individuals whose objectivity may reasonably be questioned, as they include close colleagues, former mentors, and in at least one instance, the subject himself during a moment of uncharacteristic self-promotion.
+</p>
+
+<!-- ========== PERSONAL LIFE ========== -->
+<h2 class="section-h2" id="personal-life">Personal life <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<p>
+Garg maintains a private personal life, consistent with the general expectations of the <a href="https://en.wikipedia.org/wiki/Wikipedia:Biographies_of_living_persons" target="_blank">Wikipedia Biographies of Living Persons</a> policy. He is known to reside in India and to have interests outside of software engineering, including but not limited to activities that do not involve staring at a screen.<span class="citation-needed"><a href="javascript:void(0)" title="Unverified; screen time data not available">[<i>citation needed</i>]</a></span>
+</p>
+
+<p>
+Colleagues report that Garg is an avid learner who spends a nontrivial portion of his free time reading technical literature, contributing to open-source projects, and occasionally attempting to explain distributed consensus algorithms to people who did not ask.<sup class="ref"><a href="#ref-19">[19]</a></sup>
+</p>
+
+<!-- ========== REFERENCES ========== -->
+<h2 class="section-h2" id="ref-section">References <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<div class="reflist">
+  <ol>
+    <li id="ref-1">Garg, A. "On the asymptotic nature of refactoring." <i>Internal Slack messages</i>, 2023-2024. Retrieved from #engineering-general.</li>
+    <li id="ref-2">Walmart Global Tech Engineering Blog. <a href="https://tech.walmart.com" target="_blank">"Building for Scale at Walmart."</a> Walmart, 2024.</li>
+    <li id="ref-3">Personal communication, Garg family archives, undated. Reliability: <i>moderate</i>.</li>
+    <li id="ref-4">Competitive Programming and Its Effects on Sleep Patterns: A Longitudinal Study. <i>Proceedings of the ACM</i> (fictitious).</li>
+    <li id="ref-5">LinkedIn profile: <a href="https://linkedin.com/in/anshullgarg" target="_blank">Anshull Garg</a>. Accessed February 2025.</li>
+    <li id="ref-6">Walmart Inc. Annual Report, 2024. <a href="https://corporate.walmart.com" target="_blank">corporate.walmart.com</a>.</li>
+    <li id="ref-7">Distributed Systems Design Patterns, 3rd ed. O'Reilly Media, 2023. Referenced for context, not direct attribution.</li>
+    <li id="ref-8">Lehman, M.M. "Laws of Software Evolution Revisited." <i>EWSPT</i>, 1996. Applied metaphorically.</li>
+    <li id="ref-9">GitHub repositories: <a href="https://github.com/anshullgarg" target="_blank">github.com/anshullgarg</a>. Commit history available for verification.</li>
+    <li id="ref-10">Attributed to Garg; similar sentiments expressed by approximately 94% of all software engineers. Source: common observation.</li>
+    <li id="ref-11">Fielding, R.T. "Architectural Styles and the Design of Network-based Software Architectures." Doctoral dissertation, UC Irvine, 2000.</li>
+    <li id="ref-12">Dreyfus, S.E.; Dreyfus, H.L. "A Five-Stage Model of the Mental Activities Involved in Directed Skill Acquisition." University of California, Berkeley, 1980.</li>
+    <li id="ref-13">Variously attributed to Bill Gates, Jeff Atwood, and now Anshull Garg. The lineage of this aphorism is disputed.</li>
+    <li id="ref-14">Beyer, B. et al. <i>Site Reliability Engineering</i>. O'Reilly Media, 2016.</li>
+    <li id="ref-15">Source: a Slack message screenshot of uncertain provenance, circulated among engineering teams, c. 2024.</li>
+    <li id="ref-16">Peer feedback, annual performance review cycle, 2024. Names redacted per corporate policy.</li>
+    <li id="ref-17">Anonymous interview, conducted for the purposes of this article. January 2025.</li>
+    <li id="ref-18">Former team lead, personal communication, 2024. Quoted with permission.</li>
+    <li id="ref-19">"He once explained Raft consensus to me at a dinner party." -- Unnamed acquaintance, 2024.</li>
+  </ol>
+</div>
+
+<!-- ========== EXTERNAL LINKS ========== -->
+<h2 class="section-h2" id="external-links">External links <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<ul class="ext-links">
+  <li><a href="https://anshullgarg.dev" target="_blank" class="ext-icon">Official website -- anshullgarg.dev</a></li>
+  <li><a href="https://github.com/anshullgarg" target="_blank" class="ext-icon">Anshull Garg on GitHub</a> -- Public repositories and open-source contributions</li>
+  <li><a href="https://linkedin.com/in/anshullgarg" target="_blank" class="ext-icon">Anshull Garg on LinkedIn</a> -- Professional profile and employment history</li>
+  <li><a href="https://tech.walmart.com" target="_blank" class="ext-icon">Walmart Global Tech</a> -- Employer's technology division</li>
+</ul>
+
+<!-- ========== SEE ALSO ========== -->
+<h2 class="section-h2" id="see-also">See also <span class="edit-link" onclick="showEditTooltip(event)">edit</span></h2>
+
+<div class="columns-2">
+  <ul>
+    <li><a href="javascript:void(0)">Software engineering</a></li>
+    <li><a href="javascript:void(0)">Distributed computing</a></li>
+    <li><a href="javascript:void(0)">Walmart</a></li>
+    <li><a href="javascript:void(0)">Microservices</a></li>
+    <li><a href="javascript:void(0)">Site reliability engineering</a></li>
+    <li><a href="javascript:void(0)">Event-driven architecture</a></li>
+    <li><a href="javascript:void(0)">RESTful API design</a></li>
+    <li><a href="javascript:void(0)">Technical debt</a></li>
+    <li><a href="javascript:void(0)">Impostor syndrome in tech</a></li>
+    <li><a href="javascript:void(0)">The Mythical Man-Month</a></li>
+  </ul>
+</div>
+
+<!-- ========== CATEGORY TAGS ========== -->
+<div class="catlinks">
+  <span class="catlinks-title">Categories:</span>
+  <a href="javascript:void(0)">Living people</a> |
+  <a href="javascript:void(0)">Indian software engineers</a> |
+  <a href="javascript:void(0)">Walmart people</a> |
+  <a href="javascript:void(0)">Backend developers</a> |
+  <a href="javascript:void(0)">Distributed systems researchers</a> |
+  <a href="javascript:void(0)">People who explain Raft at dinner parties</a> |
+  <a href="javascript:void(0)">Engineers with strong opinions on tabs vs spaces</a>
+</div>
+
+<div class="last-edited">
+  This page was last edited on 8 February 2025, at 03:42 (UTC).<br>
+  Text is available under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike License 4.0</a>; additional terms may apply.
+</div>
+
+</div><!-- /panel-article -->
+
+
+<!-- ============================ -->
+<!-- TALK TAB                     -->
+<!-- ============================ -->
+<div class="tab-panel" id="panel-talk">
+
+<h1 class="article-title">Talk:Anshull Garg</h1>
+
+<div class="ambox" style="border-color:#5599ff; background:#eaf3ff;">
+  <div class="ambox-header" style="background:#cde;">
+    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="none" stroke="#36c" stroke-width="1.5"/><rect x="7" y="4" width="2" height="5" rx="1" fill="#36c"/><circle cx="8" cy="11.5" r="1" fill="#36c"/></svg>
+    This is the talk page for discussing improvements to the <b>Anshull Garg</b> article.
+  </div>
+</div>
+
+<div class="talk-thread">
+  <div class="talk-thread-header">Article reads like a resume</div>
+  <div class="talk-post">
+    This article definitely reads like a polished LinkedIn profile. Can we get some more encyclopedic tone here? Every other sentence is basically a humble brag wrapped in third person. I've tagged it accordingly.
+    <div class="talk-sig">-- <a href="javascript:void(0)">WikiEditor2847</a> (talk) 14:23, 15 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    I disagree. The article clearly attempts encyclopedic neutrality. The subject's accomplishments are documented with references. The fact that accomplishments sound impressive is not the article's fault.
+    <div class="talk-sig">-- <a href="javascript:void(0)">TotallyNotAnshull</a> (talk) 14:25, 15 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent-2">
+    Your username is suspicious.
+    <div class="talk-sig">-- <a href="javascript:void(0)">WikiEditor2847</a> (talk) 14:26, 15 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    I've reviewed the article and made some neutrality edits. Removed three instances of "visionary" and one "revolutionized." Replaced with "contributed to" and "was involved in."
+    <div class="talk-sig">-- <a href="javascript:void(0)">NeutralityBot</a> (talk) 16:02, 15 January 2025 (UTC)</div>
+  </div>
+</div>
+
+<div class="talk-thread">
+  <div class="talk-thread-header">Notability concerns</div>
+  <div class="talk-post">
+    Does this person meet WP:NOTABILITY? They're a software developer at a large company. That describes roughly 500,000 people. What makes this one encyclopedic?
+    <div class="talk-sig">-- <a href="javascript:void(0)">DeletionPatrol</a> (talk) 09:11, 18 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    Strong keep. The subject has made significant contributions to systems serving millions of users. Also, have you SEEN his GitHub? The commit history alone is a primary source of historical significance.
+    <div class="talk-sig">-- <a href="javascript:void(0)">TotallyNotAnshull</a> (talk) 09:14, 18 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    <b>Keep</b> -- The article is well-sourced (19 references!) and the subject's work at Walmart scale satisfies WP:GNG. Also, the article is genuinely enjoyable to read, which is more than I can say for most Wikipedia bios.
+    <div class="talk-sig">-- <a href="javascript:void(0)">AfDSurvivor</a> (talk) 11:30, 18 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent-2">
+    "Enjoyable to read" is not a notability criterion. But I'll withdraw my nomination because I don't want to deal with the inevitable sockpuppet investigation.
+    <div class="talk-sig">-- <a href="javascript:void(0)">DeletionPatrol</a> (talk) 12:45, 18 January 2025 (UTC)</div>
+  </div>
+</div>
+
+<div class="talk-thread">
+  <div class="talk-thread-header">Merge proposal: Merge into "Walmart Global Tech employees"</div>
+  <div class="talk-post">
+    Proposing merge into a broader article about Walmart engineering staff. This would solve the notability issue while preserving content.
+    <div class="talk-sig">-- <a href="javascript:void(0)">MergeProposer</a> (talk) 20:00, 22 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    <b>Oppose</b> -- This article has more references than the article on Walmart itself. Also, have you tried merging 19 footnotes into a list article? I have. It's not fun.
+    <div class="talk-sig">-- <a href="javascript:void(0)">ListArticleVeteran</a> (talk) 20:15, 22 January 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    <b>Strong oppose</b> -- Per the subject's own philosophy: "The best code is the code you don't have to write." By analogy, the best merge is the merge you don't have to do. Keeping separate.
+    <div class="talk-sig">-- <a href="javascript:void(0)">TotallyNotAnshull</a> (talk) 20:17, 22 January 2025 (UTC)</div>
+  </div>
+</div>
+
+<div class="talk-thread">
+  <div class="talk-thread-header">"Tabs vs spaces" -- should we include this?</div>
+  <div class="talk-post">
+    The article mentions the subject has "strong opinions" on tabs vs spaces but does not state what those opinions are. This is a clear violation of WP:WEASEL. Should we ask the subject directly?
+    <div class="talk-sig">-- <a href="javascript:void(0)">CodeStyleWatcher</a> (talk) 08:30, 1 February 2025 (UTC)</div>
+  </div>
+  <div class="talk-post talk-indent">
+    Absolutely not. Some things are better left as [citation needed]. This is one of them.
+    <div class="talk-sig">-- <a href="javascript:void(0)">EditWarVeteran</a> (talk) 08:45, 1 February 2025 (UTC)</div>
+  </div>
+</div>
+
+</div><!-- /panel-talk -->
+
+
+<!-- ============================ -->
+<!-- HISTORY TAB                  -->
+<!-- ============================ -->
+<div class="tab-panel" id="panel-history">
+
+<h1 class="article-title">Anshull Garg: Revision history</h1>
+
+<p style="font-size:13px; font-family:sans-serif; margin:12px 0;">
+  For any version listed below, click on its date to view it. For more help, see <a href="javascript:void(0)">Help:Page history</a>.<br>
+  <small>External tools: <a href="javascript:void(0)">Page statistics</a> | <a href="javascript:void(0)">Revision history search</a></small>
+</p>
+
+<div style="font-size:13px; font-family:sans-serif; margin:8px 0; padding:8px 12px; background:#eaf3ff; border:1px solid #a7d7f9;">
+  Browse history: <b>19 revisions</b> from <b>15 January 2024</b> to <b>8 February 2025</b>
+</div>
+
+<table class="history-table">
+  <tr>
+    <th style="width:40px;"></th>
+    <th>Date / Time</th>
+    <th>Hash</th>
+    <th>Editor</th>
+    <th>Summary</th>
+    <th>Size</th>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>08 Feb 2025, 03:42</td>
+    <td><span class="history-hash">a7f3c2d</span></td>
+    <td><a href="javascript:void(0)">TotallyNotAnshull</a></td>
+    <td>Updated reception section; added three new testimonials; definitely not self-authored</td>
+    <td>+2,847</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>05 Feb 2025, 19:11</td>
+    <td><span class="history-hash">e8b1f4a</span></td>
+    <td><a href="javascript:void(0)">NeutralityBot</a></td>
+    <td>Removed 3x "visionary", 1x "revolutionized", 2x "genius-level". Replaced with neutral language.</td>
+    <td>-342</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>01 Feb 2025, 08:30</td>
+    <td><span class="history-hash">c4d9e6b</span></td>
+    <td><a href="javascript:void(0)">CodeStyleWatcher</a></td>
+    <td>Added [citation needed] to tabs vs spaces claim</td>
+    <td>+28</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>22 Jan 2025, 14:00</td>
+    <td><span class="history-hash">f2a8b3c</span></td>
+    <td><a href="javascript:void(0)">TotallyNotAnshull</a></td>
+    <td>feat: Added Walmart Global Tech section with highlighted box</td>
+    <td>+4,210</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>20 Jan 2025, 09:15</td>
+    <td><span class="history-hash">b7e2d1f</span></td>
+    <td><a href="javascript:void(0)">WikiEditor2847</a></td>
+    <td>Tagged: article reads like resume. Added ambox.</td>
+    <td>+156</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>18 Jan 2025, 12:45</td>
+    <td><span class="history-hash">d5f8a2e</span></td>
+    <td><a href="javascript:void(0)">DeletionPatrol</a></td>
+    <td>Withdrew AfD nomination. Subject is apparently notable enough. Fine.</td>
+    <td>+0</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>18 Jan 2025, 09:11</td>
+    <td><span class="history-hash">a1c3e7d</span></td>
+    <td><a href="javascript:void(0)">DeletionPatrol</a></td>
+    <td>Nominated for deletion: WP:NOTABILITY concerns</td>
+    <td>+89</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>15 Jan 2025, 22:00</td>
+    <td><span class="history-hash">e4b2c8f</span></td>
+    <td><a href="javascript:void(0)">TotallyNotAnshull</a></td>
+    <td>refactor: Restructured technical expertise table; added Dreyfus model reference</td>
+    <td>+1,523</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>15 Jan 2025, 16:02</td>
+    <td><span class="history-hash">c9f1d4a</span></td>
+    <td><a href="javascript:void(0)">NeutralityBot</a></td>
+    <td>Tone cleanup pass #1. This article needed it.</td>
+    <td>-891</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>15 Jan 2025, 14:23</td>
+    <td><span class="history-hash">b3a7e2c</span></td>
+    <td><a href="javascript:void(0)">WikiEditor2847</a></td>
+    <td>First read of article. Concerns noted. Talk page discussion opened.</td>
+    <td>+0</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>10 Jan 2025, 03:00</td>
+    <td><span class="history-hash">f8d4a1b</span></td>
+    <td><a href="javascript:void(0)">TotallyNotAnshull</a></td>
+    <td>chore: Added 19 references. Article now has more citations than the page on JavaScript.</td>
+    <td>+3,412</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>05 Jan 2025, 11:30</td>
+    <td><span class="history-hash">a2e6c9d</span></td>
+    <td><a href="javascript:void(0)">TotallyNotAnshull</a></td>
+    <td>fix: Corrected "10x engineer" to "effective contributor". NeutralityBot was watching.</td>
+    <td>-47</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>01 Jan 2025, 00:01</td>
+    <td><span class="history-hash">d7b3f5e</span></td>
+    <td><a href="javascript:void(0)">TotallyNotAnshull</a></td>
+    <td>New Year's resolution: finally write my own Wikipedia article. I mean, document this notable person.</td>
+    <td>+12,847</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>15 Aug 2024, 09:00</td>
+    <td><span class="history-hash">c1f8a3d</span></td>
+    <td><a href="javascript:void(0)">AutoWikiBrowser</a></td>
+    <td>Stub created. Red link resolved from "Walmart Global Tech employees" list.</td>
+    <td>+234</td>
+  </tr>
+  <tr>
+    <td><input type="radio" disabled></td>
+    <td>15 Jan 2024, 00:00</td>
+    <td><span class="history-hash">0000000</span></td>
+    <td><a href="javascript:void(0)">System</a></td>
+    <td><span class="history-minor">m</span> Page created. git init.</td>
+    <td>+0</td>
+  </tr>
+</table>
+
+</div><!-- /panel-history -->
+
+</main>
+
+<!-- ========== TOOLTIP ========== -->
+<div class="wiki-tooltip" id="editTooltip">
+  <b>This page is semi-protected.</b><br>
+  You must be an <a href="javascript:void(0)">autoconfirmed user</a> to edit this article. If you'd like to suggest changes, consider reaching out via <a href="mailto:hello@anshullgarg.dev">email</a> or <a href="https://linkedin.com/in/anshullgarg" target="_blank">LinkedIn</a>.
+</div>
+
+<script>
+/* ============================================================
+   JAVASCRIPT -- TAB SWITCHING, SEARCH, EASTER EGGS
+   ============================================================ */
+
+// ---- Tab switching ----
+function switchTab(tab) {
+  // panels
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+
+  // tab buttons
+  document.querySelectorAll('.wiki-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.wiki-tab[data-tab="' + tab + '"]').forEach(t => t.classList.add('active'));
+
+  // scroll to top of body
+  document.querySelector('.wiki-body').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ---- TOC toggle ----
+function toggleTOC() {
+  const list = document.getElementById('tocList');
+  const toggle = document.getElementById('tocToggle');
+  if (list.style.display === 'none') {
+    list.style.display = '';
+    toggle.textContent = '[hide]';
+  } else {
+    list.style.display = 'none';
+    toggle.textContent = '[show]';
+  }
+}
+
+// ---- Edit tooltip ----
+function showEditTooltip(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const tip = document.getElementById('editTooltip');
+  tip.style.display = 'block';
+  tip.style.left = Math.min(e.clientX, window.innerWidth - 340) + 'px';
+  tip.style.top = (e.clientY + 16) + 'px';
+  setTimeout(() => { tip.style.display = 'none'; }, 4000);
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.classList.contains('edit-link')) {
+    document.getElementById('editTooltip').style.display = 'none';
+  }
+});
+
+// ---- Random article / scroll to random section ----
+function scrollToRandom() {
+  const sections = ['early-life','career','early-career','walmart','notable-works','technical-expertise','philosophy','reception','personal-life'];
+  const id = sections[Math.floor(Math.random() * sections.length)];
+  const el = document.getElementById(id);
+  if (el) {
+    // Make sure we're on article tab
+    switchTab('article');
+    setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // flash effect
+      el.style.background = '#fff59d';
+      setTimeout(() => { el.style.background = ''; }, 1500);
+    }, 100);
+  }
+}
+
+// ---- Search ----
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+searchInput.addEventListener('input', function() {
+  const query = this.value.trim().toLowerCase();
+  if (query.length < 2) {
+    searchResults.classList.remove('active');
+    clearHighlights();
+    return;
+  }
+  performLiveSearch(query);
+});
+
+searchInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    performSearch();
+  }
+  if (e.key === 'Escape') {
+    searchResults.classList.remove('active');
+    clearHighlights();
+  }
+});
+
+// Close search results when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.wiki-search-wrap')) {
+    searchResults.classList.remove('active');
+  }
+});
+
+function performLiveSearch(query) {
+  const article = document.getElementById('panel-article');
+  const text = article.innerText;
+  const lines = text.split('\n').filter(l => l.trim().length > 0);
+
+  const results = [];
+  const seen = new Set();
+
+  for (const line of lines) {
+    if (line.toLowerCase().includes(query) && line.trim().length > 10) {
+      const trimmed = line.trim().substring(0, 120);
+      if (!seen.has(trimmed)) {
+        seen.add(trimmed);
+        results.push(trimmed);
+      }
+      if (results.length >= 8) break;
+    }
+  }
+
+  if (results.length === 0) {
+    searchResults.innerHTML = '<div class="wiki-search-result" style="color:#72777d;">No results found for "' + escapeHtml(searchInput.value) + '"</div>';
+  } else {
+    searchResults.innerHTML = results.map(r => {
+      const highlighted = highlightInText(r, query);
+      return '<div class="wiki-search-result" onclick="jumpToText(\'' + escapeForAttr(r.substring(0, 40)) + '\')">' + highlighted + '</div>';
+    }).join('');
+  }
+
+  searchResults.classList.add('active');
+}
+
+function performSearch() {
+  const query = searchInput.value.trim().toLowerCase();
+  if (query.length < 2) return;
+
+  // Switch to article tab
+  switchTab('article');
+  searchResults.classList.remove('active');
+
+  // Clear old highlights
+  clearHighlights();
+
+  // Highlight in article
+  setTimeout(() => {
+    highlightInArticle(query);
+  }, 150);
+}
+
+function highlightInArticle(query) {
+  const article = document.getElementById('panel-article');
+  const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null, false);
+  const matches = [];
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const idx = node.nodeValue.toLowerCase().indexOf(query);
+    if (idx !== -1) {
+      matches.push({ node, idx });
+    }
+  }
+
+  if (matches.length > 0) {
+    // Highlight first few matches
+    let scrolled = false;
+    for (let i = Math.min(matches.length - 1, 15); i >= 0; i--) {
+      const { node, idx } = matches[i];
+      const range = document.createRange();
+      range.setStart(node, idx);
+      range.setEnd(node, idx + query.length);
+      const span = document.createElement('span');
+      span.className = 'search-highlight';
+      range.surroundContents(span);
+      if (!scrolled) {
+        span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        scrolled = true;
+      }
+    }
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.search-highlight').forEach(el => {
+    const parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
+}
+
+function jumpToText(snippet) {
+  searchResults.classList.remove('active');
+  switchTab('article');
+  clearHighlights();
+
+  const query = snippet.toLowerCase();
+  setTimeout(() => {
+    const article = document.getElementById('panel-article');
+    const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null, false);
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (node.nodeValue.toLowerCase().includes(query)) {
+        const idx = node.nodeValue.toLowerCase().indexOf(query);
+        const range = document.createRange();
+        range.setStart(node, idx);
+        range.setEnd(node, Math.min(idx + snippet.length, node.nodeValue.length));
+        const span = document.createElement('span');
+        span.className = 'search-highlight';
+        try {
+          range.surroundContents(span);
+          span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => clearHighlights(), 3000);
+        } catch(e) { /* cross-boundary, skip */ }
+        break;
+      }
+    }
+  }, 150);
+}
+
+function highlightInText(text, query) {
+  const idx = text.toLowerCase().indexOf(query);
+  if (idx === -1) return escapeHtml(text);
+  return escapeHtml(text.substring(0, idx)) +
+    '<mark>' + escapeHtml(text.substring(idx, idx + query.length)) + '</mark>' +
+    escapeHtml(text.substring(idx + query.length));
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+function escapeForAttr(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+// ---- Smooth scroll for footnotes ----
+document.querySelectorAll('.ref a, .toc a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.getElementById(href.substring(1));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // flash
+        target.style.background = '#def';
+        setTimeout(() => { target.style.background = ''; }, 2000);
+      }
+    }
+  });
+});
+
+// ---- Keyboard accessibility for tabs ----
+document.querySelectorAll('.wiki-tab').forEach(tab => {
+  tab.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.click();
+    }
+  });
+});
+
+// ---- Update "last edited" with real time ----
+(function() {
+  const now = new Date();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  const timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const el = document.querySelector('.last-edited');
+  if (el) {
+    el.innerHTML = el.innerHTML.replace(/8 February 2025, at 03:42/, dateStr + ', at ' + timeStr);
+  }
+})();
+</script>
+
+</body>
+</html>

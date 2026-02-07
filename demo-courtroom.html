@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE PEOPLE vs. ANSHULL GARG | Case No. 2026-DEV-001</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   CSS RESET & VARIABLES
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --courtroom: #1A1510;
+  --courtroom-light: #2A2218;
+  --courtroom-lighter: #3A3228;
+  --paper: #F5EDD8;
+  --paper-dark: #E8DCC4;
+  --paper-darker: #D4C9AB;
+  --ink: #1A1A1A;
+  --ink-light: #3A3A3A;
+  --burgundy: #6B1D2A;
+  --burgundy-light: #8B2D3A;
+  --gold: #C9A84C;
+  --gold-dark: #A8893C;
+  --stamp-red: #CC2936;
+  --stamp-red-dark: #991E28;
+  --cream: #F5EDD8;
+  --wood-1: #2E2316;
+  --wood-2: #3D2F1E;
+  --wood-3: #1F1812;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--courtroom);
+  color: var(--cream);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ============================================
+   WOOD GRAIN TEXTURE (CSS-only)
+   ============================================ */
+.wood-bg {
+  background:
+    repeating-linear-gradient(
+      2deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.03) 3px,
+      rgba(0,0,0,0.03) 4px
+    ),
+    repeating-linear-gradient(
+      178deg,
+      transparent,
+      transparent 7px,
+      rgba(62,47,30,0.15) 7px,
+      rgba(62,47,30,0.15) 8px
+    ),
+    repeating-linear-gradient(
+      1deg,
+      transparent,
+      transparent 15px,
+      rgba(46,35,22,0.08) 15px,
+      rgba(46,35,22,0.08) 17px
+    ),
+    linear-gradient(180deg, var(--courtroom) 0%, var(--courtroom-light) 50%, var(--courtroom) 100%);
+}
+
+/* ============================================
+   PAPER DOCUMENT STYLE
+   ============================================ */
+.legal-document {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 27px,
+      rgba(180,170,150,0.2) 27px,
+      rgba(180,170,150,0.2) 28px
+    ),
+    linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+  color: var(--ink);
+  border: 1px solid var(--paper-darker);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.1),
+    0 8px 24px rgba(0,0,0,0.2),
+    inset 0 0 60px rgba(0,0,0,0.03);
+  position: relative;
+}
+
+.legal-document::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 60px;
+  width: 1px;
+  height: 100%;
+  background: rgba(204,41,54,0.15);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.heading-legal {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.typewriter {
+  font-family: 'Courier Prime', 'Courier New', monospace;
+}
+
+.body-text {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============================================
+   SECTION COMMON
+   ============================================ */
+section {
+  padding: 80px 20px;
+  position: relative;
+}
+
+.section-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   SECTION DIVIDER (wooden rail)
+   ============================================ */
+.court-divider {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  height: 8px;
+  background:
+    linear-gradient(180deg, var(--wood-2) 0%, var(--wood-1) 40%, var(--wood-3) 100%);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+}
+
+.court-divider::before,
+.court-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3), 0 0 8px rgba(201,168,76,0.3);
+}
+
+.court-divider::before { left: 20px; }
+.court-divider::after { right: 20px; }
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.court-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(26,21,16,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--gold-dark);
+  padding: 12px 20px;
+  transform: translateY(-100%);
+  transition: transform 0.4s ease;
+}
+
+.court-nav.visible {
+  transform: translateY(0);
+}
+
+.court-nav-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.court-nav-case {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.court-nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.court-nav-links a {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  color: var(--cream);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.court-nav-links a:hover {
+  opacity: 1;
+  color: var(--gold);
+}
+
+/* ============================================
+   HERO - THE CASE
+   ============================================ */
+#the-case {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+.courtroom-atmosphere {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 100% at 50% 100%, rgba(26,21,16,0.9) 0%, transparent 50%),
+    repeating-linear-gradient(
+      2deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.02) 3px,
+      rgba(0,0,0,0.02) 4px
+    ),
+    linear-gradient(180deg, #1A1510 0%, #2A2218 40%, #1A1510 100%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.case-header-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ornament-line {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.ornament-diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+
+.case-court-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeSlideDown 0.8s ease 0.3s forwards;
+}
+
+.case-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  color: var(--cream);
+  line-height: 1.1;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: fadeSlideDown 0.8s ease 0.5s forwards;
+}
+
+.case-title .vs {
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.5em;
+  display: block;
+  color: var(--gold);
+  margin: 4px 0;
+}
+
+.case-number {
+  font-family: 'Courier Prime', monospace;
+  font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+  letter-spacing: 0.15em;
+  color: var(--paper-darker);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeSlideDown 0.8s ease 0.7s forwards;
+}
+
+.case-charge {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
+  font-style: italic;
+  color: var(--cream);
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeSlideDown 0.8s ease 0.9s forwards;
+}
+
+.case-charge strong {
+  color: var(--stamp-red);
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* Gavel */
+.gavel-container {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 40px;
+  position: relative;
+  opacity: 0;
+  animation: fadeIn 0.3s ease 1.2s forwards;
+}
+
+.gavel-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gavel-head-group {
+  transform-origin: 60px 80px;
+  animation: gavelSlam 1s cubic-bezier(0.34, 1.56, 0.64, 1) 1.4s both;
+}
+
+@keyframes gavelSlam {
+  0% { transform: rotate(-60deg); }
+  50% { transform: rotate(5deg); }
+  65% { transform: rotate(-3deg); }
+  80% { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.gavel-impact {
+  opacity: 0;
+  animation: gavelImpact 0.6s ease 1.8s both;
+}
+
+@keyframes gavelImpact {
+  0% { opacity: 0; transform: scale(0.5); }
+  30% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+/* Plea */
+.plea-section {
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeSlideDown 0.8s ease 2.2s forwards;
+}
+
+.plea-question {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.plea-answer {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  color: var(--cream);
+}
+
+.plea-answer em {
+  color: var(--burgundy-light);
+  font-style: normal;
+}
+
+/* CTA */
+.proceed-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--courtroom);
+  background: var(--gold);
+  border: none;
+  padding: 16px 36px;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeSlideDown 0.8s ease 2.5s forwards;
+}
+
+.proceed-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px solid var(--courtroom);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.proceed-btn:hover {
+  background: #D4B85C;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201,168,76,0.3);
+}
+
+.proceed-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.proceed-btn:hover svg {
+  transform: translateY(3px);
+}
+
+/* ============================================
+   EXHIBIT STAMP
+   ============================================ */
+.exhibit-stamp {
+  display: inline-block;
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--stamp-red);
+  border: 3px solid var(--stamp-red);
+  padding: 4px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transform: rotate(-4deg);
+  opacity: 0;
+  position: relative;
+}
+
+.exhibit-stamp::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--stamp-red);
+  opacity: 0.3;
+  transform: translate(2px, 2px);
+}
+
+.exhibit-stamp.stamped {
+  animation: stampSlam 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+}
+
+@keyframes stampSlam {
+  0% {
+    opacity: 0;
+    transform: rotate(-4deg) scale(3);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(-4deg) scale(0.9);
+  }
+  70% {
+    transform: rotate(-4deg) scale(1.05);
+  }
+  100% {
+    opacity: 0.85;
+    transform: rotate(-4deg) scale(1);
+  }
+}
+
+/* ============================================
+   PROSECUTION'S CASE (EVIDENCE)
+   ============================================ */
+#evidence {
+  padding-top: 60px;
+}
+
+.section-heading-block {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.section-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--cream);
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.85rem;
+  color: var(--paper-darker);
+  font-style: italic;
+}
+
+/* Evidence Card */
+.evidence-card {
+  margin-bottom: 48px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.evidence-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Folder tab */
+.evidence-tab {
+  display: inline-block;
+  background: var(--paper-dark);
+  padding: 8px 24px 4px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid var(--paper-darker);
+  border-bottom: none;
+  margin-left: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.evidence-tab-text {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.evidence-body {
+  padding: 40px;
+  border-radius: 0 4px 4px 4px;
+  position: relative;
+}
+
+.evidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--paper-darker);
+}
+
+.evidence-title-block {}
+
+.evidence-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.evidence-tag {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.evidence-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  text-indent: 2em;
+}
+
+.evidence-chain {
+  margin-bottom: 20px;
+}
+
+.evidence-chain-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+  margin-bottom: 10px;
+}
+
+.evidence-chain-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chain-item {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border: 1px solid var(--paper-darker);
+  background: rgba(0,0,0,0.03);
+  color: var(--ink);
+}
+
+.evidence-impact {
+  background: rgba(107,29,42,0.06);
+  border-left: 3px solid var(--burgundy);
+  padding: 16px 20px;
+  margin-top: 16px;
+}
+
+.evidence-impact-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--burgundy);
+  margin-bottom: 4px;
+}
+
+.evidence-impact-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ============================================
+   WITNESS TESTIMONY
+   ============================================ */
+#testimony {
+  padding-top: 60px;
+}
+
+.testimony-document {
+  padding: 48px 40px;
+  border-radius: 2px;
+  margin-bottom: 48px;
+}
+
+.testimony-header {
+  text-align: center;
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--paper-darker);
+}
+
+.testimony-header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.testimony-header-subtitle {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  color: var(--ink-light);
+}
+
+.sworn-oath {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 16px;
+  border: 1px dashed var(--paper-darker);
+}
+
+.qa-block {
+  margin-bottom: 28px;
+  padding-left: 20px;
+}
+
+.qa-question {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--burgundy);
+  margin-bottom: 8px;
+}
+
+.qa-question::before {
+  content: 'Q: ';
+}
+
+.qa-answer {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.7;
+  padding-left: 24px;
+  position: relative;
+}
+
+.qa-answer::before {
+  content: 'A:';
+  position: absolute;
+  left: 0;
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Character Witnesses */
+.character-witness {
+  border: 1px solid var(--paper-darker);
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  background: rgba(0,0,0,0.015);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+}
+
+.character-witness.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.witness-badge {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background: var(--paper);
+  color: var(--burgundy);
+  padding: 2px 10px;
+  border: 1px solid var(--burgundy);
+}
+
+.witness-quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.witness-quote::before { content: '\201C'; }
+.witness-quote::after { content: '\201D'; }
+
+.witness-identity {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  color: var(--ink-light);
+}
+
+.witness-identity strong {
+  color: var(--ink);
+}
+
+/* ============================================
+   FORENSIC EVIDENCE (SKILLS)
+   ============================================ */
+#forensics {
+  padding-top: 60px;
+}
+
+.lab-reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.lab-report {
+  padding: 32px 28px;
+  border-radius: 2px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+}
+
+.lab-report.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lab-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--paper-darker);
+}
+
+.lab-report-title {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+  margin-bottom: 4px;
+}
+
+.lab-report-category {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.lab-report-number {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  color: var(--paper-darker);
+}
+
+.lab-skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--paper-darker);
+}
+
+.lab-skill-item:last-child {
+  border-bottom: none;
+}
+
+.lab-skill-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.proficiency-stamp {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 1.5px solid;
+  transform: rotate(-2deg);
+  white-space: nowrap;
+}
+
+.proficiency-stamp.expert {
+  color: var(--stamp-red);
+  border-color: var(--stamp-red);
+}
+
+.proficiency-stamp.advanced {
+  color: var(--burgundy);
+  border-color: var(--burgundy);
+}
+
+.proficiency-stamp.proficient {
+  color: var(--gold-dark);
+  border-color: var(--gold-dark);
+}
+
+/* DNA Helix Decoration */
+.dna-decoration {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* ============================================
+   THE CRIMINAL RECORD (EXPERIENCE)
+   ============================================ */
+#record {
+  padding-top: 60px;
+}
+
+.record-document {
+  padding: 48px 40px;
+  border-radius: 2px;
+}
+
+.record-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--paper-darker);
+}
+
+.record-header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.record-header-subtitle {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  color: var(--ink-light);
+}
+
+.count-item {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--paper-darker);
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 24px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.5s ease;
+}
+
+.count-item.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.count-item:last-child {
+  border-bottom: none;
+}
+
+.count-meta {
+  text-align: right;
+  padding-right: 20px;
+  border-right: 2px solid var(--burgundy);
+}
+
+.count-number {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stamp-red);
+  margin-bottom: 4px;
+}
+
+.count-date {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  color: var(--ink-light);
+}
+
+.count-details {}
+
+.count-offense {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.count-location {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  color: var(--burgundy);
+  margin-bottom: 8px;
+}
+
+.count-sentence {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+.count-sentence strong {
+  color: var(--ink);
+}
+
+/* ============================================
+   CLOSING ARGUMENTS
+   ============================================ */
+#closing {
+  padding-top: 60px;
+  text-align: center;
+}
+
+.closing-speech {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.closing-address {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-style: italic;
+  color: var(--cream);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.closing-paragraph {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: var(--paper-darker);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.damning-evidence {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+  margin: 48px 0;
+}
+
+.damning-item {
+  text-align: center;
+  padding: 24px;
+  border: 1px solid rgba(201,168,76,0.2);
+  position: relative;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.5s ease;
+}
+
+.damning-item.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.damning-item::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(201,168,76,0.1);
+  pointer-events: none;
+}
+
+.damning-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.damning-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--paper-darker);
+}
+
+/* ============================================
+   THE VERDICT (CONTACT/CTA)
+   ============================================ */
+#verdict {
+  padding: 100px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.verdict-content {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.verdict-instruction {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 12px;
+}
+
+.verdict-subtitle {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.8rem;
+  color: var(--paper-darker);
+  margin-bottom: 48px;
+}
+
+.verdict-buttons {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.verdict-btn {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 20px 44px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.verdict-btn::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.verdict-btn-guilty {
+  background: var(--gold);
+  color: var(--courtroom);
+}
+
+.verdict-btn-guilty::before {
+  border-color: var(--courtroom);
+}
+
+.verdict-btn-guilty:hover {
+  background: #D4B85C;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+}
+
+.verdict-btn-not-guilty {
+  background: transparent;
+  color: var(--cream);
+  border: 2px solid var(--cream);
+}
+
+.verdict-btn-not-guilty::before {
+  border-color: var(--cream);
+}
+
+.verdict-btn-not-guilty:hover {
+  background: rgba(245,237,216,0.05);
+  transform: translateY(-3px);
+}
+
+/* Verdict Result */
+.verdict-result {
+  display: none;
+  padding: 48px;
+  border-radius: 2px;
+  text-align: center;
+  position: relative;
+}
+
+.verdict-result.active {
+  display: block;
+  animation: verdictReveal 0.6s ease forwards;
+}
+
+@keyframes verdictReveal {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.verdict-gavel-slam {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+}
+
+.verdict-declaration {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.verdict-sentence-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+}
+
+.verdict-sentence-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+
+.verdict-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.verdict-contact-item {
+  padding: 16px;
+  border: 1px dashed var(--paper-darker);
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.verdict-contact-item:hover {
+  background: rgba(0,0,0,0.03);
+  border-color: var(--burgundy);
+}
+
+.verdict-contact-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+  margin-bottom: 4px;
+}
+
+.verdict-contact-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Wax seal */
+.wax-seal {
+  width: 70px;
+  height: 70px;
+  position: absolute;
+}
+
+.wax-seal.top-right {
+  top: -15px;
+  right: -15px;
+}
+
+/* Confetti */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.court-footer {
+  padding: 40px 20px;
+  text-align: center;
+  border-top: 2px solid var(--gold-dark);
+}
+
+.court-footer-text {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  color: var(--paper-darker);
+  letter-spacing: 0.1em;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeSlideDown {
+  0% { opacity: 0; transform: translateY(-15px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  section {
+    padding: 60px 16px;
+  }
+
+  .evidence-body {
+    padding: 28px 20px;
+  }
+
+  .testimony-document {
+    padding: 32px 20px;
+  }
+
+  .record-document {
+    padding: 32px 20px;
+  }
+
+  .count-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .count-meta {
+    text-align: left;
+    padding-right: 0;
+    border-right: none;
+    border-bottom: 2px solid var(--burgundy);
+    padding-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  .court-nav-links {
+    gap: 12px;
+  }
+
+  .court-nav-links a {
+    font-size: 0.65rem;
+  }
+
+  .verdict-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .verdict-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .legal-document::before {
+    left: 30px;
+  }
+
+  .qa-block {
+    padding-left: 0;
+  }
+
+  .damning-evidence {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .case-header-ornament {
+    margin-bottom: 20px;
+  }
+
+  .ornament-line {
+    width: 40px;
+  }
+
+  .lab-reports-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .damning-evidence {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .damning-item {
+    padding: 16px;
+  }
+
+  .damning-number {
+    font-size: 1.6rem;
+  }
+}
+
+/* ============================================
+   SCROLL REVEAL UTILITY
+   ============================================ */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body class="wood-bg">
+
+<!-- ============================================
+     NAVIGATION
+     ============================================ -->
+<nav class="court-nav" id="courtNav">
+  <div class="court-nav-inner">
+    <span class="court-nav-case">Case No. 2026-DEV-001</span>
+    <ul class="court-nav-links">
+      <li><a href="#evidence">Evidence</a></li>
+      <li><a href="#testimony">Testimony</a></li>
+      <li><a href="#forensics">Forensics</a></li>
+      <li><a href="#record">Record</a></li>
+      <li><a href="#verdict">Verdict</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============================================
+     HERO - THE CASE
+     ============================================ -->
+<section id="the-case">
+  <div class="courtroom-atmosphere"></div>
+  <div class="hero-content">
+    <div class="case-header-ornament">
+      <span class="ornament-line"></span>
+      <span class="ornament-diamond"></span>
+      <span class="ornament-line"></span>
+    </div>
+
+    <p class="case-court-name">Superior Court of Software Engineering</p>
+
+    <h1 class="case-title">
+      The People
+      <span class="vs">vs.</span>
+      Anshull Garg
+    </h1>
+
+    <p class="case-number">CASE NO. 2026-DEV-001 &mdash; FILED IN THE COURT OF TECHNICAL EXCELLENCE</p>
+
+    <p class="case-charge">
+      <strong>CHARGE:</strong> Being an exceptional software developer with intent to deliver outstanding results
+    </p>
+
+    <!-- Gavel SVG -->
+    <div class="gavel-container">
+      <svg class="gavel-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sound block / base -->
+        <rect x="35" y="90" width="50" height="12" rx="2" fill="#3D2F1E" stroke="#C9A84C" stroke-width="0.5"/>
+        <rect x="38" y="92" width="44" height="8" rx="1" fill="#2E2316"/>
+        <!-- Gavel group -->
+        <g class="gavel-head-group">
+          <!-- Handle -->
+          <rect x="57" y="30" width="6" height="52" rx="2" fill="#3D2F1E" stroke="#C9A84C" stroke-width="0.5"/>
+          <rect x="58.5" y="35" width="3" height="45" rx="1" fill="#2E2316"/>
+          <!-- Head -->
+          <rect x="30" y="20" width="60" height="18" rx="4" fill="#3D2F1E" stroke="#C9A84C" stroke-width="0.8"/>
+          <rect x="33" y="23" width="54" height="12" rx="2" fill="#2E2316"/>
+          <!-- Head bands -->
+          <rect x="42" y="20" width="3" height="18" rx="1" fill="#C9A84C" opacity="0.4"/>
+          <rect x="75" y="20" width="3" height="18" rx="1" fill="#C9A84C" opacity="0.4"/>
+        </g>
+        <!-- Impact burst -->
+        <g class="gavel-impact" transform="translate(60, 90)">
+          <line x1="-15" y1="0" x2="-25" y2="-5" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+          <line x1="15" y1="0" x2="25" y2="-5" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+          <line x1="-10" y1="-3" x2="-18" y2="-12" stroke="#C9A84C" stroke-width="1" opacity="0.4"/>
+          <line x1="10" y1="-3" x2="18" y2="-12" stroke="#C9A84C" stroke-width="1" opacity="0.4"/>
+          <line x1="0" y1="-5" x2="0" y2="-15" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="plea-section">
+      <p class="plea-question">How does the defendant plead?</p>
+      <p class="plea-answer"><em>Not guilty</em> ... of being ordinary.</p>
+    </div>
+
+    <a href="#evidence" class="proceed-btn">
+      Proceed to Evidence
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="court-divider"></div>
+
+<!-- ============================================
+     PROSECUTION'S CASE (EVIDENCE/PROJECTS)
+     ============================================ -->
+<section id="evidence">
+  <div class="section-inner">
+    <div class="section-heading-block scroll-reveal">
+      <p class="section-label">Prosecution's Case</p>
+      <h2 class="section-title">The Evidence</h2>
+      <p class="section-subtitle">"The prosecution presents the following exhibits to the jury."</p>
+    </div>
+
+    <!-- EXHIBIT A -->
+    <div class="evidence-card">
+      <div class="evidence-tab">
+        <span class="evidence-tab-text">Exhibit A</span>
+      </div>
+      <div class="evidence-body legal-document">
+        <div class="evidence-header">
+          <div class="evidence-title-block">
+            <h3 class="evidence-title">Checkout Optimization Engine</h3>
+            <p class="evidence-tag">Filed: 2024 &mdash; Walmart Global Tech</p>
+          </div>
+          <span class="exhibit-stamp">Exhibit A</span>
+        </div>
+        <p class="evidence-description">
+          The defendant engineered a high-performance checkout optimization system serving millions of daily transactions across Walmart's e-commerce platform. The system reduced page load times by 40% and increased conversion rates, directly impacting the company's bottom line. Evidence suggests premeditated use of advanced caching strategies and micro-frontend architecture.
+        </p>
+        <div class="evidence-chain">
+          <p class="evidence-chain-label">Chain of Custody (Tech Stack)</p>
+          <div class="evidence-chain-items">
+            <span class="chain-item">React</span>
+            <span class="chain-item">Next.js</span>
+            <span class="chain-item">TypeScript</span>
+            <span class="chain-item">Node.js</span>
+            <span class="chain-item">GraphQL</span>
+            <span class="chain-item">Redis</span>
+          </div>
+        </div>
+        <div class="evidence-impact">
+          <p class="evidence-impact-label">Impact Assessment</p>
+          <p class="evidence-impact-text">40% reduction in load time. Millions of daily transactions processed. Measurable uplift in checkout conversion rate.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXHIBIT B -->
+    <div class="evidence-card">
+      <div class="evidence-tab">
+        <span class="evidence-tab-text">Exhibit B</span>
+      </div>
+      <div class="evidence-body legal-document">
+        <div class="evidence-header">
+          <div class="evidence-title-block">
+            <h3 class="evidence-title">Enterprise Component Library</h3>
+            <p class="evidence-tag">Filed: 2023-Present &mdash; Walmart Global Tech</p>
+          </div>
+          <span class="exhibit-stamp">Exhibit B</span>
+        </div>
+        <p class="evidence-description">
+          The accused constructed and maintained a comprehensive design system and component library adopted by 12 engineering teams across the organization. This premeditated act of standardization resulted in a 30% reduction in development time for new features and established visual consistency across customer-facing applications.
+        </p>
+        <div class="evidence-chain">
+          <p class="evidence-chain-label">Chain of Custody (Tech Stack)</p>
+          <div class="evidence-chain-items">
+            <span class="chain-item">React</span>
+            <span class="chain-item">Storybook</span>
+            <span class="chain-item">TypeScript</span>
+            <span class="chain-item">Styled Components</span>
+            <span class="chain-item">Jest</span>
+            <span class="chain-item">Chromatic</span>
+          </div>
+        </div>
+        <div class="evidence-impact">
+          <p class="evidence-impact-label">Impact Assessment</p>
+          <p class="evidence-impact-text">Adopted by 12 teams. 30% faster feature development. 200+ reusable components catalogued.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXHIBIT C -->
+    <div class="evidence-card">
+      <div class="evidence-tab">
+        <span class="evidence-tab-text">Exhibit C</span>
+      </div>
+      <div class="evidence-body legal-document">
+        <div class="evidence-header">
+          <div class="evidence-title-block">
+            <h3 class="evidence-title">Real-Time Inventory Dashboard</h3>
+            <p class="evidence-tag">Filed: 2023 &mdash; Walmart Global Tech</p>
+          </div>
+          <span class="exhibit-stamp">Exhibit C</span>
+        </div>
+        <p class="evidence-description">
+          Evidence reveals the defendant architected a real-time inventory monitoring dashboard processing live data feeds from thousands of store locations. The system enables supply chain operators to identify stock discrepancies within seconds rather than hours, demonstrating a flagrant disregard for the status quo of slow, manual reporting processes.
+        </p>
+        <div class="evidence-chain">
+          <p class="evidence-chain-label">Chain of Custody (Tech Stack)</p>
+          <div class="evidence-chain-items">
+            <span class="chain-item">React</span>
+            <span class="chain-item">D3.js</span>
+            <span class="chain-item">WebSockets</span>
+            <span class="chain-item">Kafka</span>
+            <span class="chain-item">Elasticsearch</span>
+            <span class="chain-item">Python</span>
+          </div>
+        </div>
+        <div class="evidence-impact">
+          <p class="evidence-impact-label">Impact Assessment</p>
+          <p class="evidence-impact-text">Real-time monitoring of 4,700+ stores. Detection time reduced from hours to seconds. $2M+ in prevented stock-outs.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXHIBIT D -->
+    <div class="evidence-card">
+      <div class="evidence-tab">
+        <span class="evidence-tab-text">Exhibit D</span>
+      </div>
+      <div class="evidence-body legal-document">
+        <div class="evidence-header">
+          <div class="evidence-title-block">
+            <h3 class="evidence-title">Performance Monitoring Platform</h3>
+            <p class="evidence-tag">Filed: 2024 &mdash; Walmart Global Tech</p>
+          </div>
+          <span class="exhibit-stamp">Exhibit D</span>
+        </div>
+        <p class="evidence-description">
+          The defendant built an internal platform that continuously monitors Core Web Vitals and custom performance metrics across all customer-facing properties. Automated alerting pipelines detect regressions before they reach production. This deliberate act of quality obsession has been shown to improve site reliability scores by 25%.
+        </p>
+        <div class="evidence-chain">
+          <p class="evidence-chain-label">Chain of Custody (Tech Stack)</p>
+          <div class="evidence-chain-items">
+            <span class="chain-item">TypeScript</span>
+            <span class="chain-item">Grafana</span>
+            <span class="chain-item">Prometheus</span>
+            <span class="chain-item">Node.js</span>
+            <span class="chain-item">React</span>
+            <span class="chain-item">CI/CD Pipelines</span>
+          </div>
+        </div>
+        <div class="evidence-impact">
+          <p class="evidence-impact-label">Impact Assessment</p>
+          <p class="evidence-impact-text">25% improvement in site reliability. Zero undetected production regressions. Monitoring 50+ web properties.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="court-divider"></div>
+
+<!-- ============================================
+     WITNESS TESTIMONY (ABOUT/TESTIMONIALS)
+     ============================================ -->
+<section id="testimony">
+  <div class="section-inner">
+    <div class="section-heading-block scroll-reveal">
+      <p class="section-label">Witness Testimony</p>
+      <h2 class="section-title">The Court Calls Anshull Garg to the Stand</h2>
+      <p class="section-subtitle">"Let the record show the witness has been sworn in."</p>
+    </div>
+
+    <!-- Sworn Testimony -->
+    <div class="testimony-document legal-document scroll-reveal">
+      <div class="testimony-header">
+        <p class="testimony-header-title">Sworn Deposition</p>
+        <p class="testimony-header-subtitle">Witness: Anshull Garg &mdash; Defendant</p>
+      </div>
+
+      <p class="sworn-oath">"Do you solemnly swear to tell the truth, the whole truth, and nothing but the truth about your capabilities as a software developer?"</p>
+
+      <div class="qa-block">
+        <p class="qa-question">State your name and current occupation for the record.</p>
+        <p class="qa-answer">Anshull Garg. Software Developer at Walmart Global Tech, where I build and scale web applications that serve hundreds of millions of customers.</p>
+      </div>
+
+      <div class="qa-block">
+        <p class="qa-question">Describe your experience and areas of specialization.</p>
+        <p class="qa-answer">I specialize in frontend engineering with deep expertise in React, TypeScript, and modern JavaScript ecosystems. I have architected high-traffic e-commerce interfaces, led the development of enterprise-scale component libraries, and driven performance optimization initiatives that have measurably impacted business outcomes at a Fortune 1 company.</p>
+      </div>
+
+      <div class="qa-block">
+        <p class="qa-question">What drives your approach to software development?</p>
+        <p class="qa-answer">I believe great software is built at the intersection of technical rigor and user empathy. Every line of code I write serves a person on the other end. I obsess over performance because milliseconds matter. I champion accessibility because everyone deserves a seamless experience. And I invest in developer experience because a well-equipped team ships better products faster.</p>
+      </div>
+
+      <div class="qa-block">
+        <p class="qa-question">Do you have anything else to add to the record?</p>
+        <p class="qa-answer">Only that I intend to keep building, keep learning, and keep pushing the boundaries of what is possible on the web. The evidence will speak for itself.</p>
+      </div>
+    </div>
+
+    <!-- Character Witnesses -->
+    <div class="section-heading-block scroll-reveal" style="margin-top: 48px;">
+      <p class="section-label">Character Witnesses</p>
+      <h3 class="section-title" style="font-size: clamp(1.2rem, 2.5vw, 1.6rem);">Testimony from Colleagues</h3>
+    </div>
+
+    <div class="testimony-document legal-document" style="padding: 32px;">
+      <div class="character-witness">
+        <span class="witness-badge">Witness 1</span>
+        <p class="witness-quote">Anshull has a rare ability to take complex technical problems and break them down into elegant, maintainable solutions. His component library work saved our team months of development time and set the standard for engineering quality.</p>
+        <p class="witness-identity"><strong>Senior Engineering Manager</strong> &mdash; Walmart Global Tech</p>
+      </div>
+
+      <div class="character-witness">
+        <span class="witness-badge">Witness 2</span>
+        <p class="witness-quote">Working with Anshull on the checkout optimization project was a masterclass in frontend performance. He does not just fix performance issues -- he builds systems that prevent them from occurring in the first place.</p>
+        <p class="witness-identity"><strong>Staff Software Engineer</strong> &mdash; Walmart Global Tech</p>
+      </div>
+
+      <div class="character-witness">
+        <span class="witness-badge">Witness 3</span>
+        <p class="witness-quote">Anshull is the kind of developer every team needs. He elevates the codebase, mentors junior engineers, and consistently delivers ahead of schedule. His attention to accessibility and user experience is genuinely impressive.</p>
+        <p class="witness-identity"><strong>Product Manager</strong> &mdash; Walmart Global Tech</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="court-divider"></div>
+
+<!-- ============================================
+     FORENSIC EVIDENCE (SKILLS)
+     ============================================ -->
+<section id="forensics">
+  <div class="section-inner">
+    <div class="section-heading-block scroll-reveal">
+      <p class="section-label">Forensic Analysis</p>
+      <h2 class="section-title">Technical Proficiency Report</h2>
+      <p class="section-subtitle">"Forensic lab results confirm the following proficiencies."</p>
+    </div>
+
+    <!-- DNA Helix SVG (decorative) -->
+    <div style="text-align:center; margin-bottom:40px; opacity:0.08;">
+      <svg width="400" height="60" viewBox="0 0 400 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;">
+        <path d="M0 30 Q50 0, 100 30 T200 30 T300 30 T400 30" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+        <path d="M0 30 Q50 60, 100 30 T200 30 T300 30 T400 30" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+        <line x1="25" y1="15" x2="25" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="50" y1="5" x2="50" y2="55" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="75" y1="15" x2="75" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="125" y1="15" x2="125" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="150" y1="5" x2="150" y2="55" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="175" y1="15" x2="175" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="225" y1="15" x2="225" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="250" y1="5" x2="250" y2="55" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="275" y1="15" x2="275" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="325" y1="15" x2="325" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="350" y1="5" x2="350" y2="55" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+        <line x1="375" y1="15" x2="375" y2="45" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+      </svg>
+    </div>
+
+    <div class="lab-reports-grid">
+      <!-- Lab Report 1: Frontend -->
+      <div class="lab-report legal-document">
+        <div class="lab-report-header">
+          <div>
+            <p class="lab-report-title">Lab Report</p>
+            <p class="lab-report-category">Frontend Engineering</p>
+          </div>
+          <span class="lab-report-number">FR-001</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">React / Next.js</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">TypeScript</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">JavaScript (ES6+)</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">HTML5 / CSS3</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Tailwind CSS</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Web Performance</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+      </div>
+
+      <!-- Lab Report 2: Backend & Data -->
+      <div class="lab-report legal-document">
+        <div class="lab-report-header">
+          <div>
+            <p class="lab-report-title">Lab Report</p>
+            <p class="lab-report-category">Backend & Data</p>
+          </div>
+          <span class="lab-report-number">BE-002</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Node.js</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">GraphQL</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">REST APIs</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Python</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">SQL / NoSQL</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Redis / Caching</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+      </div>
+
+      <!-- Lab Report 3: Tools & Practices -->
+      <div class="lab-report legal-document">
+        <div class="lab-report-header">
+          <div>
+            <p class="lab-report-title">Lab Report</p>
+            <p class="lab-report-category">Tools & Practices</p>
+          </div>
+          <span class="lab-report-number">TP-003</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Git / GitHub</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">CI/CD Pipelines</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Testing (Jest, Cypress)</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Docker / Cloud</span>
+          <span class="proficiency-stamp proficient">Proficient</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Accessibility (WCAG)</span>
+          <span class="proficiency-stamp advanced">Advanced</span>
+        </div>
+        <div class="lab-skill-item">
+          <span class="lab-skill-name">Agile / Scrum</span>
+          <span class="proficiency-stamp expert">Expert</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="court-divider"></div>
+
+<!-- ============================================
+     THE CRIMINAL RECORD (EXPERIENCE)
+     ============================================ -->
+<section id="record">
+  <div class="section-inner">
+    <div class="section-heading-block scroll-reveal">
+      <p class="section-label">Prior Offenses</p>
+      <h2 class="section-title">The Criminal Record</h2>
+      <p class="section-subtitle">"A documented history of exceptional performance."</p>
+    </div>
+
+    <div class="record-document legal-document">
+      <div class="record-header">
+        <p class="record-header-title">Official Record of Accomplishments</p>
+        <p class="record-header-subtitle">Department of Engineering Excellence</p>
+      </div>
+
+      <div class="count-item">
+        <div class="count-meta">
+          <p class="count-number">Count 1</p>
+          <p class="count-date">2022 - Present</p>
+        </div>
+        <div class="count-details">
+          <p class="count-offense">Software Developer</p>
+          <p class="count-location">Walmart Global Tech &mdash; Bentonville, AR</p>
+          <p class="count-sentence"><strong>Sentence:</strong> Led frontend development for checkout and e-commerce platforms serving 240M+ weekly customers. Built enterprise component library adopted across 12 teams. Drove performance optimization initiatives resulting in 40% faster page loads. Architected real-time monitoring dashboards for supply chain operations.</p>
+        </div>
+      </div>
+
+      <div class="count-item">
+        <div class="count-meta">
+          <p class="count-number">Count 2</p>
+          <p class="count-date">2021 - 2022</p>
+        </div>
+        <div class="count-details">
+          <p class="count-offense">Software Engineering Intern</p>
+          <p class="count-location">Walmart Global Tech &mdash; Bentonville, AR</p>
+          <p class="count-sentence"><strong>Sentence:</strong> Developed internal tooling for engineering productivity. Built automated testing frameworks that reduced QA cycle time by 50%. Collaborated with senior engineers on customer-facing feature development. Performance so notable it resulted in a full-time offer.</p>
+        </div>
+      </div>
+
+      <div class="count-item">
+        <div class="count-meta">
+          <p class="count-number">Count 3</p>
+          <p class="count-date">2018 - 2022</p>
+        </div>
+        <div class="count-details">
+          <p class="count-offense">B.S. Computer Science</p>
+          <p class="count-location">University Education</p>
+          <p class="count-sentence"><strong>Sentence:</strong> Studied computer science with a focus on software engineering and web technologies. Completed multiple independent projects including open-source contributions. Participated in hackathons and coding competitions. Built a strong foundation in algorithms, data structures, and system design.</p>
+        </div>
+      </div>
+
+      <div class="count-item">
+        <div class="count-meta">
+          <p class="count-number">Count 4</p>
+          <p class="count-date">Ongoing</p>
+        </div>
+        <div class="count-details">
+          <p class="count-offense">Open Source Contributions & Side Projects</p>
+          <p class="count-location">The Internet &mdash; Worldwide</p>
+          <p class="count-sentence"><strong>Sentence:</strong> Active contributor to open-source projects. Maintains personal projects exploring emerging technologies including AI/ML integrations, WebGL experiments, and developer tools. Demonstrates a chronic inability to stop building things.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="court-divider"></div>
+
+<!-- ============================================
+     CLOSING ARGUMENTS
+     ============================================ -->
+<section id="closing">
+  <div class="section-inner">
+    <div class="section-heading-block scroll-reveal">
+      <p class="section-label">Closing Arguments</p>
+      <h2 class="section-title">The Prosecution Rests</h2>
+    </div>
+
+    <div class="closing-speech">
+      <p class="closing-address scroll-reveal">
+        "Ladies and gentlemen of the jury, the evidence before you is overwhelming..."
+      </p>
+
+      <p class="closing-paragraph scroll-reveal">
+        You have seen the exhibits -- four major projects, each demonstrating technical mastery, architectural vision, and measurable business impact at the world's largest retailer. You have heard the sworn testimony of a developer who does not merely write code, but engineers solutions that serve hundreds of millions of people.
+      </p>
+
+      <p class="closing-paragraph scroll-reveal">
+        The character witnesses have confirmed what the forensic analysis already proved: this is a developer of exceptional caliber. The criminal record shows a pattern -- a pattern of relentless excellence, of turning complexity into clarity, of raising the bar for everyone around him.
+      </p>
+
+      <div class="damning-evidence">
+        <div class="damning-item">
+          <p class="damning-number">240M+</p>
+          <p class="damning-label">Weekly customers served</p>
+        </div>
+        <div class="damning-item">
+          <p class="damning-number">40%</p>
+          <p class="damning-label">Faster page loads</p>
+        </div>
+        <div class="damning-item">
+          <p class="damning-number">12</p>
+          <p class="damning-label">Teams using his library</p>
+        </div>
+        <div class="damning-item">
+          <p class="damning-number">200+</p>
+          <p class="damning-label">Components built</p>
+        </div>
+      </div>
+
+      <p class="closing-paragraph scroll-reveal" style="font-style:italic; color: var(--gold);">
+        The prosecution urges you -- find Anshull Garg guilty. Guilty of excellence, guilty of impact, and guilty of being exactly the developer your team needs.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="court-divider"></div>
+
+<!-- ============================================
+     THE VERDICT (CONTACT / CTA)
+     ============================================ -->
+<section id="verdict">
+  <div class="verdict-content">
+    <div class="section-heading-block scroll-reveal">
+      <p class="section-label">Final Deliberation</p>
+      <h2 class="verdict-instruction">The Jury Will Now Deliberate</h2>
+      <p class="verdict-subtitle">You have reviewed the evidence. Now render your verdict.</p>
+    </div>
+
+    <div class="verdict-buttons scroll-reveal" id="verdictButtons">
+      <button class="verdict-btn verdict-btn-guilty" id="guiltyBtn" aria-label="Find guilty of excellence">
+        Guilty<br><small style="font-size:0.6em; font-weight:400; font-style:italic;">(of excellence)</small>
+      </button>
+      <button class="verdict-btn verdict-btn-not-guilty" id="notGuiltyBtn" aria-label="Find not guilty">
+        Not Guilty
+      </button>
+    </div>
+
+    <!-- Guilty Result -->
+    <div class="verdict-result legal-document" id="guiltyResult">
+      <!-- Wax Seal -->
+      <svg class="wax-seal top-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="30" fill="#6B1D2A"/>
+        <circle cx="35" cy="35" r="25" fill="#8B2D3A"/>
+        <circle cx="35" cy="35" r="20" stroke="#C9A84C" stroke-width="1" fill="none"/>
+        <path d="M35 18 L38 28 L48 28 L40 33 L43 43 L35 37 L27 43 L30 33 L22 28 L32 28 Z" fill="#C9A84C" opacity="0.8"/>
+        <!-- Scalloped edge -->
+        <circle cx="35" cy="5" r="4" fill="#6B1D2A"/>
+        <circle cx="52" cy="10" r="4" fill="#6B1D2A"/>
+        <circle cx="62" cy="24" r="4" fill="#6B1D2A"/>
+        <circle cx="65" cy="42" r="4" fill="#6B1D2A"/>
+        <circle cx="56" cy="57" r="4" fill="#6B1D2A"/>
+        <circle cx="42" cy="64" r="4" fill="#6B1D2A"/>
+        <circle cx="28" cy="64" r="4" fill="#6B1D2A"/>
+        <circle cx="14" cy="57" r="4" fill="#6B1D2A"/>
+        <circle cx="5" cy="42" r="4" fill="#6B1D2A"/>
+        <circle cx="8" cy="24" r="4" fill="#6B1D2A"/>
+        <circle cx="18" cy="10" r="4" fill="#6B1D2A"/>
+      </svg>
+
+      <div class="verdict-gavel-slam">
+        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+          <rect x="25" y="58" width="30" height="8" rx="2" fill="#3D2F1E" stroke="#C9A84C" stroke-width="0.5"/>
+          <rect x="36" y="22" width="5" height="38" rx="2" fill="#3D2F1E"/>
+          <rect x="20" y="14" width="40" height="14" rx="3" fill="#3D2F1E" stroke="#C9A84C" stroke-width="0.5"/>
+        </svg>
+      </div>
+
+      <p class="verdict-declaration">Guilty!</p>
+      <p class="verdict-sentence-label">The Defendant Is Hereby Sentenced To:</p>
+      <p class="verdict-sentence-text">An interview with your team -- at the earliest available date.</p>
+
+      <div class="verdict-contact-grid">
+        <a href="mailto:anshullgarg@gmail.com" class="verdict-contact-item">
+          <p class="verdict-contact-label">Electronic Mail</p>
+          <p class="verdict-contact-value">anshullgarg@gmail.com</p>
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="verdict-contact-item">
+          <p class="verdict-contact-label">Professional Network</p>
+          <p class="verdict-contact-value">linkedin.com/in/anshullgarg</p>
+        </a>
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="verdict-contact-item">
+          <p class="verdict-contact-label">Code Repository</p>
+          <p class="verdict-contact-value">github.com/anshullgarg</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Not Guilty Dismissal -->
+    <div class="verdict-result" id="notGuiltyResult" style="background: var(--courtroom-light); border: 2px solid var(--gold-dark); color: var(--cream);">
+      <p class="verdict-declaration" style="color: var(--stamp-red);">Objection!</p>
+      <p style="font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; color: var(--cream); margin-bottom: 16px;">
+        The court respectfully disagrees with the jury's assessment.
+      </p>
+      <p style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--paper-darker); margin-bottom: 24px;">
+        The evidence is overwhelming. The court orders the jury to review all exhibits before rendering a final verdict.
+      </p>
+      <button class="proceed-btn" onclick="document.getElementById('the-case').scrollIntoView({behavior:'smooth'}); resetVerdict();" style="opacity:1; animation:none;">
+        Review Evidence Again
+        <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16"><path d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer class="court-footer">
+  <p class="court-footer-text">
+    CASE NO. 2026-DEV-001 &bull; THE PEOPLE vs. ANSHULL GARG &bull; ALL RIGHTS RESERVED
+  </p>
+  <p class="court-footer-text" style="margin-top: 8px; opacity: 0.5;">
+    This courtroom is a portfolio. No actual laws were broken. Probably.
+  </p>
+</footer>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ========================================
+  // NAVIGATION SHOW/HIDE ON SCROLL
+  // ========================================
+  const nav = document.getElementById('courtNav');
+  let lastScroll = 0;
+  const heroSection = document.getElementById('the-case');
+
+  function handleNav() {
+    const currentScroll = window.scrollY;
+    const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+
+    if (currentScroll > heroBottom - 100) {
+      nav.classList.add('visible');
+    } else {
+      nav.classList.remove('visible');
+    }
+
+    lastScroll = currentScroll;
+  }
+
+  window.addEventListener('scroll', handleNav, { passive: true });
+
+  // ========================================
+  // SCROLL REVEAL / INTERSECTION OBSERVER
+  // ========================================
+  const revealElements = document.querySelectorAll(
+    '.scroll-reveal, .evidence-card, .character-witness, .lab-report, .count-item, .damning-item'
+  );
+
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.15,
+      rootMargin: '0px 0px -50px 0px',
+    }
+  );
+
+  revealElements.forEach((el) => {
+    revealObserver.observe(el);
+  });
+
+  // ========================================
+  // EXHIBIT STAMPS - SLAM ON SCROLL
+  // ========================================
+  const stamps = document.querySelectorAll('.exhibit-stamp');
+
+  const stampObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Small delay to stagger effect
+          setTimeout(() => {
+            entry.target.classList.add('stamped');
+          }, 300);
+          stampObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.5,
+    }
+  );
+
+  stamps.forEach((stamp) => {
+    stampObserver.observe(stamp);
+  });
+
+  // ========================================
+  // VERDICT BUTTONS
+  // ========================================
+  const guiltyBtn = document.getElementById('guiltyBtn');
+  const notGuiltyBtn = document.getElementById('notGuiltyBtn');
+  const guiltyResult = document.getElementById('guiltyResult');
+  const notGuiltyResult = document.getElementById('notGuiltyResult');
+  const verdictButtons = document.getElementById('verdictButtons');
+
+  guiltyBtn.addEventListener('click', function () {
+    verdictButtons.style.display = 'none';
+    guiltyResult.classList.add('active');
+    notGuiltyResult.classList.remove('active');
+    launchConfetti();
+
+    // Scroll to verdict result
+    setTimeout(() => {
+      guiltyResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 200);
+  });
+
+  notGuiltyBtn.addEventListener('click', function () {
+    verdictButtons.style.display = 'none';
+    notGuiltyResult.classList.add('active');
+    guiltyResult.classList.remove('active');
+
+    setTimeout(() => {
+      notGuiltyResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 200);
+  });
+
+  // Reset verdict (called from "Review Evidence Again" button)
+  window.resetVerdict = function () {
+    setTimeout(() => {
+      verdictButtons.style.display = 'flex';
+      guiltyResult.classList.remove('active');
+      notGuiltyResult.classList.remove('active');
+    }, 800);
+  };
+
+  // ========================================
+  // CONFETTI EFFECT
+  // ========================================
+  function launchConfetti() {
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    const colors = ['#C9A84C', '#6B1D2A', '#CC2936', '#F5EDD8', '#8B2D3A', '#D4B85C'];
+    const shapes = ['square', 'circle'];
+
+    for (let i = 0; i < 80; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      const size = Math.random() * 8 + 6;
+      const left = Math.random() * 100;
+      const delay = Math.random() * 1.5;
+      const duration = Math.random() * 2 + 2;
+
+      piece.style.cssText = `
+        left: ${left}%;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${color};
+        border-radius: ${shape === 'circle' ? '50%' : '0'};
+        animation-delay: ${delay}s;
+        animation-duration: ${duration}s;
+      `;
+
+      container.appendChild(piece);
+    }
+
+    // Remove after animation completes
+    setTimeout(() => {
+      container.remove();
+    }, 5000);
+  }
+
+  // ========================================
+  // SMOOTH SCROLL FOR ANCHOR LINKS
+  // ========================================
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  // ========================================
+  // STAGGERED REVEAL FOR CHARACTER WITNESSES
+  // ========================================
+  const witnesses = document.querySelectorAll('.character-witness');
+  const witnessObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          // Find position in NodeList for stagger delay
+          const nodeIndex = Array.from(witnesses).indexOf(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('revealed');
+          }, nodeIndex * 200);
+          witnessObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  witnesses.forEach((w) => witnessObserver.observe(w));
+
+  // ========================================
+  // STAGGERED REVEAL FOR LAB REPORTS
+  // ========================================
+  const labReports = document.querySelectorAll('.lab-report');
+  const labObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const nodeIndex = Array.from(labReports).indexOf(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('revealed');
+          }, nodeIndex * 150);
+          labObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  labReports.forEach((r) => labObserver.observe(r));
+
+  // ========================================
+  // STAGGERED REVEAL FOR DAMNING EVIDENCE
+  // ========================================
+  const damningItems = document.querySelectorAll('.damning-item');
+  const damningObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const nodeIndex = Array.from(damningItems).indexOf(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('revealed');
+          }, nodeIndex * 150);
+          damningObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+
+  damningItems.forEach((d) => damningObserver.observe(d));
+
+  // ========================================
+  // STAGGERED COUNT ITEMS
+  // ========================================
+  const countItems = document.querySelectorAll('.count-item');
+  const countObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const nodeIndex = Array.from(countItems).indexOf(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('revealed');
+          }, nodeIndex * 200);
+          countObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  countItems.forEach((c) => countObserver.observe(c));
+
+})();
+</script>
+
+</body>
+</html>
