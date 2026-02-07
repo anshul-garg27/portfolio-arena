@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Frequency Portfolio | Anshull Garg</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --deep-purple: #4B0082;
+  --electric-blue: #00BFFF;
+  --teal: #00CED1;
+  --copper: #C87941;
+  --text: #F0F0F0;
+  --bg: #000000;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* --- Canvas Background --- */
+#visualizer-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --- Hero / Press Play --- */
+#hero {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: #000;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#hero.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#hero .tune-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.4);
+  margin-bottom: 40px;
+}
+
+#play-btn {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(75, 0, 130, 0.6);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+#play-btn:hover {
+  border-color: var(--electric-blue);
+  box-shadow: 0 0 40px rgba(0, 191, 255, 0.3);
+}
+
+#play-btn::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 22px 0 22px 38px;
+  border-color: transparent transparent transparent var(--text);
+  margin-left: 6px;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(75, 0, 130, 0.4); }
+  50% { box-shadow: 0 0 0 25px rgba(75, 0, 130, 0); }
+}
+
+#play-btn-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: rgba(240, 240, 240, 0.5);
+  margin-top: 30px;
+}
+
+/* --- Main Content Wrapper --- */
+#main-content {
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 1s ease 0.5s;
+  pointer-events: none;
+}
+
+#main-content.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* --- Header / Identity --- */
+#identity {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px 40px;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#identity.visible {
+  opacity: 1;
+}
+
+#identity .name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+}
+
+#identity .subtitle {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.5);
+  margin-top: 2px;
+}
+
+/* --- Audio Controls (top right) --- */
+#audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ctrl-btn.active {
+  background: rgba(0, 191, 255, 0.15);
+  border-color: var(--electric-blue);
+  color: var(--electric-blue);
+}
+
+#volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--electric-blue);
+  cursor: pointer;
+}
+
+#volume-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(240, 240, 240, 0.4);
+  min-width: 28px;
+}
+
+/* --- Visualizer Style Toggle --- */
+#viz-toggle {
+  position: fixed;
+  top: 80px;
+  right: 40px;
+  z-index: 50;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#viz-toggle.visible {
+  opacity: 1;
+}
+
+.viz-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(240, 240, 240, 0.4);
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viz-btn.active {
+  color: var(--electric-blue);
+  border-color: rgba(0, 191, 255, 0.3);
+  background: rgba(0, 191, 255, 0.08);
+}
+
+/* --- Now Playing Bar --- */
+#now-playing {
+  position: fixed;
+  top: 80px;
+  left: 40px;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#now-playing.visible {
+  opacity: 1;
+}
+
+#now-playing .track-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.3);
+}
+
+#now-playing .track-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  margin-top: 3px;
+  transition: color 0.5s ease;
+}
+
+#now-playing .freq-readout {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  color: var(--electric-blue);
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+
+/* --- Section Content Panels --- */
+.section-panel {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 40px;
+  position: relative;
+}
+
+.panel-inner {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 50px 60px;
+  max-width: 800px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+}
+
+.panel-inner::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--electric-blue), transparent);
+  opacity: 0.4;
+}
+
+.section-freq {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.3);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+.section-body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(240, 240, 240, 0.75);
+}
+
+.section-body p {
+  margin-bottom: 16px;
+}
+
+/* --- Skills Grid --- */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.skill-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-item .skill-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.skill-item .skill-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.skill-item .skill-fill {
+  height: 100%;
+  border-radius: 1px;
+  background: linear-gradient(90deg, var(--deep-purple), var(--electric-blue));
+  transition: width 1s ease;
+}
+
+.skill-category {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.3);
+}
+
+/* --- Projects --- */
+.project-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+}
+
+.project-card:hover {
+  border-color: rgba(75, 0, 130, 0.4);
+}
+
+.project-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.project-card p {
+  font-size: 14px;
+  color: rgba(240, 240, 240, 0.6);
+  line-height: 1.7;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.project-tag {
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  background: rgba(0, 191, 255, 0.08);
+  border: 1px solid rgba(0, 191, 255, 0.15);
+  color: var(--electric-blue);
+}
+
+/* --- Experience Timeline --- */
+.timeline-item {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 36px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 10px var(--teal);
+}
+
+.timeline-item .role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.timeline-item .company {
+  font-size: 14px;
+  color: var(--teal);
+  margin-top: 2px;
+}
+
+.timeline-item .period {
+  font-size: 11px;
+  color: rgba(240, 240, 240, 0.35);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.timeline-item .desc {
+  font-size: 14px;
+  color: rgba(240, 240, 240, 0.6);
+  line-height: 1.7;
+  margin-top: 10px;
+}
+
+/* --- Contact --- */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.2s ease;
+}
+
+.contact-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.contact-link .link-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.contact-link .link-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.3);
+}
+
+.contact-link .link-value {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* --- EQ Navigation (Bottom Bar) --- */
+#eq-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 40px 16px;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.6s ease;
+}
+
+#eq-nav.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.eq-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 0 24px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.eq-channel:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.eq-slider-track {
+  width: 4px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.eq-slider-fill {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-radius: 2px;
+  transition: height 0.5s ease, background 0.5s ease;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.eq-channel.active .eq-slider-fill {
+  background: linear-gradient(to top, var(--deep-purple), var(--electric-blue));
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.4);
+}
+
+.eq-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.3);
+  margin-top: 8px;
+  transition: color 0.3s ease;
+}
+
+.eq-channel.active .eq-label {
+  color: var(--electric-blue);
+}
+
+.eq-freq {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  color: rgba(240, 240, 240, 0.2);
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+
+.eq-channel.active .eq-freq {
+  color: rgba(0, 191, 255, 0.6);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .panel-inner {
+    padding: 32px 24px;
+  }
+
+  .section-title {
+    font-size: 26px;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #eq-nav {
+    padding: 10px 12px 14px;
+  }
+
+  .eq-channel {
+    padding: 0 12px;
+  }
+
+  .eq-slider-track {
+    height: 40px;
+  }
+
+  #identity {
+    padding: 16px 20px;
+  }
+
+  #identity .name {
+    font-size: 16px;
+  }
+
+  .section-panel {
+    padding: 100px 20px;
+  }
+
+  #audio-controls {
+    gap: 8px;
+  }
+
+  #volume-slider {
+    width: 50px;
+  }
+
+  #viz-toggle {
+    right: 20px;
+    top: 70px;
+  }
+
+  #now-playing {
+    left: 20px;
+    top: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eq-label {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+
+  .eq-freq {
+    display: none;
+  }
+
+  .eq-channel {
+    padding: 0 8px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Full-screen Canvas Visualizer -->
+<canvas id="visualizer-canvas"></canvas>
+
+<!-- Hero / Press Play -->
+<div id="hero">
+  <div class="tune-label">Tune In</div>
+  <button id="play-btn" aria-label="Press play to start audio and enter portfolio"></button>
+  <div id="play-btn-label">PRESS PLAY</div>
+</div>
+
+<!-- Identity Header -->
+<div id="identity">
+  <div>
+    <div class="name">ANSHULL GARG</div>
+    <div class="subtitle">Software Developer at Walmart</div>
+  </div>
+  <div id="audio-controls">
+    <button id="pause-btn" class="ctrl-btn" aria-label="Pause audio">PAUSE</button>
+    <button id="mute-btn" class="ctrl-btn" aria-label="Mute audio">MUTE</button>
+    <input type="range" id="volume-slider" min="0" max="100" value="40" aria-label="Volume">
+    <span id="volume-label">40%</span>
+  </div>
+</div>
+
+<!-- Now Playing -->
+<div id="now-playing">
+  <div class="track-label">Now Playing</div>
+  <div class="track-name" id="track-name">Warm Drone - About</div>
+  <div class="freq-readout" id="freq-readout">110 Hz</div>
+</div>
+
+<!-- Visualizer Style Toggle -->
+<div id="viz-toggle">
+  <button class="viz-btn active" data-style="circular" aria-label="Circular visualizer">CIRCULAR</button>
+  <button class="viz-btn" data-style="bars" aria-label="Bars visualizer">BARS</button>
+  <button class="viz-btn" data-style="waveform" aria-label="Waveform visualizer">WAVEFORM</button>
+</div>
+
+<!-- Main Content -->
+<div id="main-content">
+
+  <!-- ABOUT Section -->
+  <section class="section-panel" id="section-about" data-section="about">
+    <div class="panel-inner">
+      <div class="section-freq">110 Hz // Warm Drone</div>
+      <h2 class="section-title">About</h2>
+      <div class="section-body">
+        <p>I am a Software Developer at Walmart, building scalable systems that serve millions of users. My work sits at the intersection of robust backend architecture and polished frontend experiences, where every millisecond of performance and every pixel of clarity matters.</p>
+        <p>I approach software the way a musician approaches composition: layering complexity beneath simplicity, finding rhythm in data flow, and tuning systems until they resonate with purpose. From distributed microservices to responsive interfaces, I craft solutions that perform under pressure.</p>
+        <p>When I am not writing code, I am exploring generative art, audio programming, and the strange beauty that emerges when algorithms meet creativity.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS Section -->
+  <section class="section-panel" id="section-skills" data-section="skills">
+    <div class="panel-inner">
+      <div class="section-freq">440 Hz // Rhythmic Pulse</div>
+      <h2 class="section-title">Skills</h2>
+      <div class="section-body">
+        <div class="skills-grid">
+          <div class="skill-item">
+            <div class="skill-category">Language</div>
+            <div class="skill-name">JavaScript / TypeScript</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 95%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Language</div>
+            <div class="skill-name">Python</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 88%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Language</div>
+            <div class="skill-name">Java</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 85%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Frontend</div>
+            <div class="skill-name">React / Next.js</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 93%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Frontend</div>
+            <div class="skill-name">HTML / CSS / Tailwind</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 92%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Backend</div>
+            <div class="skill-name">Node.js / Express</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 90%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Backend</div>
+            <div class="skill-name">Spring Boot</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 82%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Data</div>
+            <div class="skill-name">SQL / NoSQL / Redis</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 87%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Cloud</div>
+            <div class="skill-name">AWS / GCP / Azure</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 84%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">DevOps</div>
+            <div class="skill-name">Docker / Kubernetes / CI/CD</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 80%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">API</div>
+            <div class="skill-name">REST / GraphQL / gRPC</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 88%"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-category">Testing</div>
+            <div class="skill-name">Jest / Cypress / JUnit</div>
+            <div class="skill-bar"><div class="skill-fill" style="width: 85%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS Section -->
+  <section class="section-panel" id="section-projects" data-section="projects">
+    <div class="panel-inner">
+      <div class="section-freq">660 Hz // Complex Harmonics</div>
+      <h2 class="section-title">Projects</h2>
+      <div class="section-body">
+        <div class="project-card">
+          <h3>Real-Time Inventory Orchestrator</h3>
+          <p>Distributed event-driven system processing 50K+ inventory updates per second across Walmart's fulfillment network. Reduced stock-out incidents by 34% through predictive pre-caching and intelligent routing.</p>
+          <div class="project-tags">
+            <span class="project-tag">Kafka</span>
+            <span class="project-tag">Java</span>
+            <span class="project-tag">Redis</span>
+            <span class="project-tag">Kubernetes</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h3>Adaptive Search Experience</h3>
+          <p>ML-enhanced search interface that learns from user behavior patterns to surface relevant products. Built with React and a custom ranking API that improved conversion by 12% in A/B testing.</p>
+          <div class="project-tags">
+            <span class="project-tag">React</span>
+            <span class="project-tag">TypeScript</span>
+            <span class="project-tag">Python</span>
+            <span class="project-tag">ElasticSearch</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h3>Generative Audio Visualizer</h3>
+          <p>Creative coding project using the Web Audio API and WebGL to create real-time audio-reactive visuals. Synthesizes ambient soundscapes from oscillators and maps frequency data to particle systems and geometry.</p>
+          <div class="project-tags">
+            <span class="project-tag">Web Audio API</span>
+            <span class="project-tag">Canvas</span>
+            <span class="project-tag">JavaScript</span>
+            <span class="project-tag">Creative Coding</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE Section -->
+  <section class="section-panel" id="section-experience" data-section="experience">
+    <div class="panel-inner">
+      <div class="section-freq">880 Hz // Ascending Progression</div>
+      <h2 class="section-title">Experience</h2>
+      <div class="section-body">
+        <div class="timeline-item">
+          <div class="role">Software Developer</div>
+          <div class="company">Walmart Global Tech</div>
+          <div class="period">2023 - Present</div>
+          <div class="desc">Building high-scale e-commerce systems serving millions of daily users. Developing microservices for inventory management, search optimization, and real-time pricing engines. Leading frontend modernization efforts with React and Next.js.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="role">Software Engineering Intern</div>
+          <div class="company">Walmart Global Tech</div>
+          <div class="period">2022 - 2023</div>
+          <div class="desc">Contributed to the checkout experience platform, optimizing page load times by 40%. Built internal tooling for A/B test management and collaborated with cross-functional teams on feature rollouts.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="role">Freelance Developer</div>
+          <div class="company">Independent</div>
+          <div class="period">2020 - 2022</div>
+          <div class="desc">Delivered full-stack web applications for small businesses and startups. Specialized in React frontends, Node.js APIs, and cloud deployment on AWS. Built custom CMS solutions and e-commerce platforms.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT Section -->
+  <section class="section-panel" id="section-contact" data-section="contact">
+    <div class="panel-inner">
+      <div class="section-freq">1320 Hz // Clear Signal</div>
+      <h2 class="section-title">Contact</h2>
+      <div class="section-body">
+        <p>Open to conversations about software architecture, creative coding, and interesting problems. The best signals are direct ones.</p>
+        <div class="contact-links">
+          <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+            <span class="link-icon">@</span>
+            <div>
+              <div class="link-label">Email</div>
+              <div class="link-value">anshullgarg@gmail.com</div>
+            </div>
+          </a>
+          <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <span class="link-icon">&lt;/&gt;</span>
+            <div>
+              <div class="link-label">GitHub</div>
+              <div class="link-value">github.com/anshullgarg</div>
+            </div>
+          </a>
+          <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <span class="link-icon">in</span>
+            <div>
+              <div class="link-label">LinkedIn</div>
+              <div class="link-value">linkedin.com/in/anshullgarg</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- EQ Navigation -->
+<nav id="eq-nav" aria-label="Section navigation">
+  <div class="eq-channel active" data-target="about" role="button" tabindex="0" aria-label="Navigate to About section, 110 Hz">
+    <div class="eq-slider-track"><div class="eq-slider-fill" style="height: 80%"></div></div>
+    <div class="eq-label">About</div>
+    <div class="eq-freq">110 Hz</div>
+  </div>
+  <div class="eq-channel" data-target="skills" role="button" tabindex="0" aria-label="Navigate to Skills section, 440 Hz">
+    <div class="eq-slider-track"><div class="eq-slider-fill" style="height: 30%"></div></div>
+    <div class="eq-label">Skills</div>
+    <div class="eq-freq">440 Hz</div>
+  </div>
+  <div class="eq-channel" data-target="projects" role="button" tabindex="0" aria-label="Navigate to Projects section, 660 Hz">
+    <div class="eq-slider-track"><div class="eq-slider-fill" style="height: 30%"></div></div>
+    <div class="eq-label">Projects</div>
+    <div class="eq-freq">660 Hz</div>
+  </div>
+  <div class="eq-channel" data-target="experience" role="button" tabindex="0" aria-label="Navigate to Experience section, 880 Hz">
+    <div class="eq-slider-track"><div class="eq-slider-fill" style="height: 30%"></div></div>
+    <div class="eq-label">Experience</div>
+    <div class="eq-freq">880 Hz</div>
+  </div>
+  <div class="eq-channel" data-target="contact" role="button" tabindex="0" aria-label="Navigate to Contact section, 1320 Hz">
+    <div class="eq-slider-track"><div class="eq-slider-fill" style="height: 30%"></div></div>
+    <div class="eq-label">Contact</div>
+    <div class="eq-freq">1320 Hz</div>
+  </div>
+</nav>
+
+<script>
+// ===================================================================
+// THE FREQUENCY PORTFOLIO - Audio Engine & Visualizer
+// ===================================================================
+
+(function () {
+  'use strict';
+
+  // ----- State -----
+  const state = {
+    audioStarted: false,
+    paused: false,
+    muted: false,
+    volume: 0.4,
+    activeSection: 'about',
+    vizStyle: 'circular', // circular | bars | waveform
+    particles: [],
+    animFrame: null,
+    sectionInView: 'about'
+  };
+
+  // ----- Section audio configs -----
+  const SECTIONS = {
+    about: {
+      label: 'Warm Drone - About',
+      freq: 110,
+      freqLabel: '110 Hz',
+      wave1: 'sawtooth',
+      wave2: 'sine',
+      detune: 5,
+      filterFreq: 400,
+      filterQ: 1,
+      lfoRate: 0.3,
+      lfoDepth: 8,
+      color1: [200, 121, 65],   // copper
+      color2: [75, 0, 130],     // deep purple
+      glowColor: 'rgba(200, 121, 65, 0.15)'
+    },
+    skills: {
+      label: 'Rhythmic Pulse - Skills',
+      freq: 440,
+      freqLabel: '440 Hz',
+      wave1: 'square',
+      wave2: 'triangle',
+      detune: 3,
+      filterFreq: 1200,
+      filterQ: 4,
+      lfoRate: 2,
+      lfoDepth: 20,
+      color1: [0, 191, 255],    // electric blue
+      color2: [75, 0, 130],     // deep purple
+      glowColor: 'rgba(0, 191, 255, 0.12)'
+    },
+    projects: {
+      label: 'Complex Harmonics - Projects',
+      freq: 660,
+      freqLabel: '660 Hz',
+      wave1: 'sawtooth',
+      wave2: 'square',
+      detune: 7,
+      filterFreq: 2000,
+      filterQ: 2,
+      lfoRate: 1.2,
+      lfoDepth: 15,
+      color1: [75, 0, 130],     // deep purple
+      color2: [0, 191, 255],    // electric blue
+      glowColor: 'rgba(75, 0, 130, 0.18)'
+    },
+    experience: {
+      label: 'Ascending Progression - Experience',
+      freq: 880,
+      freqLabel: '880 Hz',
+      wave1: 'triangle',
+      wave2: 'sine',
+      detune: 2,
+      filterFreq: 1800,
+      filterQ: 1.5,
+      lfoRate: 0.6,
+      lfoDepth: 12,
+      color1: [0, 206, 209],    // teal
+      color2: [0, 191, 255],    // electric blue
+      glowColor: 'rgba(0, 206, 209, 0.14)'
+    },
+    contact: {
+      label: 'Clear Signal - Contact',
+      freq: 1320,
+      freqLabel: '1320 Hz',
+      wave1: 'sine',
+      wave2: 'sine',
+      detune: 0,
+      filterFreq: 3000,
+      filterQ: 0.5,
+      lfoRate: 0.15,
+      lfoDepth: 4,
+      color1: [240, 240, 240],  // white
+      color2: [0, 191, 255],    // electric blue
+      glowColor: 'rgba(240, 240, 240, 0.1)'
+    }
+  };
+
+  // ----- DOM refs -----
+  const canvas = document.getElementById('visualizer-canvas');
+  const ctx = canvas.getContext('2d');
+  const hero = document.getElementById('hero');
+  const playBtn = document.getElementById('play-btn');
+  const mainContent = document.getElementById('main-content');
+  const identity = document.getElementById('identity');
+  const eqNav = document.getElementById('eq-nav');
+  const nowPlaying = document.getElementById('now-playing');
+  const vizToggle = document.getElementById('viz-toggle');
+  const pauseBtn = document.getElementById('pause-btn');
+  const muteBtn = document.getElementById('mute-btn');
+  const volumeSlider = document.getElementById('volume-slider');
+  const volumeLabel = document.getElementById('volume-label');
+  const trackName = document.getElementById('track-name');
+  const freqReadout = document.getElementById('freq-readout');
+  const eqChannels = document.querySelectorAll('.eq-channel');
+  const vizBtns = document.querySelectorAll('.viz-btn');
+  const sectionPanels = document.querySelectorAll('.section-panel');
+
+  // ----- Audio Nodes -----
+  let audioCtx, masterGain, analyser, osc1, osc2, lfo, lfoGain, filter;
+  let dataArray, freqArray, bufferLength;
+
+  // ----- Canvas sizing -----
+  function resizeCanvas() {
+    canvas.width = window.innerWidth * window.devicePixelRatio;
+    canvas.height = window.innerHeight * window.devicePixelRatio;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  }
+  resizeCanvas();
+  window.addEventListener('resize', function () {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    resizeCanvas();
+  });
+
+  // ----- Init Audio -----
+  function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Analyser
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    freqArray = new Uint8Array(bufferLength);
+
+    // Master gain
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = state.volume * 0.25; // keep it gentle
+    masterGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    // Filter
+    filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 400;
+    filter.Q.value = 1;
+    filter.connect(masterGain);
+
+    // Oscillator 1
+    osc1 = audioCtx.createOscillator();
+    osc1.type = 'sawtooth';
+    osc1.frequency.value = 110;
+    const osc1Gain = audioCtx.createGain();
+    osc1Gain.gain.value = 0.5;
+    osc1.connect(osc1Gain);
+    osc1Gain.connect(filter);
+    osc1.start();
+
+    // Oscillator 2 (detuned)
+    osc2 = audioCtx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.value = 110;
+    osc2.detune.value = 5;
+    const osc2Gain = audioCtx.createGain();
+    osc2Gain.gain.value = 0.4;
+    osc2.connect(osc2Gain);
+    osc2Gain.connect(filter);
+    osc2.start();
+
+    // LFO
+    lfo = audioCtx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.3;
+    lfoGain = audioCtx.createGain();
+    lfoGain.gain.value = 8;
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc1.frequency);
+    lfoGain.connect(osc2.frequency);
+    lfo.start();
+
+    // Store gain nodes for later reference
+    osc1._gainNode = osc1Gain;
+    osc2._gainNode = osc2Gain;
+  }
+
+  // ----- Tune to section -----
+  function tuneToSection(sectionKey) {
+    if (!audioCtx || state.activeSection === sectionKey) return;
+    const cfg = SECTIONS[sectionKey];
+    if (!cfg) return;
+
+    state.activeSection = sectionKey;
+    const t = audioCtx.currentTime;
+    const ramp = 0.8;
+
+    // Oscillator frequencies
+    osc1.frequency.linearRampToValueAtTime(cfg.freq, t + ramp);
+    osc2.frequency.linearRampToValueAtTime(cfg.freq, t + ramp);
+
+    // Waveforms
+    osc1.type = cfg.wave1;
+    osc2.type = cfg.wave2;
+    osc2.detune.linearRampToValueAtTime(cfg.detune, t + ramp);
+
+    // Filter
+    filter.frequency.linearRampToValueAtTime(cfg.filterFreq, t + ramp);
+    filter.Q.linearRampToValueAtTime(cfg.filterQ, t + ramp);
+
+    // LFO
+    lfo.frequency.linearRampToValueAtTime(cfg.lfoRate, t + ramp);
+    lfoGain.gain.linearRampToValueAtTime(cfg.lfoDepth, t + ramp);
+
+    // UI updates
+    trackName.textContent = cfg.label;
+    freqReadout.textContent = cfg.freqLabel;
+
+    // EQ nav
+    eqChannels.forEach(function (ch) {
+      const target = ch.getAttribute('data-target');
+      if (target === sectionKey) {
+        ch.classList.add('active');
+        ch.querySelector('.eq-slider-fill').style.height = '80%';
+      } else {
+        ch.classList.remove('active');
+        ch.querySelector('.eq-slider-fill').style.height = '30%';
+      }
+    });
+  }
+
+  // ----- Start experience -----
+  function startExperience() {
+    initAudio();
+    state.audioStarted = true;
+
+    hero.classList.add('hidden');
+
+    setTimeout(function () {
+      mainContent.classList.add('active');
+      identity.classList.add('visible');
+      eqNav.classList.add('visible');
+      nowPlaying.classList.add('visible');
+      vizToggle.classList.add('visible');
+    }, 400);
+
+    tuneToSection('about');
+    animate();
+  }
+
+  playBtn.addEventListener('click', startExperience);
+
+  // ----- Pause / Mute / Volume -----
+  pauseBtn.addEventListener('click', function () {
+    if (!audioCtx) return;
+    if (state.paused) {
+      audioCtx.resume();
+      state.paused = false;
+      pauseBtn.textContent = 'PAUSE';
+      pauseBtn.classList.remove('active');
+    } else {
+      audioCtx.suspend();
+      state.paused = true;
+      pauseBtn.textContent = 'PLAY';
+      pauseBtn.classList.add('active');
+    }
+  });
+
+  muteBtn.addEventListener('click', function () {
+    if (!masterGain) return;
+    state.muted = !state.muted;
+    masterGain.gain.linearRampToValueAtTime(
+      state.muted ? 0 : state.volume * 0.25,
+      audioCtx.currentTime + 0.1
+    );
+    muteBtn.textContent = state.muted ? 'UNMUTE' : 'MUTE';
+    muteBtn.classList.toggle('active', state.muted);
+  });
+
+  volumeSlider.addEventListener('input', function () {
+    state.volume = this.value / 100;
+    volumeLabel.textContent = this.value + '%';
+    if (masterGain && !state.muted) {
+      masterGain.gain.linearRampToValueAtTime(
+        state.volume * 0.25,
+        audioCtx.currentTime + 0.05
+      );
+    }
+  });
+
+  // ----- EQ Nav clicks -----
+  eqChannels.forEach(function (ch) {
+    function activate() {
+      var target = ch.getAttribute('data-target');
+      tuneToSection(target);
+      var el = document.getElementById('section-' + target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+    ch.addEventListener('click', activate);
+    ch.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+    });
+  });
+
+  // ----- Visualizer style toggle -----
+  vizBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      vizBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.vizStyle = btn.getAttribute('data-style');
+    });
+  });
+
+  // ----- Scroll detection for sections -----
+  function detectSection() {
+    var scrollY = window.scrollY + window.innerHeight * 0.5;
+    sectionPanels.forEach(function (panel) {
+      var top = panel.offsetTop;
+      var bottom = top + panel.offsetHeight;
+      if (scrollY >= top && scrollY < bottom) {
+        var key = panel.getAttribute('data-section');
+        if (key && key !== state.sectionInView) {
+          state.sectionInView = key;
+          tuneToSection(key);
+        }
+      }
+    });
+  }
+  window.addEventListener('scroll', detectSection, { passive: true });
+
+  // ----- Particles -----
+  function spawnParticle(x, y, color) {
+    if (state.particles.length > 120) return;
+    state.particles.push({
+      x: x,
+      y: y,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      life: 1,
+      decay: 0.01 + Math.random() * 0.02,
+      size: 1 + Math.random() * 2,
+      color: color
+    });
+  }
+
+  function updateParticles() {
+    for (var i = state.particles.length - 1; i >= 0; i--) {
+      var p = state.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+      if (p.life <= 0) {
+        state.particles.splice(i, 1);
+      }
+    }
+  }
+
+  function drawParticles() {
+    state.particles.forEach(function (p) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + p.color[0] + ',' + p.color[1] + ',' + p.color[2] + ',' + (p.life * 0.6) + ')';
+      ctx.fill();
+    });
+  }
+
+  // ----- Helper: lerp color -----
+  function lerpColor(a, b, t) {
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * t),
+      Math.round(a[1] + (b[1] - a[1]) * t),
+      Math.round(a[2] + (b[2] - a[2]) * t)
+    ];
+  }
+
+  // ----- Animation Loop -----
+  function animate() {
+    state.animFrame = requestAnimationFrame(animate);
+
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var cx = w / 2;
+    var cy = h / 2;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Get audio data
+    if (analyser) {
+      analyser.getByteFrequencyData(freqArray);
+      analyser.getByteTimeDomainData(dataArray);
+    }
+
+    var cfg = SECTIONS[state.activeSection] || SECTIONS.about;
+
+    // ----- Background glow (bass reactive) -----
+    var bassAvg = 0;
+    for (var b = 0; b < 8; b++) bassAvg += (freqArray ? freqArray[b] : 0);
+    bassAvg = bassAvg / (8 * 255);
+
+    var glowRadius = Math.max(w, h) * 0.3 + bassAvg * 200;
+    var glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
+    glow.addColorStop(0, cfg.glowColor);
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+
+    // ----- Draw based on visualizer style -----
+    if (state.vizStyle === 'circular') {
+      drawCircularViz(cx, cy, cfg);
+    } else if (state.vizStyle === 'bars') {
+      drawBarsViz(w, h, cfg);
+    } else if (state.vizStyle === 'waveform') {
+      drawWaveformViz(w, h, cfg);
+    }
+
+    // ----- Particles -----
+    updateParticles();
+    drawParticles();
+  }
+
+  // ----- Circular Visualizer -----
+  function drawCircularViz(cx, cy, cfg) {
+    var barCount = 64;
+    var baseRadius = Math.min(cx, cy) * 0.25;
+    var maxBarH = Math.min(cx, cy) * 0.35;
+    var angleStep = (Math.PI * 2) / barCount;
+    var time = Date.now() * 0.001;
+
+    // Frequency bars around circle
+    for (var i = 0; i < barCount; i++) {
+      var freqIdx = Math.floor(i * (bufferLength || 128) / barCount);
+      var val = freqArray ? freqArray[freqIdx] / 255 : 0;
+      var barH = val * maxBarH + 2;
+      var angle = i * angleStep - Math.PI / 2;
+
+      // Gentle pulsing motion
+      var pulse = 1 + Math.sin(time * 1.5 + i * 0.1) * 0.08;
+      var r = baseRadius * pulse;
+
+      var x1 = cx + Math.cos(angle) * r;
+      var y1 = cy + Math.sin(angle) * r;
+      var x2 = cx + Math.cos(angle) * (r + barH);
+      var y2 = cy + Math.sin(angle) * (r + barH);
+
+      var t = i / barCount;
+      var c = lerpColor(cfg.color1, cfg.color2, t);
+      var alpha = 0.4 + val * 0.6;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + alpha + ')';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Spawn particles on high frequency peaks
+      if (val > 0.8 && Math.random() > 0.7) {
+        spawnParticle(x2, y2, c);
+      }
+    }
+
+    // Inner waveform circle (oscilloscope ring)
+    ctx.beginPath();
+    for (var j = 0; j <= barCount; j++) {
+      var wAngle = (j / barCount) * Math.PI * 2 - Math.PI / 2;
+      var wIdx = Math.floor(j * (bufferLength || 128) / barCount);
+      var wVal = dataArray ? (dataArray[wIdx] / 128 - 1) : 0;
+      var wR = baseRadius * 0.7 + wVal * baseRadius * 0.3;
+      var wx = cx + Math.cos(wAngle) * wR;
+      var wy = cy + Math.sin(wAngle) * wR;
+      if (j === 0) ctx.moveTo(wx, wy);
+      else ctx.lineTo(wx, wy);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.5)';
+    ctx.fill();
+  }
+
+  // ----- Bars Visualizer -----
+  function drawBarsViz(w, h, cfg) {
+    var barCount = bufferLength || 128;
+    var barW = w / barCount;
+    var time = Date.now() * 0.001;
+
+    for (var i = 0; i < barCount; i++) {
+      var val = freqArray ? freqArray[i] / 255 : 0;
+      var barH = val * h * 0.6 + 2;
+      var t = i / barCount;
+      var c = lerpColor(cfg.color1, cfg.color2, t);
+      var alpha = 0.3 + val * 0.5;
+
+      // Bars from bottom
+      ctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + alpha + ')';
+      var x = i * barW;
+      ctx.fillRect(x, h - barH, barW - 1, barH);
+
+      // Mirror from top (subtle)
+      ctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (alpha * 0.2) + ')';
+      ctx.fillRect(x, 0, barW - 1, barH * 0.3);
+
+      // Particles on peaks
+      if (val > 0.85 && Math.random() > 0.8) {
+        spawnParticle(x + barW / 2, h - barH, c);
+      }
+    }
+
+    // Mid line
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.5);
+    for (var j = 0; j < barCount; j++) {
+      var v = dataArray ? (dataArray[j] / 128 - 1) : 0;
+      ctx.lineTo(j * barW, h * 0.5 + v * h * 0.15);
+    }
+    ctx.strokeStyle = 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.15)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // ----- Waveform Visualizer -----
+  function drawWaveformViz(w, h, cfg) {
+    var len = bufferLength || 128;
+    var sliceW = w / len;
+    var time = Date.now() * 0.001;
+
+    // Main waveform (time domain)
+    ctx.beginPath();
+    for (var i = 0; i < len; i++) {
+      var v = dataArray ? (dataArray[i] / 128.0) : 1;
+      var y = (v * h) / 2;
+      if (i === 0) ctx.moveTo(0, y);
+      else ctx.lineTo(i * sliceW, y);
+    }
+    var grad = ctx.createLinearGradient(0, 0, w, 0);
+    grad.addColorStop(0, 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.8)');
+    grad.addColorStop(0.5, 'rgba(' + cfg.color2[0] + ',' + cfg.color2[1] + ',' + cfg.color2[2] + ',0.8)');
+    grad.addColorStop(1, 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.8)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Filled glow underneath
+    ctx.lineTo(w, h / 2);
+    ctx.lineTo(0, h / 2);
+    ctx.closePath();
+    var fillGrad = ctx.createLinearGradient(0, 0, w, 0);
+    fillGrad.addColorStop(0, 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.05)');
+    fillGrad.addColorStop(0.5, 'rgba(' + cfg.color2[0] + ',' + cfg.color2[1] + ',' + cfg.color2[2] + ',0.05)');
+    fillGrad.addColorStop(1, 'rgba(' + cfg.color1[0] + ',' + cfg.color1[1] + ',' + cfg.color1[2] + ',0.05)');
+    ctx.fillStyle = fillGrad;
+    ctx.fill();
+
+    // Secondary waveform (shifted)
+    ctx.beginPath();
+    for (var j = 0; j < len; j++) {
+      var v2 = dataArray ? (dataArray[j] / 128.0) : 1;
+      var y2 = (v2 * h) / 2 + Math.sin(time + j * 0.05) * 20;
+      if (j === 0) ctx.moveTo(0, y2);
+      else ctx.lineTo(j * sliceW, y2);
+    }
+    ctx.strokeStyle = 'rgba(' + cfg.color2[0] + ',' + cfg.color2[1] + ',' + cfg.color2[2] + ',0.2)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Frequency overlay as subtle dots along bottom
+    for (var k = 0; k < len; k++) {
+      var fv = freqArray ? freqArray[k] / 255 : 0;
+      if (fv > 0.1) {
+        var t = k / len;
+        var c = lerpColor(cfg.color1, cfg.color2, t);
+        ctx.beginPath();
+        ctx.arc(k * sliceW, h - 40 - fv * (h * 0.3), 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (fv * 0.6) + ')';
+        ctx.fill();
+
+        if (fv > 0.85 && Math.random() > 0.85) {
+          spawnParticle(k * sliceW, h - 40 - fv * (h * 0.3), c);
+        }
+      }
+    }
+  }
+
+  // ----- Keyboard shortcut: space to pause, m to mute -----
+  document.addEventListener('keydown', function (e) {
+    if (!state.audioStarted) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        startExperience();
+      }
+      return;
+    }
+    if (e.key === ' ' && document.activeElement === document.body) {
+      e.preventDefault();
+      pauseBtn.click();
+    }
+    if (e.key === 'm' || e.key === 'M') {
+      muteBtn.click();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
