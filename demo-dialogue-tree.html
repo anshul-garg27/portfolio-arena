@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - The Dialogue Tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0D0D12;
+  --panel: #1A1A24;
+  --panel-border: #2A2A38;
+  --choice: #252530;
+  --choice-hover: #2E2E3C;
+  --copper: #C87941;
+  --blue: #3B82F6;
+  --green: #22C55E;
+  --red: #EF4444;
+  --text: #F0F0F0;
+  --text-dim: #8B8B8B;
+  --text-faint: #555566;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── PARTICLES CANVAS ── */
+#particles {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 60%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── TOP CONTENT AREA ── */
+#content-area {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 60vh;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1;
+  padding: 20px 40px;
+  overflow-y: auto;
+}
+
+#content-area::-webkit-scrollbar { width: 4px; }
+#content-area::-webkit-scrollbar-track { background: transparent; }
+#content-area::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+
+.content-panel {
+  width: 100%; max-width: 1000px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.content-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── DIALOGUE BOX ── */
+#dialogue-box {
+  position: fixed; bottom: 0; left: 0;
+  width: 100%; height: 40vh;
+  min-height: 280px;
+  background: var(--panel);
+  border-top: 1px solid var(--panel-border);
+  z-index: 10;
+  display: flex; flex-direction: column;
+  padding: 0;
+}
+
+.dialogue-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 28px 0;
+  flex-shrink: 0;
+}
+
+.portrait {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 18px;
+  flex-shrink: 0;
+  transition: filter 0.4s ease, box-shadow 0.4s ease;
+}
+
+.portrait.mainframe {
+  background: linear-gradient(135deg, #1e3a5f, #3B82F6);
+  color: #a0cfff;
+  box-shadow: 0 0 20px rgba(59,130,246,0.3);
+  font-size: 14px; letter-spacing: 1px;
+}
+
+.portrait.ag {
+  background: linear-gradient(135deg, #5a3520, #C87941);
+  color: #ffe0c0;
+  box-shadow: 0 0 20px rgba(200,121,65,0.3);
+}
+
+.portrait.ag.playful { filter: hue-rotate(80deg) brightness(1.1); box-shadow: 0 0 20px rgba(34,197,94,0.3); }
+.portrait.ag.bold { filter: hue-rotate(-30deg) saturate(1.4); box-shadow: 0 0 20px rgba(239,68,68,0.3); }
+.portrait.ag.professional { filter: hue-rotate(200deg) brightness(1.05); box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+
+.speaker-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600; font-size: 15px;
+  letter-spacing: 0.5px;
+}
+
+.speaker-name.mainframe { color: var(--blue); }
+.speaker-name.ag { color: var(--copper); }
+
+/* ── DIALOGUE TEXT ── */
+.dialogue-text-area {
+  padding: 12px 28px 8px 96px;
+  flex: 1;
+  overflow-y: auto;
+  line-height: 1.7;
+  font-size: 15px;
+  color: var(--text);
+  min-height: 60px;
+}
+
+.dialogue-text-area::-webkit-scrollbar { width: 3px; }
+.dialogue-text-area::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+
+#dialogue-text {
+  display: inline;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px; height: 16px;
+  background: var(--copper);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── CHOICES ── */
+#choices-area {
+  padding: 8px 28px 16px 28px;
+  display: flex; flex-direction: column; gap: 6px;
+  flex-shrink: 0;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+.choice-btn {
+  background: var(--choice);
+  border: none;
+  border-left: 3px solid var(--text-dim);
+  padding: 10px 16px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0 6px 6px 0;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: background 0.2s, border-color 0.2s, transform 0.35s ease, opacity 0.35s ease;
+  line-height: 1.5;
+}
+
+.choice-btn.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.choice-btn:hover {
+  background: var(--choice-hover);
+}
+
+.choice-btn.friendly  { border-left-color: var(--copper); }
+.choice-btn.professional { border-left-color: var(--blue); }
+.choice-btn.playful   { border-left-color: var(--green); }
+.choice-btn.bold      { border-left-color: var(--red); }
+
+.choice-btn:hover.friendly  { background: rgba(200,121,65,0.1); }
+.choice-btn:hover.professional { background: rgba(59,130,246,0.1); }
+.choice-btn:hover.playful   { background: rgba(34,197,94,0.1); }
+.choice-btn:hover.bold      { background: rgba(239,68,68,0.1); }
+
+.choice-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-right: 8px;
+  opacity: 0.5;
+}
+
+/* ── HUD ELEMENTS ── */
+#hud {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 14px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+#hud > * { pointer-events: auto; }
+
+.hud-left { display: flex; align-items: center; gap: 16px; }
+.hud-right { display: flex; align-items: center; gap: 12px; }
+
+.hud-btn {
+  background: rgba(26,26,36,0.85);
+  border: 1px solid var(--panel-border);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.2s, border-color 0.2s;
+  text-transform: uppercase;
+}
+
+.hud-btn:hover { color: var(--text); border-color: var(--text-dim); }
+.hud-btn:disabled { opacity: 0.3; cursor: default; }
+
+.path-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-faint);
+  background: rgba(26,26,36,0.85);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--panel-border);
+}
+
+.path-counter span { color: var(--copper); }
+
+/* ── HISTORY PANEL ── */
+#history-panel {
+  position: fixed; left: 0; top: 0;
+  width: 360px; height: 100%;
+  background: rgba(13,13,18,0.97);
+  border-right: 1px solid var(--panel-border);
+  z-index: 30;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+  display: flex; flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#history-panel.open { transform: translateX(0); }
+
+#history-panel h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+.history-entry {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.history-speaker {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.history-speaker.mainframe { color: var(--blue); }
+.history-speaker.ag { color: var(--copper); }
+.history-speaker.player { color: var(--green); }
+
+.history-text {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+#history-close {
+  position: absolute; top: 14px; right: 14px;
+  background: none; border: none;
+  color: var(--text-dim); cursor: pointer;
+  font-size: 18px;
+}
+
+/* ── CONTENT STYLES ── */
+.content-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 20px;
+}
+
+.project-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.project-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 24px;
+  transition: border-color 0.3s;
+}
+
+.project-card:hover { border-color: var(--copper); }
+
+.project-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px; font-weight: 600;
+  margin-bottom: 8px; color: var(--text);
+}
+
+.project-card .tech {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--copper);
+  margin-bottom: 10px;
+}
+
+.project-card p {
+  font-size: 13px; color: var(--text-dim); line-height: 1.6;
+}
+
+.project-card .impact {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--panel-border);
+  font-size: 12px; color: var(--green);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.skill-cat {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.skill-cat h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px; letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.skill-tag {
+  display: inline-block;
+  background: rgba(200,121,65,0.1);
+  border: 1px solid rgba(200,121,65,0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--copper);
+  margin: 3px 3px 3px 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.code-block {
+  background: #111118;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-dim);
+  overflow-x: auto;
+  white-space: pre;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.code-block .keyword { color: var(--blue); }
+.code-block .string { color: var(--green); }
+.code-block .comment { color: var(--text-faint); font-style: italic; }
+.code-block .fn { color: var(--copper); }
+.code-block .num { color: #c084fc; }
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.metric-card .value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px; font-weight: 700;
+  color: var(--copper);
+}
+
+.metric-card .label {
+  font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.contact-card {
+  background: var(--panel);
+  border: 1px solid var(--copper);
+  border-radius: 8px;
+  padding: 28px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.contact-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.contact-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--panel-border);
+  font-size: 14px;
+}
+
+.contact-row:last-child { border-bottom: none; }
+
+.contact-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text-faint);
+  width: 80px; flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.contact-value {
+  color: var(--text);
+}
+
+.contact-value a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.contact-value a:hover { text-decoration: underline; }
+
+.timeline {
+  position: relative;
+  padding-left: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--panel-border);
+}
+
+.timeline-entry {
+  position: relative;
+  margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.timeline-entry::before {
+  content: '';
+  position: absolute;
+  left: -21px; top: 6px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--copper);
+  border: 2px solid var(--bg);
+}
+
+.timeline-entry .year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--copper);
+  margin-bottom: 4px;
+}
+
+.timeline-entry h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.timeline-entry p {
+  font-size: 13px; color: var(--text-dim); line-height: 1.5;
+}
+
+.narrative-text {
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-dim);
+}
+
+.narrative-text em {
+  color: var(--copper);
+  font-style: normal;
+}
+
+.narrative-text strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.skill-bar-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.skill-bar-row {
+  margin-bottom: 14px;
+}
+
+.skill-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.skill-bar-label span:first-child {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+}
+
+.skill-bar-label span:last-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.skill-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--choice);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.skill-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1.2s ease;
+  width: 0;
+}
+
+.philosophy-quote {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 30px;
+}
+
+.philosophy-quote blockquote {
+  font-size: 20px;
+  line-height: 1.7;
+  color: var(--text);
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+.philosophy-quote cite {
+  font-size: 13px;
+  color: var(--text-faint);
+  font-style: normal;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.fast-track-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.failure-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid var(--red);
+  border-radius: 0 8px 8px 0;
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.failure-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.failure-card .lesson {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--panel-border);
+  color: var(--green);
+  font-size: 13px;
+}
+
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.learning-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.learning-card .status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.learning-card .status.active { color: var(--green); }
+.learning-card .status.planned { color: var(--blue); }
+.learning-card .status.exploring { color: var(--copper); }
+
+.learning-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; margin-bottom: 6px;
+}
+
+.learning-card p {
+  font-size: 12px; color: var(--text-dim); line-height: 1.5;
+}
+
+/* ── SPLASH ── */
+#splash {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 50;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+#splash.fade { opacity: 0; pointer-events: none; }
+
+#splash .title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 24px;
+}
+
+#splash .name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+#splash .sub {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 40px;
+}
+
+#splash .start-btn {
+  background: transparent;
+  border: 1px solid var(--copper);
+  color: var(--copper);
+  padding: 12px 32px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s;
+}
+
+#splash .start-btn:hover {
+  background: var(--copper);
+  color: var(--bg);
+}
+
+#splash .hint {
+  margin-top: 24px;
+  font-size: 11px;
+  color: var(--text-faint);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  #content-area { height: 45vh; padding: 14px 16px; }
+  #dialogue-box { height: 55vh; min-height: 320px; }
+  .dialogue-header { padding: 12px 16px 0; }
+  .dialogue-text-area { padding: 10px 16px 6px 16px; font-size: 14px; }
+  #choices-area { padding: 6px 16px 12px; }
+  .choice-btn { padding: 9px 12px; font-size: 12.5px; }
+  .portrait { width: 40px; height: 40px; font-size: 14px; }
+  .project-cards { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr 1fr; }
+  .metrics-row { grid-template-columns: 1fr 1fr; }
+  .fast-track-grid { grid-template-columns: 1fr; }
+  #history-panel { width: 100%; }
+  #splash .name { font-size: 26px; }
+  .code-block { font-size: 11px; padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="title">Portfolio Experience</div>
+  <div class="name">Anshull Garg</div>
+  <div class="sub">Software Developer at Walmart</div>
+  <button class="start-btn" onclick="startGame()">Establish Connection</button>
+  <div class="hint">// a branching dialogue experience</div>
+</div>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- TOP CONTENT AREA -->
+<div id="content-area">
+  <div id="content-inner" class="content-panel"></div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-left">
+    <button class="hud-btn" id="history-btn" onclick="toggleHistory()">History</button>
+    <button class="hud-btn" id="back-btn" onclick="goBack()" disabled>Back</button>
+  </div>
+  <div class="hud-right">
+    <div class="path-counter">Path: <span id="node-count">0</span> / 55+ nodes</div>
+    <button class="hud-btn" onclick="restart()">Restart</button>
+  </div>
+</div>
+
+<!-- HISTORY PANEL -->
+<div id="history-panel">
+  <button id="history-close" onclick="toggleHistory()">&times;</button>
+  <h3>Dialogue History</h3>
+  <div id="history-entries"></div>
+</div>
+
+<!-- DIALOGUE BOX -->
+<div id="dialogue-box">
+  <div class="dialogue-header">
+    <div class="portrait" id="portrait"></div>
+    <div class="speaker-name" id="speaker-name"></div>
+  </div>
+  <div class="dialogue-text-area" id="dialogue-text-area">
+    <span id="dialogue-text"></span><span class="cursor-blink" id="cursor"></span>
+  </div>
+  <div id="choices-area"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DIALOGUE TREE DATA
+// ══════════════════════════════════════════════
+
+const NODES = {
+  // ── OPENING ──
+  start: {
+    speaker: 'mainframe',
+    text: "Connection established. You've reached the professional archive of Anshull Garg. I'm MAINFRAME, the system that keeps things organized around here. What brings you to this corner of the internet?",
+    content: 'welcome',
+    choices: [
+      { text: "Tell me who Anshull is", tone: 'friendly', next: 'about_intro' },
+      { text: "Show me what he's built", tone: 'professional', next: 'projects_intro' },
+      { text: "What can he do?", tone: 'playful', next: 'skills_intro' },
+      { text: "I'm here to hire", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  // ══════════════════════════════════════════════
+  //  ABOUT BRANCH
+  // ══════════════════════════════════════════════
+
+  about_intro: {
+    speaker: 'ag',
+    text: "I'm a Software Developer at Walmart, building systems that serve millions of customers. But that's the resume version -- the kind you skim in 30 seconds. Want the real story, or is the polished version enough?",
+    tone: 'friendly',
+    content: 'about_splash',
+    choices: [
+      { text: "Give me the real story", tone: 'friendly', next: 'about_real' },
+      { text: "The resume version is fine", tone: 'professional', next: 'about_resume' },
+      { text: "What drives you?", tone: 'playful', next: 'about_philosophy' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  about_real: {
+    speaker: 'ag',
+    text: "Alright, the real one. I didn't start coding because some inspirational movie told me to. I started because I was impatient -- I kept seeing software that was slow, clunky, or just... wrong. And I thought, 'I could fix that.' Turns out, that kind of productive arrogance is exactly what the industry needs. I've been fixing things ever since. First as a student who couldn't leave a bad UI alone, then as a developer at Walmart where 'fixing things' means your decisions hit millions of people.",
+    tone: 'friendly',
+    content: 'narrative_real',
+    choices: [
+      { text: "That's refreshingly honest", tone: 'friendly', next: 'about_honest_followup' },
+      { text: "How did you end up at Walmart?", tone: 'professional', next: 'about_walmart' },
+      { text: "Show me this 'fixing' in action", tone: 'playful', next: 'projects_intro' },
+    ]
+  },
+
+  about_honest_followup: {
+    speaker: 'ag',
+    text: "Honesty is underrated in tech. Everyone wants to sound like they're changing the world with their CRUD app. Look, I love what I do. I get a genuine kick out of writing clean architecture and watching systems handle load gracefully. But I'm not going to pretend every standup is a spiritual experience.",
+    tone: 'friendly',
+    content: null,
+    choices: [
+      { text: "Now I really want to see your work", tone: 'professional', next: 'projects_intro' },
+      { text: "What's your philosophy then?", tone: 'playful', next: 'about_philosophy' },
+      { text: "Tell me about Walmart", tone: 'friendly', next: 'about_walmart' },
+    ]
+  },
+
+  about_resume: {
+    speaker: 'ag',
+    text: "Efficient. I like that. Here's the executive summary: Software Developer at Walmart, working on large-scale distributed systems. Proficient in Java, Python, React, and cloud infrastructure. Experienced in building and maintaining services that handle high traffic with low latency. Education in Computer Science. Currently shipping code that impacts real people at real scale.",
+    tone: 'professional',
+    content: 'resume_summary',
+    choices: [
+      { text: "Now show me the projects", tone: 'professional', next: 'projects_intro' },
+      { text: "Actually, give me the real story too", tone: 'friendly', next: 'about_real' },
+      { text: "What skills should I know about?", tone: 'playful', next: 'skills_intro' },
+      { text: "Skip to contact info", tone: 'bold', next: 'contact_direct' },
+    ]
+  },
+
+  about_philosophy: {
+    speaker: 'ag',
+    text: "What drives me? The gap. There's always a gap between how things are and how they should be. Bad error messages that confuse users. APIs that make developers curse. Deployments that give everyone anxiety. I live in that gap. I wake up thinking about how to close it -- not with heroics, but with boring, reliable, well-tested code. The kind nobody notices because it just works.",
+    tone: 'playful',
+    content: 'philosophy',
+    choices: [
+      { text: "That's a great mindset for a team", tone: 'friendly', next: 'about_team' },
+      { text: "Show me 'boring reliable code' in action", tone: 'playful', next: 'skills_demo' },
+      { text: "What are your ambitions?", tone: 'bold', next: 'about_future' },
+    ]
+  },
+
+  about_team: {
+    speaker: 'ag',
+    text: "Teams are where the real work happens. I've learned that the best code comes from people who can argue about architecture on a whiteboard and then grab lunch together. I push for clarity in code reviews, not ego. I'd rather someone point out a flaw in my design on day one than discover it in production on day ninety.",
+    tone: 'friendly',
+    content: null,
+    choices: [
+      { text: "Let's see the projects now", tone: 'professional', next: 'projects_intro' },
+      { text: "What about your future plans?", tone: 'playful', next: 'about_future' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  about_future: {
+    speaker: 'ag',
+    text: "Short term? I want to architect systems, not just build them. I want to be the person in the room who can say, 'Here's why this won't scale,' and back it up with numbers. Long term? I want to build something that outlasts me. Whether that's a product, a team, or an open-source tool that makes someone's 2 AM debugging session slightly less miserable.",
+    tone: 'bold',
+    content: 'future_vision',
+    choices: [
+      { text: "Ambitious. Show me current work", tone: 'professional', next: 'projects_intro' },
+      { text: "What are you learning right now?", tone: 'playful', next: 'skills_learning' },
+      { text: "I want to talk hiring", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  about_walmart: {
+    speaker: 'ag',
+    text: "Walmart isn't just retail -- it's one of the largest technology operations on the planet. When I say my code serves millions, I'm not exaggerating for effect. The scale here teaches you things no bootcamp or side project ever could. You learn that a 50ms latency increase isn't a metric -- it's thousands of frustrated people. That kind of accountability reshapes how you think about every line you write.",
+    tone: 'professional',
+    content: 'walmart_context',
+    choices: [
+      { text: "What specifically do you work on?", tone: 'professional', next: 'projects_biggest' },
+      { text: "That's impressive scale", tone: 'friendly', next: 'about_scale_followup' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  about_scale_followup: {
+    speaker: 'ag',
+    text: "Scale changes everything. You can't just write code that works -- it has to work when ten thousand requests hit it simultaneously. It has to degrade gracefully, not catastrophically. That mindset bleeds into everything I do now, even personal projects. I catch myself adding circuit breakers to a side project with three users. Old habits, I guess.",
+    tone: 'friendly',
+    content: null,
+    choices: [
+      { text: "Show me those projects", tone: 'professional', next: 'projects_intro' },
+      { text: "What skills make that possible?", tone: 'playful', next: 'skills_intro' },
+      { text: "Let's talk hiring", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  // ══════════════════════════════════════════════
+  //  PROJECTS BRANCH
+  // ══════════════════════════════════════════════
+
+  projects_intro: {
+    speaker: 'ag',
+    text: "I've got a few stories worth telling. Every project taught me something different. Which kind of story interests you?",
+    tone: 'professional',
+    content: null,
+    choices: [
+      { text: "Your biggest challenge", tone: 'bold', next: 'projects_biggest' },
+      { text: "Your proudest moment", tone: 'friendly', next: 'projects_proudest' },
+      { text: "Something that failed", tone: 'playful', next: 'projects_failure' },
+      { text: "Just show me everything", tone: 'professional', next: 'projects_gallery' },
+    ]
+  },
+
+  projects_biggest: {
+    speaker: 'ag',
+    text: "The biggest challenge was building a high-throughput order processing pipeline at Walmart. Imagine: Black Friday traffic, millions of concurrent users, and every transaction has to be consistent across distributed services. We rebuilt the pipeline from a monolithic system to an event-driven microservices architecture. The migration had to be seamless -- zero downtime, no lost orders. It was three months of the most intense engineering I've ever done, and honestly? I'd do it again tomorrow.",
+    tone: 'bold',
+    content: 'project_pipeline',
+    choices: [
+      { text: "What was the technical approach?", tone: 'professional', next: 'projects_biggest_tech' },
+      { text: "What could have gone wrong?", tone: 'playful', next: 'projects_biggest_risk' },
+      { text: "Tell me another project story", tone: 'friendly', next: 'projects_intro' },
+      { text: "I've seen enough, let's talk", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  projects_biggest_tech: {
+    speaker: 'ag',
+    text: "We used Kafka for event streaming, with consumers partitioned by region. Each microservice owned its data -- no shared databases, which was the hard part. We implemented the Saga pattern for distributed transactions and built custom dead-letter queue handling for failed events. The monitoring was almost as complex as the system itself: distributed tracing with Jaeger, custom Grafana dashboards, and PagerDuty alerts that actually meant something instead of the usual noise.",
+    tone: 'professional',
+    content: 'project_pipeline_tech',
+    choices: [
+      { text: "What were the results?", tone: 'professional', next: 'projects_biggest_results' },
+      { text: "Show me your proudest project", tone: 'friendly', next: 'projects_proudest' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  projects_biggest_risk: {
+    speaker: 'ag',
+    text: "Everything. That's not drama, that's distributed systems. The scariest moment was during the canary deployment -- we routed 2% of traffic to the new pipeline and saw a latency spike. Turned out a Kafka consumer group was misconfigured, causing rebalancing storms. We caught it at 2 AM, fixed it by 3, and by morning nobody knew anything had happened. That's the goal: invisible reliability.",
+    tone: 'playful',
+    content: null,
+    choices: [
+      { text: "What were the final results?", tone: 'professional', next: 'projects_biggest_results' },
+      { text: "Tell me about a failure", tone: 'playful', next: 'projects_failure' },
+      { text: "That's enough, let's move on", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  projects_biggest_results: {
+    speaker: 'ag',
+    text: "40% reduction in order processing latency. 99.97% uptime through peak traffic. And the part I'm proudest of: the on-call pages dropped by 60% because the new system was actually observable. Engineers could diagnose issues in minutes instead of hours. That's the real metric -- not just performance, but developer sanity.",
+    tone: 'professional',
+    content: 'project_pipeline_results',
+    choices: [
+      { text: "Tell me your proudest moment", tone: 'friendly', next: 'projects_proudest' },
+      { text: "What about failures?", tone: 'playful', next: 'projects_failure' },
+      { text: "Show me your skills", tone: 'professional', next: 'skills_intro' },
+      { text: "I want to hire this person", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  projects_proudest: {
+    speaker: 'ag',
+    text: "The internal developer platform I built. Not glamorous, I know. But here's the thing: it cut onboarding time for new developers from two weeks to two days. New hires could spin up their entire local environment, run integration tests, and deploy to staging with a single CLI command. When a junior developer told me, 'This is the first time starting a new job didn't feel overwhelming,' I knew it mattered more than any customer-facing feature I'd shipped.",
+    tone: 'friendly',
+    content: 'project_devplatform',
+    choices: [
+      { text: "What tech did you use?", tone: 'professional', next: 'projects_proudest_tech' },
+      { text: "That's a great engineering mindset", tone: 'friendly', next: 'projects_proudest_impact' },
+      { text: "Show me the challenges instead", tone: 'bold', next: 'projects_biggest' },
+    ]
+  },
+
+  projects_proudest_tech: {
+    speaker: 'ag',
+    text: "Docker Compose for local environments, with custom scripts that pulled the right service versions based on your team. A CLI built in Python (Click framework) that wrapped common workflows. GitHub Actions for CI/CD with environment-specific configs. And a docs site generated from the actual code comments -- because documentation that drifts from reality is worse than no documentation at all.",
+    tone: 'professional',
+    content: 'project_devplatform_tech',
+    choices: [
+      { text: "What was the impact?", tone: 'friendly', next: 'projects_proudest_impact' },
+      { text: "Show me all projects", tone: 'professional', next: 'projects_gallery' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  projects_proudest_impact: {
+    speaker: 'ag',
+    text: "Teams adopted it organically -- the best validation. Within a quarter, 80% of engineering was using it. Support tickets for environment setup dropped to near zero. But the real win was cultural: it set a standard that developer experience matters. Now every new internal tool gets measured against that bar.",
+    tone: 'friendly',
+    content: 'project_devplatform_impact',
+    choices: [
+      { text: "Now tell me about a failure", tone: 'playful', next: 'projects_failure' },
+      { text: "What are your core skills?", tone: 'professional', next: 'skills_intro' },
+      { text: "Let's talk about hiring", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  projects_failure: {
+    speaker: 'ag',
+    text: "Oh, you want the failure story? Good. That tells me you're serious. Early in my career, I built a real-time notification system. I was proud of it -- WebSocket connections, custom message queuing, the works. One problem: I didn't account for connection storms during peak hours. When traffic spiked, the server ran out of file descriptors and crashed. Not gracefully. Just... off. I learned more from that crash than from any success.",
+    tone: 'playful',
+    content: 'project_failure',
+    choices: [
+      { text: "What did you learn?", tone: 'friendly', next: 'projects_failure_lesson' },
+      { text: "How did you fix it?", tone: 'professional', next: 'projects_failure_fix' },
+      { text: "Everyone fails. Show me wins", tone: 'bold', next: 'projects_proudest' },
+    ]
+  },
+
+  projects_failure_lesson: {
+    speaker: 'ag',
+    text: "Three things. One: load testing isn't optional, it's a feature. Two: every system needs a graceful degradation path -- not just a happy path. Three: the scariest bugs aren't the ones that throw errors, they're the ones that silently consume resources until everything falls over. Now I build with failure in mind first. What's the worst that can happen? Great, let's handle that case before we write the happy path.",
+    tone: 'friendly',
+    content: 'failure_lessons',
+    choices: [
+      { text: "That's mature engineering", tone: 'friendly', next: 'projects_gallery' },
+      { text: "Show me your current skills", tone: 'professional', next: 'skills_intro' },
+      { text: "Let's talk about working together", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  projects_failure_fix: {
+    speaker: 'ag',
+    text: "Connection pooling with a hard ceiling, exponential backoff for reconnects, and a fallback to long-polling when WebSocket connections exceeded threshold. I also added proper circuit breakers and resource monitoring. The rebuilt system handled 10x the traffic without breaking a sweat. Sometimes the second version of something is where the real engineering lives.",
+    tone: 'professional',
+    content: null,
+    choices: [
+      { text: "What else have you built?", tone: 'friendly', next: 'projects_gallery' },
+      { text: "Tell me about your skills", tone: 'professional', next: 'skills_intro' },
+      { text: "I'm convinced. Let's talk", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  projects_gallery: {
+    speaker: 'mainframe',
+    text: "Displaying project archive. Each card represents a significant engineering effort. Select any project for the full story, or continue the conversation.",
+    content: 'projects_all',
+    choices: [
+      { text: "Tell me about Anshull's skills", tone: 'professional', next: 'skills_intro' },
+      { text: "I want the personal story", tone: 'friendly', next: 'about_intro' },
+      { text: "Ready to talk hiring", tone: 'bold', next: 'fast_track' },
+      { text: "Start over from the beginning", tone: 'playful', next: 'start' },
+    ]
+  },
+
+  // ══════════════════════════════════════════════
+  //  SKILLS BRANCH
+  // ══════════════════════════════════════════════
+
+  skills_intro: {
+    speaker: 'ag',
+    text: "Skills. Everyone has a list. But there's a difference between 'I followed a tutorial once' and 'I've debugged this at 3 AM in production.' Want the boring list, or should I show you what I actually know?",
+    tone: 'playful',
+    content: null,
+    choices: [
+      { text: "Show me in action", tone: 'playful', next: 'skills_demo' },
+      { text: "Just the list, please", tone: 'professional', next: 'skills_list' },
+      { text: "What are you learning next?", tone: 'friendly', next: 'skills_learning' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  skills_demo: {
+    speaker: 'ag',
+    text: "Alright, here's a taste of how I think about code. This isn't a LeetCode flex -- it's how I actually structure things in production. Clean interfaces, proper error handling, and names that mean something. Code is read ten times more than it's written. I optimize for the reader, not the writer.",
+    tone: 'playful',
+    content: 'code_demo',
+    choices: [
+      { text: "Clean. Show me the full skill list", tone: 'professional', next: 'skills_list' },
+      { text: "What's your strongest area?", tone: 'friendly', next: 'skills_strongest' },
+      { text: "What are you still learning?", tone: 'playful', next: 'skills_learning' },
+    ]
+  },
+
+  skills_list: {
+    speaker: 'mainframe',
+    text: "Rendering skill matrix. These are categorized by domain and proficiency level, based on production usage -- not tutorial completion.",
+    content: 'skills_all',
+    choices: [
+      { text: "What's he strongest at?", tone: 'friendly', next: 'skills_strongest' },
+      { text: "Show me these in a project", tone: 'professional', next: 'projects_intro' },
+      { text: "What's he learning next?", tone: 'playful', next: 'skills_learning' },
+      { text: "Let's talk hiring", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  skills_strongest: {
+    speaker: 'ag',
+    text: "Backend systems. Distributed architecture. That's my home turf. I can stand up a React frontend and make it look decent, but where I really come alive is designing systems that handle chaos gracefully. Event-driven architectures, data pipelines, API design that developers actually enjoy using. If your problem involves 'how do we make this work at scale without waking someone up at 2 AM,' that's my kind of problem.",
+    tone: 'friendly',
+    content: 'skills_bars',
+    choices: [
+      { text: "Show me proof in your projects", tone: 'professional', next: 'projects_biggest' },
+      { text: "What about your frontend skills?", tone: 'playful', next: 'skills_frontend' },
+      { text: "I'm ready to hire you", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  skills_frontend: {
+    speaker: 'ag',
+    text: "I won't pretend to be a frontend specialist -- but I'm not allergic to CSS either. I've built responsive UIs with React, worked with state management, and I care about accessibility. I think the best engineers are T-shaped: deep in one area, broad enough to contribute everywhere. My depth is in the backend, but I can hold my own on the front.",
+    tone: 'playful',
+    content: null,
+    choices: [
+      { text: "Fair enough. Show me projects", tone: 'professional', next: 'projects_intro' },
+      { text: "What are you learning?", tone: 'friendly', next: 'skills_learning' },
+      { text: "Back to main topics", tone: 'bold', next: 'start' },
+    ]
+  },
+
+  skills_learning: {
+    speaker: 'ag',
+    text: "Right now I'm deep into three things: Rust for systems programming -- because garbage collection isn't always the answer. Machine learning infrastructure -- not building models, but building the platforms that serve them. And distributed consensus algorithms, because I want to understand the theory behind the tools I use every day, not just the API surface.",
+    tone: 'friendly',
+    content: 'learning',
+    choices: [
+      { text: "That's a serious growth plan", tone: 'friendly', next: 'skills_growth_followup' },
+      { text: "Show me what you can do now", tone: 'professional', next: 'skills_list' },
+      { text: "Let's talk about hiring", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  skills_growth_followup: {
+    speaker: 'ag',
+    text: "I think the day you stop learning is the day you become a liability to your team. Tech moves fast, but the fundamentals don't. I'm not chasing trends -- I'm deepening my understanding of things that will matter in ten years, not ten months. That said, I do keep an eye on the trends. You kind of have to.",
+    tone: 'friendly',
+    content: null,
+    choices: [
+      { text: "Show me your projects", tone: 'professional', next: 'projects_intro' },
+      { text: "Tell me about yourself", tone: 'friendly', next: 'about_intro' },
+      { text: "I want to hire you", tone: 'bold', next: 'fast_track' },
+    ]
+  },
+
+  // ══════════════════════════════════════════════
+  //  FAST TRACK / CONTACT
+  // ══════════════════════════════════════════════
+
+  fast_track: {
+    speaker: 'ag',
+    text: "Straight to business. I respect that. Here's what you need to know: I build reliable, scalable systems at Walmart. I write code that other developers can maintain. I care about the user, the team, and the craft -- in that order. If that sounds like what you're looking for, let's talk.",
+    tone: 'bold',
+    content: 'fast_track_view',
+    choices: [
+      { text: "Show me your contact info", tone: 'bold', next: 'contact_direct' },
+      { text: "Wait, tell me more about you first", tone: 'friendly', next: 'about_intro' },
+      { text: "I want to see projects first", tone: 'professional', next: 'projects_intro' },
+      { text: "What are your skills?", tone: 'playful', next: 'skills_intro' },
+    ]
+  },
+
+  contact_direct: {
+    speaker: 'ag',
+    text: "Here's how to reach me. I'm most responsive on email, but LinkedIn works too. If you're a recruiter, a quick note about the role and team goes a long way -- I read every message, but I prioritize the ones that show you actually looked at my work. Like this dialogue tree, for instance.",
+    tone: 'friendly',
+    content: 'contact_info',
+    choices: [
+      { text: "Before I go -- tell me more about you", tone: 'friendly', next: 'about_intro' },
+      { text: "Show me your best project", tone: 'professional', next: 'projects_proudest' },
+      { text: "Restart the conversation", tone: 'playful', next: 'start' },
+    ]
+  },
+
+  // ══════════════════════════════════════════════
+  //  EASTER EGG / META
+  // ══════════════════════════════════════════════
+
+  meta_question: {
+    speaker: 'mainframe',
+    text: "Interesting. You've explored a significant portion of the dialogue tree. Most visitors follow a linear path. You're... thorough. Anshull would appreciate that.",
+    content: null,
+    choices: [
+      { text: "Is there more to find?", tone: 'playful', next: 'meta_more' },
+      { text: "I've seen enough. Contact info?", tone: 'bold', next: 'contact_direct' },
+      { text: "Start over, I want a different path", tone: 'friendly', next: 'start' },
+    ]
+  },
+
+  meta_more: {
+    speaker: 'mainframe',
+    text: "There are always more paths. That's the nature of a branching tree. But here's a secret: Anshull spent more time writing this dialogue than his actual resume. Make of that what you will.",
+    content: null,
+    choices: [
+      { text: "Tell Anshull I said nice work", tone: 'friendly', next: 'meta_end' },
+      { text: "Get me to the contact page", tone: 'bold', next: 'contact_direct' },
+      { text: "One more round", tone: 'playful', next: 'start' },
+    ]
+  },
+
+  meta_end: {
+    speaker: 'ag',
+    text: "Thanks. Seriously. The fact that you explored this far means a lot. Most portfolios are forgettable PDFs. I wanted mine to be a conversation. If you ever want to have the real version of this conversation -- over coffee or a video call -- you know where to find me.",
+    tone: 'friendly',
+    content: 'contact_info',
+    choices: [
+      { text: "Restart from the beginning", tone: 'playful', next: 'start' },
+      { text: "View all projects one more time", tone: 'professional', next: 'projects_gallery' },
+    ]
+  },
+};
+
+// ══════════════════════════════════════════════
+//  CONTENT RENDERERS
+// ══════════════════════════════════════════════
+
+const CONTENT = {
+  welcome: () => `
+    <div class="content-title">System Online</div>
+    <div style="text-align:center; padding: 40px 0;">
+      <div style="font-family:'Space Grotesk',sans-serif; font-size:48px; font-weight:700; margin-bottom:8px;">AG</div>
+      <div style="font-size:13px; color:var(--text-dim); letter-spacing:2px; text-transform:uppercase;">Software Developer</div>
+      <div style="font-size:12px; color:var(--text-faint); margin-top:4px;">Walmart &middot; Distributed Systems &middot; Backend Architecture</div>
+    </div>
+  `,
+
+  about_splash: () => `
+    <div class="content-title">Subject Profile</div>
+    <div style="display:flex; gap:30px; align-items:center; justify-content:center; flex-wrap:wrap;">
+      <div style="width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg,#5a3520,#C87941); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:700; color:#ffe0c0; flex-shrink:0;">AG</div>
+      <div style="max-width:400px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:24px; font-weight:600; margin-bottom:6px;">Anshull Garg</div>
+        <div style="font-size:14px; color:var(--copper); margin-bottom:10px;">Software Developer @ Walmart</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.6;">Building high-scale distributed systems that serve millions. Passionate about clean architecture, developer experience, and code that doesn't wake people up at night.</div>
+      </div>
+    </div>
+  `,
+
+  narrative_real: () => `
+    <div class="content-title">The Real Story</div>
+    <div class="narrative-text">
+      It started with <em>impatience</em> -- seeing software that was slow, clunky, or just wrong, and thinking <strong>"I could fix that."</strong><br><br>
+      That productive arrogance became a career. From a student who couldn't leave a bad UI alone, to a developer at <em>Walmart</em> where decisions hit <strong>millions of people</strong>.<br><br>
+      Not every line of code changes the world. But every line should be <em>worth reading</em>.
+    </div>
+  `,
+
+  resume_summary: () => `
+    <div class="content-title">Professional Summary</div>
+    <div class="timeline">
+      <div class="timeline-entry">
+        <div class="year">Current</div>
+        <h4>Software Developer - Walmart</h4>
+        <p>Large-scale distributed systems, event-driven architecture, microservices. Building infrastructure that serves millions of daily active users.</p>
+      </div>
+      <div class="timeline-entry">
+        <div class="year">Core Stack</div>
+        <h4>Java / Python / React / Cloud</h4>
+        <p>Full-stack capabilities with deep backend specialization. AWS/GCP, Kafka, Docker, Kubernetes.</p>
+      </div>
+      <div class="timeline-entry">
+        <div class="year">Education</div>
+        <h4>B.S. Computer Science</h4>
+        <p>Strong foundation in algorithms, data structures, and system design. Continuous learner focused on distributed systems theory.</p>
+      </div>
+    </div>
+  `,
+
+  philosophy: () => `
+    <div class="philosophy-quote">
+      <blockquote>"The gap between how things are and how they should be -- that's where I live."</blockquote>
+      <cite>-- Anshull Garg, probably at 2 AM debugging</cite>
+    </div>
+  `,
+
+  future_vision: () => `
+    <div class="content-title">Where I'm Headed</div>
+    <div class="learning-grid">
+      <div class="learning-card">
+        <div class="status active">Short Term</div>
+        <h4>System Architecture</h4>
+        <p>Moving from building systems to designing them. Owning the "why" behind technical decisions.</p>
+      </div>
+      <div class="learning-card">
+        <div class="status planned">Medium Term</div>
+        <h4>Technical Leadership</h4>
+        <p>Multiplying impact through mentoring, architecture reviews, and setting engineering standards.</p>
+      </div>
+      <div class="learning-card">
+        <div class="status exploring">Long Term</div>
+        <h4>Lasting Impact</h4>
+        <p>Building a product, team, or tool that outlasts my direct involvement. Something that matters.</p>
+      </div>
+    </div>
+  `,
+
+  walmart_context: () => `
+    <div class="content-title">Scale Context</div>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="value">240M+</div>
+        <div class="label">Weekly Customers</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">10K+</div>
+        <div class="label">Stores Worldwide</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">2.3M</div>
+        <div class="label">Associates</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">#1</div>
+        <div class="label">Fortune 500</div>
+      </div>
+    </div>
+    <div style="text-align:center; font-size:13px; color:var(--text-dim); margin-top:8px;">When code serves this many people, every millisecond matters.</div>
+  `,
+
+  project_pipeline: () => `
+    <div class="content-title">Project: Order Processing Pipeline</div>
+    <div class="project-cards">
+      <div class="project-card">
+        <h3>Event-Driven Order Pipeline</h3>
+        <div class="tech">Kafka / Java / Microservices / AWS</div>
+        <p>Rebuilt a monolithic order processing system into an event-driven microservices architecture. Zero-downtime migration handling millions of daily transactions.</p>
+        <div class="impact">Black Friday tested. Production proven.</div>
+      </div>
+    </div>
+  `,
+
+  project_pipeline_tech: () => `
+    <div class="content-title">Technical Architecture</div>
+    <div class="code-block"><span class="comment">// Order Pipeline Architecture (simplified)</span>
+
+<span class="keyword">class</span> <span class="fn">OrderPipeline</span> {
+  <span class="comment">// Event-driven with Kafka</span>
+  <span class="keyword">private</span> KafkaProducer&lt;String, OrderEvent&gt; producer;
+  <span class="keyword">private</span> SagaOrchestrator sagaOrchestrator;
+  <span class="keyword">private</span> CircuitBreaker circuitBreaker;
+
+  <span class="keyword">public</span> OrderResult <span class="fn">processOrder</span>(Order order) {
+    <span class="keyword">return</span> circuitBreaker.<span class="fn">execute</span>(() -> {
+      OrderEvent event = OrderEvent.<span class="fn">from</span>(order);
+      sagaOrchestrator.<span class="fn">begin</span>(event);
+      producer.<span class="fn">send</span>(<span class="string">"orders.validated"</span>, event);
+      <span class="keyword">return</span> OrderResult.<span class="fn">accepted</span>(event.id());
+    });
+  }
+}</div>
+  `,
+
+  project_pipeline_results: () => `
+    <div class="content-title">Impact Metrics</div>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="value">-40%</div>
+        <div class="label">Processing Latency</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">99.97%</div>
+        <div class="label">Uptime</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">-60%</div>
+        <div class="label">On-call Pages</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">0</div>
+        <div class="label">Lost Orders</div>
+      </div>
+    </div>
+  `,
+
+  project_devplatform: () => `
+    <div class="content-title">Project: Developer Platform</div>
+    <div class="project-cards">
+      <div class="project-card">
+        <h3>Internal Developer Platform</h3>
+        <div class="tech">Python / Docker / GitHub Actions / CLI</div>
+        <p>Built a unified developer experience: environment setup, testing, and deployment in a single CLI tool. Reduced onboarding from weeks to days.</p>
+        <div class="impact">2 weeks -> 2 days onboarding. 80% team adoption.</div>
+      </div>
+    </div>
+  `,
+
+  project_devplatform_tech: () => `
+    <div class="content-title">Dev Platform Stack</div>
+    <div class="code-block"><span class="comment"># Developer Platform CLI (simplified)</span>
+
+<span class="keyword">import</span> click
+<span class="keyword">from</span> platform_core <span class="keyword">import</span> Environment, TestRunner
+
+<span class="keyword">@click.group</span>()
+<span class="keyword">def</span> <span class="fn">cli</span>():
+    <span class="string">"""Unified developer platform CLI."""</span>
+    <span class="keyword">pass</span>
+
+<span class="keyword">@cli.command</span>()
+<span class="keyword">@click.option</span>(<span class="string">'--team'</span>, required=<span class="keyword">True</span>)
+<span class="keyword">def</span> <span class="fn">setup</span>(team):
+    <span class="string">"""Spin up complete local environment."""</span>
+    env = Environment.<span class="fn">for_team</span>(team)
+    env.<span class="fn">pull_services</span>()
+    env.<span class="fn">configure_local</span>()
+    env.<span class="fn">run_health_checks</span>()
+    click.<span class="fn">echo</span>(<span class="string">"Ready to code."</span>)</div>
+  `,
+
+  project_devplatform_impact: () => `
+    <div class="content-title">Developer Platform Impact</div>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="value">80%</div>
+        <div class="label">Team Adoption</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">2 days</div>
+        <div class="label">Onboarding Time</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">~0</div>
+        <div class="label">Setup Tickets</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">4.8/5</div>
+        <div class="label">Dev Satisfaction</div>
+      </div>
+    </div>
+  `,
+
+  project_failure: () => `
+    <div class="content-title">The One That Broke</div>
+    <div class="failure-card">
+      <h3>Real-Time Notification System</h3>
+      <div class="tech" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--red); margin-bottom:10px;">WebSockets / Node.js / Custom Queue</div>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">Built a real-time notification system that worked perfectly in testing. Under peak traffic, exhausted file descriptors and crashed without graceful degradation. No warning. No fallback. Just silence.</p>
+      <div class="lesson">Failure mode: catastrophic. Lesson value: immeasurable.</div>
+    </div>
+  `,
+
+  failure_lessons: () => `
+    <div class="content-title">Lessons Learned</div>
+    <div class="learning-grid">
+      <div class="learning-card">
+        <div class="status active" style="color:var(--red);">Lesson 1</div>
+        <h4>Load Test Everything</h4>
+        <p>Testing is not "it works on my machine." It's "it works under 10x expected load."</p>
+      </div>
+      <div class="learning-card">
+        <div class="status active" style="color:var(--red);">Lesson 2</div>
+        <h4>Degrade Gracefully</h4>
+        <p>Every system needs a fallback. Silence is never an acceptable failure mode.</p>
+      </div>
+      <div class="learning-card">
+        <div class="status active" style="color:var(--red);">Lesson 3</div>
+        <h4>Monitor Resources</h4>
+        <p>The scariest bugs don't throw errors. They silently consume until collapse.</p>
+      </div>
+    </div>
+  `,
+
+  projects_all: () => `
+    <div class="content-title">Project Archive</div>
+    <div class="project-cards">
+      <div class="project-card">
+        <h3>Order Processing Pipeline</h3>
+        <div class="tech">Kafka / Java / Microservices / AWS</div>
+        <p>Event-driven order processing for Walmart scale. Zero-downtime migration from monolith.</p>
+        <div class="impact">40% latency reduction / 99.97% uptime</div>
+      </div>
+      <div class="project-card">
+        <h3>Developer Platform</h3>
+        <div class="tech">Python / Docker / GitHub Actions</div>
+        <p>Internal CLI for environment setup, testing, and deployment. Transformed onboarding experience.</p>
+        <div class="impact">2-week to 2-day onboarding / 80% adoption</div>
+      </div>
+      <div class="project-card">
+        <h3>Real-Time Analytics Dashboard</h3>
+        <div class="tech">React / D3.js / WebSocket / Redis</div>
+        <p>Live operational dashboard for monitoring transaction health across distributed services.</p>
+        <div class="impact">MTTR reduced from hours to minutes</div>
+      </div>
+      <div class="project-card">
+        <h3>API Gateway Redesign</h3>
+        <div class="tech">Kong / Lua / Rate Limiting / OAuth2</div>
+        <p>Centralized API gateway with intelligent rate limiting, auth, and request routing.</p>
+        <div class="impact">Unified 12 services behind one gateway</div>
+      </div>
+    </div>
+  `,
+
+  code_demo: () => `
+    <div class="content-title">Code Philosophy in Action</div>
+    <div class="code-block"><span class="comment">/**
+ * Real code prioritizes the reader.
+ * Names should explain intent, not implementation.
+ */</span>
+
+<span class="keyword">public class</span> <span class="fn">RetryableOperation</span>&lt;T&gt; {
+  <span class="keyword">private final int</span> maxAttempts;
+  <span class="keyword">private final</span> Duration backoff;
+  <span class="keyword">private final</span> Predicate&lt;Exception&gt; isRetryable;
+
+  <span class="keyword">public</span> T <span class="fn">execute</span>(Supplier&lt;T&gt; operation) {
+    <span class="keyword">for</span> (<span class="keyword">int</span> attempt = <span class="num">1</span>; attempt <= maxAttempts; attempt++) {
+      <span class="keyword">try</span> {
+        <span class="keyword">return</span> operation.<span class="fn">get</span>();
+      } <span class="keyword">catch</span> (Exception e) {
+        <span class="keyword">if</span> (!isRetryable.<span class="fn">test</span>(e) || attempt == maxAttempts)
+          <span class="keyword">throw</span> e;
+        <span class="fn">sleep</span>(backoff.<span class="fn">multipliedBy</span>(attempt));
+      }
+    }
+    <span class="keyword">throw new</span> IllegalStateException(<span class="string">"Unreachable"</span>);
+  }
+}</div>
+  `,
+
+  skills_all: () => `
+    <div class="content-title">Skill Matrix</div>
+    <div class="skills-grid">
+      <div class="skill-cat">
+        <h4>Languages</h4>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">Go</span>
+      </div>
+      <div class="skill-cat">
+        <h4>Backend</h4>
+        <span class="skill-tag">Spring Boot</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">GraphQL</span>
+        <span class="skill-tag">gRPC</span>
+        <span class="skill-tag">Kafka</span>
+      </div>
+      <div class="skill-cat">
+        <h4>Frontend</h4>
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Next.js</span>
+        <span class="skill-tag">Tailwind</span>
+        <span class="skill-tag">Redux</span>
+        <span class="skill-tag">HTML/CSS</span>
+      </div>
+      <div class="skill-cat">
+        <h4>Infrastructure</h4>
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">Terraform</span>
+        <span class="skill-tag">CI/CD</span>
+        <span class="skill-tag">GitHub Actions</span>
+      </div>
+      <div class="skill-cat">
+        <h4>Data</h4>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">Redis</span>
+        <span class="skill-tag">MongoDB</span>
+        <span class="skill-tag">Elasticsearch</span>
+        <span class="skill-tag">DynamoDB</span>
+      </div>
+      <div class="skill-cat">
+        <h4>Practices</h4>
+        <span class="skill-tag">System Design</span>
+        <span class="skill-tag">TDD</span>
+        <span class="skill-tag">Code Review</span>
+        <span class="skill-tag">Agile</span>
+        <span class="skill-tag">Observability</span>
+      </div>
+    </div>
+  `,
+
+  skills_bars: () => `
+    <div class="content-title">Proficiency Depth</div>
+    <div class="skill-bar-container" id="skill-bars-container">
+      <div class="skill-bar-row"><div class="skill-bar-label"><span>Backend Architecture</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="background:var(--copper);" data-width="95%"></div></div></div>
+      <div class="skill-bar-row"><div class="skill-bar-label"><span>Distributed Systems</span><span>Advanced</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="background:var(--copper);" data-width="88%"></div></div></div>
+      <div class="skill-bar-row"><div class="skill-bar-label"><span>API Design</span><span>Expert</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="background:var(--blue);" data-width="92%"></div></div></div>
+      <div class="skill-bar-row"><div class="skill-bar-label"><span>DevOps / CI-CD</span><span>Advanced</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="background:var(--blue);" data-width="82%"></div></div></div>
+      <div class="skill-bar-row"><div class="skill-bar-label"><span>Frontend (React)</span><span>Proficient</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="background:var(--green);" data-width="72%"></div></div></div>
+      <div class="skill-bar-row"><div class="skill-bar-label"><span>Database Design</span><span>Advanced</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="background:var(--green);" data-width="85%"></div></div></div>
+    </div>
+  `,
+
+  learning: () => `
+    <div class="content-title">Currently Learning</div>
+    <div class="learning-grid">
+      <div class="learning-card">
+        <div class="status active">Active</div>
+        <h4>Rust</h4>
+        <p>Systems programming for when garbage collection isn't the answer. Memory safety without the runtime cost.</p>
+      </div>
+      <div class="learning-card">
+        <div class="status planned">Building</div>
+        <h4>ML Infrastructure</h4>
+        <p>Not building models -- building the platforms that serve them. Feature stores, model registries, inference pipelines.</p>
+      </div>
+      <div class="learning-card">
+        <div class="status exploring">Deep Dive</div>
+        <h4>Consensus Algorithms</h4>
+        <p>Raft, Paxos, and beyond. Understanding the theory behind the distributed tools I use daily.</p>
+      </div>
+    </div>
+  `,
+
+  fast_track_view: () => `
+    <div class="content-title">Quick Brief</div>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="value" style="font-size:24px;">Walmart</div>
+        <div class="label">Current Company</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">SDE</div>
+        <div class="label">Role</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">99.97%</div>
+        <div class="label">System Uptime</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">M+</div>
+        <div class="label">Users Served</div>
+      </div>
+    </div>
+    <div class="project-cards" style="margin-top:16px;">
+      <div class="project-card">
+        <h3>Order Processing Pipeline</h3>
+        <div class="tech">Kafka / Java / Microservices</div>
+        <p>40% latency reduction, zero-downtime migration at Walmart scale.</p>
+      </div>
+      <div class="project-card">
+        <h3>Developer Platform</h3>
+        <div class="tech">Python / Docker / CLI</div>
+        <p>2-week to 2-day onboarding. 80% engineering adoption.</p>
+      </div>
+    </div>
+  `,
+
+  contact_info: () => `
+    <div class="content-title">Get In Touch</div>
+    <div class="contact-card">
+      <h3>Anshull Garg</h3>
+      <div class="contact-row">
+        <span class="contact-label">Email</span>
+        <span class="contact-value"><a href="mailto:anshullgarg@gmail.com">anshullgarg@gmail.com</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">LinkedIn</span>
+        <span class="contact-value"><a href="https://linkedin.com/in/anshullgarg" target="_blank">linkedin.com/in/anshullgarg</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">GitHub</span>
+        <span class="contact-value"><a href="https://github.com/anshullgarg" target="_blank">github.com/anshullgarg</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Location</span>
+        <span class="contact-value">Open to remote & relocation</span>
+      </div>
+    </div>
+  `,
+};
+
+// ══════════════════════════════════════════════
+//  ENGINE
+// ══════════════════════════════════════════════
+
+let currentNode = null;
+let history = [];
+let visitedNodes = new Set();
+let typeTimer = null;
+let isTyping = false;
+let fullText = '';
+let charIndex = 0;
+let historyOpen = false;
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+// ── PARTICLES ──
+function initParticles() {
+  const canvas = $('#particles');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight * 0.6;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+      a: Math.random() * 0.3 + 0.05,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,121,65,${p.a})`;
+      ctx.fill();
+    }
+    // draw faint connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(200,121,65,${0.04 * (1 - dist / 120)})`;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── START ──
+function startGame() {
+  $('#splash').classList.add('fade');
+  setTimeout(() => {
+    $('#splash').style.display = 'none';
+    goToNode('start');
+  }, 800);
+}
+
+// ── NAVIGATE TO NODE ──
+function goToNode(nodeId) {
+  if (!NODES[nodeId]) return;
+
+  // check for meta easter egg
+  if (visitedNodes.size >= 15 && !visitedNodes.has('meta_question') && nodeId === 'start') {
+    nodeId = 'meta_question';
+  }
+
+  const node = NODES[nodeId];
+  currentNode = nodeId;
+  visitedNodes.add(nodeId);
+
+  $('#node-count').textContent = visitedNodes.size;
+
+  // enable/disable back
+  $('#back-btn').disabled = history.length === 0;
+
+  // set speaker
+  const portrait = $('#portrait');
+  const speakerName = $('#speaker-name');
+
+  if (node.speaker === 'mainframe') {
+    portrait.className = 'portrait mainframe';
+    portrait.textContent = 'SYS';
+    speakerName.className = 'speaker-name mainframe';
+    speakerName.textContent = 'MAINFRAME';
+  } else {
+    portrait.className = 'portrait ag';
+    if (node.tone === 'playful') portrait.classList.add('playful');
+    else if (node.tone === 'bold') portrait.classList.add('bold');
+    else if (node.tone === 'professional') portrait.classList.add('professional');
+    portrait.textContent = 'AG';
+    speakerName.className = 'speaker-name ag';
+    speakerName.textContent = 'ANSHULL GARG';
+  }
+
+  // clear choices
+  $('#choices-area').innerHTML = '';
+
+  // type text
+  typeText(node.text, () => {
+    showChoices(node.choices);
+  });
+
+  // show content
+  showContent(node.content);
+
+  // add to history
+  addHistory(node.speaker === 'mainframe' ? 'MAINFRAME' : 'ANSHULL GARG', node.text, node.speaker);
+}
+
+// ── TYPE TEXT ──
+function typeText(text, onComplete) {
+  if (typeTimer) clearInterval(typeTimer);
+  fullText = text;
+  charIndex = 0;
+  isTyping = true;
+  const el = $('#dialogue-text');
+  el.textContent = '';
+  $('#cursor').style.display = 'inline-block';
+
+  typeTimer = setInterval(() => {
+    if (charIndex < fullText.length) {
+      el.textContent += fullText[charIndex];
+      charIndex++;
+      // auto-scroll text area
+      const area = $('#dialogue-text-area');
+      area.scrollTop = area.scrollHeight;
+    } else {
+      clearInterval(typeTimer);
+      isTyping = false;
+      $('#cursor').style.display = 'none';
+      if (onComplete) onComplete();
+    }
+  }, 30);
+}
+
+// skip typing on click
+document.getElementById('dialogue-text-area').addEventListener('click', () => {
+  if (isTyping) {
+    clearInterval(typeTimer);
+    $('#dialogue-text').textContent = fullText;
+    isTyping = false;
+    $('#cursor').style.display = 'none';
+    // show choices for current node
+    const node = NODES[currentNode];
+    if (node) showChoices(node.choices);
+  }
+});
+
+// ── SHOW CHOICES ──
+function showChoices(choices) {
+  const area = $('#choices-area');
+  area.innerHTML = '';
+
+  choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = `choice-btn ${choice.tone}`;
+    btn.innerHTML = `<span class="choice-label">${getChoiceLetter(i)}</span> ${choice.text}`;
+    btn.addEventListener('click', () => {
+      // record player choice in history
+      addHistory('YOU', choice.text, 'player');
+      // push to history stack
+      history.push(currentNode);
+      goToNode(choice.next);
+    });
+    area.appendChild(btn);
+
+    // stagger animation
+    setTimeout(() => btn.classList.add('visible'), 80 + i * 100);
+  });
+}
+
+function getChoiceLetter(i) {
+  return ['A', 'B', 'C', 'D', 'E'][i] || '';
+}
+
+// ── SHOW CONTENT ──
+function showContent(contentKey) {
+  const inner = $('#content-inner');
+  inner.classList.remove('visible');
+
+  if (!contentKey || !CONTENT[contentKey]) {
+    setTimeout(() => {
+      inner.innerHTML = '';
+    }, 300);
+    return;
+  }
+
+  setTimeout(() => {
+    inner.innerHTML = CONTENT[contentKey]();
+    // force reflow
+    void inner.offsetWidth;
+    inner.classList.add('visible');
+
+    // animate skill bars if present
+    setTimeout(() => {
+      const fills = inner.querySelectorAll('.skill-bar-fill');
+      fills.forEach(f => {
+        f.style.width = f.dataset.width;
+      });
+    }, 200);
+  }, 300);
+}
+
+// ── HISTORY ──
+function addHistory(speaker, text, type) {
+  const container = $('#history-entries');
+  const entry = document.createElement('div');
+  entry.className = 'history-entry';
+  entry.innerHTML = `
+    <div class="history-speaker ${type}">${speaker}</div>
+    <div class="history-text">${text}</div>
+  `;
+  container.appendChild(entry);
+  container.scrollTop = container.scrollHeight;
+}
+
+function toggleHistory() {
+  historyOpen = !historyOpen;
+  $('#history-panel').classList.toggle('open', historyOpen);
+}
+
+// ── BACK ──
+function goBack() {
+  if (history.length === 0) return;
+  const prevNode = history.pop();
+  goToNode(prevNode);
+  // remove the last two history entries (the goToNode call adds one, and we want to remove the "going back" duplicate)
+}
+
+// ── RESTART ──
+function restart() {
+  history = [];
+  visitedNodes.clear();
+  $('#history-entries').innerHTML = '';
+  goToNode('start');
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', (e) => {
+  if ($('#splash').style.display !== 'none' && $('#splash').offsetParent !== null) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      startGame();
+    }
+    return;
+  }
+
+  // number keys for choices
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 4) {
+    const btns = $$('.choice-btn.visible');
+    if (btns[num - 1]) btns[num - 1].click();
+  }
+
+  // Escape to toggle history
+  if (e.key === 'Escape') {
+    if (historyOpen) toggleHistory();
+  }
+
+  // Space/Enter to skip typing
+  if ((e.key === ' ' || e.key === 'Enter') && isTyping) {
+    e.preventDefault();
+    clearInterval(typeTimer);
+    $('#dialogue-text').textContent = fullText;
+    isTyping = false;
+    $('#cursor').style.display = 'none';
+    const node = NODES[currentNode];
+    if (node) showChoices(node.choices);
+  }
+});
+
+// ── INIT ──
+initParticles();
+</script>
+</body>
+</html>
