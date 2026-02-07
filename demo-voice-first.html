@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Voice-First Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0A0A12;
+  --bg-card: #12121E;
+  --bg-elevated: #1A1A2E;
+  --accent: #3B82F6;
+  --copper: #C87941;
+  --text: #F0F0F0;
+  --text-dim: #8888AA;
+  --green: #34D399;
+  --red: #EF4444;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ---- Audio Wave Background Pattern ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 60px,
+      rgba(59,130,246,0.015) 60px,
+      rgba(59,130,246,0.015) 61px
+    ),
+    radial-gradient(ellipse at 50% 50%, rgba(59,130,246,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Animated subtle wave SVG background */
+.wave-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.06;
+}
+.wave-bg svg { width: 100%; height: 100%; }
+
+h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+/* ---- Listening Glow Overlay ---- */
+.listening-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border: 2px solid transparent;
+  border-radius: 0;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+body.is-listening .listening-glow {
+  border-color: rgba(59,130,246,0.25);
+  box-shadow: inset 0 0 80px rgba(59,130,246,0.08), inset 0 0 200px rgba(59,130,246,0.03);
+}
+
+/* ---- Main Container ---- */
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 8rem;
+  min-height: 100vh;
+}
+
+/* ---- Browser Warning ---- */
+.browser-warning {
+  display: none;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #FCA5A5;
+}
+.browser-warning strong { color: var(--red); }
+
+/* ---- Hero Section ---- */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+  transition: opacity 0.5s, transform 0.5s;
+}
+.hero.hidden {
+  opacity: 0;
+  transform: translateY(-30px);
+  pointer-events: none;
+  position: absolute;
+  width: 0; height: 0; overflow: hidden;
+}
+
+.mic-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+/* Pulsing ring */
+.mic-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(59,130,246,0.3);
+  animation: pulse-ring 2.5s ease-in-out infinite;
+}
+.mic-ring:nth-child(2) { animation-delay: 0.8s; }
+.mic-ring:nth-child(3) { animation-delay: 1.6s; }
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.mic-circle {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid rgba(59,130,246,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+}
+.mic-circle:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px rgba(59,130,246,0.2);
+}
+body.is-listening .mic-circle {
+  background: rgba(59,130,246,0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 40px rgba(59,130,246,0.3);
+}
+
+.mic-circle svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: var(--text-dim);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.3s;
+}
+body.is-listening .mic-circle svg { stroke: var(--accent); }
+
+.hero-title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+.hero-sub {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  max-width: 340px;
+}
+.hero-sub span { color: var(--copper); font-weight: 500; }
+
+/* ---- Equalizer Bars ---- */
+.equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 40px;
+  margin: 1.5rem 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+body.is-listening .equalizer { opacity: 1; }
+
+.eq-bar {
+  width: 6px;
+  background: var(--accent);
+  border-radius: 3px;
+  min-height: 4px;
+  transition: height 0.08s ease;
+}
+
+/* ---- Transcript Display ---- */
+.transcript-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  min-height: 44px;
+  width: 100%;
+  max-width: 500px;
+  margin: 1rem auto 0;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  position: relative;
+}
+body.is-listening .transcript-box,
+.transcript-box.visible { opacity: 1; }
+
+.transcript-box .interim { color: var(--accent); }
+.transcript-box .final { color: var(--text); }
+
+/* Listening dots */
+.listening-dots {
+  display: none;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+body.is-listening .listening-dots { display: inline-flex; }
+
+.listening-dots span {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: dot-bounce 1.4s ease-in-out infinite;
+}
+.listening-dots span:nth-child(2) { animation-delay: 0.2s; }
+.listening-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* ---- Command Flash Feedback ---- */
+.flash-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.flash-overlay.flash-green { background: rgba(52,211,153,0.08); opacity: 1; }
+.flash-overlay.flash-red { background: rgba(239,68,68,0.06); opacity: 1; }
+
+/* ---- Sections ---- */
+.section {
+  display: none;
+  animation: section-in 0.6s ease forwards;
+}
+.section.active { display: block; }
+
+@keyframes section-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.section-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+.section-header .icon {
+  width: 36px; height: 36px;
+  background: rgba(59,130,246,0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.section-header .icon svg {
+  width: 20px; height: 20px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.back-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-dim);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s, color 0.3s;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- About Card ---- */
+.about-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 2rem;
+}
+.about-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.25rem;
+}
+.about-card .role {
+  color: var(--copper);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.about-card p {
+  color: var(--text-dim);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+.about-highlights {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.about-highlights .hl {
+  background: var(--bg-elevated);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  flex: 1;
+  min-width: 140px;
+}
+.about-highlights .hl .val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.about-highlights .hl .lbl {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+}
+
+/* ---- Project Cards ---- */
+.projects-grid {
+  display: grid;
+  gap: 1rem;
+}
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+  transition: border-color 0.3s, transform 0.2s;
+}
+.project-card:hover {
+  border-color: rgba(59,130,246,0.2);
+  transform: translateY(-2px);
+}
+.project-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+.project-card .proj-desc {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+.project-card .proj-tech {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.project-card .proj-tech span {
+  background: rgba(59,130,246,0.08);
+  color: var(--accent);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* ---- Skills ---- */
+.skills-category {
+  margin-bottom: 1.5rem;
+}
+.skills-category h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--copper);
+  margin-bottom: 0.75rem;
+}
+.skill-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.skill-pill {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text);
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: border-color 0.3s, background 0.3s;
+}
+.skill-pill:hover {
+  border-color: var(--accent);
+  background: rgba(59,130,246,0.06);
+}
+
+/* ---- Experience Timeline ---- */
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: rgba(59,130,246,0.15);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -2rem;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+}
+.timeline-item:first-child::before {
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(59,130,246,0.4);
+}
+.timeline-item h3 { font-size: 1.05rem; }
+.timeline-item .company {
+  color: var(--copper);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.timeline-item .period {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+.timeline-item p {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ---- Contact ---- */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.3s, transform 0.2s;
+}
+.contact-link:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+.contact-link svg {
+  width: 22px; height: 22px;
+  stroke: var(--copper);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.contact-link .cl-label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.contact-link .cl-value {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.voice-hint {
+  background: rgba(200,121,65,0.08);
+  border: 1px solid rgba(200,121,65,0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--copper);
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+/* ---- Resume Section ---- */
+.resume-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+}
+.resume-card svg {
+  width: 48px; height: 48px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-bottom: 1rem;
+}
+.resume-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.resume-card p {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+.resume-btn:hover {
+  background: #2563EB;
+  transform: translateY(-1px);
+}
+
+/* ---- Command Log ---- */
+.command-log {
+  position: fixed;
+  bottom: 80px;
+  right: 1rem;
+  width: 260px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 0.75rem;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.command-log.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.command-log h4 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+.log-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+.log-entry .log-icon { flex-shrink: 0; font-size: 0.7rem; }
+.log-entry .log-text { color: var(--text-dim); }
+.log-entry .log-cmd { color: var(--accent); font-weight: 500; }
+.log-entry.error .log-text { color: rgba(239,68,68,0.8); }
+
+/* ---- Bottom Nav ---- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10,10,18,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.5rem;
+  z-index: 60;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 0.3s, background 0.3s;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  min-width: 52px;
+}
+.nav-btn svg {
+  width: 20px; height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.nav-btn:hover, .nav-btn.active {
+  color: var(--accent);
+  background: rgba(59,130,246,0.06);
+}
+
+/* Mute Toggle */
+.mute-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 0.5rem;
+  cursor: pointer;
+  z-index: 70;
+  transition: border-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mute-toggle:hover { border-color: var(--accent); }
+.mute-toggle svg {
+  width: 20px; height: 20px;
+  stroke: var(--text-dim);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mute-toggle.muted svg { stroke: var(--red); }
+
+/* Log Toggle */
+.log-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 3.5rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 0.5rem;
+  cursor: pointer;
+  z-index: 70;
+  transition: border-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.log-toggle:hover { border-color: var(--accent); }
+.log-toggle svg {
+  width: 20px; height: 20px;
+  stroke: var(--text-dim);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .container { padding: 1.5rem 1rem 7rem; }
+  .hero-title { font-size: 1.2rem; }
+  .section-header h2 { font-size: 1.4rem; }
+  .about-highlights { flex-direction: column; }
+  .command-log { display: none; }
+  .log-toggle { display: none; }
+  .nav-btn { padding: 0.4rem 0.45rem; min-width: 44px; font-size: 0.6rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Subtle wave background -->
+<div class="wave-bg">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="none">
+    <path d="M0,450 Q360,350 720,450 T1440,450" fill="none" stroke="rgba(59,130,246,0.3)" stroke-width="1">
+      <animate attributeName="d" dur="8s" repeatCount="indefinite"
+        values="M0,450 Q360,350 720,450 T1440,450;
+                M0,450 Q360,550 720,450 T1440,450;
+                M0,450 Q360,350 720,450 T1440,450" />
+    </path>
+    <path d="M0,400 Q360,300 720,400 T1440,400" fill="none" stroke="rgba(200,121,65,0.2)" stroke-width="0.5">
+      <animate attributeName="d" dur="10s" repeatCount="indefinite"
+        values="M0,400 Q360,300 720,400 T1440,400;
+                M0,400 Q360,500 720,400 T1440,400;
+                M0,400 Q360,300 720,400 T1440,400" />
+    </path>
+    <path d="M0,500 Q360,400 720,500 T1440,500" fill="none" stroke="rgba(59,130,246,0.15)" stroke-width="0.5">
+      <animate attributeName="d" dur="12s" repeatCount="indefinite"
+        values="M0,500 Q360,400 720,500 T1440,500;
+                M0,500 Q360,600 720,500 T1440,500;
+                M0,500 Q360,400 720,500 T1440,500" />
+    </path>
+  </svg>
+</div>
+
+<!-- Listening glow border -->
+<div class="listening-glow"></div>
+
+<!-- Command flash overlay -->
+<div class="flash-overlay" id="flashOverlay"></div>
+
+<!-- Mute toggle -->
+<button class="mute-toggle" id="muteToggle" title="Toggle speech output">
+  <svg id="muteIcon" viewBox="0 0 24 24">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  </svg>
+</button>
+
+<!-- Log toggle -->
+<button class="log-toggle" id="logToggle" title="Toggle command log">
+  <svg viewBox="0 0 24 24">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </svg>
+</button>
+
+<!-- Command Log -->
+<div class="command-log" id="commandLog">
+  <h4>Voice Log</h4>
+  <div id="logEntries"></div>
+</div>
+
+<div class="container">
+
+  <!-- Browser Warning -->
+  <div class="browser-warning" id="browserWarning">
+    <strong>Voice commands are not supported in this browser.</strong><br>
+    For the full experience, please use <strong>Google Chrome</strong> (desktop or Android).<br>
+    You can still navigate using the buttons below.
+  </div>
+
+  <!-- ==================== HERO ==================== -->
+  <div class="hero" id="heroSection">
+    <div class="mic-container" id="micBtn" role="button" tabindex="0" aria-label="Activate voice navigation">
+      <div class="mic-ring"></div>
+      <div class="mic-ring"></div>
+      <div class="mic-ring"></div>
+      <div class="mic-circle">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="hero-title">Say Hi to Navigate</h1>
+    <p class="hero-sub">Say <span>"Hey Anshull"</span> or click the mic to begin. Then try commands like <span>"projects"</span> or <span>"about"</span>.</p>
+
+    <!-- Equalizer -->
+    <div class="equalizer" id="equalizer">
+      <div class="eq-bar" style="height:8px"></div>
+      <div class="eq-bar" style="height:14px"></div>
+      <div class="eq-bar" style="height:10px"></div>
+      <div class="eq-bar" style="height:20px"></div>
+      <div class="eq-bar" style="height:12px"></div>
+      <div class="eq-bar" style="height:18px"></div>
+      <div class="eq-bar" style="height:8px"></div>
+    </div>
+
+    <!-- Transcript -->
+    <div class="transcript-box" id="transcriptBox">
+      <span class="listening-dots"><span></span><span></span><span></span></span>
+      <span id="transcriptText"></span>
+    </div>
+  </div>
+
+  <!-- ==================== ABOUT ==================== -->
+  <div class="section" id="aboutSection">
+    <button class="back-btn" onclick="navigateTo('home')">Back to Home</button>
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </div>
+      <h2>About Me</h2>
+    </div>
+    <div class="about-card">
+      <h3>Anshull Garg</h3>
+      <div class="role">Software Developer at Walmart</div>
+      <p>
+        I build scalable, user-centric software that impacts millions of users.
+        At Walmart, I work on frontend systems and backend services that power
+        one of the world's largest retail platforms. I'm passionate about
+        clean architecture, performance optimization, and creating
+        intuitive developer and user experiences.
+      </p>
+      <p>
+        Beyond my day-to-day, I explore creative interfaces (like this voice-first portfolio),
+        contribute to open source, and stay curious about emerging web technologies
+        including Web Speech, WebGL, and edge computing.
+      </p>
+      <div class="about-highlights">
+        <div class="hl">
+          <div class="val">Walmart</div>
+          <div class="lbl">Current Company</div>
+        </div>
+        <div class="hl">
+          <div class="val">Full Stack</div>
+          <div class="lbl">Specialization</div>
+        </div>
+        <div class="hl">
+          <div class="val">React</div>
+          <div class="lbl">Primary Framework</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROJECTS ==================== -->
+  <div class="section" id="projectsSection">
+    <button class="back-btn" onclick="navigateTo('home')">Back to Home</button>
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+      </div>
+      <h2>Projects</h2>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <h3>Voice-First Portfolio</h3>
+        <p class="proj-desc">
+          This very site -- a portfolio navigable entirely by voice using the Web Speech Recognition
+          and Synthesis APIs. Features real-time transcript display, audio visualization,
+          and full click-based fallback for unsupported browsers.
+        </p>
+        <div class="proj-tech">
+          <span>Web Speech API</span>
+          <span>Web Audio API</span>
+          <span>Vanilla JS</span>
+          <span>CSS Animations</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>Retail Inventory Dashboard</h3>
+        <p class="proj-desc">
+          A real-time inventory management dashboard built for high-scale retail operations.
+          Handles millions of SKUs with live updates, predictive restocking alerts,
+          and role-based access controls.
+        </p>
+        <div class="proj-tech">
+          <span>React</span>
+          <span>Node.js</span>
+          <span>Kafka</span>
+          <span>Redis</span>
+          <span>PostgreSQL</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3>Developer Tooling CLI</h3>
+        <p class="proj-desc">
+          An internal CLI tool that streamlines microservice scaffolding, CI/CD pipeline setup,
+          and configuration management. Reduced onboarding time for new services
+          from days to under an hour.
+        </p>
+        <div class="proj-tech">
+          <span>TypeScript</span>
+          <span>Node.js</span>
+          <span>Docker</span>
+          <span>GitHub Actions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SKILLS ==================== -->
+  <div class="section" id="skillsSection">
+    <button class="back-btn" onclick="navigateTo('home')">Back to Home</button>
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+      </div>
+      <h2>Skills</h2>
+    </div>
+    <div class="skills-category">
+      <h3>Languages</h3>
+      <div class="skill-pills">
+        <div class="skill-pill">JavaScript</div>
+        <div class="skill-pill">TypeScript</div>
+        <div class="skill-pill">Python</div>
+        <div class="skill-pill">Java</div>
+        <div class="skill-pill">SQL</div>
+        <div class="skill-pill">HTML/CSS</div>
+      </div>
+    </div>
+    <div class="skills-category">
+      <h3>Frontend</h3>
+      <div class="skill-pills">
+        <div class="skill-pill">React</div>
+        <div class="skill-pill">Next.js</div>
+        <div class="skill-pill">Redux</div>
+        <div class="skill-pill">Tailwind CSS</div>
+        <div class="skill-pill">Webpack</div>
+        <div class="skill-pill">Accessibility (WCAG)</div>
+      </div>
+    </div>
+    <div class="skills-category">
+      <h3>Backend & Infrastructure</h3>
+      <div class="skill-pills">
+        <div class="skill-pill">Node.js</div>
+        <div class="skill-pill">Express</div>
+        <div class="skill-pill">GraphQL</div>
+        <div class="skill-pill">REST APIs</div>
+        <div class="skill-pill">Kafka</div>
+        <div class="skill-pill">Redis</div>
+      </div>
+    </div>
+    <div class="skills-category">
+      <h3>Databases</h3>
+      <div class="skill-pills">
+        <div class="skill-pill">PostgreSQL</div>
+        <div class="skill-pill">MongoDB</div>
+        <div class="skill-pill">Elasticsearch</div>
+      </div>
+    </div>
+    <div class="skills-category">
+      <h3>DevOps & Tools</h3>
+      <div class="skill-pills">
+        <div class="skill-pill">Docker</div>
+        <div class="skill-pill">Kubernetes</div>
+        <div class="skill-pill">GitHub Actions</div>
+        <div class="skill-pill">Jenkins</div>
+        <div class="skill-pill">AWS</div>
+        <div class="skill-pill">GCP</div>
+        <div class="skill-pill">Git</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EXPERIENCE ==================== -->
+  <div class="section" id="experienceSection">
+    <button class="back-btn" onclick="navigateTo('home')">Back to Home</button>
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+      </div>
+      <h2>Experience</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h3>Software Developer</h3>
+        <div class="company">Walmart</div>
+        <div class="period">Present</div>
+        <p>
+          Building and maintaining large-scale frontend and backend systems
+          for Walmart's e-commerce and retail technology platforms.
+          Working with React, Node.js, and distributed systems architecture
+          to serve millions of daily active users.
+        </p>
+      </div>
+      <div class="timeline-item">
+        <h3>Software Engineering Intern</h3>
+        <div class="company">Previous Roles</div>
+        <div class="period">Earlier</div>
+        <p>
+          Gained hands-on experience in full-stack development, agile practices,
+          and production-grade systems. Contributed to feature development,
+          code reviews, and CI/CD pipeline improvements across multiple teams.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CONTACT ==================== -->
+  <div class="section" id="contactSection">
+    <button class="back-btn" onclick="navigateTo('home')">Back to Home</button>
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+      </div>
+      <h2>Contact</h2>
+    </div>
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:anshullgarg@gmail.com">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <div>
+          <div class="cl-label">Email</div>
+          <div class="cl-value">anshullgarg@gmail.com</div>
+        </div>
+      </a>
+      <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        <div>
+          <div class="cl-label">LinkedIn</div>
+          <div class="cl-value">linkedin.com/in/anshullgarg</div>
+        </div>
+      </a>
+      <a class="contact-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        <div>
+          <div class="cl-label">GitHub</div>
+          <div class="cl-value">github.com/anshullgarg</div>
+        </div>
+      </a>
+    </div>
+    <div class="voice-hint">
+      Say <strong>"email"</strong> to open mail composer, or <strong>"home"</strong> to go back.
+    </div>
+  </div>
+
+  <!-- ==================== RESUME ==================== -->
+  <div class="section" id="resumeSection">
+    <button class="back-btn" onclick="navigateTo('home')">Back to Home</button>
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </div>
+      <h2>Resume</h2>
+    </div>
+    <div class="resume-card">
+      <svg viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      <h3>Download My Resume</h3>
+      <p>Get the full picture of my experience, skills, and accomplishments.</p>
+      <button class="resume-btn" onclick="alert('Resume download would start here. Add your actual resume file link.')">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download PDF
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== BOTTOM NAV ==================== -->
+<nav class="bottom-nav" aria-label="Section navigation">
+  <button class="nav-btn active" onclick="navigateTo('home')" data-section="home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    Home
+  </button>
+  <button class="nav-btn" onclick="navigateTo('about')" data-section="about">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    About
+  </button>
+  <button class="nav-btn" onclick="navigateTo('projects')" data-section="projects">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+    Projects
+  </button>
+  <button class="nav-btn" onclick="navigateTo('skills')" data-section="skills">
+    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+    Skills
+  </button>
+  <button class="nav-btn" onclick="navigateTo('experience')" data-section="experience">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+    Work
+  </button>
+  <button class="nav-btn" onclick="navigateTo('contact')" data-section="contact">
+    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    Contact
+  </button>
+</nav>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let isListening = false;
+  let isMuted = false;
+  let currentSection = 'home';
+  let recognition = null;
+  let audioContext = null;
+  let analyser = null;
+  let micStream = null;
+  let animFrameId = null;
+  const speechSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  const synthSupported = !!window.speechSynthesis;
+
+  // ============================================================
+  // DOM REFS
+  // ============================================================
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const heroEl = $('#heroSection');
+  const micBtn = $('#micBtn');
+  const eqEl = $('#equalizer');
+  const eqBars = eqEl.querySelectorAll('.eq-bar');
+  const transcriptBox = $('#transcriptBox');
+  const transcriptText = $('#transcriptText');
+  const flashOverlay = $('#flashOverlay');
+  const muteToggle = $('#muteToggle');
+  const muteIcon = $('#muteIcon');
+  const logToggle = $('#logToggle');
+  const commandLog = $('#commandLog');
+  const logEntries = $('#logEntries');
+  const browserWarning = $('#browserWarning');
+  const navBtns = $$('.nav-btn');
+
+  const sections = {
+    about: $('#aboutSection'),
+    projects: $('#projectsSection'),
+    skills: $('#skillsSection'),
+    experience: $('#experienceSection'),
+    contact: $('#contactSection'),
+    resume: $('#resumeSection')
+  };
+
+  // ============================================================
+  // SPEECH SYNTHESIS RESPONSES
+  // ============================================================
+  const speechResponses = {
+    about: "I'm Anshull Garg, a Software Developer at Walmart. I build scalable systems that impact millions of users. Want to know more? Say projects, skills, or experience.",
+    projects: "Here are some things I've built. A voice-first portfolio, a retail inventory dashboard, and a developer tooling CLI. Say a project name or try another command.",
+    skills: "My tech stack spans JavaScript, TypeScript, React, Node.js, and cloud infrastructure. I focus on full-stack development with a frontend specialization.",
+    experience: "I'm currently a Software Developer at Walmart, building large-scale e-commerce and retail technology platforms.",
+    contact: "You can reach me by email at anshull garg at gmail dot com, or find me on LinkedIn and GitHub. Say email to open the mail composer.",
+    resume: "Here you can download my resume for a full summary of my experience and skills.",
+    home: "Welcome back. Say a command like about, projects, skills, experience, or contact to explore.",
+    greeting: "Hey there! I'm Anshull's portfolio. You can navigate by voice. Try saying about, projects, skills, experience, or contact.",
+    unknown: "I didn't catch that. Try saying projects, about, skills, experience, or contact."
+  };
+
+  // ============================================================
+  // VOICE COMMANDS MAP
+  // ============================================================
+  const commandMap = [
+    { keys: ['about', 'who are you', 'tell me about yourself', 'tell me about you', 'bio', 'introduction', 'introduce'], target: 'about' },
+    { keys: ['projects', 'project', 'what have you built', 'show me your work', 'work samples', 'portfolio', 'show work'], target: 'projects' },
+    { keys: ['skills', 'skill', 'what can you do', 'tech stack', 'technologies', 'technology', 'stack', 'what do you know'], target: 'skills' },
+    { keys: ['experience', 'where have you worked', 'career', 'work history', 'job', 'jobs', 'work experience'], target: 'experience' },
+    { keys: ['contact', 'hire', 'get in touch', 'reach out', 'email', 'mail', 'connect'], target: 'contact' },
+    { keys: ['resume', 'download', 'cv', 'download resume'], target: 'resume' },
+    { keys: ['home', 'start over', 'go back', 'reset', 'start', 'beginning', 'main', 'back'], target: 'home' },
+  ];
+
+  const greetingKeys = ['hey anshull', 'hi anshull', 'hello anshull', 'hey', 'hi', 'hello', 'start'];
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  function init() {
+    if (!speechSupported) {
+      browserWarning.style.display = 'block';
+    }
+
+    micBtn.addEventListener('click', toggleListening);
+    micBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleListening(); }
+    });
+
+    muteToggle.addEventListener('click', toggleMute);
+    logToggle.addEventListener('click', () => {
+      commandLog.classList.toggle('visible');
+    });
+
+    // Setup speech recognition
+    if (speechSupported) {
+      setupRecognition();
+    }
+  }
+
+  // ============================================================
+  // SPEECH RECOGNITION SETUP
+  // ============================================================
+  function setupRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = handleRecognitionResult;
+    recognition.onerror = handleRecognitionError;
+    recognition.onend = handleRecognitionEnd;
+  }
+
+  function handleRecognitionResult(event) {
+    let interimTranscript = '';
+    let finalTranscript = '';
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+
+    // Display transcript
+    if (finalTranscript) {
+      transcriptText.innerHTML = '<span class="final">' + escapeHTML(finalTranscript) + '</span>';
+      processVoiceCommand(finalTranscript.toLowerCase().trim());
+    } else if (interimTranscript) {
+      transcriptText.innerHTML = '<span class="interim">' + escapeHTML(interimTranscript) + '</span>';
+    }
+  }
+
+  function handleRecognitionError(event) {
+    console.warn('Speech recognition error:', event.error);
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      addLogEntry('Microphone access denied', true);
+      stopListening();
+    }
+    // For 'no-speech' or 'aborted', we let onend handle restart
+  }
+
+  function handleRecognitionEnd() {
+    // Auto-restart if we should still be listening
+    if (isListening && recognition) {
+      try {
+        recognition.start();
+      } catch(e) {
+        // Already started, ignore
+      }
+    }
+  }
+
+  // ============================================================
+  // TOGGLE LISTENING
+  // ============================================================
+  function toggleListening() {
+    if (!speechSupported) {
+      addLogEntry('Voice not supported in this browser', true);
+      return;
+    }
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  }
+
+  function startListening() {
+    if (!recognition) return;
+    isListening = true;
+    document.body.classList.add('is-listening');
+    transcriptText.textContent = '';
+    transcriptBox.classList.add('visible');
+
+    try {
+      recognition.start();
+    } catch(e) {
+      // May already be started
+    }
+
+    // Setup audio analyser for visualizer
+    setupAudioAnalyser();
+
+    speak(speechResponses.greeting);
+    addLogEntry('Listening activated');
+  }
+
+  function stopListening() {
+    isListening = false;
+    document.body.classList.remove('is-listening');
+
+    if (recognition) {
+      try { recognition.stop(); } catch(e) {}
+    }
+
+    // Cleanup audio
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    if (micStream) {
+      micStream.getTracks().forEach(t => t.stop());
+      micStream = null;
+    }
+    if (audioContext) {
+      audioContext.close().catch(() => {});
+      audioContext = null;
+    }
+
+    // Reset eq bars
+    eqBars.forEach(bar => bar.style.height = '4px');
+    addLogEntry('Listening stopped');
+  }
+
+  // ============================================================
+  // AUDIO ANALYSER FOR EQUALIZER
+  // ============================================================
+  async function setupAudioAnalyser() {
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 64;
+      const source = audioContext.createMediaStreamSource(micStream);
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      function updateEqualizer() {
+        if (!isListening) return;
+        analyser.getByteFrequencyData(dataArray);
+
+        const barCount = eqBars.length;
+        for (let i = 0; i < barCount; i++) {
+          // Sample different frequency ranges for each bar
+          const idx = Math.floor((i / barCount) * dataArray.length * 0.6) + 1;
+          const value = dataArray[idx] || 0;
+          const height = Math.max(4, (value / 255) * 40);
+          eqBars[i].style.height = height + 'px';
+        }
+
+        animFrameId = requestAnimationFrame(updateEqualizer);
+      }
+      updateEqualizer();
+    } catch(e) {
+      console.warn('Could not access microphone for visualizer:', e);
+      // Fallback: animate bars randomly
+      startFallbackEqualizer();
+    }
+  }
+
+  function startFallbackEqualizer() {
+    function tick() {
+      if (!isListening) return;
+      eqBars.forEach(bar => {
+        const h = 4 + Math.random() * 28;
+        bar.style.height = h + 'px';
+      });
+      animFrameId = requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  // ============================================================
+  // VOICE COMMAND PROCESSING
+  // ============================================================
+  function processVoiceCommand(text) {
+    // Check greeting first
+    const isGreeting = greetingKeys.some(g => text.includes(g));
+    if (isGreeting && currentSection === 'home') {
+      flashFeedback('green');
+      addLogEntry('Heard: "' + text + '"');
+      // Already at home, just acknowledge
+      return;
+    }
+
+    // Check email shortcut
+    if (text.includes('email') || text.includes('mail')) {
+      flashFeedback('green');
+      addLogEntry('Command: email', false, 'contact');
+      navigateTo('contact');
+      setTimeout(() => {
+        window.location.href = 'mailto:anshullgarg@gmail.com';
+      }, 1200);
+      return;
+    }
+
+    // Match commands
+    for (const cmd of commandMap) {
+      for (const key of cmd.keys) {
+        if (text.includes(key)) {
+          flashFeedback('green');
+          addLogEntry('Command: "' + key + '"', false, cmd.target);
+          navigateTo(cmd.target);
+          return;
+        }
+      }
+    }
+
+    // No match
+    flashFeedback('red');
+    addLogEntry('Not recognized: "' + text + '"', true);
+    speak(speechResponses.unknown);
+    transcriptText.innerHTML = '<span class="interim">I didn\'t catch that. Try saying "projects" or "about".</span>';
+  }
+
+  // ============================================================
+  // NAVIGATION
+  // ============================================================
+  function navigateTo(target) {
+    currentSection = target;
+
+    // Hide all sections
+    Object.values(sections).forEach(s => s.classList.remove('active'));
+
+    // Update nav buttons
+    navBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.section === target);
+    });
+
+    if (target === 'home') {
+      heroEl.classList.remove('hidden');
+      speak(speechResponses.home);
+    } else {
+      heroEl.classList.add('hidden');
+      if (sections[target]) {
+        sections[target].classList.add('active');
+      }
+      if (speechResponses[target]) {
+        speak(speechResponses[target]);
+      }
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Make navigateTo globally accessible for onclick handlers
+  window.navigateTo = navigateTo;
+
+  // ============================================================
+  // SPEECH SYNTHESIS
+  // ============================================================
+  function speak(text) {
+    if (isMuted || !synthSupported) return;
+
+    // Cancel any current speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 0.8;
+
+    // Try to select a natural English voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v =>
+      v.lang.startsWith('en') && (
+        v.name.includes('Google') ||
+        v.name.includes('Samantha') ||
+        v.name.includes('Daniel') ||
+        v.name.includes('Karen') ||
+        v.name.includes('Natural')
+      )
+    );
+    if (preferred) {
+      utterance.voice = preferred;
+    } else {
+      const english = voices.find(v => v.lang.startsWith('en'));
+      if (english) utterance.voice = english;
+    }
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Load voices (async in some browsers)
+  if (synthSupported) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
+    // Trigger initial load
+    window.speechSynthesis.getVoices();
+  }
+
+  // ============================================================
+  // MUTE TOGGLE
+  // ============================================================
+  function toggleMute() {
+    isMuted = !isMuted;
+    muteToggle.classList.toggle('muted', isMuted);
+
+    if (isMuted) {
+      window.speechSynthesis.cancel();
+      muteIcon.innerHTML = '<line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2c0 .34-.03.67-.08 1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line>';
+    } else {
+      muteIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+    }
+  }
+
+  // ============================================================
+  // VISUAL FEEDBACK
+  // ============================================================
+  function flashFeedback(type) {
+    flashOverlay.className = 'flash-overlay flash-' + type;
+    setTimeout(() => {
+      flashOverlay.className = 'flash-overlay';
+    }, 400);
+  }
+
+  // ============================================================
+  // COMMAND LOG
+  // ============================================================
+  function addLogEntry(text, isError, targetSection) {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry' + (isError ? ' error' : '');
+
+    let icon = '&#10004;';
+    if (isError) icon = '&#10008;';
+
+    let html = '<span class="log-icon">' + icon + '</span>';
+    if (targetSection) {
+      html += '<span class="log-text">' + escapeHTML(text) + ' &rarr; <span class="log-cmd">' + targetSection + '</span></span>';
+    } else {
+      html += '<span class="log-text">' + escapeHTML(text) + '</span>';
+    }
+
+    entry.innerHTML = html;
+    logEntries.prepend(entry);
+
+    // Limit to 20 entries
+    while (logEntries.children.length > 20) {
+      logEntries.removeChild(logEntries.lastChild);
+    }
+  }
+
+  // ============================================================
+  // UTILITIES
+  // ============================================================
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ============================================================
+  // START
+  // ============================================================
+  init();
+
+})();
+</script>
+</body>
+</html>
