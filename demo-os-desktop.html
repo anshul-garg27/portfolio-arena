@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GargOS 2.0 | Anshull Garg - Software Developer</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. An interactive desktop OS portfolio experience.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & CUSTOM PROPERTIES
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg-deep: #0A0A1A;
+  --bg-mid: #1A1A3A;
+  --window-chrome: #1E1E2E;
+  --window-body: #181825;
+  --dock-bg: rgba(30,30,46,0.65);
+  --text: #EDEDED;
+  --text-muted: #8B8B8B;
+  --text-dim: #555568;
+  --accent: #3B82F6;
+  --copper: #C87941;
+  --red: #FF5F57;
+  --yellow: #FEBC2E;
+  --green: #28C840;
+  --border: rgba(255,255,255,0.08);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --radius: 10px;
+  --radius-lg: 12px;
+}
+
+html, body { height:100%; overflow:hidden; background:#000; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+::selection { background: rgba(59,130,246,0.3); color:#fff; }
+
+/* ============================================================
+   BOOT SCREEN
+   ============================================================ */
+#boot-screen {
+  position: fixed; inset:0; z-index:99999;
+  background: #000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.6s ease;
+}
+#boot-screen.fade-out { opacity:0; pointer-events:none; }
+
+.boot-logo {
+  font-family: var(--font-sans);
+  font-weight: 700; font-size: 28px;
+  color: #fff; letter-spacing: -0.5px;
+  margin-bottom: 32px;
+}
+.boot-logo span { color: var(--accent); }
+
+.boot-bar-track {
+  width: 240px; height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px; overflow: hidden;
+}
+.boot-bar-fill {
+  width: 0%; height: 100%;
+  background: linear-gradient(90deg, var(--accent), #60A5FA);
+  border-radius: 4px;
+  animation: bootFill 1.6s ease-in-out forwards;
+}
+@keyframes bootFill { to { width:100%; } }
+
+/* ============================================================
+   DESKTOP
+   ============================================================ */
+#desktop {
+  position: fixed; inset:0;
+  opacity:0; transition: opacity 0.5s ease;
+  display: flex; flex-direction: column;
+}
+#desktop.visible { opacity:1; }
+
+/* Wallpaper */
+.wallpaper {
+  position: absolute; inset:0; z-index:0;
+  transition: background 0.5s ease;
+}
+.wallpaper[data-wp="stars"] {
+  background: linear-gradient(145deg, #0A0A1A 0%, #0F1028 40%, #1A1A3A 100%);
+}
+.wallpaper[data-wp="aurora"] {
+  background: linear-gradient(145deg, #0A1628 0%, #102040 30%, #1A0A3A 60%, #2A1040 100%);
+}
+.wallpaper[data-wp="sunset"] {
+  background: linear-gradient(145deg, #1A0A0A 0%, #2A1A1A 30%, #3A2010 60%, #1A1A2A 100%);
+}
+
+/* Stars */
+.stars {
+  position:absolute; inset:0; overflow:hidden;
+}
+.star {
+  position:absolute;
+  width:2px; height:2px;
+  background:#fff;
+  border-radius:50%;
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+@keyframes twinkle { 0%{opacity:0.2;} 100%{opacity:0.8;} }
+
+/* ============================================================
+   MENU BAR
+   ============================================================ */
+.menu-bar {
+  position: relative; z-index: 900;
+  height: 28px;
+  background: rgba(20,20,30,0.78);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-size: 12.5px; font-weight: 500;
+}
+.menu-left { display:flex; align-items:center; gap:16px; }
+.menu-right { display:flex; align-items:center; gap:14px; color:var(--text-muted); font-size:12px; }
+.menu-logo {
+  font-weight:700; font-size:13px; cursor:default;
+  display:flex; align-items:center; gap:5px;
+}
+.menu-logo svg { width:14px; height:14px; }
+.menu-item { cursor:default; color:var(--text); }
+.menu-item:hover { color:var(--accent); }
+.menu-clock { cursor:pointer; }
+.menu-clock:hover { color:var(--text); }
+.menu-icon { cursor:pointer; opacity:0.7; }
+.menu-icon:hover { opacity:1; }
+
+/* ============================================================
+   DESKTOP ICONS
+   ============================================================ */
+.desktop-area {
+  flex:1; position:relative; z-index:1;
+  padding: 20px;
+}
+.desktop-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 88px);
+  grid-template-rows: repeat(auto-fill, 96px);
+  gap: 4px;
+}
+.desktop-icon {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center;
+  padding: 8px 4px;
+  border-radius: 8px;
+  cursor:default;
+  gap:4px;
+  transition: background 0.15s;
+}
+.desktop-icon:hover { background: rgba(255,255,255,0.06); }
+.desktop-icon.selected { background: rgba(59,130,246,0.2); }
+.desktop-icon-img {
+  width:48px; height:48px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+.desktop-icon-label {
+  font-size:11px; text-align:center;
+  color:#fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  line-height:1.2;
+  max-width:80px;
+  word-break:break-word;
+}
+
+/* ============================================================
+   DOCK
+   ============================================================ */
+.dock-wrapper {
+  position:relative; z-index:800;
+  display:flex; justify-content:center;
+  padding-bottom:6px;
+}
+.dock {
+  display:flex; align-items:flex-end;
+  gap:4px;
+  padding:4px 10px;
+  background: var(--dock-bg);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  min-height:56px;
+}
+.dock-item {
+  width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px;
+  border-radius:10px;
+  cursor:pointer;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), margin 0.2s;
+  position:relative;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.dock-item:hover {
+  transform: translateY(-8px) scale(1.25);
+  margin: 0 6px;
+}
+.dock-item.bounce {
+  animation: dockBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes dockBounce {
+  0%,100%{ transform:translateY(0); }
+  30%{ transform:translateY(-18px); }
+  60%{ transform:translateY(-6px); }
+}
+.dock-dot {
+  position:absolute; bottom:-4px;
+  width:4px; height:4px;
+  background:var(--text-muted);
+  border-radius:50%;
+  display:none;
+}
+.dock-item.open .dock-dot { display:block; }
+.dock-separator {
+  width:1px; height:32px;
+  background:rgba(255,255,255,0.15);
+  margin:0 4px;
+  align-self:center;
+}
+
+/* ============================================================
+   WINDOW SYSTEM
+   ============================================================ */
+.window {
+  position:absolute;
+  min-width:360px; min-height:240px;
+  background: var(--window-body);
+  border-radius: var(--radius-lg);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.3);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.window.minimized {
+  opacity:0; transform:scale(0.5) translateY(100px);
+  pointer-events:none;
+}
+.window.opening {
+  animation: windowOpen 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes windowOpen {
+  from { opacity:0; transform:scale(0.85); }
+  to { opacity:1; transform:scale(1); }
+}
+.window.closing {
+  animation: windowClose 0.2s ease forwards;
+}
+@keyframes windowClose {
+  to { opacity:0; transform:scale(0.85); }
+}
+
+/* Title Bar */
+.window-titlebar {
+  height:38px;
+  background: var(--window-chrome);
+  display:flex; align-items:center;
+  padding:0 12px;
+  cursor:default;
+  flex-shrink:0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.traffic-lights {
+  display:flex; gap:7px; margin-right:12px;
+}
+.traffic-light {
+  width:12px; height:12px;
+  border-radius:50%;
+  cursor:pointer;
+  transition: filter 0.15s;
+  position:relative;
+}
+.traffic-light:hover { filter:brightness(1.2); }
+.traffic-light.close { background:var(--red); }
+.traffic-light.minimize { background:var(--yellow); }
+.traffic-light.maximize { background:var(--green); }
+/* Show icons on hover */
+.traffic-lights:hover .traffic-light::after {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:8px; font-weight:700; color:rgba(0,0,0,0.5);
+}
+.traffic-lights:hover .close::after { content:"\00D7"; font-size:11px; }
+.traffic-lights:hover .minimize::after { content:"\2013"; font-size:9px; }
+.traffic-lights:hover .maximize::after { content:"\002B"; font-size:10px; }
+
+.window-title {
+  flex:1; text-align:center;
+  font-size:12.5px; font-weight:500;
+  color:var(--text-muted);
+  pointer-events:none;
+}
+
+/* Window Content */
+.window-content {
+  flex:1; overflow:auto;
+  padding:0;
+}
+
+/* Scrollbar */
+.window-content::-webkit-scrollbar { width:6px; }
+.window-content::-webkit-scrollbar-track { background:transparent; }
+.window-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:3px; }
+.window-content::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.2); }
+
+/* ============================================================
+   NOTIFICATION CENTER
+   ============================================================ */
+.notif-panel {
+  position:fixed; top:28px; right:0;
+  width:320px; height:calc(100% - 28px);
+  background: rgba(20,20,30,0.85);
+  backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+  border-left:1px solid var(--border);
+  z-index:850;
+  transform:translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  padding:20px;
+  overflow-y:auto;
+}
+.notif-panel.open { transform:translateX(0); }
+.notif-title { font-size:18px; font-weight:600; margin-bottom:16px; }
+.notif-card {
+  background:rgba(255,255,255,0.05);
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:10px;
+  border:1px solid var(--border);
+}
+.notif-card-header { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.notif-card-icon { font-size:16px; }
+.notif-card-app { font-size:11px; font-weight:600; color:var(--accent); }
+.notif-card-time { font-size:10px; color:var(--text-dim); margin-left:auto; }
+.notif-card-text { font-size:12px; color:var(--text-muted); line-height:1.4; }
+
+/* ============================================================
+   CONTEXT MENU
+   ============================================================ */
+.context-menu {
+  position:fixed; z-index:9000;
+  background: rgba(30,30,46,0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;
+  padding:4px 0;
+  min-width:180px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  display:none;
+  font-size:12.5px;
+}
+.context-menu.visible { display:block; }
+.ctx-item {
+  padding:6px 14px;
+  cursor:default;
+  display:flex; align-items:center; gap:10px;
+}
+.ctx-item:hover { background:var(--accent); color:#fff; border-radius:4px; margin:0 4px; padding:6px 10px; }
+.ctx-sep { height:1px; background:rgba(255,255,255,0.08); margin:4px 0; }
+.ctx-item-shortcut { margin-left:auto; font-size:11px; color:var(--text-dim); }
+.ctx-item:hover .ctx-item-shortcut { color:rgba(255,255,255,0.7); }
+
+/* ============================================================
+   APP STYLES: About Me
+   ============================================================ */
+.about-app { padding:24px; display:flex; flex-direction:column; align-items:center; }
+.about-avatar {
+  width:96px; height:96px;
+  border-radius:50%;
+  background: linear-gradient(135deg, var(--accent), var(--copper));
+  display:flex; align-items:center; justify-content:center;
+  font-size:40px; font-weight:700; color:#fff;
+  margin-bottom:16px;
+  box-shadow:0 4px 20px rgba(59,130,246,0.3);
+}
+.about-name { font-size:24px; font-weight:700; margin-bottom:4px; }
+.about-role { font-size:14px; color:var(--copper); font-weight:500; margin-bottom:12px; }
+.about-bio { font-size:13px; color:var(--text-muted); line-height:1.7; text-align:center; max-width:440px; margin-bottom:20px; }
+.about-links { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.about-link {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:12px; color:var(--text-muted);
+  cursor:pointer; text-decoration:none;
+  transition: background 0.2s, color 0.2s;
+}
+.about-link:hover { background:rgba(59,130,246,0.15); color:var(--accent); border-color:rgba(59,130,246,0.3); }
+.about-stats { display:flex; gap:24px; margin-top:24px; }
+.about-stat { text-align:center; }
+.about-stat-val { font-size:22px; font-weight:700; color:var(--accent); }
+.about-stat-label { font-size:11px; color:var(--text-dim); margin-top:2px; }
+
+/* ============================================================
+   APP STYLES: Finder / Projects
+   ============================================================ */
+.finder-app { display:flex; height:100%; }
+.finder-sidebar {
+  width:170px; flex-shrink:0;
+  background:rgba(0,0,0,0.2);
+  border-right:1px solid var(--border);
+  padding:12px 0;
+}
+.finder-sidebar-section {
+  padding:0 12px; margin-bottom:12px;
+}
+.finder-sidebar-title {
+  font-size:10px; font-weight:600;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:6px;
+}
+.finder-sidebar-item {
+  font-size:12px; color:var(--text-muted);
+  padding:4px 8px;
+  border-radius:6px;
+  cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+}
+.finder-sidebar-item:hover { background:rgba(255,255,255,0.06); }
+.finder-sidebar-item.active { background:rgba(59,130,246,0.2); color:var(--accent); }
+.finder-main { flex:1; padding:16px; overflow-y:auto; }
+.finder-breadcrumb { font-size:12px; color:var(--text-dim); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.finder-breadcrumb span { cursor:pointer; }
+.finder-breadcrumb span:hover { color:var(--text); }
+.finder-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; }
+.finder-file {
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 10px;
+  display:flex; flex-direction:column; align-items:center;
+  cursor:pointer; transition: background 0.15s, border-color 0.15s;
+}
+.finder-file:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.12); }
+.finder-file.selected { border-color:var(--accent); background:rgba(59,130,246,0.08); }
+.finder-file-icon { font-size:36px; margin-bottom:8px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.finder-file-name { font-size:11.5px; text-align:center; color:var(--text); line-height:1.3; }
+.finder-file-meta { font-size:10px; color:var(--text-dim); margin-top:3px; }
+
+/* Project Detail */
+.project-detail { padding:20px; }
+.project-back { font-size:12px; color:var(--accent); cursor:pointer; margin-bottom:14px; display:inline-flex; align-items:center; gap:4px; }
+.project-back:hover { text-decoration:underline; }
+.project-hero {
+  width:100%; height:160px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(200,121,65,0.2));
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:48px; margin-bottom:16px;
+}
+.project-title { font-size:20px; font-weight:700; margin-bottom:6px; }
+.project-desc { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:14px; }
+.project-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.project-tag {
+  padding:4px 10px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-size:11px; color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+.project-links { display:flex; gap:8px; }
+.project-btn {
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:12px; font-weight:500;
+  cursor:pointer; border:none;
+  transition:background 0.2s;
+}
+.project-btn.primary { background:var(--accent); color:#fff; }
+.project-btn.primary:hover { background:#2563EB; }
+.project-btn.secondary { background:rgba(255,255,255,0.08); color:var(--text); }
+.project-btn.secondary:hover { background:rgba(255,255,255,0.12); }
+
+/* ============================================================
+   APP STYLES: Terminal
+   ============================================================ */
+.terminal-app {
+  font-family:var(--font-mono);
+  background:#0C0C0C;
+  padding:12px;
+  height:100%;
+  overflow-y:auto;
+  font-size:13px;
+  line-height:1.6;
+}
+.term-line { color:#4ADE80; }
+.term-line.output { color:#9CA3AF; }
+.term-line.error { color:#EF4444; }
+.term-line.info { color:var(--accent); }
+.term-line.copper { color:var(--copper); }
+.term-prompt { color:#4ADE80; }
+.term-prompt .path { color:var(--accent); }
+.term-prompt .arrow { color:var(--copper); }
+.term-input-line {
+  display:flex; align-items:center;
+}
+.term-input {
+  background:none; border:none; outline:none;
+  color:#4ADE80;
+  font-family:var(--font-mono);
+  font-size:13px;
+  flex:1;
+  caret-color:#4ADE80;
+}
+.term-cursor {
+  display:inline-block;
+  width:7px; height:15px;
+  background:#4ADE80;
+  animation: blink 1s step-end infinite;
+  margin-left:1px;
+  vertical-align:middle;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+/* ============================================================
+   APP STYLES: TextEdit / Skills
+   ============================================================ */
+.textedit-app { padding:0; height:100%; display:flex; flex-direction:column; }
+.textedit-toolbar {
+  background:rgba(0,0,0,0.3);
+  border-bottom:1px solid var(--border);
+  padding:6px 12px;
+  display:flex; align-items:center; gap:12px;
+  font-size:11px; color:var(--text-dim);
+}
+.textedit-toolbar-btn {
+  padding:3px 8px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  border-radius:4px;
+  color:var(--text-muted);
+  cursor:pointer;
+  font-size:11px;
+}
+.textedit-toolbar-btn:hover { background:rgba(255,255,255,0.1); }
+.textedit-body {
+  flex:1; padding:20px 24px;
+  font-size:13.5px; line-height:1.8;
+  overflow-y:auto;
+  color:var(--text);
+}
+.textedit-body h2 { font-size:18px; font-weight:700; margin:20px 0 10px; color:var(--text); }
+.textedit-body h2:first-child { margin-top:0; }
+.textedit-body .skill-cat { color:var(--copper); font-weight:600; font-size:14px; margin:16px 0 6px; }
+.textedit-body .skill-line {
+  font-family:var(--font-mono); font-size:12.5px;
+  color:var(--text-muted); padding:2px 0;
+}
+.textedit-body .skill-bar-track {
+  width:180px; height:4px;
+  background:rgba(255,255,255,0.08);
+  border-radius:2px;
+  display:inline-block;
+  vertical-align:middle;
+  margin-left:8px;
+}
+.textedit-body .skill-bar-fill {
+  height:100%; border-radius:2px;
+  background:var(--accent);
+}
+
+/* ============================================================
+   APP STYLES: Mail / Contact
+   ============================================================ */
+.mail-app { display:flex; flex-direction:column; height:100%; }
+.mail-header {
+  background:rgba(0,0,0,0.25);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+}
+.mail-field {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.mail-field:last-child { border-bottom:none; }
+.mail-field-label { color:var(--text-dim); font-size:12px; width:60px; flex-shrink:0; }
+.mail-field-input {
+  flex:1; background:none; border:none; outline:none;
+  color:var(--text); font-size:13px; font-family:var(--font-sans);
+}
+.mail-field-input::placeholder { color:var(--text-dim); }
+.mail-body-area {
+  flex:1; padding:16px;
+}
+.mail-textarea {
+  width:100%; height:100%; background:none;
+  border:none; outline:none; resize:none;
+  color:var(--text); font-size:13px;
+  font-family:var(--font-sans);
+  line-height:1.6;
+}
+.mail-textarea::placeholder { color:var(--text-dim); }
+.mail-footer {
+  padding:10px 16px;
+  border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.mail-send-btn {
+  padding:8px 20px;
+  background:var(--accent);
+  color:#fff;
+  border:none; border-radius:8px;
+  font-size:13px; font-weight:500;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+.mail-send-btn:hover { background:#2563EB; }
+.mail-status { font-size:12px; color:var(--text-dim); }
+
+/* ============================================================
+   APP STYLES: Settings
+   ============================================================ */
+.settings-app { display:flex; height:100%; }
+.settings-sidebar {
+  width:160px; flex-shrink:0;
+  background:rgba(0,0,0,0.2);
+  border-right:1px solid var(--border);
+  padding:12px 0;
+}
+.settings-sidebar-item {
+  padding:8px 14px;
+  font-size:12.5px;
+  color:var(--text-muted);
+  cursor:pointer;
+  display:flex; align-items:center; gap:8px;
+}
+.settings-sidebar-item:hover { background:rgba(255,255,255,0.05); }
+.settings-sidebar-item.active { background:rgba(59,130,246,0.15); color:var(--accent); }
+.settings-main { flex:1; padding:20px; overflow-y:auto; }
+.settings-title { font-size:18px; font-weight:600; margin-bottom:16px; }
+.settings-group { margin-bottom:24px; }
+.settings-group-label { font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; font-weight:600; }
+.settings-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:6px;
+}
+.settings-row-label { font-size:13px; }
+.settings-toggle {
+  width:40px; height:22px;
+  background:rgba(255,255,255,0.15);
+  border-radius:11px;
+  cursor:pointer;
+  position:relative;
+  transition:background 0.2s;
+}
+.settings-toggle.active { background:var(--accent); }
+.settings-toggle::after {
+  content:'';
+  position:absolute; top:2px; left:2px;
+  width:18px; height:18px;
+  background:#fff; border-radius:50%;
+  transition:transform 0.2s;
+}
+.settings-toggle.active::after { transform:translateX(18px); }
+.wp-options { display:flex; gap:10px; }
+.wp-option {
+  width:64px; height:42px;
+  border-radius:8px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:border-color 0.2s;
+}
+.wp-option.active { border-color:var(--accent); }
+.wp-option[data-wp="stars"] { background:linear-gradient(135deg,#0A0A1A,#1A1A3A); }
+.wp-option[data-wp="aurora"] { background:linear-gradient(135deg,#0A1628,#1A0A3A); }
+.wp-option[data-wp="sunset"] { background:linear-gradient(135deg,#1A0A0A,#3A2010); }
+
+/* About This Mac */
+.atm-card {
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+}
+.atm-logo { font-size:48px; margin-bottom:10px; }
+.atm-name { font-size:20px; font-weight:700; margin-bottom:4px; }
+.atm-version { font-size:13px; color:var(--text-muted); margin-bottom:16px; }
+.atm-specs { font-size:12px; color:var(--text-dim); line-height:1.8; }
+
+/* ============================================================
+   APP STYLES: Resume
+   ============================================================ */
+.resume-app { padding:24px; overflow-y:auto; height:100%; }
+.resume-section { margin-bottom:20px; }
+.resume-section-title {
+  font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--copper);
+  margin-bottom:10px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.resume-item { margin-bottom:12px; }
+.resume-item-header { display:flex; justify-content:space-between; align-items:baseline; }
+.resume-item-title { font-size:14px; font-weight:600; }
+.resume-item-date { font-size:11px; color:var(--text-dim); }
+.resume-item-sub { font-size:12px; color:var(--accent); margin-top:2px; }
+.resume-item-desc { font-size:12.5px; color:var(--text-muted); margin-top:6px; line-height:1.6; }
+.resume-item-desc li { margin-left:16px; margin-bottom:3px; }
+.resume-download {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:10px 20px;
+  background:var(--accent);
+  color:#fff; border-radius:8px;
+  font-size:13px; font-weight:500;
+  cursor:pointer; border:none;
+  margin-top:10px;
+}
+.resume-download:hover { background:#2563EB; }
+
+/* ============================================================
+   LIGHT THEME
+   ============================================================ */
+body.light {
+  --window-chrome: #E8E8EE;
+  --window-body: #F5F5F7;
+  --dock-bg: rgba(255,255,255,0.65);
+  --text: #1A1A2E;
+  --text-muted: #6B6B80;
+  --text-dim: #9999AA;
+  --border: rgba(0,0,0,0.08);
+}
+body.light .menu-bar { background:rgba(240,240,245,0.78); }
+body.light .window { box-shadow:0 20px 60px rgba(0,0,0,0.15),0 0 0 1px rgba(0,0,0,0.06); }
+body.light .window-titlebar { background:var(--window-chrome); border-bottom-color:rgba(0,0,0,0.06); }
+body.light .desktop-icon-label { color:#1A1A2E; text-shadow:0 1px 3px rgba(255,255,255,0.5); }
+body.light .terminal-app { background:#1A1A2E; }
+body.light .notif-panel { background:rgba(245,245,247,0.88); }
+body.light .context-menu { background:rgba(245,245,247,0.92); }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BOOT SCREEN
+     ============================================================ -->
+<div id="boot-screen">
+  <div class="boot-logo">Garg<span>OS</span> 2.0</div>
+  <div class="boot-bar-track">
+    <div class="boot-bar-fill"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     DESKTOP
+     ============================================================ -->
+<div id="desktop">
+  <div class="wallpaper" data-wp="stars" id="wallpaper">
+    <div class="stars" id="stars-container"></div>
+  </div>
+
+  <!-- Menu Bar -->
+  <div class="menu-bar">
+    <div class="menu-left">
+      <div class="menu-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        GargOS
+      </div>
+      <div class="menu-item" onclick="openApp('about')">About</div>
+      <div class="menu-item" onclick="openApp('projects')">Projects</div>
+      <div class="menu-item" onclick="openApp('contact')">Contact</div>
+    </div>
+    <div class="menu-right">
+      <span class="menu-icon" title="Wi-Fi">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+      </span>
+      <span class="menu-icon" title="Battery">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="10" x2="23" y2="14"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor" opacity="0.4"/></svg>
+      </span>
+      <span class="menu-clock" id="menu-clock" onclick="toggleNotifications()">--:--</span>
+    </div>
+  </div>
+
+  <!-- Desktop Icons -->
+  <div class="desktop-area" id="desktop-area">
+    <div class="desktop-icons">
+      <div class="desktop-icon" data-app="about" ondblclick="openApp('about')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#128100;</div>
+        <div class="desktop-icon-label">About Me.app</div>
+      </div>
+      <div class="desktop-icon" data-app="projects" ondblclick="openApp('projects')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#128193;</div>
+        <div class="desktop-icon-label">Projects</div>
+      </div>
+      <div class="desktop-icon" data-app="terminal" ondblclick="openApp('terminal')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#128187;</div>
+        <div class="desktop-icon-label">Terminal.app</div>
+      </div>
+      <div class="desktop-icon" data-app="skills" ondblclick="openApp('skills')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#128196;</div>
+        <div class="desktop-icon-label">Skills.txt</div>
+      </div>
+      <div class="desktop-icon" data-app="resume" ondblclick="openApp('resume')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#128220;</div>
+        <div class="desktop-icon-label">Resume.pdf</div>
+      </div>
+      <div class="desktop-icon" data-app="contact" ondblclick="openApp('contact')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#9993;</div>
+        <div class="desktop-icon-label">Contact.app</div>
+      </div>
+      <div class="desktop-icon" data-app="settings" ondblclick="openApp('settings')" onclick="selectIcon(this)">
+        <div class="desktop-icon-img">&#9881;</div>
+        <div class="desktop-icon-label">Settings.app</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dock -->
+  <div class="dock-wrapper">
+    <div class="dock" id="dock">
+      <div class="dock-item" data-app="about" onclick="dockClick('about')" title="About Me">&#128100;<span class="dock-dot"></span></div>
+      <div class="dock-item" data-app="projects" onclick="dockClick('projects')" title="Projects">&#128193;<span class="dock-dot"></span></div>
+      <div class="dock-item" data-app="terminal" onclick="dockClick('terminal')" title="Terminal">&#128187;<span class="dock-dot"></span></div>
+      <div class="dock-item" data-app="skills" onclick="dockClick('skills')" title="Skills">&#128196;<span class="dock-dot"></span></div>
+      <div class="dock-separator"></div>
+      <div class="dock-item" data-app="resume" onclick="dockClick('resume')" title="Resume">&#128220;<span class="dock-dot"></span></div>
+      <div class="dock-item" data-app="contact" onclick="dockClick('contact')" title="Contact">&#9993;<span class="dock-dot"></span></div>
+      <div class="dock-item" data-app="settings" onclick="dockClick('settings')" title="Settings">&#9881;<span class="dock-dot"></span></div>
+    </div>
+  </div>
+
+  <!-- Notification Panel -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-title">Notifications</div>
+    <div class="notif-card">
+      <div class="notif-card-header">
+        <span class="notif-card-icon">&#128230;</span>
+        <span class="notif-card-app">GitHub</span>
+        <span class="notif-card-time">2h ago</span>
+      </div>
+      <div class="notif-card-text">Pushed 3 commits to portfolio-v2 repository</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-card-header">
+        <span class="notif-card-icon">&#9989;</span>
+        <span class="notif-card-app">CI/CD Pipeline</span>
+        <span class="notif-card-time">4h ago</span>
+      </div>
+      <div class="notif-card-text">All tests passed. Build #247 deployed to production.</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-card-header">
+        <span class="notif-card-icon">&#128172;</span>
+        <span class="notif-card-app">Code Review</span>
+        <span class="notif-card-time">6h ago</span>
+      </div>
+      <div class="notif-card-text">PR #42 approved -- "Optimize API response caching"</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-card-header">
+        <span class="notif-card-icon">&#127942;</span>
+        <span class="notif-card-app">Achievement</span>
+        <span class="notif-card-time">1d ago</span>
+      </div>
+      <div class="notif-card-text">500+ contributions this year on GitHub. Keep it up!</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-card-header">
+        <span class="notif-card-icon">&#128640;</span>
+        <span class="notif-card-app">Portfolio</span>
+        <span class="notif-card-time">2d ago</span>
+      </div>
+      <div class="notif-card-text">Updated portfolio with GargOS 2.0 theme. Looking sharp.</div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div class="context-menu" id="context-menu">
+    <div class="ctx-item" onclick="openApp('about')">&#128100; Open About Me <span class="ctx-item-shortcut"></span></div>
+    <div class="ctx-item" onclick="openApp('terminal')">&#128187; Open Terminal <span class="ctx-item-shortcut"></span></div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="changeWallpaper()">&#127796; Change Wallpaper</div>
+    <div class="ctx-item" onclick="toggleTheme()">&#127763; Toggle Dark/Light</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="closeContextMenu()">&#128196; View Source <span class="ctx-item-shortcut">Ctrl+U</span></div>
+  </div>
+
+  <!-- Windows Container -->
+  <div id="windows-container"></div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let zIndexCounter = 100;
+const openWindows = {};
+let activeWindow = null;
+let notifOpen = false;
+let currentWallpaper = 'stars';
+let selectedProject = null;
+let lightTheme = false;
+let terminalHistory = [];
+let termHistoryIdx = -1;
+
+/* ============================================================
+   BOOT SEQUENCE
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  generateStars();
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  setTimeout(() => {
+    document.getElementById('boot-screen').classList.add('fade-out');
+    setTimeout(() => {
+      document.getElementById('boot-screen').style.display = 'none';
+      document.getElementById('desktop').classList.add('visible');
+    }, 600);
+  }, 2000);
+});
+
+function generateStars() {
+  const container = document.getElementById('stars-container');
+  for (let i = 0; i < 100; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.width = (Math.random() * 2 + 1) + 'px';
+    star.style.height = star.style.width;
+    star.style.animationDelay = (Math.random() * 3) + 's';
+    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    container.appendChild(star);
+  }
+}
+
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('menu-clock').textContent =
+    days[now.getDay()] + ' ' + months[now.getMonth()] + ' ' + now.getDate() + '  ' + h12 + ':' + m + ' ' + ampm;
+}
+
+/* ============================================================
+   ICON SELECTION
+   ============================================================ */
+function selectIcon(el) {
+  document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.desktop-icon')) {
+    document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+  }
+});
+
+/* ============================================================
+   WINDOW MANAGEMENT
+   ============================================================ */
+const appConfigs = {
+  about:    { title: 'About Me',       width:500, height:520, icon:'&#128100;' },
+  projects: { title: 'Projects',        width:680, height:460, icon:'&#128193;' },
+  terminal: { title: 'Terminal',         width:600, height:380, icon:'&#128187;' },
+  skills:   { title: 'Skills.txt -- TextEdit', width:560, height:440, icon:'&#128196;' },
+  resume:   { title: 'Resume.pdf',      width:560, height:500, icon:'&#128220;' },
+  contact:  { title: 'New Message',      width:520, height:420, icon:'&#9993;' },
+  settings: { title: 'Settings',         width:600, height:420, icon:'&#9881;' },
+};
+
+function openApp(appId) {
+  closeContextMenu();
+
+  if (openWindows[appId]) {
+    const w = openWindows[appId];
+    if (w.classList.contains('minimized')) {
+      w.classList.remove('minimized');
+    }
+    bringToFront(w);
+    return;
+  }
+
+  const cfg = appConfigs[appId];
+  if (!cfg) return;
+
+  const w = document.createElement('div');
+  w.className = 'window opening';
+  w.dataset.app = appId;
+
+  const area = document.getElementById('desktop-area');
+  const areaRect = area.getBoundingClientRect();
+  const offsetX = 60 + (Object.keys(openWindows).length * 30) % 200;
+  const offsetY = 40 + (Object.keys(openWindows).length * 30) % 150;
+
+  w.style.width = cfg.width + 'px';
+  w.style.height = cfg.height + 'px';
+  w.style.left = (areaRect.left + offsetX) + 'px';
+  w.style.top = (areaRect.top + offsetY) + 'px';
+  w.style.zIndex = ++zIndexCounter;
+
+  w.innerHTML = `
+    <div class="window-titlebar" data-drag="true">
+      <div class="traffic-lights">
+        <div class="traffic-light close" onclick="closeWindow('${appId}')"></div>
+        <div class="traffic-light minimize" onclick="minimizeWindow('${appId}')"></div>
+        <div class="traffic-light maximize" onclick="maximizeWindow('${appId}',this)"></div>
+      </div>
+      <div class="window-title">${cfg.title}</div>
+    </div>
+    <div class="window-content" id="wc-${appId}">
+      ${getAppContent(appId)}
+    </div>
+  `;
+
+  document.getElementById('windows-container').appendChild(w);
+  openWindows[appId] = w;
+
+  bringToFront(w);
+  updateDockDots();
+
+  // Init app-specific logic
+  setTimeout(() => {
+    w.classList.remove('opening');
+    if (appId === 'terminal') initTerminal();
+    if (appId === 'settings') initSettings();
+  }, 260);
+
+  // Click to bring to front
+  w.addEventListener('mousedown', () => bringToFront(w));
+
+  // Dragging
+  makeDraggable(w);
+}
+
+function closeWindow(appId) {
+  const w = openWindows[appId];
+  if (!w) return;
+  w.classList.add('closing');
+  setTimeout(() => {
+    w.remove();
+    delete openWindows[appId];
+    updateDockDots();
+  }, 200);
+}
+
+function minimizeWindow(appId) {
+  const w = openWindows[appId];
+  if (!w) return;
+  w.classList.add('minimized');
+}
+
+function maximizeWindow(appId, btn) {
+  const w = openWindows[appId];
+  if (!w) return;
+  const area = document.getElementById('desktop-area');
+  const areaRect = area.getBoundingClientRect();
+  if (w.dataset.maximized === 'true') {
+    w.style.left = w.dataset.prevLeft;
+    w.style.top = w.dataset.prevTop;
+    w.style.width = w.dataset.prevWidth;
+    w.style.height = w.dataset.prevHeight;
+    w.dataset.maximized = 'false';
+  } else {
+    w.dataset.prevLeft = w.style.left;
+    w.dataset.prevTop = w.style.top;
+    w.dataset.prevWidth = w.style.width;
+    w.dataset.prevHeight = w.style.height;
+    w.style.left = '0px';
+    w.style.top = '28px';
+    w.style.width = '100vw';
+    w.style.height = 'calc(100vh - 28px - 62px)';
+    w.dataset.maximized = 'true';
+  }
+}
+
+function bringToFront(w) {
+  w.style.zIndex = ++zIndexCounter;
+  activeWindow = w;
+}
+
+function updateDockDots() {
+  document.querySelectorAll('.dock-item[data-app]').forEach(d => {
+    const app = d.dataset.app;
+    if (openWindows[app]) d.classList.add('open');
+    else d.classList.remove('open');
+  });
+}
+
+function dockClick(appId) {
+  const dockItem = document.querySelector(`.dock-item[data-app="${appId}"]`);
+  if (dockItem) {
+    dockItem.classList.add('bounce');
+    setTimeout(() => dockItem.classList.remove('bounce'), 500);
+  }
+  openApp(appId);
+}
+
+/* ============================================================
+   DRAGGING
+   ============================================================ */
+function makeDraggable(w) {
+  const titlebar = w.querySelector('.window-titlebar');
+  let isDragging = false, startX, startY, origX, origY;
+
+  titlebar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.traffic-light')) return;
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    origX = parseInt(w.style.left) || 0;
+    origY = parseInt(w.style.top) || 0;
+    w.style.transition = 'none';
+    bringToFront(w);
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    w.style.left = (origX + dx) + 'px';
+    w.style.top = (origY + dy) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      w.style.transition = '';
+    }
+  });
+}
+
+/* ============================================================
+   NOTIFICATION CENTER
+   ============================================================ */
+function toggleNotifications() {
+  notifOpen = !notifOpen;
+  document.getElementById('notif-panel').classList.toggle('open', notifOpen);
+}
+
+document.addEventListener('click', (e) => {
+  if (notifOpen && !e.target.closest('.notif-panel') && !e.target.closest('.menu-clock')) {
+    notifOpen = false;
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+});
+
+/* ============================================================
+   CONTEXT MENU
+   ============================================================ */
+document.getElementById('desktop-area').addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  const menu = document.getElementById('context-menu');
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = e.clientY + 'px';
+  menu.classList.add('visible');
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.context-menu')) closeContextMenu();
+});
+
+function closeContextMenu() {
+  document.getElementById('context-menu').classList.remove('visible');
+}
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+document.addEventListener('keydown', (e) => {
+  // Cmd+W or Ctrl+W to close active window
+  if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
+    e.preventDefault();
+    if (activeWindow && activeWindow.dataset.app) {
+      closeWindow(activeWindow.dataset.app);
+    }
+  }
+  // Cmd+N or Ctrl+N open about
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+    e.preventDefault();
+    openApp('about');
+  }
+});
+
+/* ============================================================
+   WALLPAPER
+   ============================================================ */
+function setWallpaper(wp) {
+  currentWallpaper = wp;
+  document.getElementById('wallpaper').setAttribute('data-wp', wp);
+  // Update settings UI if open
+  document.querySelectorAll('.wp-option').forEach(o => {
+    o.classList.toggle('active', o.dataset.wp === wp);
+  });
+}
+
+function changeWallpaper() {
+  const wps = ['stars','aurora','sunset'];
+  const idx = (wps.indexOf(currentWallpaper) + 1) % wps.length;
+  setWallpaper(wps[idx]);
+}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function toggleTheme() {
+  lightTheme = !lightTheme;
+  document.body.classList.toggle('light', lightTheme);
+  // Update settings toggle if open
+  const toggle = document.getElementById('theme-toggle');
+  if (toggle) toggle.classList.toggle('active', lightTheme);
+}
+
+/* ============================================================
+   SETTINGS INIT
+   ============================================================ */
+function initSettings() {
+  const toggle = document.getElementById('theme-toggle');
+  if (toggle) {
+    toggle.classList.toggle('active', lightTheme);
+    toggle.onclick = () => toggleTheme();
+  }
+  document.querySelectorAll('.wp-option').forEach(o => {
+    o.classList.toggle('active', o.dataset.wp === currentWallpaper);
+    o.onclick = () => setWallpaper(o.dataset.wp);
+  });
+}
+
+/* ============================================================
+   TERMINAL
+   ============================================================ */
+function initTerminal() {
+  const input = document.getElementById('term-input');
+  if (!input) return;
+  input.focus();
+  input.addEventListener('keydown', handleTerminalKey);
+  // Focus on click anywhere in terminal
+  const wc = document.getElementById('wc-terminal');
+  if (wc) wc.addEventListener('click', () => input.focus());
+}
+
+function handleTerminalKey(e) {
+  const input = document.getElementById('term-input');
+  if (e.key === 'Enter') {
+    const cmd = input.value.trim();
+    input.value = '';
+    processCommand(cmd);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (terminalHistory.length > 0) {
+      if (termHistoryIdx < terminalHistory.length - 1) termHistoryIdx++;
+      input.value = terminalHistory[terminalHistory.length - 1 - termHistoryIdx];
+    }
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (termHistoryIdx > 0) {
+      termHistoryIdx--;
+      input.value = terminalHistory[terminalHistory.length - 1 - termHistoryIdx];
+    } else {
+      termHistoryIdx = -1;
+      input.value = '';
+    }
+  } else if (e.key === 'l' && e.ctrlKey) {
+    e.preventDefault();
+    clearTerminal();
+  }
+}
+
+function processCommand(cmd) {
+  if (!cmd) { addTerminalLine('', 'output'); addTerminalPrompt(); return; }
+  terminalHistory.push(cmd);
+  termHistoryIdx = -1;
+
+  // Remove current input line
+  const container = document.getElementById('term-output');
+  const inputLine = document.getElementById('term-input-line');
+
+  // Print the command
+  addTerminalLine(`<span class="path">~/portfolio</span> <span class="arrow">&gt;</span> ${escapeHtml(cmd)}`, 'prompt-echo');
+
+  const parts = cmd.split(/\s+/);
+  const base = parts[0].toLowerCase();
+
+  switch(base) {
+    case 'help':
+      addTerminalLine('Available commands:', 'info');
+      addTerminalLine('  whoami        - About me', 'output');
+      addTerminalLine('  ls            - List portfolio sections', 'output');
+      addTerminalLine('  cat resume.txt - View resume summary', 'output');
+      addTerminalLine('  cat skills.txt - View skills', 'output');
+      addTerminalLine('  open [app]    - Open an application', 'output');
+      addTerminalLine('  clear         - Clear terminal', 'output');
+      addTerminalLine('  neofetch      - System info', 'output');
+      addTerminalLine('  contact       - Contact information', 'output');
+      addTerminalLine('  projects      - List projects', 'output');
+      addTerminalLine('  echo [text]   - Print text', 'output');
+      addTerminalLine('  date          - Current date', 'output');
+      addTerminalLine('  history       - Command history', 'output');
+      break;
+
+    case 'whoami':
+      addTerminalLine('Anshull Garg', 'info');
+      addTerminalLine('Software Developer @ Walmart Global Tech', 'copper');
+      addTerminalLine('', 'output');
+      addTerminalLine('I build scalable, high-performance applications that', 'output');
+      addTerminalLine('power enterprise e-commerce at Fortune 1 scale.', 'output');
+      addTerminalLine('Full-stack engineer with a passion for clean architecture,', 'output');
+      addTerminalLine('great UX, and solving real problems for real users.', 'output');
+      break;
+
+    case 'ls':
+      addTerminalLine('About_Me.app    Projects/       Terminal.app', 'output');
+      addTerminalLine('Skills.txt      Resume.pdf      Contact.app', 'output');
+      addTerminalLine('Settings.app    README.md       .gitconfig', 'output');
+      break;
+
+    case 'cat':
+      if (parts[1] === 'resume.txt' || parts[1] === 'resume') {
+        addTerminalLine('=== RESUME ===', 'info');
+        addTerminalLine('', 'output');
+        addTerminalLine('ANSHULL GARG', 'copper');
+        addTerminalLine('Software Developer | Walmart Global Tech', 'output');
+        addTerminalLine('', 'output');
+        addTerminalLine('EXPERIENCE:', 'info');
+        addTerminalLine('  Walmart Global Tech | Software Engineer', 'output');
+        addTerminalLine('  - Architected scalable microservices for e-commerce', 'output');
+        addTerminalLine('  - Optimized frontend performance, reducing load by 40%', 'output');
+        addTerminalLine('  - Built internal tooling used by 200+ engineers', 'output');
+        addTerminalLine('  - Led cross-functional initiatives across 3 teams', 'output');
+        addTerminalLine('', 'output');
+        addTerminalLine('SKILLS: React, Node.js, TypeScript, Java, Python,', 'output');
+        addTerminalLine('  AWS, Docker, Kubernetes, PostgreSQL, MongoDB', 'output');
+      } else if (parts[1] === 'skills.txt' || parts[1] === 'skills') {
+        addTerminalLine('=== SKILLS ===', 'info');
+        addTerminalLine('Frontend:  React, Next.js, TypeScript, Tailwind CSS', 'output');
+        addTerminalLine('Backend:   Node.js, Java, Python, Go', 'output');
+        addTerminalLine('Database:  PostgreSQL, MongoDB, Redis', 'output');
+        addTerminalLine('Cloud:     AWS, GCP, Docker, Kubernetes', 'output');
+        addTerminalLine('Tools:     Git, CI/CD, Webpack, Vite', 'output');
+      } else {
+        addTerminalLine(`cat: ${parts[1] || ''}: No such file or directory`, 'error');
+      }
+      break;
+
+    case 'open':
+      const appMap = { about:'about', projects:'projects', terminal:'terminal', skills:'skills', resume:'resume', contact:'contact', settings:'settings' };
+      const target = appMap[(parts[1]||'').toLowerCase()];
+      if (target) {
+        addTerminalLine(`Opening ${target}...`, 'output');
+        setTimeout(() => openApp(target), 300);
+      } else {
+        addTerminalLine(`open: ${parts[1] || 'usage: open [app-name]'}: application not found`, 'error');
+      }
+      break;
+
+    case 'clear':
+      clearTerminal();
+      return;
+
+    case 'neofetch':
+      addTerminalLine('', 'output');
+      addTerminalLine('   ██████╗  ██████╗ ███████╗', 'info');
+      addTerminalLine('  ██╔════╝ ██╔═══██╗██╔════╝', 'info');
+      addTerminalLine('  ██║  ███╗██║   ██║███████╗  <span style="color:#C87941;">anshull@gargos</span>', 'info');
+      addTerminalLine('  ██║   ██║██║   ██║╚════██║  ──────────────', 'info');
+      addTerminalLine('  ╚██████╔╝╚██████╔╝███████║  <span style="color:#C87941;">OS:</span> GargOS 2.0', 'info');
+      addTerminalLine('   ╚═════╝  ╚═════╝ ╚══════╝  <span style="color:#C87941;">Host:</span> Portfolio v2', 'info');
+      addTerminalLine('                               <span style="color:#C87941;">Role:</span> Software Developer', 'output');
+      addTerminalLine('                               <span style="color:#C87941;">Company:</span> Walmart Global Tech', 'output');
+      addTerminalLine('                               <span style="color:#C87941;">Stack:</span> Full-Stack', 'output');
+      addTerminalLine('                               <span style="color:#C87941;">Editor:</span> VS Code + Vim', 'output');
+      addTerminalLine('                               <span style="color:#C87941;">Terminal:</span> GargOS Shell', 'output');
+      addTerminalLine('                               <span style="color:#C87941;">Uptime:</span> Always shipping', 'output');
+      break;
+
+    case 'contact':
+      addTerminalLine('=== CONTACT ===', 'info');
+      addTerminalLine('Email:    anshullgarg@gmail.com', 'output');
+      addTerminalLine('GitHub:   github.com/anshullgarg', 'output');
+      addTerminalLine('LinkedIn: linkedin.com/in/anshullgarg', 'output');
+      break;
+
+    case 'projects':
+      addTerminalLine('=== PROJECTS ===', 'info');
+      addTerminalLine('', 'output');
+      addTerminalLine('1. E-Commerce Platform', 'copper');
+      addTerminalLine('   Full-stack marketplace with real-time inventory', 'output');
+      addTerminalLine('   Tech: React, Node.js, PostgreSQL, Redis', 'output');
+      addTerminalLine('', 'output');
+      addTerminalLine('2. DevOps Dashboard', 'copper');
+      addTerminalLine('   Unified monitoring & deployment pipeline', 'output');
+      addTerminalLine('   Tech: Next.js, Go, Docker, Kubernetes', 'output');
+      addTerminalLine('', 'output');
+      addTerminalLine('3. Real-Time Analytics Engine', 'copper');
+      addTerminalLine('   Stream processing for e-commerce metrics', 'output');
+      addTerminalLine('   Tech: Kafka, Python, ClickHouse, Grafana', 'output');
+      addTerminalLine('', 'output');
+      addTerminalLine('4. AI Code Review Bot', 'copper');
+      addTerminalLine('   Automated PR review with LLM integration', 'output');
+      addTerminalLine('   Tech: Python, OpenAI API, GitHub Actions', 'output');
+      break;
+
+    case 'echo':
+      addTerminalLine(escapeHtml(parts.slice(1).join(' ')), 'output');
+      break;
+
+    case 'date':
+      addTerminalLine(new Date().toString(), 'output');
+      break;
+
+    case 'history':
+      terminalHistory.forEach((h, i) => addTerminalLine(`  ${i+1}  ${escapeHtml(h)}`, 'output'));
+      break;
+
+    case 'pwd':
+      addTerminalLine('/home/anshull/portfolio', 'output');
+      break;
+
+    case 'sudo':
+      addTerminalLine('Nice try. But you do not have root access on GargOS.', 'error');
+      break;
+
+    case 'exit':
+      addTerminalLine('Closing terminal...', 'output');
+      setTimeout(() => closeWindow('terminal'), 500);
+      return;
+
+    default:
+      addTerminalLine(`zsh: command not found: ${escapeHtml(base)}`, 'error');
+      addTerminalLine('Type "help" for available commands.', 'output');
+  }
+
+  addTerminalPrompt();
+}
+
+function addTerminalLine(html, cls) {
+  const container = document.getElementById('term-output');
+  const inputLine = document.getElementById('term-input-line');
+  const div = document.createElement('div');
+  div.className = 'term-line ' + (cls || '');
+  div.innerHTML = html;
+  container.insertBefore(div, inputLine);
+}
+
+function addTerminalPrompt() {
+  // Scroll to bottom
+  const wc = document.getElementById('wc-terminal');
+  if (wc) wc.scrollTop = wc.scrollHeight;
+  const input = document.getElementById('term-input');
+  if (input) input.focus();
+}
+
+function clearTerminal() {
+  const container = document.getElementById('term-output');
+  const inputLine = document.getElementById('term-input-line');
+  while (container.firstChild && container.firstChild !== inputLine) {
+    container.removeChild(container.firstChild);
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ============================================================
+   APP CONTENT GENERATORS
+   ============================================================ */
+function getAppContent(appId) {
+  switch(appId) {
+    case 'about': return getAboutContent();
+    case 'projects': return getProjectsContent();
+    case 'terminal': return getTerminalContent();
+    case 'skills': return getSkillsContent();
+    case 'resume': return getResumeContent();
+    case 'contact': return getContactContent();
+    case 'settings': return getSettingsContent();
+    default: return '<div style="padding:20px">App not found.</div>';
+  }
+}
+
+function getAboutContent() {
+  return `
+  <div class="about-app">
+    <div class="about-avatar">AG</div>
+    <div class="about-name">Anshull Garg</div>
+    <div class="about-role">Software Developer @ Walmart Global Tech</div>
+    <div class="about-bio">
+      I build scalable, high-performance applications that power enterprise e-commerce at Fortune 1 scale. Full-stack engineer who cares about clean architecture, great user experiences, and code that ships. I think in systems and deliver in sprints.
+    </div>
+    <div class="about-stats">
+      <div class="about-stat">
+        <div class="about-stat-val">3+</div>
+        <div class="about-stat-label">Years Exp</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-val">20+</div>
+        <div class="about-stat-label">Projects</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-val">500+</div>
+        <div class="about-stat-label">Contributions</div>
+      </div>
+    </div>
+    <div class="about-links" style="margin-top:20px;">
+      <a class="about-link" href="https://github.com/anshullgarg" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a class="about-link" href="https://linkedin.com/in/anshullgarg" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a class="about-link" href="mailto:anshullgarg@gmail.com">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email
+      </a>
+    </div>
+  </div>`;
+}
+
+function getProjectsContent() {
+  return `
+  <div class="finder-app" id="finder-app">
+    <div class="finder-sidebar">
+      <div class="finder-sidebar-section">
+        <div class="finder-sidebar-title">Favorites</div>
+        <div class="finder-sidebar-item active" onclick="showAllProjects()">&#128193; All Projects</div>
+        <div class="finder-sidebar-item" onclick="filterProjects('frontend')">&#127912; Frontend</div>
+        <div class="finder-sidebar-item" onclick="filterProjects('backend')">&#9881; Backend</div>
+        <div class="finder-sidebar-item" onclick="filterProjects('fullstack')">&#128187; Full-Stack</div>
+      </div>
+      <div class="finder-sidebar-section">
+        <div class="finder-sidebar-title">Locations</div>
+        <div class="finder-sidebar-item">&#128187; This Mac</div>
+        <div class="finder-sidebar-item">&#9729; GitHub</div>
+      </div>
+    </div>
+    <div class="finder-main" id="finder-main">
+      <div class="finder-breadcrumb">
+        <span onclick="showAllProjects()">Projects</span>
+        <span id="finder-breadcrumb-sub"></span>
+      </div>
+      <div class="finder-grid" id="finder-grid"></div>
+      <div id="finder-detail" style="display:none;"></div>
+    </div>
+  </div>`;
+}
+
+// Project data
+const projectsData = [
+  {
+    id: 'ecommerce',
+    name: 'E-Commerce Platform',
+    icon: '&#128722;',
+    category: 'fullstack',
+    meta: 'Full-Stack  |  2024',
+    desc: 'A full-stack marketplace with real-time inventory management, optimistic UI updates, and seamless checkout flows. Built to handle high traffic with horizontal scaling and intelligent caching strategies.',
+    tags: ['React', 'Node.js', 'PostgreSQL', 'Redis', 'Docker'],
+    features: ['Real-time inventory sync', 'Optimistic UI updates', 'Sub-200ms response times', 'Horizontal auto-scaling']
+  },
+  {
+    id: 'devops',
+    name: 'DevOps Dashboard',
+    icon: '&#128200;',
+    category: 'fullstack',
+    meta: 'Full-Stack  |  2024',
+    desc: 'Unified monitoring and deployment pipeline dashboard. Aggregates metrics from multiple sources, provides one-click deployments, and real-time alerting for production incidents.',
+    tags: ['Next.js', 'Go', 'Docker', 'Kubernetes', 'Grafana'],
+    features: ['Multi-source metric aggregation', 'One-click deployments', 'Real-time incident alerts', 'Custom dashboard builder']
+  },
+  {
+    id: 'analytics',
+    name: 'Real-Time Analytics',
+    icon: '&#128202;',
+    category: 'backend',
+    meta: 'Backend  |  2023',
+    desc: 'Stream processing engine for e-commerce analytics. Processes millions of events per hour with sub-second latency, powering dashboards and automated decision-making systems.',
+    tags: ['Kafka', 'Python', 'ClickHouse', 'Grafana'],
+    features: ['Million events/hour throughput', 'Sub-second query latency', 'Automated anomaly detection', 'Custom report generation']
+  },
+  {
+    id: 'aibot',
+    name: 'AI Code Review Bot',
+    icon: '&#129302;',
+    category: 'backend',
+    meta: 'Backend  |  2024',
+    desc: 'Automated pull request reviewer powered by LLM integration. Analyzes code quality, suggests improvements, detects potential bugs, and enforces team coding standards automatically.',
+    tags: ['Python', 'OpenAI API', 'GitHub Actions', 'FastAPI'],
+    features: ['Automated PR analysis', 'Bug pattern detection', 'Style guide enforcement', 'Learning from team feedback']
+  },
+  {
+    id: 'designsystem',
+    name: 'Component Library',
+    icon: '&#127912;',
+    category: 'frontend',
+    meta: 'Frontend  |  2023',
+    desc: 'A comprehensive design system and component library built for consistency across multiple products. Includes 40+ accessible components, theming engine, and Storybook documentation.',
+    tags: ['React', 'TypeScript', 'Storybook', 'Tailwind CSS'],
+    features: ['40+ accessible components', 'Dark/Light theme engine', 'Full Storybook docs', 'Tree-shakeable exports']
+  },
+  {
+    id: 'portfolio',
+    name: 'GargOS Portfolio',
+    icon: '&#128187;',
+    category: 'frontend',
+    meta: 'Frontend  |  2025',
+    desc: 'This portfolio itself -- a fully interactive desktop OS simulation built as a single HTML file. Features draggable windows, a working terminal, multiple apps, and theme customization.',
+    tags: ['HTML', 'CSS', 'Vanilla JS'],
+    features: ['Desktop OS simulation', 'Draggable window system', 'Working terminal emulator', 'Theme & wallpaper settings']
+  }
+];
+
+// Render projects after DOM is ready
+setTimeout(() => renderProjects(), 0);
+
+function renderProjects(filter) {
+  const grid = document.getElementById('finder-grid');
+  if (!grid) return;
+  const detail = document.getElementById('finder-detail');
+  if (detail) detail.style.display = 'none';
+  grid.style.display = 'grid';
+
+  const filtered = filter ? projectsData.filter(p => p.category === filter) : projectsData;
+  grid.innerHTML = filtered.map(p => `
+    <div class="finder-file" onclick="showProjectDetail('${p.id}')">
+      <div class="finder-file-icon">${p.icon}</div>
+      <div class="finder-file-name">${p.name}</div>
+      <div class="finder-file-meta">${p.meta}</div>
+    </div>
+  `).join('');
+}
+
+function showAllProjects() {
+  document.querySelectorAll('.finder-sidebar-item').forEach(i => i.classList.remove('active'));
+  document.querySelector('.finder-sidebar-item').classList.add('active');
+  document.getElementById('finder-breadcrumb-sub').innerHTML = '';
+  renderProjects();
+}
+
+function filterProjects(cat) {
+  document.querySelectorAll('.finder-sidebar-item').forEach(i => i.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('finder-breadcrumb-sub').innerHTML = ' / ' + cat.charAt(0).toUpperCase() + cat.slice(1);
+  renderProjects(cat);
+}
+
+function showProjectDetail(id) {
+  const p = projectsData.find(x => x.id === id);
+  if (!p) return;
+  const grid = document.getElementById('finder-grid');
+  const detail = document.getElementById('finder-detail');
+  grid.style.display = 'none';
+  detail.style.display = 'block';
+  document.getElementById('finder-breadcrumb-sub').innerHTML = ' / ' + p.name;
+
+  detail.innerHTML = `
+    <div class="project-detail">
+      <div class="project-back" onclick="showAllProjects()">&larr; Back to Projects</div>
+      <div class="project-hero">${p.icon}</div>
+      <div class="project-title">${p.name}</div>
+      <div class="project-desc">${p.desc}</div>
+      <div class="project-tags">${p.tags.map(t => `<span class="project-tag">${t}</span>`).join('')}</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--copper);">Key Features</div>
+        <ul style="font-size:12.5px;color:var(--text-muted);line-height:1.8;margin-left:16px;">
+          ${p.features.map(f => `<li>${f}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="project-links">
+        <button class="project-btn primary">View Live</button>
+        <button class="project-btn secondary">Source Code</button>
+      </div>
+    </div>
+  `;
+}
+
+function getTerminalContent() {
+  return `
+  <div class="terminal-app" id="term-output">
+    <div class="term-line info">Welcome to GargOS Terminal v2.0</div>
+    <div class="term-line output">Type <span style="color:#4ADE80;">"help"</span> for a list of available commands.</div>
+    <div class="term-line output" style="margin-bottom:8px;"></div>
+    <div class="term-input-line" id="term-input-line">
+      <span class="term-prompt"><span class="path">~/portfolio</span> <span class="arrow">&gt;</span> </span>
+      <input type="text" class="term-input" id="term-input" spellcheck="false" autocomplete="off" autofocus>
+    </div>
+  </div>`;
+}
+
+function getSkillsContent() {
+  return `
+  <div class="textedit-app">
+    <div class="textedit-toolbar">
+      <span class="textedit-toolbar-btn">Format</span>
+      <span class="textedit-toolbar-btn">Font</span>
+      <span style="flex:1;"></span>
+      <span style="font-family:var(--font-mono);">Skills.txt -- UTF-8</span>
+    </div>
+    <div class="textedit-body">
+      <h2>Technical Skills</h2>
+
+      <div class="skill-cat">Languages</div>
+      <div class="skill-line">JavaScript / TypeScript <span class="skill-bar-track"><span class="skill-bar-fill" style="width:95%;background:var(--accent);"></span></span></div>
+      <div class="skill-line">Java                    <span class="skill-bar-track"><span class="skill-bar-fill" style="width:88%;background:var(--accent);"></span></span></div>
+      <div class="skill-line">Python                  <span class="skill-bar-track"><span class="skill-bar-fill" style="width:85%;background:var(--accent);"></span></span></div>
+      <div class="skill-line">Go                      <span class="skill-bar-track"><span class="skill-bar-fill" style="width:70%;background:var(--accent);"></span></span></div>
+      <div class="skill-line">SQL                     <span class="skill-bar-track"><span class="skill-bar-fill" style="width:82%;background:var(--accent);"></span></span></div>
+
+      <div class="skill-cat">Frontend</div>
+      <div class="skill-line">React / Next.js         <span class="skill-bar-track"><span class="skill-bar-fill" style="width:95%;background:var(--copper);"></span></span></div>
+      <div class="skill-line">Tailwind CSS            <span class="skill-bar-track"><span class="skill-bar-fill" style="width:90%;background:var(--copper);"></span></span></div>
+      <div class="skill-line">Redux / Zustand         <span class="skill-bar-track"><span class="skill-bar-fill" style="width:88%;background:var(--copper);"></span></span></div>
+      <div class="skill-line">HTML5 / CSS3            <span class="skill-bar-track"><span class="skill-bar-fill" style="width:92%;background:var(--copper);"></span></span></div>
+
+      <div class="skill-cat">Backend & Infrastructure</div>
+      <div class="skill-line">Node.js / Express       <span class="skill-bar-track"><span class="skill-bar-fill" style="width:92%;background:#4ADE80;"></span></span></div>
+      <div class="skill-line">REST / GraphQL APIs     <span class="skill-bar-track"><span class="skill-bar-fill" style="width:90%;background:#4ADE80;"></span></span></div>
+      <div class="skill-line">Docker / Kubernetes     <span class="skill-bar-track"><span class="skill-bar-fill" style="width:80%;background:#4ADE80;"></span></span></div>
+      <div class="skill-line">AWS / GCP               <span class="skill-bar-track"><span class="skill-bar-fill" style="width:78%;background:#4ADE80;"></span></span></div>
+
+      <div class="skill-cat">Databases</div>
+      <div class="skill-line">PostgreSQL              <span class="skill-bar-track"><span class="skill-bar-fill" style="width:88%;background:#A78BFA;"></span></span></div>
+      <div class="skill-line">MongoDB                 <span class="skill-bar-track"><span class="skill-bar-fill" style="width:82%;background:#A78BFA;"></span></span></div>
+      <div class="skill-line">Redis                   <span class="skill-bar-track"><span class="skill-bar-fill" style="width:80%;background:#A78BFA;"></span></span></div>
+
+      <div class="skill-cat">Tools & Practices</div>
+      <div class="skill-line">Git / GitHub             <span class="skill-bar-track"><span class="skill-bar-fill" style="width:95%;background:var(--text-muted);"></span></span></div>
+      <div class="skill-line">CI/CD Pipelines          <span class="skill-bar-track"><span class="skill-bar-fill" style="width:85%;background:var(--text-muted);"></span></span></div>
+      <div class="skill-line">Agile / Scrum            <span class="skill-bar-track"><span class="skill-bar-fill" style="width:90%;background:var(--text-muted);"></span></span></div>
+      <div class="skill-line">Testing (Jest/Cypress)   <span class="skill-bar-track"><span class="skill-bar-fill" style="width:85%;background:var(--text-muted);"></span></span></div>
+    </div>
+  </div>`;
+}
+
+function getResumeContent() {
+  return `
+  <div class="resume-app">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:22px;font-weight:700;">Anshull Garg</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Software Developer | Full-Stack Engineer</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">anshullgarg@gmail.com &middot; github.com/anshullgarg &middot; linkedin.com/in/anshullgarg</div>
+    </div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">Summary</div>
+      <div style="font-size:12.5px;color:var(--text-muted);line-height:1.7;">
+        Software Engineer with experience building scalable applications at enterprise scale.
+        Passionate about clean architecture, performance optimization, and user-centric design.
+        Currently engineering production systems at Fortune 1 scale with Walmart Global Tech.
+      </div>
+    </div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">Experience</div>
+      <div class="resume-item">
+        <div class="resume-item-header">
+          <div class="resume-item-title">Software Engineer</div>
+          <div class="resume-item-date">2022 - Present</div>
+        </div>
+        <div class="resume-item-sub">Walmart Global Tech</div>
+        <div class="resume-item-desc">
+          <ul>
+            <li>Architected scalable microservices serving millions of daily users on the e-commerce platform</li>
+            <li>Optimized frontend performance, reducing page load times by 40% through code splitting and lazy loading</li>
+            <li>Built internal developer tooling used by 200+ engineers, improving deployment efficiency by 60%</li>
+            <li>Led cross-functional initiatives across 3 teams to deliver high-impact features on schedule</li>
+            <li>Implemented real-time inventory tracking system processing 10K+ transactions per minute</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">Education</div>
+      <div class="resume-item">
+        <div class="resume-item-header">
+          <div class="resume-item-title">Bachelor of Technology, Computer Science</div>
+          <div class="resume-item-date">2018 - 2022</div>
+        </div>
+        <div class="resume-item-desc" style="margin-top:4px;">
+          Relevant coursework: Data Structures, Algorithms, System Design, Database Systems, Computer Networks
+        </div>
+      </div>
+    </div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">Technical Skills</div>
+      <div style="font-size:12.5px;color:var(--text-muted);line-height:1.8;">
+        <strong style="color:var(--copper);">Languages:</strong> JavaScript, TypeScript, Java, Python, Go, SQL<br>
+        <strong style="color:var(--copper);">Frontend:</strong> React, Next.js, Tailwind CSS, Redux, HTML5/CSS3<br>
+        <strong style="color:var(--copper);">Backend:</strong> Node.js, Express, Spring Boot, FastAPI, GraphQL<br>
+        <strong style="color:var(--copper);">Infrastructure:</strong> AWS, GCP, Docker, Kubernetes, Terraform<br>
+        <strong style="color:var(--copper);">Databases:</strong> PostgreSQL, MongoDB, Redis, ClickHouse<br>
+        <strong style="color:var(--copper);">Tools:</strong> Git, CI/CD, Webpack, Vite, Jest, Cypress
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="resume-download" onclick="alert('Resume download would be triggered here.')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+    </div>
+  </div>`;
+}
+
+function getContactContent() {
+  return `
+  <div class="mail-app">
+    <div class="mail-header">
+      <div class="mail-field">
+        <div class="mail-field-label">To:</div>
+        <input class="mail-field-input" value="anshullgarg@gmail.com" readonly>
+      </div>
+      <div class="mail-field">
+        <div class="mail-field-label">From:</div>
+        <input class="mail-field-input" id="mail-from" placeholder="your@email.com">
+      </div>
+      <div class="mail-field">
+        <div class="mail-field-label">Subject:</div>
+        <input class="mail-field-input" id="mail-subject" placeholder="Hello from your portfolio!">
+      </div>
+    </div>
+    <div class="mail-body-area">
+      <textarea class="mail-textarea" id="mail-body" placeholder="Write your message here...
+
+(This is a demo -- messages are not actually sent. For real inquiries, email anshullgarg@gmail.com directly.)"></textarea>
+    </div>
+    <div class="mail-footer">
+      <button class="mail-send-btn" onclick="sendMail()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send
+      </button>
+      <span class="mail-status" id="mail-status"></span>
+    </div>
+  </div>`;
+}
+
+function sendMail() {
+  const status = document.getElementById('mail-status');
+  const from = document.getElementById('mail-from').value;
+  const subject = document.getElementById('mail-subject').value;
+  const body = document.getElementById('mail-body').value;
+
+  if (!from || !subject || !body) {
+    status.textContent = 'Please fill in all fields.';
+    status.style.color = 'var(--red)';
+    return;
+  }
+
+  status.textContent = 'Sending...';
+  status.style.color = 'var(--accent)';
+
+  setTimeout(() => {
+    status.textContent = 'Message sent successfully! (Demo mode)';
+    status.style.color = 'var(--green)';
+  }, 1200);
+}
+
+function getSettingsContent() {
+  return `
+  <div class="settings-app">
+    <div class="settings-sidebar">
+      <div class="settings-sidebar-item active" onclick="showSettingsTab('general',this)">&#9881; General</div>
+      <div class="settings-sidebar-item" onclick="showSettingsTab('appearance',this)">&#127912; Appearance</div>
+      <div class="settings-sidebar-item" onclick="showSettingsTab('about',this)">&#128187; About</div>
+    </div>
+    <div class="settings-main" id="settings-main">
+      <div id="settings-tab-general">
+        <div class="settings-title">General</div>
+        <div class="settings-group">
+          <div class="settings-group-label">Theme</div>
+          <div class="settings-row">
+            <div class="settings-row-label">Light Mode</div>
+            <div class="settings-toggle ${lightTheme ? 'active' : ''}" id="theme-toggle" onclick="toggleTheme()"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-label">Wallpaper</div>
+          <div class="wp-options">
+            <div class="wp-option ${currentWallpaper==='stars'?'active':''}" data-wp="stars" onclick="setWallpaper('stars')"></div>
+            <div class="wp-option ${currentWallpaper==='aurora'?'active':''}" data-wp="aurora" onclick="setWallpaper('aurora')"></div>
+            <div class="wp-option ${currentWallpaper==='sunset'?'active':''}" data-wp="sunset" onclick="setWallpaper('sunset')"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-label">Accessibility</div>
+          <div class="settings-row">
+            <div class="settings-row-label">Reduce Motion</div>
+            <div class="settings-toggle" onclick="this.classList.toggle('active')"></div>
+          </div>
+        </div>
+      </div>
+      <div id="settings-tab-appearance" style="display:none;">
+        <div class="settings-title">Appearance</div>
+        <div class="settings-group">
+          <div class="settings-group-label">Accent Color</div>
+          <div style="display:flex;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#3B82F6;cursor:pointer;border:2px solid var(--border);" onclick="document.documentElement.style.setProperty('--accent','#3B82F6')"></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#8B5CF6;cursor:pointer;border:2px solid var(--border);" onclick="document.documentElement.style.setProperty('--accent','#8B5CF6')"></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#EC4899;cursor:pointer;border:2px solid var(--border);" onclick="document.documentElement.style.setProperty('--accent','#EC4899')"></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#10B981;cursor:pointer;border:2px solid var(--border);" onclick="document.documentElement.style.setProperty('--accent','#10B981')"></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#F59E0B;cursor:pointer;border:2px solid var(--border);" onclick="document.documentElement.style.setProperty('--accent','#F59E0B')"></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#EF4444;cursor:pointer;border:2px solid var(--border);" onclick="document.documentElement.style.setProperty('--accent','#EF4444')"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-label">Font Size</div>
+          <div class="settings-row">
+            <div class="settings-row-label">Base Size</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:11px;color:var(--text-dim);cursor:pointer;" onclick="document.body.style.fontSize='12px'">A</span>
+              <span style="font-size:13px;color:var(--text-muted);cursor:pointer;" onclick="document.body.style.fontSize='13px'">A</span>
+              <span style="font-size:16px;color:var(--text);cursor:pointer;" onclick="document.body.style.fontSize='15px'">A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="settings-tab-about" style="display:none;">
+        <div class="settings-title">About This Machine</div>
+        <div class="atm-card">
+          <div class="atm-logo">&#128187;</div>
+          <div class="atm-name">GargOS 2.0</div>
+          <div class="atm-version">Version 2.0.0 (Build 2025.02)</div>
+          <div class="atm-specs">
+            <strong>Developer:</strong> Anshull Garg<br>
+            <strong>Role:</strong> Software Developer @ Walmart Global Tech<br>
+            <strong>Runtime:</strong> Vanilla JS + CSS<br>
+            <strong>Framework:</strong> None (hand-crafted)<br>
+            <strong>Lines of Code:</strong> ~2,000<br>
+            <strong>Bundle Size:</strong> Single HTML File<br>
+            <strong>Dependencies:</strong> 0<br>
+            <strong>License:</strong> Open Source, Built with Care
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showSettingsTab(tab, el) {
+  document.querySelectorAll('.settings-sidebar-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('[id^="settings-tab-"]').forEach(t => t.style.display = 'none');
+  const target = document.getElementById('settings-tab-' + tab);
+  if (target) target.style.display = 'block';
+}
+
+/* ============================================================
+   AUTO-OPEN ABOUT ON FIRST LOAD (after boot)
+   ============================================================ */
+setTimeout(() => {
+  if (document.getElementById('desktop').classList.contains('visible')) {
+    openApp('about');
+  } else {
+    // Wait for desktop to be visible
+    const obs = new MutationObserver(() => {
+      if (document.getElementById('desktop').classList.contains('visible')) {
+        obs.disconnect();
+        setTimeout(() => openApp('about'), 400);
+      }
+    });
+    obs.observe(document.getElementById('desktop'), { attributes:true });
+  }
+}, 2800);
+</script>
+</body>
+</html>
