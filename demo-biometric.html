@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG | The Biometric-Adaptive Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A portfolio that adapts to your expressions.">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   CSS CUSTOM PROPERTIES - EMOTION-ADAPTIVE SYSTEM
+   ======================================================================== */
+:root {
+  /* Base palette */
+  --bg-deep: #0A0A12;
+  --bg-surface: #12121C;
+  --bg-elevated: #1A1A28;
+  --bg-card: #161622;
+  --border: #2A2A3A;
+  --text-primary: #F0F0F0;
+  --text-secondary: #9898B0;
+  --text-muted: #6868A0;
+
+  /* Emotion-adaptive properties (defaults = neutral) */
+  --accent: #3B82F6;
+  --accent-dim: rgba(59, 130, 246, 0.15);
+  --accent-glow: rgba(59, 130, 246, 0.3);
+  --bg-tint: rgba(10, 10, 18, 1);
+  --line-height-adaptive: 1.7;
+  --card-radius: 12px;
+  --content-density: 1;
+  --particle-speed: 1;
+  --particle-hue: 220;
+  --animation-bounce: 0;
+  --greeting-text: "Welcome";
+
+  /* Typography */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* Transitions */
+  --transition-mood: 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ========================================================================
+   EMOTION STATES
+   ======================================================================== */
+body.emotion-happy {
+  --accent: #F59E0B;
+  --accent-dim: rgba(245, 158, 11, 0.12);
+  --accent-glow: rgba(245, 158, 11, 0.3);
+  --bg-tint: rgba(14, 12, 10, 1);
+  --line-height-adaptive: 1.85;
+  --card-radius: 20px;
+  --particle-speed: 1.5;
+  --particle-hue: 40;
+  --animation-bounce: 1;
+}
+
+body.emotion-focused {
+  --accent: #22C55E;
+  --accent-dim: rgba(34, 197, 94, 0.12);
+  --accent-glow: rgba(34, 197, 94, 0.3);
+  --bg-tint: rgba(8, 12, 10, 1);
+  --line-height-adaptive: 1.55;
+  --card-radius: 8px;
+  --content-density: 1.15;
+  --particle-speed: 0.5;
+  --particle-hue: 145;
+}
+
+body.emotion-surprised {
+  --accent: #8B5CF6;
+  --accent-dim: rgba(139, 92, 246, 0.12);
+  --accent-glow: rgba(139, 92, 246, 0.3);
+  --bg-tint: rgba(12, 8, 18, 1);
+  --line-height-adaptive: 1.7;
+  --card-radius: 16px;
+  --particle-speed: 2;
+  --particle-hue: 270;
+}
+
+/* ========================================================================
+   RESET & BASE
+   ======================================================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-tint);
+  color: var(--text-secondary);
+  overflow-x: hidden;
+  line-height: var(--line-height-adaptive);
+  transition: background var(--transition-mood),
+              color var(--transition-mood),
+              line-height var(--transition-mood);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+  .particle-canvas, .opt-in-particles { display: none !important; }
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition-mood);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================================================
+   PARTICLE CANVAS
+   ======================================================================== */
+#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========================================================================
+   OPT-IN OVERLAY
+   ======================================================================== */
+.opt-in-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0A0A12;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.opt-in-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.opt-in-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.opt-in-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.3;
+  animation: floatParticle 8s ease-in-out infinite;
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
+  25% { transform: translateY(-30px) translateX(15px); opacity: 0.5; }
+  50% { transform: translateY(-60px) translateX(-10px); opacity: 0.3; }
+  75% { transform: translateY(-30px) translateX(20px); opacity: 0.4; }
+}
+
+.opt-in-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 560px;
+  padding: 48px 32px;
+}
+
+.opt-in-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 32px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulseIcon 3s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { transform: scale(1.05); box-shadow: 0 0 30px 10px var(--accent-dim); }
+}
+
+.opt-in-icon svg {
+  width: 36px;
+  height: 36px;
+  color: var(--accent);
+}
+
+.opt-in-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.opt-in-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+  line-height: 1.6;
+}
+
+.opt-in-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--accent);
+  color: #000;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--accent-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.03);
+}
+
+.opt-in-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: left;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.opt-in-privacy svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+/* ========================================================================
+   CAMERA PREVIEW
+   ======================================================================== */
+.camera-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.5s ease;
+}
+
+.camera-container.active {
+  display: flex;
+}
+
+.camera-container.minimized .camera-preview-wrapper {
+  width: 48px;
+  height: 48px;
+}
+
+.camera-container.minimized .camera-label,
+.camera-container.minimized .camera-detection {
+  display: none;
+}
+
+.camera-preview-wrapper {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 20px var(--accent-dim), 0 8px 32px rgba(0,0,0,0.4);
+  position: relative;
+  transition: all 0.5s ease, border-color var(--transition-mood), box-shadow var(--transition-mood);
+  cursor: pointer;
+}
+
+.camera-preview-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.camera-preview-wrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.camera-toggle {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.camera-toggle:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.camera-detection {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  color: var(--accent);
+  white-space: nowrap;
+  letter-spacing: 0.06em;
+  transition: color var(--transition-mood);
+}
+
+.camera-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ========================================================================
+   MOOD SELECTOR (FALLBACK)
+   ======================================================================== */
+.mood-selector {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9000;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transition: all var(--transition-mood);
+}
+
+.mood-selector.active {
+  display: flex;
+}
+
+.mood-selector-title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.mood-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-family: var(--font-body);
+  min-width: 68px;
+}
+
+.mood-btn .mood-emoji {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.mood-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.mood-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-dim);
+}
+
+.mood-selector-hint {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 260px;
+}
+
+/* ========================================================================
+   EMOTION HISTORY
+   ======================================================================== */
+.emotion-history {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9000;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 18px;
+  max-width: 300px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  display: none;
+  transition: all var(--transition-mood);
+}
+
+.emotion-history.active {
+  display: block;
+}
+
+.emotion-history-title {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+}
+
+.emotion-timeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.emotion-timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.emotion-timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.emotion-timeline-arrow {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+}
+
+.emotion-dominant {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.emotion-dominant span {
+  color: var(--accent);
+  font-weight: 600;
+  transition: color var(--transition-mood);
+}
+
+.emotion-history-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 8999;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.emotion-history-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ========================================================================
+   NAVIGATION
+   ======================================================================== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 8000;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 10, 18, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: all var(--transition-mood);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.nav-logo span {
+  color: var(--accent);
+  transition: color var(--transition-mood);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.nav-emotion-badge {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-family: var(--font-code);
+  color: var(--accent);
+  transition: all var(--transition-mood);
+}
+
+.nav-emotion-badge.active {
+  display: flex;
+}
+
+.nav-emotion-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+  transition: background var(--transition-mood);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Mobile nav */
+.nav-mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .nav-mobile-toggle { display: block; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    padding: 20px;
+    gap: 16px;
+  }
+}
+
+/* ========================================================================
+   ADAPTIVE GREETING BANNER
+   ======================================================================== */
+.adaptive-greeting {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 7500;
+  padding: 10px 24px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 30px;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.6s ease;
+  white-space: nowrap;
+}
+
+.adaptive-greeting.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+/* ========================================================================
+   SECTIONS - SHARED
+   ======================================================================== */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 120px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  transition: padding var(--transition-mood);
+}
+
+body.emotion-focused .section {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.section-label {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  transition: color var(--transition-mood);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+  line-height: 1.15;
+}
+
+.section-title .accent {
+  color: var(--accent);
+  transition: color var(--transition-mood);
+}
+
+/* ========================================================================
+   HERO SECTION
+   ======================================================================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+.hero-overline {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: var(--accent);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  transition: color var(--transition-mood);
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+
+.hero-name .accent {
+  color: var(--accent);
+  transition: color var(--transition-mood);
+}
+
+.hero-headline {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 40px;
+  line-height: var(--line-height-adaptive);
+  transition: line-height var(--transition-mood);
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: scrollHint 2s ease-in-out infinite;
+}
+
+@keyframes scrollHint {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+.hero-scroll-hint .scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  transition: background var(--transition-mood);
+}
+
+/* Adaptive hero greeting */
+.hero-adaptive-greeting {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+  min-height: 24px;
+  font-style: italic;
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+.hero-adaptive-greeting.visible {
+  opacity: 1;
+}
+
+/* ========================================================================
+   ABOUT SECTION
+   ======================================================================== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+.about-text p {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  line-height: var(--line-height-adaptive);
+  transition: line-height var(--transition-mood);
+}
+
+.about-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.stat-card {
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  transition: all var(--transition-mood);
+}
+
+.stat-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-dim);
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  transition: color var(--transition-mood);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Technical details (expand in focused mode) */
+.about-technical {
+  margin-top: 24px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.8s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+body.emotion-focused .about-technical {
+  max-height: 400px;
+  opacity: 1;
+}
+
+.about-technical-inner {
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.about-technical-inner .code-keyword {
+  color: var(--accent);
+}
+
+.about-technical-inner .code-string {
+  color: #F59E0B;
+}
+
+.about-technical-inner .code-comment {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ========================================================================
+   PROJECTS SECTION
+   ======================================================================== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  transition: all 0.4s ease, border-radius var(--transition-mood), transform 0.3s ease;
+  position: relative;
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px var(--accent-dim);
+}
+
+/* Happy bounce on hover */
+body.emotion-happy .project-card:hover {
+  animation: happyBounce 0.6s ease;
+}
+
+@keyframes happyBounce {
+  0% { transform: translateY(-4px); }
+  30% { transform: translateY(-16px); }
+  50% { transform: translateY(-6px); }
+  70% { transform: translateY(-10px); }
+  100% { transform: translateY(-4px); }
+}
+
+/* Surprised enlarge effect */
+body.emotion-surprised .project-card {
+  animation: surpriseEnlarge 1.2s ease-out;
+}
+
+@keyframes surpriseEnlarge {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.project-card-image {
+  height: 200px;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.project-card-image .project-icon {
+  font-size: 3rem;
+  opacity: 0.6;
+  transition: all 0.4s ease;
+}
+
+.project-card:hover .project-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.project-card-image .project-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  background-image:
+    linear-gradient(var(--accent) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+  background-size: 30px 30px;
+  transition: opacity 0.4s ease;
+}
+
+.project-card:hover .project-pattern {
+  opacity: 0.15;
+}
+
+.project-card-body {
+  padding: 24px;
+}
+
+.project-card-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.project-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: var(--line-height-adaptive);
+  transition: line-height var(--transition-mood);
+}
+
+/* Technical details visible in focused mode */
+.project-card-tech-detail {
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.6s ease, opacity 0.4s ease, margin 0.4s ease;
+  line-height: 1.7;
+}
+
+body.emotion-focused .project-card-tech-detail {
+  max-height: 120px;
+  opacity: 1;
+  margin-bottom: 16px;
+}
+
+.project-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.project-tag {
+  padding: 4px 12px;
+  background: var(--accent-dim);
+  border-radius: 20px;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 500;
+  transition: all var(--transition-mood);
+}
+
+.project-card-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.project-link {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.3s ease;
+}
+
+.project-link:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Easter eggs visible in surprised mode */
+.easter-egg {
+  display: none;
+  padding: 12px 16px;
+  margin-top: 12px;
+  background: var(--accent-dim);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-style: italic;
+}
+
+body.emotion-surprised .easter-egg {
+  display: block;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================================================
+   SKILLS SECTION
+   ======================================================================== */
+.skills-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.skill-category {
+  padding: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  transition: all var(--transition-mood);
+}
+
+.skill-category:hover {
+  border-color: rgba(255,255,255,0.08);
+}
+
+.skill-category-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.skill-category-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--accent);
+  transition: all var(--transition-mood);
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.skill-tag:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Focused mode: show proficiency bars */
+.skill-proficiency {
+  display: none;
+  margin-top: 4px;
+  height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+body.emotion-focused .skill-proficiency {
+  display: block;
+}
+
+.skill-proficiency-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.8s ease, background var(--transition-mood);
+}
+
+/* ========================================================================
+   CONTACT SECTION
+   ======================================================================== */
+.contact-content {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-text {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+  line-height: var(--line-height-adaptive);
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  transition: all 0.3s ease, border-radius var(--transition-mood);
+  text-decoration: none;
+}
+
+.contact-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.contact-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================================================
+   FOOTER
+   ======================================================================== */
+.footer {
+  padding: 40px;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.footer-text .accent {
+  color: var(--accent);
+  transition: color var(--transition-mood);
+}
+
+.footer-emotion-summary {
+  margin-top: 12px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-code);
+}
+
+/* ========================================================================
+   UTILITY ANIMATIONS
+   ======================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Surprised burst */
+.burst-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.burst-overlay.active {
+  opacity: 1;
+}
+
+.burst-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ========================================================================
+   SCROLLBAR
+   ======================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 768px) {
+  .section {
+    padding: 80px 20px;
+  }
+  .hero-name {
+    font-size: clamp(2.2rem, 10vw, 3.5rem);
+  }
+  .about-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .stat-card {
+    padding: 16px;
+  }
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  .camera-container {
+    bottom: 16px;
+    left: 16px;
+  }
+  .camera-preview-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+  .mood-selector {
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+  }
+  .emotion-history {
+    top: auto;
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================================================================
+     PARTICLE CANVAS
+     =================================================================== -->
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+<!-- ===================================================================
+     OPT-IN OVERLAY
+     =================================================================== -->
+<div class="opt-in-overlay" id="optInOverlay" role="dialog" aria-label="Camera permission request" aria-modal="true">
+  <div class="opt-in-particles" id="optInParticles" aria-hidden="true"></div>
+  <div class="opt-in-content">
+    <div class="opt-in-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+      </svg>
+    </div>
+    <h1 class="opt-in-title">This portfolio adapts to <span style="color: var(--accent)">you</span></h1>
+    <p class="opt-in-subtitle">Enable your camera to let the site respond to your expressions in real time. Colors, layout, and animations shift based on what it detects.</p>
+    <div class="opt-in-buttons">
+      <button class="btn-primary" id="btnEnableCamera" aria-label="Enable camera for biometric adaptation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        Enable Camera
+      </button>
+      <button class="btn-secondary" id="btnSkipCamera" aria-label="Skip camera and browse normally">
+        Skip, browse normally
+      </button>
+    </div>
+    <div class="opt-in-privacy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <span>No data is stored or sent anywhere. All processing happens entirely in your browser. The camera feed never leaves your device.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================
+     ADAPTIVE GREETING BANNER
+     =================================================================== -->
+<div class="adaptive-greeting" id="adaptiveGreeting" aria-live="polite"></div>
+
+<!-- ===================================================================
+     CAMERA PREVIEW
+     =================================================================== -->
+<div class="camera-container" id="cameraContainer" aria-label="Camera preview">
+  <div class="camera-preview-wrapper" id="cameraWrapper">
+    <video id="cameraVideo" autoplay playsinline muted aria-label="Live camera feed"></video>
+    <canvas id="cameraOverlay" aria-hidden="true"></canvas>
+    <button class="camera-toggle" id="cameraToggle" aria-label="Minimize camera preview" title="Toggle camera size">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+  </div>
+  <div class="camera-detection" id="cameraDetection">DETECTING: Neutral</div>
+  <div class="camera-label">LIVE ANALYSIS</div>
+</div>
+
+<!-- ===================================================================
+     MOOD SELECTOR (FALLBACK)
+     =================================================================== -->
+<div class="mood-selector" id="moodSelector" aria-label="Mood selector - choose your mood">
+  <div class="mood-selector-title">Choose Your Mood</div>
+  <div class="mood-buttons">
+    <button class="mood-btn active" data-emotion="neutral" aria-label="Set mood to neutral">
+      <span class="mood-emoji" aria-hidden="true">&#x1F610;</span>
+      Neutral
+    </button>
+    <button class="mood-btn" data-emotion="happy" aria-label="Set mood to happy">
+      <span class="mood-emoji" aria-hidden="true">&#x1F60A;</span>
+      Happy
+    </button>
+    <button class="mood-btn" data-emotion="focused" aria-label="Set mood to focused">
+      <span class="mood-emoji" aria-hidden="true">&#x1F9D0;</span>
+      Focused
+    </button>
+    <button class="mood-btn" data-emotion="surprised" aria-label="Set mood to surprised">
+      <span class="mood-emoji" aria-hidden="true">&#x1F62E;</span>
+      Surprised
+    </button>
+  </div>
+  <div class="mood-selector-hint">Watch the site adapt its colors, layout, and animations to match.</div>
+</div>
+
+<!-- ===================================================================
+     EMOTION HISTORY
+     =================================================================== -->
+<div class="emotion-history" id="emotionHistory" aria-label="Emotion history timeline">
+  <div class="emotion-history-title">Your Journey</div>
+  <div class="emotion-timeline" id="emotionTimeline"></div>
+  <div class="emotion-dominant" id="emotionDominant">Most felt: <span>Neutral</span></div>
+</div>
+
+<!-- ===================================================================
+     NAVIGATION
+     =================================================================== -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-logo">anshull<span>.</span>garg</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-emotion-badge" id="navEmotionBadge">
+    <span class="nav-emotion-dot"></span>
+    <span id="navEmotionText">Neutral</span>
+  </div>
+  <button class="nav-mobile-toggle" id="navMobileToggle" aria-label="Toggle navigation menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+  </button>
+</nav>
+
+<!-- ===================================================================
+     HERO SECTION
+     =================================================================== -->
+<section class="section hero" id="hero">
+  <div class="hero-adaptive-greeting" id="heroGreeting" aria-live="polite"></div>
+  <div class="hero-overline reveal">SOFTWARE DEVELOPER @ WALMART</div>
+  <h1 class="hero-name reveal">Anshull<br><span class="accent">Garg</span></h1>
+  <p class="hero-headline reveal">I build systems that serve millions. Architecting scalable, high-performance applications that power enterprise e-commerce at Fortune 1 scale.</p>
+  <div class="hero-ctas reveal">
+    <a href="#projects" class="btn-primary">See My Work</a>
+    <a href="#contact" class="btn-secondary">Get In Touch</a>
+  </div>
+  <div class="hero-scroll-hint" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     ABOUT SECTION
+     =================================================================== -->
+<section class="section" id="about">
+  <div class="section-label reveal">// about</div>
+  <h2 class="section-title reveal">A bit about <span class="accent">me</span></h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I'm a <strong>Software Developer at Walmart Global Tech</strong>, where I work on the systems that power digital commerce for millions of customers. My day-to-day involves designing scalable APIs, optimizing frontend performance, and collaborating with cross-functional teams to ship features that matter.</p>
+      <p>I care about writing code that is <strong>readable, testable, and built to last</strong>. I believe great software is built at the intersection of clean architecture, deep user empathy, and relentless iteration.</p>
+      <p>What drives me is the challenge of turning complex problems into elegant solutions -- the kind that handle traffic spikes, edge cases, and the unpredictable reality of serving users at massive scale.</p>
+
+      <div class="about-technical">
+        <div class="about-technical-inner">
+          <span class="code-comment">// You seem interested in the details...</span><br>
+          <span class="code-keyword">const</span> anshull = {<br>
+          &nbsp;&nbsp;role: <span class="code-string">"Software Developer"</span>,<br>
+          &nbsp;&nbsp;company: <span class="code-string">"Walmart Global Tech"</span>,<br>
+          &nbsp;&nbsp;focus: [<span class="code-string">"Full-Stack"</span>, <span class="code-string">"Scalable Systems"</span>, <span class="code-string">"Performance"</span>],<br>
+          &nbsp;&nbsp;philosophy: <span class="code-string">"Ship fast, iterate faster, never stop learning"</span>,<br>
+          &nbsp;&nbsp;currentlyExploring: [<span class="code-string">"System Design"</span>, <span class="code-string">"AI/ML Integration"</span>],<br>
+          &nbsp;&nbsp;funFact: <span class="code-string">"This portfolio is reading your face right now"</span><br>
+          };<br>
+        </div>
+      </div>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat-card">
+        <div class="stat-number">Fortune 1</div>
+        <div class="stat-label">Company scale</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">M+</div>
+        <div class="stat-label">Users impacted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">Full</div>
+        <div class="stat-label">Stack expertise</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Production systems</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     PROJECTS SECTION
+     =================================================================== -->
+<section class="section" id="projects">
+  <div class="section-label reveal">// projects</div>
+  <h2 class="section-title reveal">Selected <span class="accent">work</span></h2>
+  <div class="projects-grid">
+
+    <!-- Project 1 -->
+    <div class="project-card reveal">
+      <div class="project-card-image">
+        <div class="project-pattern" aria-hidden="true"></div>
+        <div class="project-icon" aria-hidden="true">&#x26A1;</div>
+      </div>
+      <div class="project-card-body">
+        <h3 class="project-card-title">Enterprise Commerce Platform</h3>
+        <p class="project-card-desc">High-performance e-commerce system handling millions of transactions. Built with a microservices architecture optimized for peak traffic events like Black Friday.</p>
+        <div class="project-card-tech-detail">
+          Architecture: Event-driven microservices with CQRS pattern. Handles 50K+ req/s at peak. Reduced page load by 40% through SSR optimization and edge caching strategies.
+        </div>
+        <div class="project-card-tags">
+          <span class="project-tag">React</span>
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">GraphQL</span>
+          <span class="project-tag">Redis</span>
+        </div>
+        <div class="easter-egg">Fun fact: The Black Friday stress tests once accidentally ordered 10,000 rubber ducks.</div>
+        <div class="project-card-links">
+          <a href="#" class="project-link" aria-label="View case study">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Case Study
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project 2 -->
+    <div class="project-card reveal">
+      <div class="project-card-image">
+        <div class="project-pattern" aria-hidden="true"></div>
+        <div class="project-icon" aria-hidden="true">&#x1F4CA;</div>
+      </div>
+      <div class="project-card-body">
+        <h3 class="project-card-title">Real-Time Analytics Dashboard</h3>
+        <p class="project-card-desc">Internal analytics platform providing real-time visibility into system health, user behavior, and business KPIs across the entire digital retail ecosystem.</p>
+        <div class="project-card-tech-detail">
+          Ingests 2TB+ daily via Kafka streams. Custom D3.js visualizations with WebSocket live updates. Sub-100ms query response on 500M+ row datasets using ClickHouse.
+        </div>
+        <div class="project-card-tags">
+          <span class="project-tag">TypeScript</span>
+          <span class="project-tag">D3.js</span>
+          <span class="project-tag">Kafka</span>
+          <span class="project-tag">ClickHouse</span>
+        </div>
+        <div class="easter-egg">The first version of this dashboard was built in a 48-hour hackathon. It won.</div>
+        <div class="project-card-links">
+          <a href="#" class="project-link" aria-label="View case study">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Case Study
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project 3 -->
+    <div class="project-card reveal">
+      <div class="project-card-image">
+        <div class="project-pattern" aria-hidden="true"></div>
+        <div class="project-icon" aria-hidden="true">&#x1F916;</div>
+      </div>
+      <div class="project-card-body">
+        <h3 class="project-card-title">AI-Powered Search Optimization</h3>
+        <p class="project-card-desc">Machine learning pipeline that improved product search relevance and personalization, directly impacting conversion rates and customer satisfaction scores.</p>
+        <div class="project-card-tech-detail">
+          Transformer-based ranking model fine-tuned on 100M+ query-click pairs. A/B tested across 5M users. Lifted CTR by 18% and conversion by 12%. Served via TensorFlow Serving with &lt;50ms p99 latency.
+        </div>
+        <div class="project-card-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">TensorFlow</span>
+          <span class="project-tag">Elasticsearch</span>
+          <span class="project-tag">AWS</span>
+        </div>
+        <div class="easter-egg">This model once suggested "rubber ducks" as the top result for "best practices". It was technically correct.</div>
+        <div class="project-card-links">
+          <a href="#" class="project-link" aria-label="View case study">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Case Study
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================================================================
+     SKILLS SECTION
+     =================================================================== -->
+<section class="section" id="skills">
+  <div class="section-label reveal">// skills</div>
+  <h2 class="section-title reveal">Tech <span class="accent">stack</span></h2>
+  <div class="skills-container">
+
+    <div class="skill-category reveal">
+      <div class="skill-category-title">
+        <div class="skill-category-icon" aria-hidden="true">&#x2728;</div>
+        Frontend
+      </div>
+      <div class="skill-tags">
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">React</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:95%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">TypeScript</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Next.js</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:88%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Tailwind CSS</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:92%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Redux</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">D3.js</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-category reveal">
+      <div class="skill-category-title">
+        <div class="skill-category-icon" aria-hidden="true">&#x2699;&#xFE0F;</div>
+        Backend
+      </div>
+      <div class="skill-tags">
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Node.js</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:92%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Python</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:88%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Java</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:82%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">GraphQL</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:86%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">REST APIs</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:94%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Microservices</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:88%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-category reveal">
+      <div class="skill-category-title">
+        <div class="skill-category-icon" aria-hidden="true">&#x2601;&#xFE0F;</div>
+        Cloud & DevOps
+      </div>
+      <div class="skill-tags">
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">AWS</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Docker</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:88%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Kubernetes</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:78%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">CI/CD</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Terraform</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:72%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Monitoring</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:82%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-category reveal">
+      <div class="skill-category-title">
+        <div class="skill-category-icon" aria-hidden="true">&#x1F4BE;</div>
+        Data & Storage
+      </div>
+      <div class="skill-tags">
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">PostgreSQL</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:88%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">MongoDB</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:84%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Redis</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:86%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Kafka</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:80%"></div></div>
+        </div>
+        <div class="skill-tag-wrapper">
+          <span class="skill-tag">Elasticsearch</span>
+          <div class="skill-proficiency"><div class="skill-proficiency-fill" style="width:78%"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================================================================
+     CONTACT SECTION
+     =================================================================== -->
+<section class="section" id="contact">
+  <div class="section-label reveal">// contact</div>
+  <h2 class="section-title reveal">Let's <span class="accent">connect</span></h2>
+  <div class="contact-content reveal">
+    <p class="contact-text">I'm always open to conversations about interesting projects, engineering challenges, or just a good chat about technology. Feel free to reach out through any of these channels.</p>
+    <div class="contact-links">
+      <a href="mailto:anshullgarg@gmail.com" class="contact-link" aria-label="Send email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email
+      </a>
+      <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        GitHub
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     FOOTER
+     =================================================================== -->
+<footer class="footer">
+  <p class="footer-text">Built by Anshull Garg with <span class="accent">adaptive intelligence</span></p>
+  <div class="footer-emotion-summary" id="footerSummary" aria-live="polite"></div>
+</footer>
+
+<!-- ===================================================================
+     BURST OVERLAY (for surprised emotion)
+     =================================================================== -->
+<div class="burst-overlay" id="burstOverlay" aria-hidden="true"></div>
+
+
+<!-- ===================================================================
+     JAVASCRIPT - BIOMETRIC ADAPTIVE ENGINE
+     =================================================================== -->
+<script>
+(function() {
+  'use strict';
+
+  // =====================================================================
+  // STATE
+  // =====================================================================
+  const state = {
+    cameraEnabled: false,
+    currentEmotion: 'neutral',
+    previousEmotion: null,
+    emotionHistory: [],
+    emotionDurations: { neutral: 0, happy: 0, focused: 0, surprised: 0 },
+    lastEmotionTime: Date.now(),
+    videoStream: null,
+    analysisInterval: null,
+    isMinimized: false,
+    historyExpanded: false,
+    started: false
+  };
+
+  const EMOTIONS = {
+    neutral:   { label: 'Neutral',   emoji: '\u{1F610}', color: '#3B82F6', greeting: 'Welcome to my portfolio.' },
+    happy:     { label: 'Happy',     emoji: '\u{1F60A}', color: '#F59E0B', greeting: 'Glad you are enjoying this!' },
+    focused:   { label: 'Focused',   emoji: '\u{1F9D0}', color: '#22C55E', greeting: 'You seem interested in the details...' },
+    surprised: { label: 'Surprised', emoji: '\u{1F62E}', color: '#8B5CF6', greeting: 'You found something interesting!' }
+  };
+
+  // =====================================================================
+  // DOM REFERENCES
+  // =====================================================================
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const optInOverlay   = $('#optInOverlay');
+  const btnEnable      = $('#btnEnableCamera');
+  const btnSkip        = $('#btnSkipCamera');
+  const cameraContainer= $('#cameraContainer');
+  const cameraVideo    = $('#cameraVideo');
+  const cameraOverlay  = $('#cameraOverlay');
+  const cameraToggle   = $('#cameraToggle');
+  const cameraDetection= $('#cameraDetection');
+  const moodSelector   = $('#moodSelector');
+  const emotionHistory = $('#emotionHistory');
+  const emotionTimeline= $('#emotionTimeline');
+  const emotionDominant= $('#emotionDominant');
+  const navEmotionBadge= $('#navEmotionBadge');
+  const navEmotionText = $('#navEmotionText');
+  const heroGreeting   = $('#heroGreeting');
+  const adaptiveGreeting= $('#adaptiveGreeting');
+  const burstOverlay   = $('#burstOverlay');
+  const footerSummary  = $('#footerSummary');
+  const particleCanvas = $('#particle-canvas');
+
+  // =====================================================================
+  // PARTICLE SYSTEM
+  // =====================================================================
+  const pCtx = particleCanvas.getContext('2d');
+  let particles = [];
+
+  function resizeCanvas() {
+    particleCanvas.width = window.innerWidth;
+    particleCanvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * particleCanvas.width;
+      this.y = Math.random() * particleCanvas.height;
+      this.size = Math.random() * 2.5 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.4;
+      this.speedY = (Math.random() - 0.5) * 0.4;
+      this.opacity = Math.random() * 0.3 + 0.1;
+      this.hueOffset = Math.random() * 30 - 15;
+    }
+    update(speed) {
+      this.x += this.speedX * speed;
+      this.y += this.speedY * speed;
+      if (this.x < 0 || this.x > particleCanvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > particleCanvas.height) this.speedY *= -1;
+    }
+    draw(hue) {
+      pCtx.beginPath();
+      pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      pCtx.fillStyle = `hsla(${hue + this.hueOffset}, 70%, 60%, ${this.opacity})`;
+      pCtx.fill();
+    }
+  }
+
+  function initParticles() {
+    resizeCanvas();
+    particles = [];
+    const count = Math.min(80, Math.floor(window.innerWidth * window.innerHeight / 15000));
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animateParticles() {
+    pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+    const style = getComputedStyle(document.documentElement);
+    const speed = parseFloat(style.getPropertyValue('--particle-speed')) || 1;
+    const hue = parseFloat(style.getPropertyValue('--particle-hue')) || 220;
+
+    particles.forEach(p => {
+      p.update(speed);
+      p.draw(hue);
+    });
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          pCtx.beginPath();
+          pCtx.strokeStyle = `hsla(${hue}, 50%, 50%, ${0.06 * (1 - dist / 120)})`;
+          pCtx.lineWidth = 0.5;
+          pCtx.moveTo(particles[i].x, particles[i].y);
+          pCtx.lineTo(particles[j].x, particles[j].y);
+          pCtx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(animateParticles);
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  initParticles();
+  animateParticles();
+
+  // =====================================================================
+  // OPT-IN PARTICLES (decorative)
+  // =====================================================================
+  function createOptInParticles() {
+    const container = $('#optInParticles');
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.className = 'opt-in-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.top = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 8 + 's';
+      p.style.animationDuration = (6 + Math.random() * 6) + 's';
+      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+      container.appendChild(p);
+    }
+  }
+  createOptInParticles();
+
+  // =====================================================================
+  // OPT-IN FLOW
+  // =====================================================================
+  btnEnable.addEventListener('click', async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 320, height: 320, facingMode: 'user' }
+      });
+      state.videoStream = stream;
+      state.cameraEnabled = true;
+      cameraVideo.srcObject = stream;
+      startPortfolio(true);
+    } catch (err) {
+      console.warn('Camera access denied or unavailable:', err);
+      startPortfolio(false);
+    }
+  });
+
+  btnSkip.addEventListener('click', () => {
+    startPortfolio(false);
+  });
+
+  function startPortfolio(withCamera) {
+    state.started = true;
+    optInOverlay.classList.add('hidden');
+
+    if (withCamera) {
+      cameraContainer.classList.add('active');
+      navEmotionBadge.classList.add('active');
+      emotionHistory.classList.add('active');
+      startSimulatedDetection();
+    } else {
+      moodSelector.classList.add('active');
+      navEmotionBadge.classList.add('active');
+      emotionHistory.classList.add('active');
+    }
+
+    // Add initial emotion to history
+    addEmotionToHistory('neutral');
+
+    // Trigger reveal animations
+    setTimeout(triggerReveals, 300);
+  }
+
+  // =====================================================================
+  // SIMULATED EMOTION DETECTION (brightness-based + manual)
+  // =====================================================================
+  function startSimulatedDetection() {
+    const canvasCtx = cameraOverlay.getContext('2d');
+
+    state.analysisInterval = setInterval(() => {
+      if (!cameraVideo.videoWidth) return;
+
+      // Set canvas dimensions to match video
+      cameraOverlay.width = cameraVideo.videoWidth;
+      cameraOverlay.height = cameraVideo.videoHeight;
+
+      // Draw current frame and analyze
+      canvasCtx.drawImage(cameraVideo, 0, 0);
+      const imageData = canvasCtx.getImageData(0, 0, cameraOverlay.width, cameraOverlay.height);
+      const data = imageData.data;
+
+      // Calculate average brightness of center region
+      let totalBrightness = 0;
+      let centerPixels = 0;
+      const cx = Math.floor(cameraOverlay.width / 2);
+      const cy = Math.floor(cameraOverlay.height / 2);
+      const radius = Math.floor(Math.min(cx, cy) * 0.6);
+
+      for (let y = cy - radius; y < cy + radius; y += 4) {
+        for (let x = cx - radius; x < cx + radius; x += 4) {
+          const idx = (y * cameraOverlay.width + x) * 4;
+          if (idx >= 0 && idx < data.length) {
+            const brightness = (data[idx] * 0.299 + data[idx+1] * 0.587 + data[idx+2] * 0.114);
+            totalBrightness += brightness;
+            centerPixels++;
+          }
+        }
+      }
+
+      const avgBrightness = centerPixels > 0 ? totalBrightness / centerPixels : 128;
+
+      // Calculate edge brightness to detect "looking away"
+      let edgeBrightness = 0;
+      let edgePixels = 0;
+      for (let y = 0; y < cameraOverlay.height; y += 8) {
+        for (let x = 0; x < cameraOverlay.width; x += 8) {
+          const dx = x - cx;
+          const dy = y - cy;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist > radius * 1.2) {
+            const idx = (y * cameraOverlay.width + x) * 4;
+            if (idx >= 0 && idx < data.length) {
+              edgeBrightness += (data[idx] * 0.299 + data[idx+1] * 0.587 + data[idx+2] * 0.114);
+              edgePixels++;
+            }
+          }
+        }
+      }
+      const avgEdge = edgePixels > 0 ? edgeBrightness / edgePixels : 128;
+
+      // Determine emotion from brightness analysis
+      let detectedEmotion = 'neutral';
+      const brightnessDiff = Math.abs(avgBrightness - avgEdge);
+
+      if (avgBrightness > 150) {
+        detectedEmotion = 'happy';
+      } else if (avgBrightness < 80) {
+        detectedEmotion = 'focused';
+      } else if (brightnessDiff > 40) {
+        detectedEmotion = 'surprised';
+      } else {
+        detectedEmotion = 'neutral';
+      }
+
+      // Draw a subtle face mesh overlay on the canvas
+      drawFaceMeshOverlay(canvasCtx, cx, cy, radius, avgBrightness);
+
+      // Clear the overlay drawing (we drew onto it for analysis, now redraw just the overlay)
+      canvasCtx.clearRect(0, 0, cameraOverlay.width, cameraOverlay.height);
+      drawFaceMeshOverlay(canvasCtx, cx, cy, radius, avgBrightness);
+
+      // Apply detected emotion
+      if (detectedEmotion !== state.currentEmotion) {
+        setEmotion(detectedEmotion);
+      }
+
+      // Update detection label
+      const emo = EMOTIONS[detectedEmotion];
+      cameraDetection.textContent = `DETECTING: ${emo.label} ${emo.emoji}`;
+
+    }, 2000); // Analyze every 2 seconds
+  }
+
+  function drawFaceMeshOverlay(ctx, cx, cy, radius, brightness) {
+    const color = EMOTIONS[state.currentEmotion].color;
+    const alpha = 0.3 + (brightness / 255) * 0.3;
+
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = alpha;
+
+    // Oval face outline
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, radius * 0.55, radius * 0.7, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Horizontal guides
+    for (let i = -2; i <= 2; i++) {
+      const yOff = i * radius * 0.18;
+      const xSpan = radius * 0.5 * Math.cos(Math.asin(Math.abs(i) * 0.3));
+      ctx.beginPath();
+      ctx.moveTo(cx - xSpan, cy + yOff);
+      ctx.lineTo(cx + xSpan, cy + yOff);
+      ctx.stroke();
+    }
+
+    // Vertical guides
+    for (let i = -1; i <= 1; i++) {
+      const xOff = i * radius * 0.22;
+      ctx.beginPath();
+      ctx.moveTo(cx + xOff, cy - radius * 0.5);
+      ctx.lineTo(cx + xOff, cy + radius * 0.5);
+      ctx.stroke();
+    }
+
+    // Eyes
+    ctx.beginPath();
+    ctx.ellipse(cx - radius * 0.2, cy - radius * 0.15, radius * 0.08, radius * 0.05, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(cx + radius * 0.2, cy - radius * 0.15, radius * 0.08, radius * 0.05, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Nose
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - radius * 0.05);
+    ctx.lineTo(cx - radius * 0.06, cy + radius * 0.1);
+    ctx.lineTo(cx + radius * 0.06, cy + radius * 0.1);
+    ctx.stroke();
+
+    // Mouth
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + radius * 0.3, radius * 0.14, radius * 0.05, 0, 0, Math.PI);
+    ctx.stroke();
+
+    // Scatter points (landmark dots)
+    const points = [
+      [cx - radius*0.45, cy - radius*0.3],
+      [cx + radius*0.45, cy - radius*0.3],
+      [cx - radius*0.35, cy - radius*0.5],
+      [cx + radius*0.35, cy - radius*0.5],
+      [cx, cy - radius*0.6],
+      [cx - radius*0.5, cy],
+      [cx + radius*0.5, cy],
+      [cx - radius*0.4, cy + radius*0.35],
+      [cx + radius*0.4, cy + radius*0.35],
+      [cx, cy + radius*0.55],
+      [cx - radius*0.15, cy + radius*0.3],
+      [cx + radius*0.15, cy + radius*0.3],
+      [cx - radius*0.25, cy - radius*0.15],
+      [cx + radius*0.25, cy - radius*0.15],
+    ];
+
+    ctx.fillStyle = color;
+    ctx.globalAlpha = alpha * 0.8;
+    points.forEach(([px, py]) => {
+      ctx.beginPath();
+      ctx.arc(px, py, 2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    ctx.restore();
+  }
+
+  // =====================================================================
+  // EMOTION MANAGEMENT
+  // =====================================================================
+  function setEmotion(emotion) {
+    if (!EMOTIONS[emotion]) return;
+    if (emotion === state.currentEmotion) return;
+
+    // Track duration of previous emotion
+    const now = Date.now();
+    state.emotionDurations[state.currentEmotion] += (now - state.lastEmotionTime);
+    state.lastEmotionTime = now;
+
+    state.previousEmotion = state.currentEmotion;
+    state.currentEmotion = emotion;
+
+    // Update body class
+    document.body.classList.remove('emotion-neutral', 'emotion-happy', 'emotion-focused', 'emotion-surprised');
+    document.body.classList.add('emotion-' + emotion);
+
+    // Update nav badge
+    navEmotionText.textContent = EMOTIONS[emotion].label + ' ' + EMOTIONS[emotion].emoji;
+
+    // Update hero greeting
+    heroGreeting.textContent = EMOTIONS[emotion].greeting;
+    heroGreeting.classList.add('visible');
+
+    // Show adaptive greeting banner
+    showAdaptiveGreeting(EMOTIONS[emotion].greeting);
+
+    // Add to history
+    addEmotionToHistory(emotion);
+
+    // Update mood selector active state
+    $$('.mood-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.emotion === emotion);
+    });
+
+    // Surprised burst effect
+    if (emotion === 'surprised') {
+      triggerBurst();
+    }
+
+    // Update footer summary
+    updateFooterSummary();
+  }
+
+  function addEmotionToHistory(emotion) {
+    state.emotionHistory.push({
+      emotion: emotion,
+      time: Date.now()
+    });
+
+    // Update timeline visual (show last 8)
+    const recent = state.emotionHistory.slice(-8);
+    emotionTimeline.innerHTML = '';
+
+    recent.forEach((entry, i) => {
+      const item = document.createElement('div');
+      item.className = 'emotion-timeline-item';
+
+      const dot = document.createElement('div');
+      dot.className = 'emotion-timeline-dot';
+      dot.style.background = EMOTIONS[entry.emotion].color;
+
+      const label = document.createElement('span');
+      label.textContent = EMOTIONS[entry.emotion].emoji;
+
+      item.appendChild(dot);
+      item.appendChild(label);
+      emotionTimeline.appendChild(item);
+
+      if (i < recent.length - 1) {
+        const arrow = document.createElement('span');
+        arrow.className = 'emotion-timeline-arrow';
+        arrow.innerHTML = '&#x2192;';
+        emotionTimeline.appendChild(arrow);
+      }
+    });
+
+    // Update dominant
+    updateDominant();
+  }
+
+  function updateDominant() {
+    // Include current emotion time
+    const tempDurations = { ...state.emotionDurations };
+    tempDurations[state.currentEmotion] += (Date.now() - state.lastEmotionTime);
+
+    let maxEmotion = 'neutral';
+    let maxTime = 0;
+    for (const [emo, time] of Object.entries(tempDurations)) {
+      if (time > maxTime) {
+        maxTime = time;
+        maxEmotion = emo;
+      }
+    }
+
+    emotionDominant.innerHTML = `Most felt: <span>${EMOTIONS[maxEmotion].label} ${EMOTIONS[maxEmotion].emoji}</span>`;
+  }
+
+  function showAdaptiveGreeting(text) {
+    adaptiveGreeting.textContent = text;
+    adaptiveGreeting.classList.add('visible');
+    clearTimeout(adaptiveGreeting._timeout);
+    adaptiveGreeting._timeout = setTimeout(() => {
+      adaptiveGreeting.classList.remove('visible');
+    }, 4000);
+  }
+
+  function updateFooterSummary() {
+    if (state.emotionHistory.length < 2) return;
+    const journey = state.emotionHistory.slice(-6).map(e => EMOTIONS[e.emotion].label).join(' -> ');
+    footerSummary.textContent = `Session journey: ${journey}`;
+  }
+
+  // =====================================================================
+  // BURST EFFECT (Surprised)
+  // =====================================================================
+  function triggerBurst() {
+    burstOverlay.innerHTML = '';
+    burstOverlay.classList.add('active');
+
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'burst-particle';
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+
+      const angle = (Math.PI * 2 * i) / 30;
+      const distance = 150 + Math.random() * 300;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      const duration = 0.6 + Math.random() * 0.6;
+
+      p.style.transition = `all ${duration}s cubic-bezier(0.22, 1, 0.36, 1)`;
+      p.style.width = p.style.height = (3 + Math.random() * 6) + 'px';
+
+      burstOverlay.appendChild(p);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          p.style.left = (cx + tx) + 'px';
+          p.style.top = (cy + ty) + 'px';
+          p.style.opacity = '0';
+        });
+      });
+    }
+
+    setTimeout(() => {
+      burstOverlay.classList.remove('active');
+      burstOverlay.innerHTML = '';
+    }, 1500);
+  }
+
+  // =====================================================================
+  // CAMERA TOGGLE
+  // =====================================================================
+  cameraToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.isMinimized = !state.isMinimized;
+    cameraContainer.classList.toggle('minimized', state.isMinimized);
+    cameraToggle.innerHTML = state.isMinimized
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>'
+      : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>';
+    cameraToggle.setAttribute('aria-label', state.isMinimized ? 'Expand camera preview' : 'Minimize camera preview');
+  });
+
+  // =====================================================================
+  // MOOD SELECTOR (FALLBACK)
+  // =====================================================================
+  $$('.mood-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const emotion = btn.dataset.emotion;
+      setEmotion(emotion);
+    });
+  });
+
+  // =====================================================================
+  // SCROLL REVEAL
+  // =====================================================================
+  function triggerReveals() {
+    const reveals = $$('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+  }
+
+  // Also trigger on load for elements already in view
+  window.addEventListener('load', () => {
+    if (state.started) triggerReveals();
+  });
+
+  // =====================================================================
+  // MOBILE NAV
+  // =====================================================================
+  const navMobileToggle = $('#navMobileToggle');
+  const navLinks = $('#navLinks');
+
+  navMobileToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile nav on link click
+  $$('#navLinks a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // =====================================================================
+  // SMOOTH SCROLL for nav links
+  // =====================================================================
+  $$('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // =====================================================================
+  // KEYBOARD ACCESSIBILITY
+  // =====================================================================
+  document.addEventListener('keydown', (e) => {
+    // ESC to close opt-in overlay
+    if (e.key === 'Escape' && !optInOverlay.classList.contains('hidden')) {
+      startPortfolio(false);
+    }
+
+    // Number keys to switch emotions (for demo)
+    if (state.started) {
+      if (e.key === '1') setEmotion('neutral');
+      if (e.key === '2') setEmotion('happy');
+      if (e.key === '3') setEmotion('focused');
+      if (e.key === '4') setEmotion('surprised');
+    }
+  });
+
+  // =====================================================================
+  // AUTO-CYCLE DEMO (if no camera, auto-cycle through emotions for demo)
+  // =====================================================================
+  // Uncomment below to enable auto-cycle:
+  /*
+  let autoCycleIndex = 0;
+  const autoCycleEmotions = ['neutral', 'happy', 'focused', 'surprised'];
+  setInterval(() => {
+    if (state.started && !state.cameraEnabled) {
+      autoCycleIndex = (autoCycleIndex + 1) % autoCycleEmotions.length;
+      setEmotion(autoCycleEmotions[autoCycleIndex]);
+    }
+  }, 8000);
+  */
+
+  // =====================================================================
+  // CLEANUP
+  // =====================================================================
+  window.addEventListener('beforeunload', () => {
+    if (state.videoStream) {
+      state.videoStream.getTracks().forEach(track => track.stop());
+    }
+    if (state.analysisInterval) {
+      clearInterval(state.analysisInterval);
+    }
+  });
+
+  // =====================================================================
+  // INITIAL FOCUS TRAP for opt-in dialog
+  // =====================================================================
+  btnEnable.focus();
+
+})();
+</script>
+
+</body>
+</html>
