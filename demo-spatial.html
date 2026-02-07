@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Spatial Portfolio</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #050510;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  /* ---------- Loading Screen ---------- */
+  #loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #050510;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  #loading-screen h1 {
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #C87941;
+    margin-bottom: 2rem;
+  }
+  .loader-bar {
+    width: 200px;
+    height: 2px;
+    background: rgba(200,121,65,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .loader-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: #C87941;
+    border-radius: 2px;
+    animation: loadFill 2.5s ease-out forwards;
+  }
+  @keyframes loadFill {
+    0% { width: 0%; }
+    60% { width: 80%; }
+    100% { width: 100%; }
+  }
+  .loader-hint {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.1em;
+  }
+
+  /* ---------- 3D UI Overlay ---------- */
+  #scene-ui {
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  #controls-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(10,10,20,0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(200,121,65,0.2);
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.05em;
+    pointer-events: auto;
+    transition: opacity 0.5s ease;
+    text-align: center;
+    line-height: 1.6;
+  }
+  #controls-hint span {
+    color: #C87941;
+    font-weight: 500;
+  }
+  #controls-hint.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #view-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 200;
+    background: rgba(10,10,20,0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(200,121,65,0.3);
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #C87941;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  #view-toggle:hover {
+    background: rgba(200,121,65,0.15);
+    border-color: #C87941;
+  }
+
+  #brand-tag {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 200;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+  #brand-tag strong {
+    color: #C87941;
+    font-weight: 500;
+  }
+
+  /* ---------- A-Frame Overrides ---------- */
+  .a-enter-vr-button {
+    background: rgba(200,121,65,0.9) !important;
+    border-radius: 10px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.05em !important;
+    bottom: 80px !important;
+    right: 20px !important;
+  }
+  .a-enter-vr-button:hover {
+    background: #C87941 !important;
+  }
+  .a-loader-title {
+    display: none !important;
+  }
+
+  /* ---------- 2D Fallback Overlay ---------- */
+  #flat-view {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: #050510;
+    overflow-y: auto;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #flat-view.active {
+    display: block;
+    opacity: 1;
+  }
+
+  .flat-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px 120px;
+  }
+  .flat-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .flat-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .flat-header h1 em {
+    color: #C87941;
+    font-style: normal;
+  }
+  .flat-header p {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+  }
+
+  .flat-section {
+    margin-bottom: 48px;
+  }
+  .flat-section-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C87941;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(200,121,65,0.15);
+  }
+  .flat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s ease;
+  }
+  .flat-card:hover {
+    border-color: rgba(200,121,65,0.25);
+  }
+  .flat-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .flat-card p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .flat-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .flat-tag {
+    background: rgba(200,121,65,0.1);
+    color: #C87941;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .flat-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .flat-skill {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+  }
+  .flat-contact a {
+    display: block;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: color 0.3s ease;
+  }
+  .flat-contact a:hover {
+    color: #C87941;
+  }
+
+  .flat-back-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 600;
+    background: rgba(200,121,65,0.12);
+    border: 1px solid rgba(200,121,65,0.3);
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #C87941;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: none;
+  }
+  #flat-view.active ~ .flat-back-btn,
+  .flat-back-btn.show {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOADING SCREEN ===== -->
+<div id="loading-screen">
+  <h1>Spatial Portfolio</h1>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div class="loader-hint">Initializing 3D environment</div>
+</div>
+
+<!-- ===== OVERLAY UI ===== -->
+<div id="brand-tag"><strong>AG</strong> &mdash; Spatial Portfolio</div>
+<button id="view-toggle" onclick="toggleFlatView()">2D View</button>
+
+<div id="controls-hint">
+  <span>WASD</span> move &nbsp;&middot;&nbsp; <span>Mouse</span> look &nbsp;&middot;&nbsp; <span>Click</span> interact &nbsp;&middot;&nbsp; <span>VR</span> headset supported
+</div>
+
+<!-- ===== A-FRAME 3D SCENE ===== -->
+<a-scene
+  id="scene"
+  vr-mode-ui="enabled: true"
+  loading-screen="enabled: false"
+  renderer="antialias: true; colorManagement: true; sortObjects: true; physicallyCorrectLights: false"
+  fog="type: exponential; color: #050510; density: 0.04"
+>
+  <!-- ===== ASSETS ===== -->
+  <a-assets timeout="8000">
+  </a-assets>
+
+  <!-- ===== ENVIRONMENT ===== -->
+  <!-- Sky -->
+  <a-sky color="#050510"></a-sky>
+
+  <!-- Stars -->
+  <a-entity id="stars-container"></a-entity>
+
+  <!-- Ground Grid -->
+  <a-entity id="ground-grid">
+    <a-plane
+      rotation="-90 0 0"
+      width="80"
+      height="80"
+      color="#0A0A18"
+      opacity="0.6"
+      material="transparent: true; side: double"
+    ></a-plane>
+    <!-- Grid lines X -->
+    <a-entity id="grid-lines"></a-entity>
+  </a-entity>
+
+  <!-- ===== LIGHTING ===== -->
+  <a-light type="ambient" color="#667" intensity="0.4"></a-light>
+  <a-light type="directional" color="#FFF8F0" intensity="0.6" position="2 8 4"></a-light>
+  <a-light type="point" color="#C87941" intensity="0.5" position="0 3 -3" distance="12" decay="2"></a-light>
+  <a-light type="point" color="#3A6B9F" intensity="0.3" position="-5 2 -6" distance="10" decay="2"></a-light>
+
+  <!-- ===== CENTRAL DECORATIVE GEOMETRY ===== -->
+  <a-entity position="0 2.2 -3.5" id="center-deco">
+    <a-icosahedron
+      radius="0.25"
+      color="#C87941"
+      material="metalness: 0.7; roughness: 0.3; emissive: #C87941; emissiveIntensity: 0.15"
+      animation="property: rotation; to: 360 360 0; dur: 20000; loop: true; easing: linear"
+    ></a-icosahedron>
+    <a-torus
+      radius="0.45"
+      radius-tubular="0.008"
+      segments-radial="6"
+      segments-tubular="48"
+      color="#C87941"
+      material="opacity: 0.3; transparent: true; emissive: #C87941; emissiveIntensity: 0.2"
+      animation="property: rotation; to: 0 360 360; dur: 30000; loop: true; easing: linear"
+    ></a-torus>
+    <a-torus
+      radius="0.6"
+      radius-tubular="0.005"
+      segments-radial="4"
+      segments-tubular="64"
+      color="#3A6B9F"
+      material="opacity: 0.2; transparent: true; emissive: #3A6B9F; emissiveIntensity: 0.15"
+      rotation="60 0 30"
+      animation="property: rotation; to: 420 360 30; dur: 40000; loop: true; easing: linear"
+    ></a-torus>
+  </a-entity>
+
+  <!-- ===== FLOATING PARTICLES ===== -->
+  <a-entity id="particles-container"></a-entity>
+
+  <!-- ===== CONTENT PANELS ===== -->
+
+  <!-- PANEL 0: WELCOME (directly ahead) -->
+  <a-entity
+    class="info-panel"
+    id="panel-welcome"
+    position="0 1.6 -3.2"
+    rotation="0 0 0"
+    animation__float="property: position; to: 0 1.68 -3.2; dur: 3000; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <!-- Card backing -->
+    <a-plane
+      class="panel-bg"
+      width="2.6"
+      height="1.4"
+      color="#0E0E1A"
+      material="opacity: 0.92; transparent: true; shader: flat"
+    ></a-plane>
+    <!-- Copper border highlight top -->
+    <a-plane
+      width="2.6"
+      height="0.008"
+      position="0 0.7 0.001"
+      color="#C87941"
+      material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"
+    ></a-plane>
+    <!-- Accent line left -->
+    <a-plane
+      width="0.006"
+      height="1.4"
+      position="-1.3 0 0.001"
+      color="#C87941"
+      material="shader: flat; opacity: 0.4; transparent: true"
+    ></a-plane>
+    <!-- Title -->
+    <a-text
+      value="ANSHULL GARG"
+      position="0 0.35 0.01"
+      align="center"
+      color="#FFFFFF"
+      font="mozillavr"
+      width="3.2"
+      letter-spacing="4"
+    ></a-text>
+    <!-- Subtitle -->
+    <a-text
+      value="Software Developer @ Walmart"
+      position="0 0.08 0.01"
+      align="center"
+      color="#C87941"
+      width="2.4"
+    ></a-text>
+    <!-- Divider -->
+    <a-plane
+      width="0.8"
+      height="0.002"
+      position="0 -0.1 0.01"
+      color="#C87941"
+      material="shader: flat; opacity: 0.5; transparent: true"
+    ></a-plane>
+    <!-- Instructions -->
+    <a-text
+      value="Look around to explore my work.\nClick panels for details.\nEnter VR for full spatial experience."
+      position="0 -0.32 0.01"
+      align="center"
+      color="#888899"
+      width="2"
+      line-height="52"
+    ></a-text>
+  </a-entity>
+
+  <!-- PANEL 1: ABOUT (slightly left) -->
+  <a-entity
+    class="info-panel"
+    id="panel-about"
+    position="-2.8 1.7 -3.5"
+    rotation="0 22 0"
+    animation__float="property: position; to: -2.8 1.78 -3.5; dur: 3500; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <a-plane class="panel-bg" width="2.2" height="1.8" color="#0E0E1A" material="opacity: 0.92; transparent: true; shader: flat"></a-plane>
+    <a-plane width="2.2" height="0.008" position="0 0.9 0.001" color="#C87941" material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"></a-plane>
+    <a-plane width="0.006" height="1.8" position="-1.1 0 0.001" color="#C87941" material="shader: flat; opacity: 0.4; transparent: true"></a-plane>
+    <!-- Label -->
+    <a-text value="ABOUT" position="0 0.68 0.01" align="center" color="#C87941" width="2" letter-spacing="3" font="mozillavr"></a-text>
+    <!-- Bio -->
+    <a-text
+      value="Software developer with a passion for\nbuilding scalable, high-performance\napplications. Currently at Walmart,\nworking on systems that serve millions\nof users.\n\nI focus on clean architecture, great\nuser experiences, and pushing the\nboundaries of web technology."
+      position="0 0.05 0.01"
+      align="center"
+      color="#AAAABC"
+      width="1.8"
+      line-height="48"
+    ></a-text>
+  </a-entity>
+
+  <!-- PANEL 2: PROJECT - Checkout Optimization (left) -->
+  <a-entity
+    class="info-panel"
+    id="panel-project1"
+    position="-5.2 1.6 -2.8"
+    rotation="0 40 0"
+    animation__float="property: position; to: -5.2 1.68 -2.8; dur: 4000; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <a-plane class="panel-bg" width="2.2" height="2" color="#0E0E1A" material="opacity: 0.92; transparent: true; shader: flat"></a-plane>
+    <a-plane width="2.2" height="0.008" position="0 1 0.001" color="#C87941" material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"></a-plane>
+    <a-plane width="0.006" height="2" position="-1.1 0 0.001" color="#C87941" material="shader: flat; opacity: 0.4; transparent: true"></a-plane>
+    <a-text value="PROJECT" position="0 0.78 0.01" align="center" color="#C87941" width="1.6" letter-spacing="3" font="mozillavr"></a-text>
+    <a-text value="Checkout Optimization" position="0 0.52 0.01" align="center" color="#FFFFFF" width="2"></a-text>
+    <a-text
+      value="Re-engineered Walmart's checkout\npipeline to reduce latency by 35%.\nHandles 100K+ concurrent sessions\nwith graceful degradation and\nreal-time inventory validation."
+      position="0 0.05 0.01"
+      align="center"
+      color="#AAAABC"
+      width="1.8"
+      line-height="48"
+    ></a-text>
+    <!-- Tech tags -->
+    <a-plane width="0.7" height="0.18" position="-0.5 -0.52 0.01" color="#1A1220" material="shader: flat" radius="0.04"></a-plane>
+    <a-text value="React" position="-0.5 -0.52 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="0.3 -0.52 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="Node.js" position="0.3 -0.52 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="-0.5 -0.78 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="Redis" position="-0.5 -0.78 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="0.3 -0.78 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="GraphQL" position="0.3 -0.78 0.02" align="center" color="#C87941" width="1.4"></a-text>
+  </a-entity>
+
+  <!-- PANEL 3: PROJECT - Component Library (far left) -->
+  <a-entity
+    class="info-panel"
+    id="panel-project2"
+    position="-6.5 1.7 -0.5"
+    rotation="0 65 0"
+    animation__float="property: position; to: -6.5 1.78 -0.5; dur: 3800; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <a-plane class="panel-bg" width="2.2" height="2" color="#0E0E1A" material="opacity: 0.92; transparent: true; shader: flat"></a-plane>
+    <a-plane width="2.2" height="0.008" position="0 1 0.001" color="#C87941" material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"></a-plane>
+    <a-plane width="0.006" height="2" position="-1.1 0 0.001" color="#C87941" material="shader: flat; opacity: 0.4; transparent: true"></a-plane>
+    <a-text value="PROJECT" position="0 0.78 0.01" align="center" color="#C87941" width="1.6" letter-spacing="3" font="mozillavr"></a-text>
+    <a-text value="Component Library" position="0 0.52 0.01" align="center" color="#FFFFFF" width="2"></a-text>
+    <a-text
+      value="Built and maintained a shared UI\ncomponent library used across 12+\nteams at Walmart. Includes 80+\ncomponents with full a11y support,\ntheme tokens, and Storybook docs."
+      position="0 0.05 0.01"
+      align="center"
+      color="#AAAABC"
+      width="1.8"
+      line-height="48"
+    ></a-text>
+    <a-plane width="0.9" height="0.18" position="-0.38 -0.52 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="TypeScript" position="-0.38 -0.52 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.9" height="0.18" position="0.55 -0.52 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="Storybook" position="0.55 -0.52 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="-0.38 -0.78 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="React" position="-0.38 -0.78 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="0.4 -0.78 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="Figma" position="0.4 -0.78 0.02" align="center" color="#C87941" width="1.4"></a-text>
+  </a-entity>
+
+  <!-- PANEL 4: PROJECT - Real-time Analytics (right) -->
+  <a-entity
+    class="info-panel"
+    id="panel-project3"
+    position="5.2 1.6 -2.8"
+    rotation="0 -40 0"
+    animation__float="property: position; to: 5.2 1.68 -2.8; dur: 3600; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <a-plane class="panel-bg" width="2.2" height="2" color="#0E0E1A" material="opacity: 0.92; transparent: true; shader: flat"></a-plane>
+    <a-plane width="2.2" height="0.008" position="0 1 0.001" color="#C87941" material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"></a-plane>
+    <a-plane width="0.006" height="2" position="-1.1 0 0.001" color="#C87941" material="shader: flat; opacity: 0.4; transparent: true"></a-plane>
+    <a-text value="PROJECT" position="0 0.78 0.01" align="center" color="#C87941" width="1.6" letter-spacing="3" font="mozillavr"></a-text>
+    <a-text value="Real-time Analytics" position="0 0.52 0.01" align="center" color="#FFFFFF" width="2"></a-text>
+    <a-text
+      value="Designed a real-time analytics\ndashboard processing 2M+ events\nper minute. Live visualizations of\nuser behavior, conversion funnels,\nand system health metrics."
+      position="0 0.05 0.01"
+      align="center"
+      color="#AAAABC"
+      width="1.8"
+      line-height="48"
+    ></a-text>
+    <a-plane width="0.7" height="0.18" position="-0.5 -0.52 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="Kafka" position="-0.5 -0.52 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="0.3 -0.52 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="D3.js" position="0.3 -0.52 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.8" height="0.18" position="-0.45 -0.78 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="ClickHouse" position="-0.45 -0.78 0.02" align="center" color="#C87941" width="1.4"></a-text>
+    <a-plane width="0.7" height="0.18" position="0.4 -0.78 0.01" color="#1A1220" material="shader: flat"></a-plane>
+    <a-text value="WebSocket" position="0.4 -0.78 0.02" align="center" color="#C87941" width="1.2"></a-text>
+  </a-entity>
+
+  <!-- PANEL 5: SKILLS (slightly right) -->
+  <a-entity
+    class="info-panel"
+    id="panel-skills"
+    position="2.8 1.7 -3.5"
+    rotation="0 -22 0"
+    animation__float="property: position; to: 2.8 1.78 -3.5; dur: 3300; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <a-plane class="panel-bg" width="2.2" height="2.4" color="#0E0E1A" material="opacity: 0.92; transparent: true; shader: flat"></a-plane>
+    <a-plane width="2.2" height="0.008" position="0 1.2 0.001" color="#C87941" material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"></a-plane>
+    <a-plane width="0.006" height="2.4" position="-1.1 0 0.001" color="#C87941" material="shader: flat; opacity: 0.4; transparent: true"></a-plane>
+    <a-text value="SKILLS" position="0 0.96 0.01" align="center" color="#C87941" width="2" letter-spacing="3" font="mozillavr"></a-text>
+    <!-- Skills list -->
+    <a-text value="Frontend" position="-0.85 0.68 0.01" align="left" color="#FFFFFF" width="1.6" font="mozillavr"></a-text>
+    <a-text value="React, Next.js, TypeScript\nTailwind, A-Frame, Three.js" position="-0.85 0.42 0.01" align="left" color="#AAAABC" width="1.6" line-height="44"></a-text>
+
+    <a-text value="Backend" position="-0.85 0.12 0.01" align="left" color="#FFFFFF" width="1.6" font="mozillavr"></a-text>
+    <a-text value="Node.js, Python, Java\nGraphQL, REST, gRPC" position="-0.85 -0.14 0.01" align="left" color="#AAAABC" width="1.6" line-height="44"></a-text>
+
+    <a-text value="Infrastructure" position="-0.85 -0.42 0.01" align="left" color="#FFFFFF" width="1.6" font="mozillavr"></a-text>
+    <a-text value="AWS, GCP, Docker, K8s\nCI/CD, Terraform" position="-0.85 -0.68 0.01" align="left" color="#AAAABC" width="1.6" line-height="44"></a-text>
+
+    <a-text value="Data" position="-0.85 -0.96 0.01" align="left" color="#FFFFFF" width="1.6" font="mozillavr"></a-text>
+    <a-text value="PostgreSQL, Redis, Kafka\nElasticsearch, ClickHouse" position="-0.85 -1.04 0.01" align="left" color="#AAAABC" width="1.4" line-height="44"></a-text>
+  </a-entity>
+
+  <!-- PANEL 6: CONTACT (far right) -->
+  <a-entity
+    class="info-panel"
+    id="panel-contact"
+    position="6.5 1.7 -0.5"
+    rotation="0 -65 0"
+    animation__float="property: position; to: 6.5 1.78 -0.5; dur: 4200; dir: alternate; loop: true; easing: easeInOutSine"
+  >
+    <a-plane class="panel-bg" width="2.2" height="1.6" color="#0E0E1A" material="opacity: 0.92; transparent: true; shader: flat"></a-plane>
+    <a-plane width="2.2" height="0.008" position="0 0.8 0.001" color="#C87941" material="shader: flat; emissive: #C87941; emissiveIntensity: 0.6"></a-plane>
+    <a-plane width="0.006" height="1.6" position="-1.1 0 0.001" color="#C87941" material="shader: flat; opacity: 0.4; transparent: true"></a-plane>
+    <a-text value="CONTACT" position="0 0.56 0.01" align="center" color="#C87941" width="2" letter-spacing="3" font="mozillavr"></a-text>
+    <a-text
+      value="Let's build something great together."
+      position="0 0.28 0.01"
+      align="center"
+      color="#FFFFFF"
+      width="1.8"
+    ></a-text>
+    <a-text value="anshull.garg@email.com" position="0 -0.02 0.01" align="center" color="#AAAABC" width="1.8"></a-text>
+    <a-text value="github.com/anshullgarg" position="0 -0.24 0.01" align="center" color="#AAAABC" width="1.8"></a-text>
+    <a-text value="linkedin.com/in/anshullgarg" position="0 -0.46 0.01" align="center" color="#AAAABC" width="1.8"></a-text>
+  </a-entity>
+
+  <!-- ===== CAMERA + CURSOR ===== -->
+  <a-entity id="rig" position="0 0 0">
+    <a-camera
+      position="0 1.6 0"
+      look-controls="pointerLockEnabled: false"
+      wasd-controls="acceleration: 20"
+    >
+      <!-- Gaze cursor (ring style) -->
+      <a-entity
+        cursor="fuse: false; rayOrigin: mouse"
+        raycaster="objects: .panel-bg; far: 20"
+        position="0 0 -1"
+      >
+        <!-- Crosshair -->
+        <a-ring
+          radius-inner="0.008"
+          radius-outer="0.012"
+          color="#C87941"
+          material="shader: flat; opacity: 0.7; transparent: true"
+          position="0 0 0"
+        ></a-ring>
+      </a-entity>
+    </a-camera>
+  </a-entity>
+
+</a-scene>
+
+<!-- ===== 2D FLAT VIEW ===== -->
+<div id="flat-view">
+  <button class="flat-back-btn" onclick="toggleFlatView()" style="position:fixed;top:20px;right:20px;z-index:600;background:rgba(200,121,65,0.12);border:1px solid rgba(200,121,65,0.3);border-radius:10px;padding:10px 20px;color:#C87941;font-family:Inter,sans-serif;font-size:0.8rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;">Back to 3D</button>
+  <div class="flat-inner">
+    <div class="flat-header">
+      <h1>Anshull <em>Garg</em></h1>
+      <p>Software Developer @ Walmart</p>
+    </div>
+
+    <div class="flat-section">
+      <div class="flat-section-label">About</div>
+      <div class="flat-card">
+        <p>Software developer with a passion for building scalable, high-performance applications. Currently at Walmart, working on systems that serve millions of users. I focus on clean architecture, great user experiences, and pushing the boundaries of web technology.</p>
+      </div>
+    </div>
+
+    <div class="flat-section">
+      <div class="flat-section-label">Projects</div>
+      <div class="flat-card">
+        <h3>Checkout Optimization</h3>
+        <p>Re-engineered Walmart's checkout pipeline to reduce latency by 35%. Handles 100K+ concurrent sessions with graceful degradation and real-time inventory validation.</p>
+        <div class="flat-tags">
+          <span class="flat-tag">React</span>
+          <span class="flat-tag">Node.js</span>
+          <span class="flat-tag">Redis</span>
+          <span class="flat-tag">GraphQL</span>
+        </div>
+      </div>
+      <div class="flat-card">
+        <h3>Component Library</h3>
+        <p>Built and maintained a shared UI component library used across 12+ teams at Walmart. Includes 80+ components with full accessibility support, theme tokens, and Storybook documentation.</p>
+        <div class="flat-tags">
+          <span class="flat-tag">TypeScript</span>
+          <span class="flat-tag">Storybook</span>
+          <span class="flat-tag">React</span>
+          <span class="flat-tag">Figma</span>
+        </div>
+      </div>
+      <div class="flat-card">
+        <h3>Real-time Analytics</h3>
+        <p>Designed a real-time analytics dashboard processing 2M+ events per minute. Live visualizations of user behavior, conversion funnels, and system health metrics.</p>
+        <div class="flat-tags">
+          <span class="flat-tag">Kafka</span>
+          <span class="flat-tag">D3.js</span>
+          <span class="flat-tag">ClickHouse</span>
+          <span class="flat-tag">WebSocket</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flat-section">
+      <div class="flat-section-label">Skills</div>
+      <div class="flat-skills-grid">
+        <div class="flat-skill">React</div>
+        <div class="flat-skill">Next.js</div>
+        <div class="flat-skill">TypeScript</div>
+        <div class="flat-skill">Node.js</div>
+        <div class="flat-skill">Python</div>
+        <div class="flat-skill">Java</div>
+        <div class="flat-skill">GraphQL</div>
+        <div class="flat-skill">AWS</div>
+        <div class="flat-skill">Docker</div>
+        <div class="flat-skill">Kubernetes</div>
+        <div class="flat-skill">PostgreSQL</div>
+        <div class="flat-skill">Redis</div>
+        <div class="flat-skill">Kafka</div>
+        <div class="flat-skill">Terraform</div>
+        <div class="flat-skill">Tailwind</div>
+        <div class="flat-skill">Three.js</div>
+      </div>
+    </div>
+
+    <div class="flat-section">
+      <div class="flat-section-label">Contact</div>
+      <div class="flat-card flat-contact">
+        <a href="mailto:anshull.garg@email.com">anshull.garg@email.com</a>
+        <a href="https://github.com/anshullgarg" target="_blank">github.com/anshullgarg</a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank">linkedin.com/in/anshullgarg</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================================================================
+// SPATIAL PORTFOLIO - Interaction & Effects
+// ===================================================================
+
+// ---------- Loading Screen ----------
+window.addEventListener('load', function () {
+  setTimeout(function () {
+    document.getElementById('loading-screen').classList.add('hidden');
+  }, 2800);
+});
+
+// ---------- Controls Hint Auto-hide ----------
+setTimeout(function () {
+  var hint = document.getElementById('controls-hint');
+  if (hint) hint.classList.add('fade-out');
+}, 10000);
+
+// ---------- 2D / 3D View Toggle ----------
+var flatViewActive = false;
+function toggleFlatView() {
+  flatViewActive = !flatViewActive;
+  var flatView = document.getElementById('flat-view');
+  var scene = document.getElementById('scene');
+  var toggleBtn = document.getElementById('view-toggle');
+  var brandTag = document.getElementById('brand-tag');
+  var controlsHint = document.getElementById('controls-hint');
+
+  if (flatViewActive) {
+    flatView.classList.add('active');
+    requestAnimationFrame(function () {
+      flatView.style.opacity = '1';
+    });
+    scene.style.display = 'none';
+    toggleBtn.style.display = 'none';
+    brandTag.style.display = 'none';
+    if (controlsHint) controlsHint.style.display = 'none';
+  } else {
+    flatView.style.opacity = '0';
+    setTimeout(function () {
+      flatView.classList.remove('active');
+      scene.style.display = '';
+      toggleBtn.textContent = '2D VIEW';
+      toggleBtn.style.display = '';
+      brandTag.style.display = '';
+    }, 500);
+  }
+}
+
+// ---------- Generate Stars ----------
+(function generateStars() {
+  var container = document.getElementById('stars-container');
+  if (!container) return;
+
+  for (var i = 0; i < 300; i++) {
+    var star = document.createElement('a-sphere');
+    var x = (Math.random() - 0.5) * 100;
+    var y = Math.random() * 40 + 2;
+    var z = (Math.random() - 0.5) * 100;
+    var size = Math.random() * 0.04 + 0.01;
+    var brightness = Math.random() * 0.5 + 0.5;
+
+    star.setAttribute('position', x + ' ' + y + ' ' + z);
+    star.setAttribute('radius', size);
+    star.setAttribute('material', 'shader: flat; color: #FFFFFF; opacity: ' + brightness + '; transparent: true');
+
+    // Some stars twinkle
+    if (Math.random() > 0.7) {
+      star.setAttribute('animation', 'property: material.opacity; from: ' + brightness + '; to: ' + (brightness * 0.2) + '; dur: ' + (1500 + Math.random() * 3000) + '; dir: alternate; loop: true; easing: easeInOutSine');
+    }
+
+    container.appendChild(star);
+  }
+})();
+
+// ---------- Generate Grid Lines ----------
+(function generateGrid() {
+  var container = document.getElementById('grid-lines');
+  if (!container) return;
+
+  var gridSize = 40;
+  var step = 2;
+
+  for (var i = -gridSize; i <= gridSize; i += step) {
+    // Lines along X
+    var lineX = document.createElement('a-plane');
+    lineX.setAttribute('position', '0 0.005 ' + i);
+    lineX.setAttribute('rotation', '-90 0 0');
+    lineX.setAttribute('width', gridSize * 2);
+    lineX.setAttribute('height', '0.02');
+    lineX.setAttribute('material', 'shader: flat; color: #C87941; opacity: 0.06; transparent: true');
+    container.appendChild(lineX);
+
+    // Lines along Z
+    var lineZ = document.createElement('a-plane');
+    lineZ.setAttribute('position', i + ' 0.005 0');
+    lineZ.setAttribute('rotation', '-90 0 90');
+    lineZ.setAttribute('width', gridSize * 2);
+    lineZ.setAttribute('height', '0.02');
+    lineZ.setAttribute('material', 'shader: flat; color: #C87941; opacity: 0.06; transparent: true');
+    container.appendChild(lineZ);
+  }
+})();
+
+// ---------- Generate Floating Particles ----------
+(function generateParticles() {
+  var container = document.getElementById('particles-container');
+  if (!container) return;
+
+  for (var i = 0; i < 40; i++) {
+    var particle = document.createElement('a-sphere');
+    var x = (Math.random() - 0.5) * 20;
+    var y = Math.random() * 5 + 0.5;
+    var z = (Math.random() - 0.5) * 20 - 3;
+    var size = Math.random() * 0.02 + 0.005;
+
+    particle.setAttribute('position', x + ' ' + y + ' ' + z);
+    particle.setAttribute('radius', size);
+    particle.setAttribute('material', 'shader: flat; color: #C87941; opacity: 0.4; transparent: true; emissive: #C87941; emissiveIntensity: 0.5');
+
+    // Gentle float animation
+    var floatY = y + (Math.random() * 0.5 + 0.2);
+    var dur = 4000 + Math.random() * 6000;
+    particle.setAttribute('animation', 'property: position; to: ' + x + ' ' + floatY + ' ' + z + '; dur: ' + dur + '; dir: alternate; loop: true; easing: easeInOutSine');
+
+    container.appendChild(particle);
+  }
+})();
+
+// ---------- Panel Hover / Click Interactions ----------
+// A-Frame component for panel interactivity
+AFRAME.registerComponent('panel-interaction', {
+  init: function () {
+    var el = this.el;
+    var panels = el.querySelectorAll('.panel-bg');
+    var expandedPanel = null;
+
+    panels.forEach(function (panel) {
+      var parentEntity = panel.parentElement;
+      var originalScale = { x: 1, y: 1, z: 1 };
+
+      // Mouse enter - highlight
+      panel.addEventListener('mouseenter', function () {
+        panel.setAttribute('material', 'opacity: 0.98; transparent: true; shader: flat; color: #12121E');
+        parentEntity.setAttribute('animation__hover', 'property: scale; to: 1.06 1.06 1.06; dur: 300; easing: easeOutQuad');
+      });
+
+      // Mouse leave - reset
+      panel.addEventListener('mouseleave', function () {
+        panel.setAttribute('material', 'opacity: 0.92; transparent: true; shader: flat; color: #0E0E1A');
+        if (expandedPanel !== parentEntity) {
+          parentEntity.setAttribute('animation__hover', 'property: scale; to: 1 1 1; dur: 300; easing: easeOutQuad');
+        }
+      });
+
+      // Click - expand / collapse
+      panel.addEventListener('click', function () {
+        if (expandedPanel === parentEntity) {
+          // Collapse
+          parentEntity.setAttribute('animation__expand', 'property: scale; to: 1 1 1; dur: 400; easing: easeOutBack');
+          panel.setAttribute('material', 'opacity: 0.92; transparent: true; shader: flat; color: #0E0E1A');
+          expandedPanel = null;
+        } else {
+          // Collapse previously expanded
+          if (expandedPanel) {
+            expandedPanel.setAttribute('animation__expand', 'property: scale; to: 1 1 1; dur: 400; easing: easeOutBack');
+            var prevBg = expandedPanel.querySelector('.panel-bg');
+            if (prevBg) prevBg.setAttribute('material', 'opacity: 0.92; transparent: true; shader: flat; color: #0E0E1A');
+          }
+          // Expand this one
+          parentEntity.setAttribute('animation__expand', 'property: scale; to: 1.15 1.15 1.15; dur: 400; easing: easeOutBack');
+          panel.setAttribute('material', 'opacity: 1; transparent: false; shader: flat; color: #141422');
+          expandedPanel = parentEntity;
+        }
+      });
+    });
+  }
+});
+
+// Apply the component to the scene
+document.addEventListener('DOMContentLoaded', function () {
+  var scene = document.getElementById('scene');
+  if (scene) {
+    scene.setAttribute('panel-interaction', '');
+  }
+});
+
+// ---------- Keyboard shortcut: ESC to toggle flat view ----------
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && flatViewActive) {
+    toggleFlatView();
+  }
+});
+</script>
+
+</body>
+</html>
