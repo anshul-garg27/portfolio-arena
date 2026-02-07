@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | The Living Organism | Software Developer Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A living, breathing biological portfolio experience.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   CSS CUSTOM PROPERTIES
+   ========================================================================== */
+:root {
+  --bg-deep: #050510;
+  --bg-surface: #0a0a1a;
+  --bg-elevated: #111128;
+  --border: #1a1a3a;
+  --text-body: #a8b8cc;
+  --text-heading: #E0E8F0;
+  --text-muted: #5a6a7a;
+  --teal: #00CED1;
+  --green: #39FF7F;
+  --blue: #4169E1;
+  --pink: #FF6B9D;
+  --teal-dim: rgba(0, 206, 209, 0.15);
+  --green-dim: rgba(57, 255, 127, 0.1);
+  --blue-dim: rgba(65, 105, 225, 0.1);
+  --pink-dim: rgba(255, 107, 157, 0.1);
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --ease-organic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-body);
+  overflow-x: hidden;
+  line-height: 1.7;
+  cursor: none;
+  min-height: 100vh;
+}
+::selection { background: rgba(0, 206, 209, 0.3); color: var(--text-heading); }
+a { color: var(--teal); text-decoration: none; transition: color 0.3s; }
+a:hover { color: var(--green); }
+
+/* ==========================================================================
+   CUSTOM CURSOR
+   ========================================================================== */
+#cursor-cell {
+  position: fixed;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,206,209,0.7), transparent 70%);
+  pointer-events: none;
+  z-index: 100000;
+  transform: translate(-50%, -50%);
+  transition: width 0.25s, height 0.25s;
+  mix-blend-mode: screen;
+}
+#cursor-cell.hovering { width: 40px; height: 40px; }
+#cursor-membrane {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,206,209,0.25);
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease-out, width 0.25s, height 0.25s;
+}
+#cursor-membrane.hovering { width: 52px; height: 52px; border-color: rgba(57,255,127,0.2); }
+@media (max-width: 768px) {
+  #cursor-cell, #cursor-membrane { display: none; }
+  body { cursor: auto; }
+}
+
+/* ==========================================================================
+   MOUSE TRAIL
+   ========================================================================== */
+.trail-dot {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  mix-blend-mode: screen;
+}
+
+/* ==========================================================================
+   OVERLAYS: VIGNETTE, FILM GRAIN, MICROSCOPE
+   ========================================================================== */
+.vignette {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9990;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(5,5,16,0.85) 100%);
+}
+.film-grain {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9989;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 256px;
+  animation: grain 0.4s steps(5) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0,0); }
+  25% { transform: translate(-4%,-6%); }
+  50% { transform: translate(3%,-3%); }
+  75% { transform: translate(-6%,4%); }
+  100% { transform: translate(0,0); }
+}
+.microscope-lens {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9988;
+  border-radius: 50%;
+  box-shadow: inset 0 0 200px 80px rgba(5,5,16,0.6);
+}
+
+/* ==========================================================================
+   MAIN CANVAS
+   ========================================================================== */
+#bioCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   HERO / CELL STATE
+   ========================================================================== */
+#hero-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 1s var(--ease-organic);
+}
+#hero-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.hero-text {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1.5s 0.5s, transform 1.5s 0.5s var(--ease-organic);
+}
+.hero-text.visible { opacity: 1; transform: translateY(0); }
+
+.hero-name {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.hero-role {
+  font-size: clamp(14px, 2vw, 20px);
+  color: var(--teal);
+  font-weight: 400;
+  margin-bottom: 16px;
+}
+.hero-subtitle {
+  font-size: clamp(12px, 1.5vw, 16px);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.cell-prompt {
+  margin-top: 40px;
+  font-size: 14px;
+  color: var(--text-muted);
+  opacity: 0;
+  animation: fadeInPulse 2s 2s forwards;
+  pointer-events: auto;
+  cursor: none;
+}
+.cell-prompt span {
+  display: inline-block;
+  padding: 10px 28px;
+  border: 1px solid rgba(0,206,209,0.3);
+  border-radius: 30px;
+  transition: all 0.3s;
+  background: rgba(0,206,209,0.05);
+}
+.cell-prompt span:hover {
+  border-color: var(--teal);
+  background: rgba(0,206,209,0.12);
+  color: var(--teal);
+  box-shadow: 0 0 30px rgba(0,206,209,0.2);
+}
+
+@keyframes fadeInPulse {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   ORGANISM NAVIGATION (post-evolution)
+   ========================================================================== */
+#organism-nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s;
+}
+#organism-nav.visible { opacity: 1; pointer-events: auto; }
+
+.nav-node {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(5,5,16,0.8);
+  color: var(--text-muted);
+  cursor: none;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+.nav-node:hover, .nav-node.active {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(0,206,209,0.08);
+  box-shadow: 0 0 20px rgba(0,206,209,0.15);
+}
+
+/* ==========================================================================
+   CONTENT PANELS
+   ========================================================================== */
+#content-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-panel {
+  position: absolute;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 40px;
+  background: rgba(10, 10, 26, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-organic), transform 0.5s var(--ease-bounce);
+  box-shadow: 0 0 60px rgba(0, 206, 209, 0.08), inset 0 0 60px rgba(0, 206, 209, 0.02);
+}
+.content-panel.visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+.content-panel::-webkit-scrollbar { width: 4px; }
+.content-panel::-webkit-scrollbar-track { background: transparent; }
+.content-panel::-webkit-scrollbar-thumb { background: var(--teal-dim); border-radius: 2px; }
+
+.panel-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(5,5,16,0.8);
+  color: var(--text-muted);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none;
+  transition: all 0.3s;
+}
+.panel-close:hover {
+  border-color: var(--pink);
+  color: var(--pink);
+  background: rgba(255,107,157,0.1);
+}
+
+.panel-title {
+  font-family: var(--font-heading);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 6px;
+}
+.panel-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+  display: block;
+}
+
+/* Organic border decoration */
+.organic-border {
+  position: relative;
+}
+.organic-border::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--teal-dim), transparent 40%, transparent 60%, var(--green-dim));
+  z-index: -1;
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   ABOUT PANEL
+   ========================================================================== */
+.about-bio { margin-bottom: 24px; line-height: 1.9; font-size: 15px; }
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+.about-stat {
+  text-align: center;
+  padding: 20px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0,206,209,0.03);
+}
+.about-stat-number {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--teal);
+  display: block;
+}
+.about-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.about-location {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.about-location-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: dotPulse 2s infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ==========================================================================
+   SKILLS / DNA PANEL
+   ========================================================================== */
+.dna-helix {
+  position: relative;
+  width: 100%;
+  padding: 20px 0;
+}
+.dna-strand {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dna-pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 10px;
+  min-height: 44px;
+}
+.dna-gene {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: rgba(5,5,16,0.6);
+  color: var(--text-heading);
+  transition: all 0.3s;
+  z-index: 2;
+  white-space: nowrap;
+}
+.dna-gene:hover {
+  transform: scale(1.05);
+}
+.dna-gene.left { }
+.dna-gene.right { }
+.dna-gene[data-cat="frontend"] { border-color: rgba(0,206,209,0.4); }
+.dna-gene[data-cat="frontend"]:hover { background: var(--teal-dim); box-shadow: 0 0 20px var(--teal-dim); }
+.dna-gene[data-cat="backend"] { border-color: rgba(57,255,127,0.4); }
+.dna-gene[data-cat="backend"]:hover { background: var(--green-dim); box-shadow: 0 0 20px var(--green-dim); }
+.dna-gene[data-cat="devops"] { border-color: rgba(65,105,225,0.4); }
+.dna-gene[data-cat="devops"]:hover { background: var(--blue-dim); box-shadow: 0 0 20px var(--blue-dim); }
+.dna-gene[data-cat="tools"] { border-color: rgba(255,107,157,0.4); }
+.dna-gene[data-cat="tools"]:hover { background: var(--pink-dim); box-shadow: 0 0 20px var(--pink-dim); }
+
+.dna-bridge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(0,206,209,0.3), rgba(57,255,127,0.3));
+  z-index: 1;
+}
+.dna-pair:nth-child(even) .dna-bridge {
+  background: linear-gradient(90deg, rgba(65,105,225,0.3), rgba(255,107,157,0.3));
+}
+
+.skill-categories {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.skill-cat-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.skill-cat-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   PROJECTS / ORGANS PANEL
+   ========================================================================== */
+.organ-card {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  background: rgba(5,5,16,0.4);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.organ-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+}
+.organ-card:nth-child(1)::before { background: var(--teal); }
+.organ-card:nth-child(2)::before { background: var(--green); }
+.organ-card:nth-child(3)::before { background: var(--blue); }
+.organ-card:hover {
+  border-color: rgba(0,206,209,0.3);
+  background: rgba(0,206,209,0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.organ-type {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.organ-card:nth-child(1) .organ-type { color: var(--teal); }
+.organ-card:nth-child(2) .organ-type { color: var(--green); }
+.organ-card:nth-child(3) .organ-type { color: var(--blue); }
+.organ-name {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 8px;
+}
+.organ-desc {
+  font-size: 14px;
+  color: var(--text-body);
+  margin-bottom: 14px;
+  line-height: 1.7;
+}
+.organ-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.organ-tag {
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: rgba(5,5,16,0.6);
+}
+
+/* ==========================================================================
+   EXPERIENCE / SPINE PANEL
+   ========================================================================== */
+.spine-chain {
+  position: relative;
+  padding-left: 30px;
+}
+.spine-chain::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--teal), var(--blue), var(--pink), transparent);
+}
+.spine-vertebra {
+  position: relative;
+  padding: 20px 0;
+  padding-left: 20px;
+}
+.spine-vertebra::before {
+  content: '';
+  position: absolute;
+  left: -25px;
+  top: 28px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--teal);
+  background: var(--bg-deep);
+  z-index: 2;
+}
+.spine-vertebra:first-child::before {
+  background: var(--teal);
+  box-shadow: 0 0 12px var(--teal);
+}
+.spine-vertebra:first-child::after {
+  content: 'CURRENT';
+  position: absolute;
+  left: -80px;
+  top: 30px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--teal);
+  transform: rotate(-90deg);
+}
+.spine-company {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+.spine-role {
+  font-size: 14px;
+  color: var(--teal);
+  margin-top: 2px;
+}
+.spine-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.spine-desc {
+  font-size: 13px;
+  color: var(--text-body);
+  margin-top: 8px;
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   CONTACT / HEART PANEL
+   ========================================================================== */
+.heart-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,107,157,0.1);
+  border: 1px solid rgba(255,107,157,0.3);
+  animation: heartPulse 1s infinite;
+}
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255,107,157,0.2); }
+  15% { transform: scale(1.15); box-shadow: 0 0 40px rgba(255,107,157,0.4); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); box-shadow: 0 0 30px rgba(255,107,157,0.3); }
+}
+.heart-icon svg {
+  width: 28px; height: 28px;
+  fill: var(--pink);
+  opacity: 0.8;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(5,5,16,0.4);
+  transition: all 0.3s;
+  cursor: none;
+  font-size: 14px;
+  color: var(--text-body);
+}
+.contact-link:hover {
+  border-color: var(--pink);
+  background: rgba(255,107,157,0.06);
+  color: var(--text-heading);
+  transform: translateY(-2px);
+}
+.contact-link svg {
+  width: 18px; height: 18px;
+  stroke: var(--pink);
+  fill: none;
+  stroke-width: 1.5;
+  flex-shrink: 0;
+}
+.contact-message {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   IDLE / STASIS OVERLAY
+   ========================================================================== */
+#stasis-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5,5,16,0.0);
+  pointer-events: none;
+  transition: background 2s;
+  opacity: 0;
+}
+#stasis-overlay.dimming {
+  opacity: 1;
+  background: rgba(5,5,16,0.5);
+}
+#stasis-overlay.stasis {
+  opacity: 1;
+  background: rgba(5,5,16,0.85);
+  pointer-events: auto;
+}
+.stasis-text {
+  font-family: var(--font-heading);
+  font-size: clamp(16px, 3vw, 28px);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 1s;
+}
+#stasis-overlay.stasis .stasis-text { opacity: 1; }
+
+.resuscitate-btn {
+  margin-top: 30px;
+  padding: 14px 36px;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(57,255,127,0.08);
+  border: 1px solid rgba(57,255,127,0.4);
+  border-radius: 30px;
+  cursor: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.5s;
+}
+#stasis-overlay.stasis .resuscitate-btn {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1s;
+}
+.resuscitate-btn:hover {
+  background: rgba(57,255,127,0.15);
+  box-shadow: 0 0 40px rgba(57,255,127,0.3);
+  color: #fff;
+}
+
+/* ==========================================================================
+   VITALS HUD
+   ========================================================================== */
+#vitals-hud {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 50;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: opacity 0.8s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#vitals-hud.visible { opacity: 1; }
+.vital-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vital-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 6px var(--teal);
+  transition: background 0.3s;
+}
+.vital-dot.warning { background: var(--pink); box-shadow: 0 0 6px var(--pink); }
+#heartbeat-display { color: var(--teal); font-weight: 600; }
+#cell-count-display { color: var(--green); font-weight: 600; }
+#organism-state-display { color: var(--text-muted); }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 768px) {
+  .content-panel { padding: 28px 20px; }
+  .about-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .about-stat-number { font-size: 22px; }
+  .contact-grid { grid-template-columns: 1fr; }
+  #organism-nav { flex-wrap: wrap; justify-content: center; top: 10px; gap: 4px; }
+  .nav-node { font-size: 10px; padding: 6px 10px; }
+  .spine-vertebra:first-child::after { display: none; }
+  .spine-chain { padding-left: 24px; }
+}
+@media (max-width: 480px) {
+  .about-stats { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .film-grain { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="cursor-cell" aria-hidden="true"></div>
+<div id="cursor-membrane" aria-hidden="true"></div>
+
+<!-- Background Canvas -->
+<canvas id="bioCanvas" aria-hidden="true"></canvas>
+
+<!-- Overlays -->
+<div class="vignette" aria-hidden="true"></div>
+<div class="film-grain" aria-hidden="true"></div>
+<div class="microscope-lens" aria-hidden="true"></div>
+
+<!-- Hero / Cell -->
+<div id="hero-overlay" role="banner">
+  <div class="hero-text" id="heroText">
+    <h1 class="hero-name">Anshull Garg</h1>
+    <p class="hero-role">Software Developer @ Walmart</p>
+    <p class="hero-subtitle">A Living Portfolio</p>
+  </div>
+  <div class="cell-prompt" id="cellPrompt">
+    <span id="evolveBtn" tabindex="0" role="button" aria-label="Click to evolve the organism and explore portfolio">Click the cell to begin evolution</span>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav id="organism-nav" role="navigation" aria-label="Portfolio sections">
+  <button class="nav-node" data-section="about" aria-label="About - Central Nervous System">CNS / About</button>
+  <button class="nav-node" data-section="skills" aria-label="Skills - DNA Strand">DNA / Skills</button>
+  <button class="nav-node" data-section="projects" aria-label="Projects - Organ Systems">Organs / Projects</button>
+  <button class="nav-node" data-section="experience" aria-label="Experience - Spinal Chain">Spine / Experience</button>
+  <button class="nav-node" data-section="contact" aria-label="Contact - Heart">Heart / Contact</button>
+</nav>
+
+<!-- Content Panels -->
+<div id="content-layer">
+
+  <!-- ABOUT -->
+  <div class="content-panel organic-border" id="panel-about" role="dialog" aria-label="About Anshull Garg">
+    <button class="panel-close" aria-label="Close panel">&times;</button>
+    <span class="panel-label">Central Nervous System</span>
+    <h2 class="panel-title">About</h2>
+    <p class="about-bio">
+      Software Developer at <strong style="color:var(--teal)">Walmart Global Tech</strong>,
+      building scalable systems that serve millions of users daily. I architect
+      high-throughput pipelines, craft accessible user interfaces, and obsess
+      over performance at every layer of the stack.
+    </p>
+    <p class="about-bio">
+      My approach: simplify the problem before you simplify the code. I believe
+      the best software is the kind that feels invisible -- fast, reliable, and
+      intuitive.
+    </p>
+    <div class="about-stats">
+      <div class="about-stat">
+        <span class="about-stat-number">4+</span>
+        <span class="about-stat-label">Years</span>
+      </div>
+      <div class="about-stat">
+        <span class="about-stat-number">500+</span>
+        <span class="about-stat-label">Commits</span>
+      </div>
+      <div class="about-stat">
+        <span class="about-stat-number">30+</span>
+        <span class="about-stat-label">Repos</span>
+      </div>
+    </div>
+    <div class="about-location">
+      <div class="about-location-dot"></div>
+      <span>Bentonville, AR -- Available for opportunities</span>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="content-panel organic-border" id="panel-skills" role="dialog" aria-label="Skills and Technologies">
+    <button class="panel-close" aria-label="Close panel">&times;</button>
+    <span class="panel-label">DNA Strand</span>
+    <h2 class="panel-title">Skills</h2>
+    <div class="skill-categories">
+      <div class="skill-cat-tag"><div class="skill-cat-dot" style="background:var(--teal)"></div> Frontend</div>
+      <div class="skill-cat-tag"><div class="skill-cat-dot" style="background:var(--green)"></div> Backend</div>
+      <div class="skill-cat-tag"><div class="skill-cat-dot" style="background:var(--blue)"></div> DevOps</div>
+      <div class="skill-cat-tag"><div class="skill-cat-dot" style="background:var(--pink)"></div> Tools</div>
+    </div>
+    <div class="dna-helix">
+      <div class="dna-strand">
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="frontend">React</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="backend">Node.js</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="frontend">Next.js</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="backend">Python</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="frontend">TypeScript</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="backend">Go</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="frontend">Tailwind CSS</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="backend">GraphQL</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="devops">AWS</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="devops">Docker</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="devops">Kubernetes</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="devops">CI/CD</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="tools">PostgreSQL</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="tools">Redis</span>
+        </div>
+        <div class="dna-pair">
+          <span class="dna-gene left" data-cat="tools">Storybook</span>
+          <div class="dna-bridge"></div>
+          <span class="dna-gene right" data-cat="tools">Jest</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="content-panel organic-border" id="panel-projects" role="dialog" aria-label="Projects">
+    <button class="panel-close" aria-label="Close panel">&times;</button>
+    <span class="panel-label">Organ Systems</span>
+    <h2 class="panel-title">Projects</h2>
+    <div class="organ-card">
+      <span class="organ-type">The Liver -- Processing Engine</span>
+      <h3 class="organ-name">Checkout Optimization Engine</h3>
+      <p class="organ-desc">
+        Architected a high-throughput checkout pipeline at Walmart scale,
+        reducing page load times by 40% and increasing conversion rates.
+        Handles millions of daily transactions with sub-200ms response times.
+      </p>
+      <div class="organ-tags">
+        <span class="organ-tag">React</span>
+        <span class="organ-tag">Node.js</span>
+        <span class="organ-tag">TypeScript</span>
+        <span class="organ-tag">Redis</span>
+        <span class="organ-tag">AWS Lambda</span>
+        <span class="organ-tag">GraphQL</span>
+      </div>
+    </div>
+    <div class="organ-card">
+      <span class="organ-type">The Skin -- Interface Layer</span>
+      <h3 class="organ-name">Internal Component Library</h3>
+      <p class="organ-desc">
+        Built a design system with 50+ accessible, themeable components
+        adopted across 12 teams. Storybook-driven development with full
+        test coverage and WCAG AA compliance.
+      </p>
+      <div class="organ-tags">
+        <span class="organ-tag">React</span>
+        <span class="organ-tag">Storybook</span>
+        <span class="organ-tag">Tailwind</span>
+        <span class="organ-tag">a11y</span>
+      </div>
+    </div>
+    <div class="organ-card">
+      <span class="organ-type">The Nervous System -- Real-time Network</span>
+      <h3 class="organ-name">Real-time Inventory Tracker</h3>
+      <p class="organ-desc">
+        Designed a WebSocket-based inventory management dashboard providing
+        real-time stock visibility across 4,700+ stores. Reduced inventory
+        discrepancy resolution time by 60%.
+      </p>
+      <div class="organ-tags">
+        <span class="organ-tag">Next.js</span>
+        <span class="organ-tag">WebSocket</span>
+        <span class="organ-tag">PostgreSQL</span>
+        <span class="organ-tag">Go</span>
+        <span class="organ-tag">K8s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="content-panel organic-border" id="panel-experience" role="dialog" aria-label="Work Experience">
+    <button class="panel-close" aria-label="Close panel">&times;</button>
+    <span class="panel-label">Spinal Chain</span>
+    <h2 class="panel-title">Experience</h2>
+    <div class="spine-chain">
+      <div class="spine-vertebra">
+        <h3 class="spine-company">Walmart Global Tech</h3>
+        <p class="spine-role">Software Developer</p>
+        <p class="spine-date">2023 -- Present</p>
+        <p class="spine-desc">
+          Architecting high-throughput systems serving millions of users. Leading
+          checkout optimization, component library development, and real-time
+          inventory solutions at enterprise scale.
+        </p>
+      </div>
+      <div class="spine-vertebra">
+        <h3 class="spine-company">Previous Company</h3>
+        <p class="spine-role">Full Stack Engineer</p>
+        <p class="spine-date">2021 -- 2023</p>
+        <p class="spine-desc">
+          Built end-to-end features across React frontends and Node.js APIs.
+          Drove migration to TypeScript and implemented CI/CD pipelines
+          reducing deployment time by 70%.
+        </p>
+      </div>
+      <div class="spine-vertebra">
+        <h3 class="spine-company">Startup Inc.</h3>
+        <p class="spine-role">Software Engineer Intern</p>
+        <p class="spine-date">2020 -- 2021</p>
+        <p class="spine-desc">
+          Shipped production features in a fast-paced startup. Built REST APIs,
+          contributed to the React frontend, and learned to move fast while
+          maintaining code quality.
+        </p>
+      </div>
+      <div class="spine-vertebra">
+        <h3 class="spine-company">University</h3>
+        <p class="spine-role">B.S. Computer Science</p>
+        <p class="spine-date">2017 -- 2021</p>
+        <p class="spine-desc">
+          Foundational studies in algorithms, data structures, systems design,
+          and software engineering principles.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="content-panel organic-border" id="panel-contact" role="dialog" aria-label="Contact Information" style="text-align:center;">
+    <button class="panel-close" aria-label="Close panel">&times;</button>
+    <span class="panel-label">The Heart</span>
+    <div class="heart-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <h2 class="panel-title">Let's Connect</h2>
+    <p style="color:var(--text-muted); margin-bottom:8px; font-size:15px;">
+      Always interested in new challenges and collaborations.
+    </p>
+    <div class="contact-grid">
+      <a href="mailto:anshull.garg@gmail.com" class="contact-link">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+        <span>Email</span>
+      </a>
+      <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        <span>GitHub</span>
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        <span>LinkedIn</span>
+      </a>
+      <a href="/resume" class="contact-link">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        <span>Resume</span>
+      </a>
+    </div>
+    <p class="contact-message">The heart of this organism beats for connection.</p>
+  </div>
+
+</div>
+
+<!-- Stasis Overlay -->
+<div id="stasis-overlay" aria-live="polite">
+  <p class="stasis-text">Organism Entering Stasis...</p>
+  <button class="resuscitate-btn" id="resuscitateBtn" aria-label="Resuscitate the organism">Resuscitate</button>
+</div>
+
+<!-- Vitals HUD -->
+<div id="vitals-hud" role="status" aria-live="polite">
+  <div class="vital-row">
+    <div class="vital-dot" id="vitalDot"></div>
+    <span>BPM: <span id="heartbeat-display">72</span></span>
+  </div>
+  <div class="vital-row">
+    <div class="vital-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+    <span>Cells: <span id="cell-count-display">1</span></span>
+  </div>
+  <div class="vital-row">
+    <div class="vital-dot" style="background:var(--blue);box-shadow:0 0 6px var(--blue)"></div>
+    <span>State: <span id="organism-state-display">EMBRYONIC</span></span>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ========================================================================
+  //  GLOBALS & STATE
+  // ========================================================================
+  const canvas = document.getElementById('bioCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  const state = {
+    phase: 'cell',        // cell | evolving | organism | stasis
+    evolved: false,
+    mouseX: 0,
+    mouseY: 0,
+    lastMouseMove: Date.now(),
+    heartbeatBPM: 72,
+    heartbeatPhase: 0,
+    heartbeatScale: 1,
+    idleTimer: 0,
+    dimming: false,
+    stasis: false,
+    activePanel: null,
+    cellDivisionProgress: 0,
+    cellCount: 1,
+    evolveStartTime: 0,
+    particles: [],
+    neuralNodes: [],
+    neuralConnections: [],
+    trailDots: [],
+    animFrame: 0
+  };
+
+  // Color palette
+  const COLORS = {
+    teal: '#00CED1',
+    green: '#39FF7F',
+    blue: '#4169E1',
+    pink: '#FF6B9D',
+    tealRGB: [0, 206, 209],
+    greenRGB: [57, 255, 127],
+    blueRGB: [65, 105, 225],
+    pinkRGB: [255, 107, 157]
+  };
+
+  // DOM refs
+  const heroOverlay = document.getElementById('hero-overlay');
+  const heroText = document.getElementById('heroText');
+  const cellPrompt = document.getElementById('cellPrompt');
+  const evolveBtn = document.getElementById('evolveBtn');
+  const organismNav = document.getElementById('organism-nav');
+  const vitalsHud = document.getElementById('vitals-hud');
+  const stasisOverlay = document.getElementById('stasis-overlay');
+  const resuscitateBtn = document.getElementById('resuscitateBtn');
+  const cursorCell = document.getElementById('cursor-cell');
+  const cursorMembrane = document.getElementById('cursor-membrane');
+
+  // ========================================================================
+  //  RESIZE
+  // ========================================================================
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ========================================================================
+  //  PARTICLE SYSTEM (Background Neural Network)
+  // ========================================================================
+  function createParticles(count) {
+    state.particles = [];
+    for (let i = 0; i < count; i++) {
+      state.particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        size: 2 + Math.random() * 5,
+        baseOpacity: 0.15 + Math.random() * 0.4,
+        opacity: 0,
+        color: Math.random() > 0.5 ? COLORS.tealRGB : COLORS.greenRGB,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function updateParticles(dt) {
+    const mouseInfluenceRadius = 180;
+    const particleConnectRadius = 150;
+    const time = state.animFrame * 0.01;
+
+    for (let i = 0; i < state.particles.length; i++) {
+      const p = state.particles[i];
+
+      // Drift with slight randomness
+      p.x += p.vx + Math.sin(time + p.phase) * 0.15;
+      p.y += p.vy + Math.cos(time + p.phase * 1.3) * 0.15;
+
+      // Wrap around edges
+      if (p.x < -20) p.x = W + 20;
+      if (p.x > W + 20) p.x = -20;
+      if (p.y < -20) p.y = H + 20;
+      if (p.y > H + 20) p.y = -20;
+
+      // Mouse repulsion
+      const dx = p.x - state.mouseX;
+      const dy = p.y - state.mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < mouseInfluenceRadius && dist > 0) {
+        const force = (mouseInfluenceRadius - dist) / mouseInfluenceRadius * 2;
+        p.vx += (dx / dist) * force * 0.08;
+        p.vy += (dy / dist) * force * 0.08;
+      }
+
+      // Damping
+      p.vx *= 0.995;
+      p.vy *= 0.995;
+
+      // Fade in based on organism state
+      const targetOpacity = state.stasis ? p.baseOpacity * 0.1 :
+                            state.dimming ? p.baseOpacity * 0.4 :
+                            state.evolved ? p.baseOpacity : p.baseOpacity * 0.3;
+      p.opacity += (targetOpacity - p.opacity) * 0.02;
+    }
+  }
+
+  function drawParticles() {
+    const connectRadius = 150;
+
+    for (let i = 0; i < state.particles.length; i++) {
+      const p = state.particles[i];
+
+      // Draw connections
+      for (let j = i + 1; j < state.particles.length; j++) {
+        const q = state.particles[j];
+        const dx = p.x - q.x;
+        const dy = p.y - q.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < connectRadius) {
+          const alpha = (1 - dist / connectRadius) * Math.min(p.opacity, q.opacity) * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = `rgba(${p.color[0]}, ${p.color[1]}, ${p.color[2]}, ${alpha})`;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+
+      // Draw particle
+      const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+      gradient.addColorStop(0, `rgba(${p.color[0]}, ${p.color[1]}, ${p.color[2]}, ${p.opacity})`);
+      gradient.addColorStop(1, `rgba(${p.color[0]}, ${p.color[1]}, ${p.color[2]}, 0)`);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
+  }
+
+  // ========================================================================
+  //  THE CELL (Central pulsing cell)
+  // ========================================================================
+  function drawMainCell() {
+    const cx = W / 2;
+    const cy = H / 2;
+    const time = state.animFrame * 0.02;
+
+    // Calculate heartbeat
+    const bpmRate = state.heartbeatBPM / 60;
+    state.heartbeatPhase += bpmRate * 0.016; // ~60fps
+    const beat = Math.sin(state.heartbeatPhase * Math.PI * 2);
+    const beatStrong = Math.pow(Math.max(0, beat), 3); // Sharp peak
+    state.heartbeatScale = 1 + beatStrong * 0.12;
+
+    if (state.phase === 'cell') {
+      const baseRadius = Math.min(W, H) * 0.08;
+      const radius = baseRadius * state.heartbeatScale;
+
+      // Outer glow
+      ctx.save();
+      ctx.shadowBlur = 60 + beatStrong * 40;
+      ctx.shadowColor = COLORS.teal;
+
+      // Main cell
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grad.addColorStop(0, `rgba(0, 206, 209, ${0.4 + beatStrong * 0.3})`);
+      grad.addColorStop(0.4, `rgba(0, 206, 209, ${0.2 + beatStrong * 0.15})`);
+      grad.addColorStop(0.7, `rgba(57, 255, 127, ${0.1 + beatStrong * 0.08})`);
+      grad.addColorStop(1, 'rgba(57, 255, 127, 0)');
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Nucleus
+      const nucleusGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.35);
+      nucleusGrad.addColorStop(0, `rgba(255, 255, 255, ${0.3 + beatStrong * 0.2})`);
+      nucleusGrad.addColorStop(0.5, `rgba(0, 206, 209, ${0.2 + beatStrong * 0.1})`);
+      nucleusGrad.addColorStop(1, 'rgba(0, 206, 209, 0)');
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.35, 0, Math.PI * 2);
+      ctx.fillStyle = nucleusGrad;
+      ctx.fill();
+
+      // Cell membrane
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 1.05, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(0, 206, 209, ${0.15 + beatStrong * 0.15})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Organelles
+      for (let i = 0; i < 5; i++) {
+        const angle = (i / 5) * Math.PI * 2 + time * 0.3;
+        const dist = radius * (0.4 + 0.2 * Math.sin(time + i));
+        const ox = cx + Math.cos(angle) * dist;
+        const oy = cy + Math.sin(angle) * dist;
+        const oSize = 3 + Math.sin(time + i * 2) * 1.5;
+
+        ctx.beginPath();
+        ctx.arc(ox, oy, oSize, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(57, 255, 127, ${0.3 + beatStrong * 0.2})`;
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+  }
+
+  // ========================================================================
+  //  CELL DIVISION ANIMATION
+  // ========================================================================
+  function drawCellDivision() {
+    if (state.phase !== 'evolving') return;
+
+    const elapsed = (Date.now() - state.evolveStartTime) / 1000;
+    const cx = W / 2;
+    const cy = H / 2;
+    const baseRadius = Math.min(W, H) * 0.06;
+
+    // Phase 1: one cell elongates and splits into two (0-2s)
+    // Phase 2: two cells split into four (2-4s)
+    // Phase 3: four cells become neural cluster (4-6s)
+    // Phase 4: neural network forms (6-8s)
+
+    const beat = Math.sin(state.heartbeatPhase * Math.PI * 2);
+    const beatStrong = Math.pow(Math.max(0, beat), 3);
+    const pulse = 1 + beatStrong * 0.08;
+
+    ctx.save();
+    ctx.shadowBlur = 30 + beatStrong * 20;
+    ctx.shadowColor = COLORS.teal;
+
+    if (elapsed < 2) {
+      // Phase 1: Single cell elongates and splits
+      const t = elapsed / 2;
+      const stretch = 1 + t * 1.2;
+      const pinch = 1 - t * 0.6;
+      const separation = t * baseRadius * 1.5;
+
+      state.cellCount = t > 0.7 ? 2 : 1;
+
+      if (t < 0.7) {
+        // Elongating cell
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, baseRadius * stretch * pulse, baseRadius * pinch * pulse, 0, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseRadius * stretch);
+        grad.addColorStop(0, `rgba(0, 206, 209, 0.5)`);
+        grad.addColorStop(0.6, `rgba(0, 206, 209, 0.2)`);
+        grad.addColorStop(1, 'rgba(57, 255, 127, 0)');
+        ctx.fillStyle = grad;
+        ctx.fill();
+      } else {
+        // Two cells separating
+        const sepT = (t - 0.7) / 0.3;
+        const sep = sepT * baseRadius * 1.2;
+        for (let s = -1; s <= 1; s += 2) {
+          const cellX = cx + s * sep;
+          const r = baseRadius * 0.8 * pulse;
+          const grad = ctx.createRadialGradient(cellX, cy, 0, cellX, cy, r);
+          grad.addColorStop(0, `rgba(0, 206, 209, 0.5)`);
+          grad.addColorStop(0.6, `rgba(0, 206, 209, 0.2)`);
+          grad.addColorStop(1, 'rgba(57, 255, 127, 0)');
+          ctx.beginPath();
+          ctx.arc(cellX, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+      }
+    } else if (elapsed < 4) {
+      // Phase 2: Two cells become four
+      const t = (elapsed - 2) / 2;
+      state.cellCount = t > 0.6 ? 4 : 2;
+      const sep = baseRadius * 1.2;
+
+      const positions = t > 0.6 ? [
+        { x: cx - sep, y: cy - sep * (t - 0.6) / 0.4 * 0.8 },
+        { x: cx + sep, y: cy - sep * (t - 0.6) / 0.4 * 0.8 },
+        { x: cx - sep * 0.5, y: cy + sep * (t - 0.6) / 0.4 * 0.8 },
+        { x: cx + sep * 0.5, y: cy + sep * (t - 0.6) / 0.4 * 0.8 }
+      ] : [
+        { x: cx - sep, y: cy },
+        { x: cx + sep, y: cy }
+      ];
+
+      positions.forEach((pos, i) => {
+        const r = baseRadius * (t > 0.6 ? 0.6 : 0.8) * pulse;
+        const colors = [COLORS.tealRGB, COLORS.greenRGB, COLORS.blueRGB, COLORS.pinkRGB];
+        const c = colors[i % colors.length];
+        const grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, r);
+        grad.addColorStop(0, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.5)`);
+        grad.addColorStop(0.6, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.2)`);
+        grad.addColorStop(1, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0)`);
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+    } else if (elapsed < 6.5) {
+      // Phase 3: Four cells become cluster of many
+      const t = Math.min(1, (elapsed - 4) / 2.5);
+      const numCells = Math.floor(4 + t * 20);
+      state.cellCount = numCells;
+
+      for (let i = 0; i < numCells; i++) {
+        const angle = (i / numCells) * Math.PI * 2 + Math.sin(elapsed + i) * 0.3;
+        const dist = (20 + i * (8 + t * 8)) * (0.5 + t * 0.5);
+        const px = cx + Math.cos(angle) * dist;
+        const py = cy + Math.sin(angle) * dist;
+        const r = (3 + Math.random() * 6) * pulse;
+        const colors = [COLORS.tealRGB, COLORS.greenRGB, COLORS.blueRGB, COLORS.pinkRGB];
+        const c = colors[i % colors.length];
+        const alpha = 0.3 + Math.sin(elapsed * 2 + i) * 0.15;
+
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, r);
+        grad.addColorStop(0, `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${alpha})`);
+        grad.addColorStop(1, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0)`);
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Draw synapse lines to nearby cells
+        if (i > 0 && i < numCells) {
+          const prevAngle = ((i - 1) / numCells) * Math.PI * 2 + Math.sin(elapsed + i - 1) * 0.3;
+          const prevDist = (20 + (i - 1) * (8 + t * 8)) * (0.5 + t * 0.5);
+          const prevX = cx + Math.cos(prevAngle) * prevDist;
+          const prevY = cy + Math.sin(prevAngle) * prevDist;
+
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(prevX, prevY);
+          ctx.strokeStyle = `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${alpha * 0.4})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    } else {
+      // Phase 4: Transition complete
+      finishEvolution();
+    }
+
+    ctx.restore();
+  }
+
+  // ========================================================================
+  //  NEURAL NETWORK (Organism nodes)
+  // ========================================================================
+  function createNeuralNodes() {
+    const cx = W / 2;
+    const cy = H / 2;
+    const spread = Math.min(W, H) * 0.3;
+
+    // Central (About)
+    state.neuralNodes.push({
+      x: cx, y: cy,
+      targetX: cx, targetY: cy,
+      size: 14,
+      color: COLORS.tealRGB,
+      label: 'CNS',
+      section: 'about',
+      satellites: []
+    });
+
+    // Left hemisphere (Skills)
+    state.neuralNodes.push({
+      x: cx, y: cy,
+      targetX: cx - spread * 0.7, targetY: cy - spread * 0.2,
+      size: 11,
+      color: COLORS.greenRGB,
+      label: 'DNA',
+      section: 'skills',
+      satellites: []
+    });
+
+    // Right hemisphere (Projects)
+    state.neuralNodes.push({
+      x: cx, y: cy,
+      targetX: cx + spread * 0.7, targetY: cy - spread * 0.2,
+      size: 11,
+      color: COLORS.blueRGB,
+      label: 'ORGANS',
+      section: 'projects',
+      satellites: []
+    });
+
+    // Spine (Experience)
+    state.neuralNodes.push({
+      x: cx, y: cy,
+      targetX: cx, targetY: cy + spread * 0.7,
+      size: 10,
+      color: COLORS.tealRGB,
+      label: 'SPINE',
+      section: 'experience',
+      satellites: []
+    });
+
+    // Heart (Contact)
+    state.neuralNodes.push({
+      x: cx, y: cy,
+      targetX: cx, targetY: cy - spread * 0.65,
+      size: 12,
+      color: COLORS.pinkRGB,
+      label: 'HEART',
+      section: 'contact',
+      satellites: []
+    });
+
+    // Create satellite cells for each node
+    state.neuralNodes.forEach((node, idx) => {
+      const numSatellites = 6 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < numSatellites; i++) {
+        const angle = (i / numSatellites) * Math.PI * 2 + Math.random() * 0.5;
+        const dist = 30 + Math.random() * 50;
+        node.satellites.push({
+          offsetX: Math.cos(angle) * dist,
+          offsetY: Math.sin(angle) * dist,
+          size: 2 + Math.random() * 3,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.5 + Math.random() * 1
+        });
+      }
+    });
+
+    // Connections between nodes
+    state.neuralConnections = [
+      [0, 1], [0, 2], [0, 3], [0, 4], // center connects to all
+      [1, 4], [2, 4], // skills & projects connect to heart
+      [1, 3], [2, 3]  // skills & projects connect to spine
+    ];
+  }
+
+  function drawNeuralNetwork() {
+    if (state.phase !== 'organism') return;
+
+    const time = state.animFrame * 0.01;
+    const beat = Math.sin(state.heartbeatPhase * Math.PI * 2);
+    const beatStrong = Math.pow(Math.max(0, beat), 3);
+
+    ctx.save();
+
+    // Animate nodes to target positions
+    state.neuralNodes.forEach(node => {
+      node.x += (node.targetX - node.x) * 0.03;
+      node.y += (node.targetY - node.y) * 0.03;
+    });
+
+    // Draw connections
+    state.neuralConnections.forEach(([a, b]) => {
+      const nodeA = state.neuralNodes[a];
+      const nodeB = state.neuralNodes[b];
+      const midX = (nodeA.x + nodeB.x) / 2 + Math.sin(time + a) * 15;
+      const midY = (nodeA.y + nodeB.y) / 2 + Math.cos(time + b) * 15;
+
+      ctx.beginPath();
+      ctx.moveTo(nodeA.x, nodeA.y);
+      ctx.quadraticCurveTo(midX, midY, nodeB.x, nodeB.y);
+
+      const alpha = 0.08 + beatStrong * 0.06;
+      ctx.strokeStyle = `rgba(0, 206, 209, ${state.dimming ? alpha * 0.3 : alpha})`;
+      ctx.lineWidth = 1;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(0, 206, 209, 0.3)';
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Traveling pulse along connection
+      const pulseT = (time * 0.5 + a * 0.3) % 1;
+      const pulseX = nodeA.x + (nodeB.x - nodeA.x) * pulseT;
+      const pulseY = nodeA.y + (nodeB.y - nodeA.y) * pulseT;
+      ctx.beginPath();
+      ctx.arc(pulseX, pulseY, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 206, 209, ${0.3 + beatStrong * 0.3})`;
+      ctx.fill();
+    });
+
+    // Draw nodes and satellites
+    state.neuralNodes.forEach((node, idx) => {
+      const isHeart = node.section === 'contact';
+      const pulse = isHeart ? 1 + beatStrong * 0.2 : 1 + beatStrong * 0.08;
+      const hover = isNodeHovered(node);
+      const dimFactor = state.dimming ? 0.3 : 1;
+
+      // Satellites
+      node.satellites.forEach(sat => {
+        const sx = node.x + sat.offsetX + Math.sin(time * sat.speed + sat.phase) * 5;
+        const sy = node.y + sat.offsetY + Math.cos(time * sat.speed + sat.phase) * 5;
+        const satAlpha = (0.2 + Math.sin(time + sat.phase) * 0.1) * dimFactor;
+
+        // Connection to main node
+        ctx.beginPath();
+        ctx.moveTo(node.x, node.y);
+        ctx.lineTo(sx, sy);
+        ctx.strokeStyle = `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, ${satAlpha * 0.4})`;
+        ctx.lineWidth = 0.4;
+        ctx.stroke();
+
+        const satGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, sat.size * 2);
+        satGrad.addColorStop(0, `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, ${satAlpha})`);
+        satGrad.addColorStop(1, `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, 0)`);
+        ctx.beginPath();
+        ctx.arc(sx, sy, sat.size * 2, 0, Math.PI * 2);
+        ctx.fillStyle = satGrad;
+        ctx.fill();
+      });
+
+      // Main node
+      const r = node.size * pulse * (hover ? 1.3 : 1);
+      ctx.shadowBlur = hover ? 40 : 20;
+      ctx.shadowColor = `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, 0.5)`;
+
+      const nodeGrad = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, r * 2);
+      nodeGrad.addColorStop(0, `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, ${(0.6 + beatStrong * 0.2) * dimFactor})`);
+      nodeGrad.addColorStop(0.4, `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, ${(0.25 + beatStrong * 0.1) * dimFactor})`);
+      nodeGrad.addColorStop(1, `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, 0)`);
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r * 2, 0, Math.PI * 2);
+      ctx.fillStyle = nodeGrad;
+      ctx.fill();
+
+      // Core
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r * 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${(0.4 + beatStrong * 0.3) * dimFactor})`;
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+
+      // Label
+      ctx.font = '600 10px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = `rgba(${node.color[0]}, ${node.color[1]}, ${node.color[2]}, ${(hover ? 1 : 0.6) * dimFactor})`;
+      ctx.fillText(node.label, node.x, node.y + r * 2.5 + 12);
+    });
+
+    ctx.restore();
+  }
+
+  function isNodeHovered(node) {
+    const dx = state.mouseX - node.x;
+    const dy = state.mouseY - node.y;
+    return Math.sqrt(dx * dx + dy * dy) < 50;
+  }
+
+  function getHoveredNode() {
+    for (let i = 0; i < state.neuralNodes.length; i++) {
+      if (isNodeHovered(state.neuralNodes[i])) return state.neuralNodes[i];
+    }
+    return null;
+  }
+
+  // ========================================================================
+  //  BIOLUMINESCENT BACKGROUND
+  // ========================================================================
+  function drawBioluminescence() {
+    const time = state.animFrame * 0.005;
+    const dimFactor = state.dimming ? 0.2 : state.stasis ? 0.05 : 1;
+
+    // Subtle ambient glow spots
+    const spots = [
+      { x: W * 0.2, y: H * 0.3, r: 200, color: COLORS.tealRGB },
+      { x: W * 0.8, y: H * 0.6, r: 180, color: COLORS.greenRGB },
+      { x: W * 0.5, y: H * 0.8, r: 220, color: COLORS.blueRGB },
+      { x: W * 0.7, y: H * 0.2, r: 160, color: COLORS.pinkRGB }
+    ];
+
+    spots.forEach((spot, i) => {
+      const ox = Math.sin(time + i * 1.5) * 30;
+      const oy = Math.cos(time + i * 2.1) * 20;
+      const alpha = (0.02 + Math.sin(time + i) * 0.01) * dimFactor;
+
+      const grad = ctx.createRadialGradient(
+        spot.x + ox, spot.y + oy, 0,
+        spot.x + ox, spot.y + oy, spot.r
+      );
+      grad.addColorStop(0, `rgba(${spot.color[0]}, ${spot.color[1]}, ${spot.color[2]}, ${alpha})`);
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.beginPath();
+      ctx.arc(spot.x + ox, spot.y + oy, spot.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+  }
+
+  // ========================================================================
+  //  MOUSE TRAIL
+  // ========================================================================
+  function addTrailDot(x, y) {
+    state.trailDots.push({
+      x, y,
+      life: 1,
+      size: 3 + Math.random() * 3,
+      color: Math.random() > 0.5 ? COLORS.tealRGB : COLORS.greenRGB
+    });
+    if (state.trailDots.length > 30) state.trailDots.shift();
+  }
+
+  function drawTrail() {
+    for (let i = state.trailDots.length - 1; i >= 0; i--) {
+      const dot = state.trailDots[i];
+      dot.life -= 0.03;
+      if (dot.life <= 0) {
+        state.trailDots.splice(i, 1);
+        continue;
+      }
+      const alpha = dot.life * 0.4;
+      const grad = ctx.createRadialGradient(dot.x, dot.y, 0, dot.x, dot.y, dot.size * dot.life);
+      grad.addColorStop(0, `rgba(${dot.color[0]}, ${dot.color[1]}, ${dot.color[2]}, ${alpha})`);
+      grad.addColorStop(1, `rgba(${dot.color[0]}, ${dot.color[1]}, ${dot.color[2]}, 0)`);
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.size * dot.life, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+  }
+
+  // ========================================================================
+  //  HEARTBEAT CALCULATION
+  // ========================================================================
+  function updateHeartbeat() {
+    const dx = state.mouseX - W / 2;
+    const dy = state.mouseY - H / 2;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const maxDist = Math.sqrt(W * W + H * H) / 2;
+    const proximity = 1 - Math.min(dist / maxDist, 1);
+
+    // Base 72 BPM, up to ~140 BPM when close
+    const targetBPM = state.stasis ? 20 :
+                      state.dimming ? 40 :
+                      72 + proximity * 68;
+    state.heartbeatBPM += (targetBPM - state.heartbeatBPM) * 0.05;
+
+    // Update HUD
+    document.getElementById('heartbeat-display').textContent = Math.round(state.heartbeatBPM);
+    document.getElementById('cell-count-display').textContent = state.cellCount;
+
+    const stateLabel = state.phase === 'cell' ? 'EMBRYONIC' :
+                       state.phase === 'evolving' ? 'MITOSIS' :
+                       state.stasis ? 'STASIS' :
+                       state.dimming ? 'DORMANT' :
+                       'ALIVE';
+    document.getElementById('organism-state-display').textContent = stateLabel;
+
+    // Warning state for vital dot
+    const vitalDot = document.getElementById('vitalDot');
+    if (state.dimming || state.stasis) {
+      vitalDot.classList.add('warning');
+    } else {
+      vitalDot.classList.remove('warning');
+    }
+  }
+
+  // ========================================================================
+  //  IDLE / STASIS MECHANIC
+  // ========================================================================
+  function updateIdle() {
+    const elapsed = (Date.now() - state.lastMouseMove) / 1000;
+
+    if (elapsed > 30 && !state.dimming && !state.stasis) {
+      state.dimming = true;
+      stasisOverlay.classList.add('dimming');
+    }
+
+    if (elapsed > 45 && state.dimming && !state.stasis) {
+      state.stasis = true;
+      state.phase = 'stasis';
+      stasisOverlay.classList.remove('dimming');
+      stasisOverlay.classList.add('stasis');
+    }
+  }
+
+  function resuscitate() {
+    state.dimming = false;
+    state.stasis = false;
+    state.lastMouseMove = Date.now();
+    stasisOverlay.classList.remove('dimming', 'stasis');
+
+    if (state.evolved) {
+      state.phase = 'organism';
+    } else {
+      state.phase = 'cell';
+    }
+
+    // Burst animation: temporarily boost particle speeds
+    state.particles.forEach(p => {
+      const angle = Math.random() * Math.PI * 2;
+      p.vx += Math.cos(angle) * 3;
+      p.vy += Math.sin(angle) * 3;
+    });
+  }
+
+  // ========================================================================
+  //  EVOLUTION TRIGGER
+  // ========================================================================
+  function beginEvolution() {
+    if (state.phase !== 'cell') return;
+    state.phase = 'evolving';
+    state.evolveStartTime = Date.now();
+    heroText.classList.remove('visible');
+    cellPrompt.style.opacity = '0';
+    cellPrompt.style.pointerEvents = 'none';
+
+    // Create more particles during evolution
+    for (let i = 0; i < 40; i++) {
+      state.particles.push({
+        x: W / 2 + (Math.random() - 0.5) * 100,
+        y: H / 2 + (Math.random() - 0.5) * 100,
+        vx: (Math.random() - 0.5) * 3,
+        vy: (Math.random() - 0.5) * 3,
+        size: 2 + Math.random() * 4,
+        baseOpacity: 0.2 + Math.random() * 0.3,
+        opacity: 0,
+        color: Math.random() > 0.5 ? COLORS.tealRGB : COLORS.greenRGB,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function finishEvolution() {
+    if (state.evolved) return;
+    state.evolved = true;
+    state.phase = 'organism';
+    state.cellCount = 90;
+
+    heroOverlay.classList.add('hidden');
+    organismNav.classList.add('visible');
+    vitalsHud.classList.add('visible');
+
+    createNeuralNodes();
+  }
+
+  // ========================================================================
+  //  PANEL MANAGEMENT
+  // ========================================================================
+  function openPanel(section) {
+    closeAllPanels();
+    const panel = document.getElementById('panel-' + section);
+    if (panel) {
+      panel.classList.add('visible');
+      state.activePanel = section;
+
+      // Highlight nav node
+      document.querySelectorAll('.nav-node').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === section);
+      });
+    }
+  }
+
+  function closeAllPanels() {
+    document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.nav-node').forEach(btn => btn.classList.remove('active'));
+    state.activePanel = null;
+  }
+
+  // ========================================================================
+  //  MAIN ANIMATION LOOP
+  // ========================================================================
+  function animate() {
+    state.animFrame++;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    drawBioluminescence();
+
+    // Particles
+    updateParticles();
+    drawParticles();
+
+    // Trail
+    drawTrail();
+
+    // Phase-specific rendering
+    if (state.phase === 'cell') {
+      drawMainCell();
+    } else if (state.phase === 'evolving') {
+      drawCellDivision();
+    } else if (state.phase === 'organism' || state.phase === 'stasis') {
+      drawNeuralNetwork();
+    }
+
+    // Update systems
+    updateHeartbeat();
+    updateIdle();
+
+    requestAnimationFrame(animate);
+  }
+
+  // ========================================================================
+  //  INPUT HANDLING
+  // ========================================================================
+  let trailCounter = 0;
+
+  function onMouseMove(e) {
+    state.mouseX = e.clientX;
+    state.mouseY = e.clientY;
+    state.lastMouseMove = Date.now();
+
+    // Reset dimming/stasis on movement
+    if (state.dimming || state.stasis) {
+      if (!state.stasis) {
+        state.dimming = false;
+        stasisOverlay.classList.remove('dimming');
+      }
+    }
+
+    // Custom cursor
+    cursorCell.style.left = e.clientX + 'px';
+    cursorCell.style.top = e.clientY + 'px';
+    cursorMembrane.style.left = e.clientX + 'px';
+    cursorMembrane.style.top = e.clientY + 'px';
+
+    // Hover state
+    const hoverable = e.target.closest('a, button, [role="button"], .nav-node, .contact-link, .organ-card, .dna-gene');
+    cursorCell.classList.toggle('hovering', !!hoverable);
+    cursorMembrane.classList.toggle('hovering', !!hoverable);
+
+    // Trail
+    trailCounter++;
+    if (trailCounter % 3 === 0) {
+      addTrailDot(e.clientX, e.clientY);
+    }
+  }
+
+  function onClick(e) {
+    state.lastMouseMove = Date.now();
+
+    if (state.phase === 'cell') {
+      // Check if clicking on/near center cell
+      const dx = e.clientX - W / 2;
+      const dy = e.clientY - H / 2;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const cellRadius = Math.min(W, H) * 0.12;
+      if (dist < cellRadius) {
+        beginEvolution();
+        return;
+      }
+    }
+
+    if (state.phase === 'organism') {
+      // Check if clicking a neural node
+      const node = getHoveredNode();
+      if (node) {
+        openPanel(node.section);
+        return;
+      }
+
+      // Click outside panels to close
+      if (state.activePanel && !e.target.closest('.content-panel') && !e.target.closest('.nav-node')) {
+        closeAllPanels();
+      }
+    }
+  }
+
+  function onScroll() {
+    state.lastMouseMove = Date.now();
+
+    if (state.phase === 'cell') {
+      beginEvolution();
+    }
+  }
+
+  function onTouchStart(e) {
+    if (e.touches.length > 0) {
+      state.mouseX = e.touches[0].clientX;
+      state.mouseY = e.touches[0].clientY;
+      state.lastMouseMove = Date.now();
+    }
+  }
+
+  function onTouchMove(e) {
+    if (e.touches.length > 0) {
+      state.mouseX = e.touches[0].clientX;
+      state.mouseY = e.touches[0].clientY;
+      state.lastMouseMove = Date.now();
+
+      if (state.dimming && !state.stasis) {
+        state.dimming = false;
+        stasisOverlay.classList.remove('dimming');
+      }
+
+      trailCounter++;
+      if (trailCounter % 3 === 0) {
+        addTrailDot(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }
+  }
+
+  // ========================================================================
+  //  EVENT BINDINGS
+  // ========================================================================
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('click', onClick);
+  document.addEventListener('wheel', onScroll, { passive: true });
+  document.addEventListener('touchstart', onTouchStart, { passive: true });
+  document.addEventListener('touchmove', onTouchMove, { passive: true });
+
+  // Evolve button (hero)
+  evolveBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    beginEvolution();
+  });
+  evolveBtn.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      beginEvolution();
+    }
+  });
+
+  // Resuscitate button
+  resuscitateBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    resuscitate();
+  });
+
+  // Nav nodes
+  document.querySelectorAll('.nav-node').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const section = this.dataset.section;
+      if (state.activePanel === section) {
+        closeAllPanels();
+      } else {
+        openPanel(section);
+      }
+    });
+  });
+
+  // Panel close buttons
+  document.querySelectorAll('.panel-close').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeAllPanels();
+    });
+  });
+
+  // Keyboard: Escape to close panels
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeAllPanels();
+    }
+    // Any key press resets idle
+    state.lastMouseMove = Date.now();
+    if (state.stasis) resuscitate();
+    if (state.dimming) {
+      state.dimming = false;
+      stasisOverlay.classList.remove('dimming');
+    }
+  });
+
+  // ========================================================================
+  //  INITIALIZATION
+  // ========================================================================
+  function init() {
+    createParticles(90);
+
+    // Show hero text after a brief delay
+    setTimeout(function() {
+      heroText.classList.add('visible');
+    }, 800);
+
+    // Show vitals HUD even in embryonic state (subtle)
+    setTimeout(function() {
+      vitalsHud.classList.add('visible');
+    }, 1500);
+
+    // Start mouse at center
+    state.mouseX = W / 2;
+    state.mouseY = H / 2;
+
+    animate();
+  }
+
+  // Wait for fonts
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(init);
+  } else {
+    window.addEventListener('load', init);
+  }
+
+})();
+</script>
+</body>
+</html>
