@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Software Developer</title>
+<style>
+  /* ============================
+     SUNSET DESERT PALETTE
+     Dusty Cream  #F5E6D3
+     Terracotta   #C2685A
+     Desert Sand  #E8A87C
+     Dusty Rose   #D4838F
+     Desert Night #4A2C2A
+     ============================ */
+
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  @font-face {
+    font-family: 'Desert Display';
+    src: local('Georgia');
+  }
+
+  :root {
+    --cream: #F5E6D3;
+    --terracotta: #C2685A;
+    --sand: #E8A87C;
+    --rose: #D4838F;
+    --night: #4A2C2A;
+    --cream-light: #FAF0E6;
+    --terracotta-dark: #A34E42;
+    --night-soft: rgba(74,44,42,0.85);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--night);
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* ---- Sand Texture Overlay (SVG noise) ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* ---- Canvas for animated particles ---- */
+  #sand-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ---- Navigation ---- */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.5s, box-shadow 0.5s, padding 0.3s;
+  }
+
+  nav.scrolled {
+    background: rgba(245,230,211,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 2px 30px rgba(74,44,42,0.08);
+    padding: 0.7rem 2rem;
+  }
+
+  .nav-brand {
+    font-family: Georgia, 'Desert Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--night);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-brand span {
+    color: var(--terracotta);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--night);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 2px;
+    transition: color 0.3s;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--terracotta), var(--rose));
+    border-radius: 2px;
+    transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .nav-links a:hover { color: var(--terracotta); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--night);
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* Warm gradient: orange to pink to dusty rose */
+    background: linear-gradient(
+      160deg,
+      #F5E6D3 0%,
+      #E8A87C 25%,
+      #D4838F 50%,
+      #C2685A 75%,
+      #4A2C2A 100%
+    );
+    background-size: 300% 300%;
+    animation: desertShift 12s ease-in-out infinite;
+  }
+
+  @keyframes desertShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Layered mesa / canyon silhouettes */
+  .hero::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    background:
+      linear-gradient(transparent 0%, rgba(74,44,42,0.15) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234A2C2A' fill-opacity='0.12' d='M0,256L48,240C96,224,192,192,288,186.7C384,181,480,203,576,197.3C672,192,768,160,864,160C960,160,1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: bottom;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 25%;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23F5E6D3' d='M0,288L60,282.7C120,277,240,267,360,245.3C480,224,600,192,720,197.3C840,203,960,245,1080,256C1200,267,1320,245,1380,234.7L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: bottom;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem;
+    max-width: 800px;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    background: rgba(74,44,42,0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 0.5rem 1.5rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .hero h1 {
+    font-family: Georgia, 'Desert Display', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 40px rgba(74,44,42,0.3);
+    letter-spacing: -0.03em;
+  }
+
+  .hero h1 .accent {
+    background: linear-gradient(135deg, var(--cream), var(--sand));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: rgba(255,255,255,0.9);
+    font-weight: 300;
+    margin-bottom: 2.5rem;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .btn-primary {
+    background: #fff;
+    color: var(--night);
+    box-shadow: 0 4px 20px rgba(74,44,42,0.2);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(74,44,42,0.3);
+    background: var(--cream);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: #fff;
+    transform: translateY(-2px);
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .scroll-hint span {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .scroll-hint .line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ---- Sections ---- */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 2rem;
+  }
+
+  .section-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 1rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--terracotta), var(--sand));
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-family: Georgia, 'Desert Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--night);
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* ---- ABOUT ---- */
+  .about {
+    background: var(--cream);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .about-image-wrap {
+    position: relative;
+  }
+
+  .about-image-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    background: linear-gradient(135deg, var(--sand), var(--rose));
+    border-radius: 24px;
+    transform: rotate(-3deg);
+    opacity: 0.3;
+    z-index: 0;
+  }
+
+  .about-image {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 4/5;
+    border-radius: 20px;
+    background: linear-gradient(145deg, var(--sand) 0%, var(--terracotta) 50%, var(--rose) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(74,44,42,0.15);
+  }
+
+  .about-image .initials {
+    font-family: Georgia, serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: -0.05em;
+  }
+
+  /* Animated desert horizon inside the image card */
+  .about-image .desert-scene {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    pointer-events: none;
+  }
+
+  .about-image .desert-scene svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .about-text p {
+    color: rgba(74,44,42,0.75);
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    line-height: 1.8;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(74,44,42,0.1);
+  }
+
+  .stat-item .stat-number {
+    font-family: Georgia, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--terracotta);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.8rem;
+    color: rgba(74,44,42,0.5);
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- PROJECTS ---- */
+  .projects {
+    background: linear-gradient(180deg, var(--cream) 0%, var(--cream-light) 50%, var(--cream) 100%);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .project-card {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(74,44,42,0.06);
+    transition: all 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    border: 1px solid rgba(74,44,42,0.05);
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(74,44,42,0.12);
+  }
+
+  .project-cover {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card:nth-child(1) .project-cover {
+    background: linear-gradient(135deg, var(--terracotta), var(--sand));
+  }
+  .project-card:nth-child(2) .project-cover {
+    background: linear-gradient(135deg, var(--rose), var(--terracotta));
+  }
+  .project-card:nth-child(3) .project-cover {
+    background: linear-gradient(135deg, var(--sand), var(--cream));
+  }
+  .project-card:nth-child(4) .project-cover {
+    background: linear-gradient(135deg, var(--night), var(--terracotta));
+  }
+
+  .project-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+  }
+
+  .project-cover .project-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3.5rem;
+    opacity: 0.25;
+    color: #fff;
+    transition: transform 0.5s, opacity 0.5s;
+  }
+
+  .project-card:hover .project-icon {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.4;
+  }
+
+  /* Canyon pattern on covers */
+  .project-cover .canyon-lines {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+  }
+
+  .project-body {
+    padding: 1.5rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    background: rgba(194,104,90,0.08);
+    padding: 0.3rem 0.7rem;
+    border-radius: 100px;
+  }
+
+  .project-body h3 {
+    font-family: Georgia, serif;
+    font-size: 1.25rem;
+    color: var(--night);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .project-body p {
+    font-size: 0.9rem;
+    color: rgba(74,44,42,0.6);
+    line-height: 1.6;
+  }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--terracotta);
+    text-decoration: none;
+    transition: gap 0.3s;
+  }
+
+  .project-link:hover {
+    gap: 0.7rem;
+  }
+
+  .project-link .arrow {
+    transition: transform 0.3s;
+  }
+
+  .project-link:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  /* ---- SKILLS ---- */
+  .skills {
+    background: var(--night);
+    color: var(--cream);
+    overflow: hidden;
+  }
+
+  .skills .section-label { color: var(--sand); }
+  .skills .section-label::before { background: linear-gradient(90deg, var(--sand), var(--terracotta)); }
+  .skills .section-title { color: var(--cream); }
+
+  .skills-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+
+  .skill-category {
+    margin-bottom: 2.5rem;
+  }
+
+  .skill-category h3 {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    color: var(--sand);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .skill-category h3::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(245,230,211,0.1);
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: 1px solid rgba(232,168,124,0.2);
+    background: rgba(232,168,124,0.06);
+    color: var(--cream);
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .skill-chip:hover {
+    background: rgba(232,168,124,0.15);
+    border-color: rgba(232,168,124,0.4);
+    transform: translateY(-2px);
+  }
+
+  .skill-chip .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terracotta);
+  }
+
+  /* Floating desert shapes decoration */
+  .skills .desert-deco {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(232,168,124,0.08);
+    pointer-events: none;
+  }
+
+  .skills .desert-deco:nth-child(1) {
+    top: -100px;
+    right: -100px;
+  }
+
+  .skills .desert-deco:nth-child(2) {
+    bottom: -150px;
+    left: -150px;
+    width: 400px;
+    height: 400px;
+  }
+
+  /* ---- EXPERIENCE ---- */
+  .experience {
+    background: var(--cream);
+  }
+
+  .timeline {
+    position: relative;
+    margin-top: 3rem;
+    padding-left: 3rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terracotta), var(--sand), var(--rose), transparent);
+    border-radius: 2px;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(74,44,42,0.05);
+    border: 1px solid rgba(74,44,42,0.05);
+    transition: all 0.4s;
+  }
+
+  .timeline-item:hover {
+    box-shadow: 0 10px 40px rgba(74,44,42,0.1);
+    transform: translateX(4px);
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -3rem;
+    top: 2.2rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 3px solid var(--terracotta);
+    transform: translateX(calc(-50% + 1px));
+    z-index: 1;
+  }
+
+  .timeline-item::after {
+    content: '';
+    position: absolute;
+    left: -1.85rem;
+    top: 2.55rem;
+    width: 20px;
+    height: 2px;
+    background: rgba(194,104,90,0.3);
+  }
+
+  .timeline-period {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-role {
+    font-family: Georgia, serif;
+    font-size: 1.3rem;
+    color: var(--night);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .timeline-company {
+    font-size: 0.95rem;
+    color: var(--rose);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+  }
+
+  .timeline-desc {
+    font-size: 0.9rem;
+    color: rgba(74,44,42,0.65);
+    line-height: 1.7;
+  }
+
+  .timeline-desc ul {
+    list-style: none;
+    margin-top: 0.5rem;
+  }
+
+  .timeline-desc ul li {
+    position: relative;
+    padding-left: 1.2rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-desc ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--terracotta), var(--sand));
+  }
+
+  /* ---- CONTACT ---- */
+  .contact {
+    background: linear-gradient(160deg, var(--night) 0%, #5E3533 50%, var(--terracotta) 100%);
+    color: var(--cream);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%23F5E6D3' d='M0,0L60,10C120,20,240,40,360,50C480,60,600,60,720,53.3C840,47,960,33,1080,26.7C1200,20,1320,20,1380,20L1440,20L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'/%3E%3C/svg%3E");
+    background-size: cover;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .contact .section-container {
+    position: relative;
+    z-index: 2;
+    padding-top: 4rem;
+  }
+
+  .contact .section-label { color: var(--sand); }
+  .contact .section-label::before { background: linear-gradient(90deg, var(--sand), var(--rose)); }
+  .contact .section-title { color: var(--cream); }
+
+  .contact-subtitle {
+    color: rgba(245,230,211,0.7);
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    font-size: 1.05rem;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+  }
+
+  .contact-card {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    background: rgba(245,230,211,0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(245,230,211,0.1);
+    transition: all 0.35s;
+    text-decoration: none;
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .contact-card:hover {
+    background: rgba(245,230,211,0.15);
+    transform: translateY(-4px);
+    border-color: rgba(245,230,211,0.25);
+  }
+
+  .contact-card .card-icon {
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(232,168,124,0.15);
+  }
+
+  .contact-card .card-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245,230,211,0.5);
+  }
+
+  .contact-card .card-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .contact-form {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245,230,211,0.6);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(245,230,211,0.15);
+    background: rgba(245,230,211,0.06);
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    outline: none;
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: rgba(245,230,211,0.3);
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--sand);
+    background: rgba(245,230,211,0.1);
+    box-shadow: 0 0 0 3px rgba(232,168,124,0.15);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .btn-send {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sand), var(--terracotta));
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.35s;
+    box-shadow: 0 4px 20px rgba(194,104,90,0.3);
+  }
+
+  .btn-send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(194,104,90,0.4);
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    background: var(--night);
+    color: rgba(245,230,211,0.4);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a {
+    color: var(--sand);
+    text-decoration: none;
+  }
+
+  /* ---- Scroll Reveal Animations ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1),
+                transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ---- Sun orb decoration ---- */
+  .sun-orb {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,124,0.5) 0%, rgba(232,168,124,0) 70%);
+    pointer-events: none;
+    animation: pulse-sun 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-sun {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 900px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .about-image-wrap { max-width: 300px; margin: 0 auto; }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .skills-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .contact-grid {
+      grid-template-columns: 1fr;
+      max-width: 320px;
+    }
+  }
+
+  @media (max-width: 680px) {
+    section { padding: 4rem 1.2rem; }
+
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(245,230,211,0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 2rem;
+      gap: 1.2rem;
+      box-shadow: 0 10px 40px rgba(74,44,42,0.1);
+    }
+
+    .nav-toggle { display: flex; }
+
+    .about-stats { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-item .stat-number { font-size: 1.5rem; }
+
+    .timeline { padding-left: 2rem; }
+    .timeline-item { padding: 1.5rem; }
+    .timeline-item::after { left: -1.35rem; width: 14px; }
+
+    .hero h1 { font-size: clamp(2.5rem, 10vw, 4rem); }
+  }
+
+  /* ---- Custom scrollbar ---- */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, var(--sand), var(--terracotta));
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--terracotta); }
+
+  /* ---- Selection ---- */
+  ::selection {
+    background: rgba(194,104,90,0.25);
+    color: var(--night);
+  }
+</style>
+</head>
+<body>
+
+<!-- Sand Particle Canvas -->
+<canvas id="sand-canvas" aria-hidden="true"></canvas>
+
+<!-- Navigation -->
+<nav role="navigation" aria-label="Main navigation">
+  <a href="#hero" class="nav-brand">anshull<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Software Developer at Walmart</div>
+    <h1>
+      Anshull<br>
+      <span class="accent">Garg</span>
+    </h1>
+    <p class="hero-subtitle">
+      Crafting scalable, elegant software like wind shapes sandstone -- patient, purposeful, beautiful in form.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#projects" class="btn btn-primary">View My Work</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
+    </div>
+  </div>
+  <div class="scroll-hint" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+
+  <!-- Decorative SVG sun -->
+  <svg style="position:absolute;top:10%;right:12%;z-index:3;opacity:0.2;pointer-events:none" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+    <circle cx="70" cy="70" r="45" fill="none" stroke="#F5E6D3" stroke-width="1"/>
+    <circle cx="70" cy="70" r="35" fill="none" stroke="#F5E6D3" stroke-width="0.5"/>
+    <circle cx="70" cy="70" r="20" fill="#F5E6D3" fill-opacity="0.15"/>
+    <!-- Sun rays -->
+    <line x1="70" y1="10" x2="70" y2="25" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="70" y1="115" x2="70" y2="130" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="10" y1="70" x2="25" y2="70" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="115" y1="70" x2="130" y2="70" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="27" y1="27" x2="38" y2="38" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="102" y1="102" x2="113" y2="113" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="113" y1="27" x2="102" y2="38" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+    <line x1="38" y1="102" x2="27" y2="113" stroke="#F5E6D3" stroke-width="1" stroke-linecap="round"/>
+  </svg>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="about" id="about">
+  <div class="section-container">
+    <div class="about-grid">
+      <div class="about-image-wrap reveal">
+        <div class="about-image">
+          <span class="initials">AG</span>
+          <div class="desert-scene" aria-hidden="true">
+            <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+              <path d="M0 120 Q50 80 100 110 Q150 70 200 100 Q250 60 300 90 Q350 70 400 80 L400 200 L0 200Z" fill="rgba(74,44,42,0.15)"/>
+              <path d="M0 150 Q80 120 160 140 Q240 110 320 135 Q360 120 400 130 L400 200 L0 200Z" fill="rgba(74,44,42,0.1)"/>
+              <!-- Cactus silhouettes -->
+              <rect x="80" y="95" width="4" height="30" rx="2" fill="rgba(74,44,42,0.12)"/>
+              <rect x="78" y="100" width="3" height="12" rx="1.5" fill="rgba(74,44,42,0.12)" transform="rotate(-30 79 106)"/>
+              <rect x="84" y="98" width="3" height="14" rx="1.5" fill="rgba(74,44,42,0.12)" transform="rotate(25 85 105)"/>
+              <rect x="300" y="85" width="3" height="25" rx="1.5" fill="rgba(74,44,42,0.1)"/>
+              <rect x="298" y="90" width="2.5" height="10" rx="1.25" fill="rgba(74,44,42,0.1)" transform="rotate(-35 299 95)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-label reveal">About Me</div>
+        <h2 class="section-title reveal reveal-delay-1">Building software<br>that endures.</h2>
+        <p class="reveal reveal-delay-2">
+          I am Anshull Garg, a Software Developer at Walmart, where I architect and build
+          large-scale applications serving millions of users. My work lives at the intersection
+          of engineering rigor and user empathy -- creating systems that are as robust under
+          the hood as they are smooth on the surface.
+        </p>
+        <p class="reveal reveal-delay-3">
+          With a deep foundation in full-stack development, I specialize in designing distributed
+          systems, optimizing performance at scale, and translating complex business requirements
+          into clean, maintainable code that teams can build upon for years.
+        </p>
+        <div class="about-stats reveal reveal-delay-4">
+          <div class="stat-item">
+            <div class="stat-number">5+</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">20+</div>
+            <div class="stat-label">Projects Shipped</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">M+</div>
+            <div class="stat-label">Users Impacted</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECTS ===== -->
+<section class="projects" id="projects">
+  <div class="section-container">
+    <div class="section-label reveal">Selected Work</div>
+    <h2 class="section-title reveal reveal-delay-1">Projects that push<br>boundaries.</h2>
+    <div class="projects-grid">
+
+      <div class="project-card reveal reveal-delay-1">
+        <div class="project-cover">
+          <div class="project-icon">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="8" y="8" width="40" height="40" rx="4"/>
+              <path d="M8 20h40M20 20v28"/>
+            </svg>
+          </div>
+          <svg class="canyon-lines" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 40 L0 25 Q100 10 200 20 Q300 30 400 15 L400 40Z" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">React</span>
+            <span class="project-tag">Node.js</span>
+            <span class="project-tag">Microservices</span>
+          </div>
+          <h3>Inventory Management Platform</h3>
+          <p>Real-time inventory tracking system handling millions of SKUs across thousands of Walmart stores with sub-second sync.</p>
+          <a href="#" class="project-link">View Details <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-2">
+        <div class="project-cover">
+          <div class="project-icon">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="28" cy="28" r="20"/>
+              <path d="M28 16v12l8 8"/>
+            </svg>
+          </div>
+          <svg class="canyon-lines" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 40 L0 20 Q100 30 200 15 Q300 25 400 20 L400 40Z" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">ML</span>
+            <span class="project-tag">Data Pipeline</span>
+          </div>
+          <h3>Demand Forecasting Engine</h3>
+          <p>Machine learning pipeline predicting product demand patterns, reducing overstock waste by 30% across regional distribution centers.</p>
+          <a href="#" class="project-link">View Details <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-3">
+        <div class="project-cover">
+          <div class="project-icon">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 44V20l16-12 16 12v24H12z"/>
+              <rect x="22" y="30" width="12" height="14"/>
+            </svg>
+          </div>
+          <svg class="canyon-lines" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 40 L0 22 Q100 15 200 25 Q300 10 400 18 L400 40Z" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">TypeScript</span>
+            <span class="project-tag">GraphQL</span>
+            <span class="project-tag">AWS</span>
+          </div>
+          <h3>Customer Experience Dashboard</h3>
+          <p>Unified analytics dashboard synthesizing customer feedback, NPS scores, and behavioral data into actionable product insights.</p>
+          <a href="#" class="project-link">View Details <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-4">
+        <div class="project-cover">
+          <div class="project-icon">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="8" y="14" width="40" height="28" rx="3"/>
+              <path d="M20 26l4 4 8-8"/>
+            </svg>
+          </div>
+          <svg class="canyon-lines" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 40 L0 18 Q100 28 200 20 Q300 28 400 22 L400 40Z" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">Go</span>
+            <span class="project-tag">Kafka</span>
+            <span class="project-tag">Kubernetes</span>
+          </div>
+          <h3>Order Processing Pipeline</h3>
+          <p>High-throughput event-driven order processing system handling peak holiday traffic with 99.99% uptime guarantee.</p>
+          <a href="#" class="project-link">View Details <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== SKILLS ===== -->
+<section class="skills" id="skills">
+  <div class="desert-deco" aria-hidden="true"></div>
+  <div class="desert-deco" aria-hidden="true"></div>
+  <div class="section-container">
+    <div class="section-label reveal">Technical Arsenal</div>
+    <h2 class="section-title reveal reveal-delay-1">Tools of the<br>trade.</h2>
+    <div class="skills-layout">
+      <div>
+        <div class="skill-category reveal reveal-delay-1">
+          <h3>Languages</h3>
+          <div class="skills-list">
+            <span class="skill-chip"><span class="dot"></span>JavaScript</span>
+            <span class="skill-chip"><span class="dot"></span>TypeScript</span>
+            <span class="skill-chip"><span class="dot"></span>Python</span>
+            <span class="skill-chip"><span class="dot"></span>Java</span>
+            <span class="skill-chip"><span class="dot"></span>Go</span>
+            <span class="skill-chip"><span class="dot"></span>SQL</span>
+          </div>
+        </div>
+        <div class="skill-category reveal reveal-delay-2">
+          <h3>Frontend</h3>
+          <div class="skills-list">
+            <span class="skill-chip"><span class="dot"></span>React</span>
+            <span class="skill-chip"><span class="dot"></span>Next.js</span>
+            <span class="skill-chip"><span class="dot"></span>Vue.js</span>
+            <span class="skill-chip"><span class="dot"></span>Tailwind CSS</span>
+            <span class="skill-chip"><span class="dot"></span>GraphQL</span>
+            <span class="skill-chip"><span class="dot"></span>Redux</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="skill-category reveal reveal-delay-2">
+          <h3>Backend & Infra</h3>
+          <div class="skills-list">
+            <span class="skill-chip"><span class="dot"></span>Node.js</span>
+            <span class="skill-chip"><span class="dot"></span>Spring Boot</span>
+            <span class="skill-chip"><span class="dot"></span>Kafka</span>
+            <span class="skill-chip"><span class="dot"></span>Redis</span>
+            <span class="skill-chip"><span class="dot"></span>PostgreSQL</span>
+            <span class="skill-chip"><span class="dot"></span>MongoDB</span>
+          </div>
+        </div>
+        <div class="skill-category reveal reveal-delay-3">
+          <h3>DevOps & Cloud</h3>
+          <div class="skills-list">
+            <span class="skill-chip"><span class="dot"></span>AWS</span>
+            <span class="skill-chip"><span class="dot"></span>GCP</span>
+            <span class="skill-chip"><span class="dot"></span>Docker</span>
+            <span class="skill-chip"><span class="dot"></span>Kubernetes</span>
+            <span class="skill-chip"><span class="dot"></span>Terraform</span>
+            <span class="skill-chip"><span class="dot"></span>CI/CD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EXPERIENCE ===== -->
+<section class="experience" id="experience">
+  <div class="section-container">
+    <div class="section-label reveal">Career Journey</div>
+    <h2 class="section-title reveal reveal-delay-1">Where I have<br>made impact.</h2>
+    <div class="timeline">
+
+      <div class="timeline-item reveal reveal-delay-1">
+        <div class="timeline-period">2022 -- Present</div>
+        <div class="timeline-role">Software Developer</div>
+        <div class="timeline-company">Walmart Global Tech</div>
+        <div class="timeline-desc">
+          <ul>
+            <li>Architecting and shipping high-impact features for Walmart's e-commerce platform serving 240M+ weekly customers</li>
+            <li>Leading backend microservices development with Java and Node.js, reducing API latency by 40%</li>
+            <li>Driving adoption of modern frontend practices with React and TypeScript across the team</li>
+            <li>Mentoring junior developers and establishing code review standards for the engineering org</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-2">
+        <div class="timeline-period">2020 -- 2022</div>
+        <div class="timeline-role">Software Engineer</div>
+        <div class="timeline-company">Tech Startup</div>
+        <div class="timeline-desc">
+          <ul>
+            <li>Built full-stack web applications from zero to production using React, Node.js, and cloud-native architecture</li>
+            <li>Designed and implemented RESTful and GraphQL APIs handling 10K+ requests per second</li>
+            <li>Established CI/CD pipelines reducing deployment time from hours to minutes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-3">
+        <div class="timeline-period">2019 -- 2020</div>
+        <div class="timeline-role">Software Engineering Intern</div>
+        <div class="timeline-company">Enterprise Solutions</div>
+        <div class="timeline-desc">
+          <ul>
+            <li>Developed internal tools and dashboards that automated manual processes, saving 15 hours per week</li>
+            <li>Contributed to the migration of legacy systems to modern cloud-based architecture</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="contact" id="contact">
+  <div class="section-container">
+    <div class="section-label reveal">Get In Touch</div>
+    <h2 class="section-title reveal reveal-delay-1">Let's build something<br>remarkable.</h2>
+    <p class="contact-subtitle reveal reveal-delay-2">
+      Open to conversations about engineering challenges, collaboration opportunities,
+      or just connecting over shared interests.
+    </p>
+
+    <div class="contact-grid reveal reveal-delay-2">
+      <a href="mailto:anshull.garg@email.com" class="contact-card">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="M22 7l-10 7L2 7"/>
+          </svg>
+        </div>
+        <div class="card-label">Email</div>
+        <div class="card-value">anshull.garg@email.com</div>
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" class="contact-card" target="_blank" rel="noopener">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/>
+            <rect x="2" y="9" width="4" height="12"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+        </div>
+        <div class="card-label">LinkedIn</div>
+        <div class="card-value">anshullgarg</div>
+      </a>
+      <a href="https://github.com/anshullgarg" class="contact-card" target="_blank" rel="noopener">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+          </svg>
+        </div>
+        <div class="card-label">GitHub</div>
+        <div class="card-value">anshullgarg</div>
+      </a>
+    </div>
+
+    <form class="contact-form reveal reveal-delay-3" onsubmit="event.preventDefault(); handleSubmit();">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" placeholder="Jane Doe" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Your Email</label>
+        <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell me about your project or idea..." required></textarea>
+      </div>
+      <button type="submit" class="btn-send" id="submitBtn">Send Message</button>
+    </form>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Anshull Garg. Crafted with care in the desert sun.</p>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ---- Sand Particle System ----
+  const canvas = document.getElementById('sand-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animFrame;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function createParticles() {
+    particles = [];
+    const count = Math.min(60, Math.floor(window.innerWidth / 25));
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 0.5,
+        speedX: (Math.random() - 0.3) * 0.4,
+        speedY: Math.random() * 0.15 + 0.05,
+        opacity: Math.random() * 0.4 + 0.1,
+        color: Math.random() > 0.5 ? '#E8A87C' : '#C2685A'
+      });
+    }
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x > canvas.width + 10) p.x = -10;
+      if (p.x < -10) p.x = canvas.width + 10;
+      if (p.y > canvas.height + 10) { p.y = -10; p.x = Math.random() * canvas.width; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.opacity;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    animFrame = requestAnimationFrame(animateParticles);
+  }
+
+  resizeCanvas();
+  createParticles();
+  animateParticles();
+  window.addEventListener('resize', () => { resizeCanvas(); createParticles(); });
+
+  // ---- Navigation scroll effect ----
+  const nav = document.querySelector('nav');
+  let lastScroll = 0;
+
+  function handleNavScroll() {
+    const scrollY = window.scrollY;
+    if (scrollY > 80) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = scrollY;
+  }
+
+  window.addEventListener('scroll', handleNavScroll, { passive: true });
+
+  // ---- Mobile nav toggle ----
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  let menuOpen = false;
+
+  navToggle.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    navLinks.classList.toggle('open', menuOpen);
+    navToggle.setAttribute('aria-expanded', menuOpen);
+    // Animate hamburger to X
+    const spans = navToggle.querySelectorAll('span');
+    if (menuOpen) {
+      spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+      spans[1].style.opacity = '0';
+      spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+    } else {
+      spans[0].style.transform = 'none';
+      spans[1].style.opacity = '1';
+      spans[2].style.transform = 'none';
+    }
+  });
+
+  // Close mobile menu on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (menuOpen) {
+        menuOpen = false;
+        navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        const spans = navToggle.querySelectorAll('span');
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+      }
+    });
+  });
+
+  // ---- Scroll Reveal ----
+  const revealEls = document.querySelectorAll('.reveal');
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // ---- Smooth scroll for anchor links ----
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // ---- Contact form handler ----
+  window.handleSubmit = function() {
+    const btn = document.getElementById('submitBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Message Sent!';
+    btn.style.background = 'linear-gradient(135deg, #D4838F, #C2685A)';
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.background = '';
+      document.querySelector('.contact-form').reset();
+    }, 2500);
+  };
+
+  // ---- Parallax-lite for hero ----
+  const hero = document.querySelector('.hero-content');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    if (scrollY < window.innerHeight) {
+      const progress = scrollY / window.innerHeight;
+      hero.style.transform = `translateY(${scrollY * 0.25}px)`;
+      hero.style.opacity = 1 - progress * 0.7;
+    }
+  }, { passive: true });
+
+  // ---- Stat counter animation ----
+  const statNumbers = document.querySelectorAll('.stat-number');
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const text = el.textContent;
+        const match = text.match(/(\d+)/);
+        if (match) {
+          const target = parseInt(match[1]);
+          const suffix = text.replace(match[1], '');
+          let current = 0;
+          const step = Math.max(1, Math.floor(target / 40));
+          const interval = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              current = target;
+              clearInterval(interval);
+            }
+            el.textContent = current + suffix;
+          }, 30);
+        }
+        statObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  statNumbers.forEach(el => statObserver.observe(el));
+
+})();
+</script>
+</body>
+</html>
