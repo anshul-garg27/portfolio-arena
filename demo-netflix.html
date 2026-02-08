@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Netflix Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A Netflix-inspired portfolio experience.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/*=== RESET ===*/
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:'Inter','Helvetica Neue',Arial,sans-serif;background:#141414;color:#fff;overflow-x:hidden;line-height:1.4}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{height:0;width:0}
+::selection{background:rgba(229,9,20,.4);color:#fff}
+
+/*=== NAV ===*/
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;padding:0 4%;height:68px;transition:background .4s}
+.nav.scrolled{background:rgba(20,20,20,.97)}
+.nav-logo{height:25px;margin-right:40px;flex-shrink:0}
+.nav-logo svg{height:25px;width:auto}
+.nav-links{display:flex;gap:20px;list-style:none;font-size:14px;font-weight:400;color:#e5e5e5}
+.nav-links li{cursor:pointer;transition:color .2s;white-space:nowrap}
+.nav-links li:hover,.nav-links li.active{color:#fff;font-weight:600}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:20px}
+.nav-icon{width:24px;height:24px;fill:#fff;cursor:pointer;transition:transform .2s}
+.nav-icon:hover{transform:scale(1.1)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:linear-gradient(135deg,#E50914,#B20710);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav{padding:0 3%;height:56px}
+  .nav-logo svg{height:20px}
+}
+
+/*=== HERO ===*/
+.hero{position:relative;width:100%;height:90vh;min-height:500px;max-height:800px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1a0a2e 0%,#16213e 30%,#0f3460 60%,#1a1a2e 100%);background-size:400% 400%;animation:heroShift 12s ease infinite}
+@keyframes heroShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero-bg::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-vignette{position:absolute;inset:0;background:linear-gradient(to top,#141414 0%,rgba(20,20,20,.7) 30%,rgba(20,20,20,.1) 60%,rgba(20,20,20,.4) 100%)}
+.hero-side-vignette{position:absolute;inset:0;background:linear-gradient(to right,rgba(20,20,20,.8) 0%,transparent 40%)}
+.hero-content{position:absolute;bottom:35%;left:4%;z-index:10;max-width:550px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;margin-bottom:16px}
+.hero-n-logo{color:#E50914;font-weight:900;font-size:20px;letter-spacing:2px}
+.hero-series{font-size:13px;font-weight:500;color:#ccc;text-transform:uppercase;letter-spacing:3px}
+.hero-title{font-size:clamp(32px,5vw,58px);font-weight:900;line-height:1.05;margin-bottom:16px;text-shadow:2px 4px 12px rgba(0,0,0,.6)}
+.hero-desc{font-size:clamp(14px,1.4vw,18px);color:#ddd;line-height:1.6;margin-bottom:24px;text-shadow:1px 2px 6px rgba(0,0,0,.5);max-width:480px}
+.hero-meta{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.hero-match{color:#46d369;font-weight:700;font-size:15px}
+.hero-year,.hero-rating{color:#999;font-size:14px}
+.hero-rating{border:1px solid #999;padding:0 6px;border-radius:2px;font-size:12px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-play,.btn-info{display:inline-flex;align-items:center;gap:10px;padding:10px 28px;border-radius:4px;font-size:16px;font-weight:600;transition:all .2s}
+.btn-play{background:#fff;color:#000}
+.btn-play:hover{background:rgba(255,255,255,.75)}
+.btn-play svg{width:24px;height:24px;fill:#000}
+.btn-info{background:rgba(109,109,110,.7);color:#fff}
+.btn-info:hover{background:rgba(109,109,110,.4)}
+.btn-info svg{width:24px;height:24px;fill:#fff}
+@media(max-width:768px){
+  .hero{height:70vh;min-height:400px}
+  .hero-content{bottom:20%;left:3%;right:3%;max-width:none}
+  .btn-play,.btn-info{padding:8px 18px;font-size:14px}
+}
+
+/*=== CATEGORY ROW ===*/
+.category-section{padding:0 4%;margin-bottom:8px;position:relative;z-index:10}
+.category-section:first-of-type{margin-top:-100px}
+.category-title{font-size:clamp(16px,1.6vw,22px);font-weight:700;margin-bottom:8px;padding-left:2px;display:flex;align-items:center;gap:8px}
+.category-title .explore{font-size:13px;color:#54b9c5;font-weight:500;opacity:0;transition:opacity .3s;cursor:pointer}
+.category-section:hover .explore{opacity:1}
+.row-wrapper{position:relative}
+.row{display:flex;gap:6px;overflow-x:auto;scroll-behavior:smooth;padding:8px 0 40px;-ms-overflow-style:none;scrollbar-width:none}
+.row::-webkit-scrollbar{display:none}
+.row-arrow{position:absolute;top:0;bottom:40px;width:55px;z-index:20;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .3s;font-size:28px;color:#fff;background:rgba(20,20,20,.7)}
+.row-wrapper:hover .row-arrow{opacity:1}
+.row-arrow:hover{background:rgba(20,20,20,.9)}
+.row-arrow.left{left:0;border-radius:0 4px 4px 0}
+.row-arrow.right{right:0;border-radius:4px 0 0 4px}
+
+/*=== CARD ===*/
+.card{flex-shrink:0;width:240px;border-radius:4px;overflow:visible;cursor:pointer;position:relative;transition:transform .3s cubic-bezier(.4,0,.2,1),z-index 0s .3s}
+.card-img{width:100%;aspect-ratio:16/9;background:#222;border-radius:4px;overflow:hidden;position:relative;transition:box-shadow .3s}
+.card-img-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;transition:transform .4s}
+.card:hover{transform:scale(1.4);z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1) .4s,z-index 0s}
+.card:hover .card-img{box-shadow:0 8px 30px rgba(0,0,0,.7)}
+.card:hover .card-img-inner{transform:scale(1.1)}
+.card:hover .card-expand{opacity:1;transform:translateY(0);pointer-events:auto}
+.card-expand{position:absolute;left:0;right:0;top:100%;background:#181818;border-radius:0 0 6px 6px;padding:14px 16px 16px;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .3s .4s,transform .3s .4s;box-shadow:0 12px 30px rgba(0,0,0,.7);z-index:101}
+.card-expand-btns{display:flex;gap:8px;margin-bottom:10px}
+.card-mini-btn{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;transition:all .2s;background:rgba(42,42,42,.6)}
+.card-mini-btn:hover{border-color:#fff;background:rgba(255,255,255,.1)}
+.card-mini-btn.play-btn{background:#fff;border-color:#fff}
+.card-mini-btn.play-btn svg{fill:#000}
+.card-mini-btn svg{width:16px;height:16px;fill:#fff}
+.card-expand-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;flex-wrap:wrap}
+.card-match{color:#46d369;font-weight:700}
+.card-year{color:#999}
+.card-duration{border:1px solid #999;padding:0 4px;border-radius:2px;color:#999;font-size:10px}
+.card-expand-desc{font-size:12px;color:#aaa;line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px}
+.card-tag{font-size:10px;padding:2px 8px;border-radius:2px;background:rgba(255,255,255,.1);color:#ccc;white-space:nowrap}
+@media(max-width:768px){
+  .card{width:140px}
+  .card:hover{transform:scale(1.05);z-index:10}
+  .card:hover .card-expand{display:none}
+  .category-section{padding:0 3%}
+}
+
+/*=== TOP 10 ROW ===*/
+.top10-row .card{width:280px}
+.top10-card{display:flex;align-items:flex-end;gap:0}
+.top10-number{font-size:140px;font-weight:900;line-height:.8;color:transparent;-webkit-text-stroke:3px #999;font-style:italic;margin-right:-20px;z-index:1;user-select:none;flex-shrink:0}
+.top10-poster{width:120px;height:170px;border-radius:4px;overflow:hidden;flex-shrink:0;position:relative;z-index:2}
+.top10-poster-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px}
+@media(max-width:768px){
+  .top10-row .card{width:200px}
+  .top10-number{font-size:90px;-webkit-text-stroke:2px #999;margin-right:-12px}
+  .top10-poster{width:90px;height:130px}
+}
+
+/*=== SKILL CARDS (My List) ===*/
+.skill-card .card-img{aspect-ratio:1/1;border-radius:8px}
+.skill-card{width:160px}
+.skill-card .card-img-inner{flex-direction:column;gap:8px;padding:12px}
+.skill-icon{font-size:36px}
+.skill-name{font-size:13px;font-weight:600;text-align:center;color:#fff}
+@media(max-width:768px){.skill-card{width:110px}}
+
+/*=== MODAL ===*/
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{width:100%;max-width:850px;background:#181818;border-radius:8px;overflow:hidden;transform:scale(.9);transition:transform .3s;position:relative}
+.modal-overlay.open .modal{transform:scale(1)}
+.modal-close{position:absolute;top:16px;right:16px;z-index:10;width:36px;height:36px;border-radius:50%;background:rgba(24,24,24,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s}
+.modal-close:hover{background:#333}
+.modal-close svg{width:20px;height:20px;fill:#fff}
+.modal-hero{position:relative;width:100%;aspect-ratio:16/9;max-height:480px;overflow:hidden}
+.modal-hero-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px}
+.modal-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,#181818 0%,rgba(24,24,24,.4) 50%,rgba(24,24,24,.1) 100%)}
+.modal-hero-content{position:absolute;bottom:40px;left:40px;right:40px;z-index:5}
+.modal-hero-title{font-size:clamp(24px,4vw,40px);font-weight:900;margin-bottom:12px}
+.modal-hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.modal-body{padding:24px 40px 40px;display:grid;grid-template-columns:1.5fr 1fr;gap:32px}
+.modal-left .modal-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:14px;flex-wrap:wrap}
+.modal-synopsis{font-size:15px;color:#ddd;line-height:1.7;margin-bottom:20px}
+.modal-right{font-size:13px;color:#999}
+.modal-right p{margin-bottom:10px}
+.modal-right .label{color:#777}
+.modal-right .value{color:#fff}
+.modal-episodes{padding:0 40px 40px}
+.modal-episodes h3{font-size:20px;font-weight:700;margin-bottom:16px}
+.episode{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid #333;align-items:flex-start}
+.episode:last-child{border-bottom:none}
+.episode-num{font-size:22px;font-weight:600;color:#999;width:30px;flex-shrink:0;text-align:center;padding-top:4px}
+.episode-thumb{width:120px;height:68px;border-radius:4px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.episode-info{flex:1}
+.episode-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.episode-desc{font-size:13px;color:#999;line-height:1.5}
+@media(max-width:768px){
+  .modal-body{grid-template-columns:1fr;gap:16px;padding:16px 20px 20px}
+  .modal-hero-content{left:20px;right:20px;bottom:20px}
+  .modal-episodes{padding:0 20px 20px}
+  .episode{flex-wrap:wrap}
+  .episode-thumb{width:100%;height:auto;aspect-ratio:16/9}
+}
+
+/*=== FOOTER ===*/
+.footer{padding:60px 4% 40px;color:#999;font-size:13px}
+.footer-links{display:flex;flex-wrap:wrap;gap:12px 32px;margin-bottom:20px}
+.footer-links a{color:#999;font-size:13px;transition:color .2s}
+.footer-links a:hover{color:#fff;text-decoration:underline}
+.footer-code{font-size:12px;color:#555;margin-top:12px}
+
+/*=== ANIMATIONS ===*/
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .6s ease forwards;opacity:0}
+.fade-up:nth-child(1){animation-delay:.1s}
+.fade-up:nth-child(2){animation-delay:.2s}
+.fade-up:nth-child(3){animation-delay:.3s}
+.fade-up:nth-child(4){animation-delay:.4s}
+
+/*=== REDUCED MOTION ===*/
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .card:hover{transform:none}
+  .hero-bg{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">
+    <svg viewBox="0 0 111 30" fill="#E50914" xmlns="http://www.w3.org/2000/svg">
+      <path d="M105.062 14.28L111 30c-1.75-.25-3.499-.563-5.28-.845l-3.345-8.686-3.437 7.969c-1.687-.282-3.344-.376-5.031-.595l6.093-13.515L94.938 0H100.5l3.063 7.64L106.703 0h5.063l-6.703 14.28zM90 0l-4.5 21.14L81 0h-4.5v28.812C74.953 29.156 73.5 29.344 72 29.5V0h6.75l4.5 19.968L87.75 0H90zM62.016 0v27.376c-1.547.094-3.063.282-4.594.47V0h4.594zM57.328 0v27.845c-1.5.188-3.016.47-4.5.657V0h4.5zM50.906 0v29.063c-1.547.25-3.094.562-4.594.843V0h4.594zM40.5 0L36 21.14 31.5 0H27v28.812C25.453 29.156 24 29.344 22.5 29.5V0h6.75l4.5 19.968L38.25 0H40.5zM20.625 0v28.125c-1.5.187-3.016.375-4.5.656V4.5h-5.063V0h14.063v0zM5.063 4.5v24.938C3.375 29.72 1.687 30 0 30V4.5h-0V0h14.063v4.5H5.063z"/>
+    </svg>
+  </div>
+  <ul class="nav-links">
+    <li class="active">Home</li>
+    <li onclick="scrollToSection('trending')">Projects</li>
+    <li onclick="scrollToSection('newreleases')">Recent Work</li>
+    <li onclick="scrollToSection('mylist')">Skills</li>
+    <li onclick="scrollToSection('top10')">Top 10</li>
+  </ul>
+  <div class="nav-right">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5S10.5 3.17 10.5 4v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    <div class="nav-avatar" title="Anshull Garg">A</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-side-vignette"></div>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="hero-n-logo">N</span>
+      <span class="hero-series">P O R T F O L I O</span>
+    </div>
+    <h1 class="hero-title">Anshull Garg:<br>Engineering at Scale</h1>
+    <p class="hero-desc">Software Developer at Walmart building high-performance microservices and scalable systems that power digital commerce for millions of users.</p>
+    <div class="hero-meta">
+      <span class="hero-match">98% Match</span>
+      <span class="hero-year">2025</span>
+      <span class="hero-rating">A+</span>
+      <span style="color:#999;font-size:14px">1 Season</span>
+      <span style="color:#999;font-size:12px;border:1px solid #999;padding:0 5px;border-radius:2px">HD</span>
+    </div>
+    <div class="hero-btns">
+      <button class="btn-play" onclick="scrollToSection('trending')">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Play
+      </button>
+      <button class="btn-info" onclick="openModal('hero')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 16v-4M12 8h.01" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        More Info
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING NOW (Projects) -->
+<section class="category-section" id="trending">
+  <h2 class="category-title">Trending Now <span class="explore">Explore All ></span></h2>
+  <div class="row-wrapper">
+    <div class="row-arrow left" onclick="scrollRow(this,-1)">&lsaquo;</div>
+    <div class="row" id="trendingRow"></div>
+    <div class="row-arrow right" onclick="scrollRow(this,1)">&rsaquo;</div>
+  </div>
+</section>
+
+<!-- NEW RELEASES (Recent Work) -->
+<section class="category-section" id="newreleases">
+  <h2 class="category-title">New Releases <span class="explore">Explore All ></span></h2>
+  <div class="row-wrapper">
+    <div class="row-arrow left" onclick="scrollRow(this,-1)">&lsaquo;</div>
+    <div class="row" id="newReleasesRow"></div>
+    <div class="row-arrow right" onclick="scrollRow(this,1)">&rsaquo;</div>
+  </div>
+</section>
+
+<!-- MY LIST (Skills) -->
+<section class="category-section" id="mylist">
+  <h2 class="category-title">My List <span class="explore">Explore All ></span></h2>
+  <div class="row-wrapper">
+    <div class="row-arrow left" onclick="scrollRow(this,-1)">&lsaquo;</div>
+    <div class="row" id="myListRow"></div>
+    <div class="row-arrow right" onclick="scrollRow(this,1)">&rsaquo;</div>
+  </div>
+</section>
+
+<!-- BECAUSE YOU WATCHED REACT -->
+<section class="category-section" id="becausereact">
+  <h2 class="category-title">Because You Watched React <span class="explore">Explore All ></span></h2>
+  <div class="row-wrapper">
+    <div class="row-arrow left" onclick="scrollRow(this,-1)">&lsaquo;</div>
+    <div class="row" id="becauseReactRow"></div>
+    <div class="row-arrow right" onclick="scrollRow(this,1)">&rsaquo;</div>
+  </div>
+</section>
+
+<!-- TOP 10 IN INDIA -->
+<section class="category-section top10-row" id="top10">
+  <h2 class="category-title">
+    <svg width="28" height="30" viewBox="0 0 28 30" fill="none"><rect x="0" y="0" width="28" height="30" rx="2" fill="#E50914"/><text x="14" y="22" text-anchor="middle" font-size="16" font-weight="900" fill="#fff" font-family="Inter">10</text></svg>
+    Top 10 in India Today
+  </h2>
+  <div class="row-wrapper">
+    <div class="row-arrow left" onclick="scrollRow(this,-1)">&lsaquo;</div>
+    <div class="row" id="top10Row"></div>
+    <div class="row-arrow right" onclick="scrollRow(this,1)">&rsaquo;</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="mailto:anshull@example.com">Email</a>
+    <a href="https://github.com/anshullgarg" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/anshullgarg" target="_blank">LinkedIn</a>
+    <a href="https://twitter.com/anshullgarg" target="_blank">Twitter / X</a>
+    <a href="#">Resume</a>
+    <a href="#">Blog</a>
+  </div>
+  <p style="color:#555">Available for opportunities. Currently: Software Developer at Walmart.</p>
+  <p class="footer-code">AGFLIX-2025 | Built with pure HTML, CSS, and JS.</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal" onclick="event.stopPropagation()">
+    <div class="modal-close" onclick="closeModal()">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </div>
+    <div class="modal-hero">
+      <div class="modal-hero-bg" id="modalHeroBg"></div>
+      <div class="modal-hero-overlay"></div>
+      <div class="modal-hero-content">
+        <h2 class="modal-hero-title" id="modalTitle"></h2>
+        <div class="modal-hero-btns">
+          <button class="btn-play"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 5v14l11-7z"/></svg> Play</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-left">
+        <div class="modal-meta">
+          <span class="card-match" id="modalMatch"></span>
+          <span class="card-year" id="modalYear"></span>
+          <span class="card-duration" id="modalRating"></span>
+        </div>
+        <p class="modal-synopsis" id="modalSynopsis"></p>
+      </div>
+      <div class="modal-right">
+        <p><span class="label">Cast: </span><span class="value" id="modalCast"></span></p>
+        <p><span class="label">Genres: </span><span class="value" id="modalGenres"></span></p>
+        <p><span class="label">This show is: </span><span class="value" id="modalTraits"></span></p>
+      </div>
+    </div>
+    <div class="modal-episodes" id="modalEpisodes">
+      <h3>Episodes</h3>
+      <div id="modalEpisodeList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================
+   DATA
+   ================================================ */
+const PROJECTS = {
+  ecommerce: {
+    id: 'ecommerce',
+    title: 'E-Commerce Platform',
+    emoji: '&#128722;',
+    gradient: 'linear-gradient(135deg,#0071CE,#004C91)',
+    match: '97%', year: '2025', rating: 'Shipped', duration: '6 months',
+    desc: 'A full-scale enterprise e-commerce platform serving millions of daily transactions. Built with a microservices architecture handling inventory management, real-time pricing, and personalized recommendations at Walmart scale.',
+    synopsis: 'When the legacy monolith could no longer keep up with the demands of modern commerce, one developer led the charge to rebuild the entire checkout and catalog system from the ground up. The result: a blazing-fast platform that handles Black Friday traffic without breaking a sweat.',
+    cast: 'React, Node.js, Kafka, PostgreSQL, Redis, Docker',
+    genres: 'Full-Stack, Enterprise, E-Commerce',
+    traits: 'Scalable, High-Performance, Mission-Critical',
+    tech: ['React','Node.js','Kafka','PostgreSQL'],
+    episodes: [
+      { title: 'Catalog Service', desc: 'High-throughput product catalog API serving 50K+ requests per second with intelligent caching and CDN integration.' },
+      { title: 'Checkout Pipeline', desc: 'Event-driven checkout flow with Kafka-based order processing, inventory reservation, and payment gateway integration.' },
+      { title: 'Search Engine', desc: 'Elasticsearch-powered product search with autocomplete, faceted filtering, and ML-based relevance ranking.' },
+      { title: 'Recommendation Engine', desc: 'Collaborative filtering recommendations using real-time user behavior data and purchase history analysis.' }
+    ]
+  },
+  mlpipeline: {
+    id: 'mlpipeline',
+    title: 'ML Pipeline Engine',
+    emoji: '&#129302;',
+    gradient: 'linear-gradient(135deg,#7B2FBE,#3B82F6)',
+    match: '95%', year: '2025', rating: 'In Progress', duration: 'Ongoing',
+    desc: 'An end-to-end machine learning pipeline engine for training, evaluating, and deploying ML models at scale. Features automated hyperparameter tuning and model versioning.',
+    synopsis: 'In a world drowning in data, a sophisticated pipeline emerges to tame the chaos. From raw data ingestion to production model serving, this engine automates the entire ML lifecycle -- so data scientists can focus on what matters: building smarter models.',
+    cast: 'Python, TensorFlow, Docker, Kubernetes, Apache Airflow',
+    genres: 'Machine Learning, Data Engineering, DevOps',
+    traits: 'Intelligent, Automated, Cloud-Native',
+    tech: ['Python','TensorFlow','Docker','K8s'],
+    episodes: [
+      { title: 'Data Ingestion', desc: 'Scalable data pipeline supporting batch and streaming ingestion from multiple sources with schema validation.' },
+      { title: 'Feature Store', desc: 'Centralized feature engineering platform with versioning, lineage tracking, and real-time feature serving.' },
+      { title: 'Training Orchestrator', desc: 'Distributed model training with automatic hyperparameter optimization using Bayesian search strategies.' },
+      { title: 'Model Registry', desc: 'Production model versioning with A/B testing, canary deployments, and automated rollback capabilities.' }
+    ]
+  },
+  analytics: {
+    id: 'analytics',
+    title: 'Real-Time Analytics Dashboard',
+    emoji: '&#128202;',
+    gradient: 'linear-gradient(135deg,#E040FB,#FF6D00)',
+    match: '93%', year: '2024', rating: 'Shipped', duration: '4 months',
+    desc: 'Interactive real-time analytics dashboard visualizing millions of data points with sub-second refresh rates. Custom D3.js visualizations with WebSocket-powered live updates.',
+    synopsis: 'Numbers tell stories -- if you know how to listen. This dashboard transforms raw telemetry into actionable insights, giving stakeholders a real-time window into system health, user behavior, and business metrics across the entire platform.',
+    cast: 'TypeScript, D3.js, PostgreSQL, WebSocket, React',
+    genres: 'Data Visualization, Frontend, Real-Time',
+    traits: 'Visual, Interactive, Data-Driven',
+    tech: ['TypeScript','D3.js','PostgreSQL','WebSocket'],
+    episodes: [
+      { title: 'Live Metrics Feed', desc: 'WebSocket-powered real-time data streaming with automatic reconnection and backpressure handling.' },
+      { title: 'Custom Charts', desc: 'Hand-crafted D3.js visualizations including heatmaps, sankey diagrams, and force-directed graphs.' },
+      { title: 'Alert System', desc: 'Configurable threshold alerts with Slack/PagerDuty integration and anomaly detection.' }
+    ]
+  },
+  auth: {
+    id: 'auth',
+    title: 'Auth Microservice',
+    emoji: '&#128274;',
+    gradient: 'linear-gradient(135deg,#FF416C,#FF4B2B)',
+    match: '91%', year: '2024', rating: 'Maintained', duration: '3 months',
+    desc: 'Zero-trust authentication microservice handling OAuth 2.0, JWT tokens, RBAC, and multi-factor authentication for enterprise applications.',
+    synopsis: 'Security is not a feature -- it is a foundation. This battle-tested auth service stands guard at the gates, verifying identities and managing permissions across the entire microservices ecosystem with zero-trust principles.',
+    cast: 'Java, Spring Boot, Redis, OAuth 2.0, JWT',
+    genres: 'Security, Backend, Microservices',
+    traits: 'Secure, Reliable, Zero-Trust',
+    tech: ['Java','Spring Boot','Redis','JWT'],
+    episodes: [
+      { title: 'OAuth 2.0 Flows', desc: 'Complete implementation of authorization code, client credentials, and PKCE flows.' },
+      { title: 'MFA Engine', desc: 'Multi-factor authentication supporting TOTP, SMS, and hardware security keys.' },
+      { title: 'RBAC System', desc: 'Hierarchical role-based access control with fine-grained permission management.' }
+    ]
+  },
+  checkout: {
+    id: 'checkout',
+    title: 'Mobile Checkout Redesign',
+    emoji: '&#128241;',
+    gradient: 'linear-gradient(135deg,#11998e,#38ef7d)',
+    match: '94%', year: '2023', rating: 'Shipped', duration: '5 months',
+    desc: 'Complete mobile checkout experience redesign using React Native. Reduced cart abandonment by 23% with streamlined UX, optimistic updates, and one-tap payment integration.',
+    synopsis: 'Every tap counts in mobile commerce. This ground-up redesign of the checkout experience eliminated friction at every step -- from cart to confirmation -- resulting in measurably higher conversion rates and happier customers.',
+    cast: 'React Native, GraphQL, Node.js, Stripe API',
+    genres: 'Mobile, UX Design, E-Commerce',
+    traits: 'User-Centric, Performant, Conversion-Focused',
+    tech: ['React Native','GraphQL','Node.js'],
+    episodes: [
+      { title: 'Cart Optimization', desc: 'Optimistic UI updates with offline support and automatic conflict resolution for cart operations.' },
+      { title: 'One-Tap Payments', desc: 'Integration with Apple Pay, Google Pay, and saved payment methods for frictionless checkout.' },
+      { title: 'Address Autocomplete', desc: 'Smart address lookup with geolocation-based suggestions and validation.' }
+    ]
+  },
+  designsystem: {
+    id: 'designsystem',
+    title: 'Component Design System',
+    emoji: '&#127912;',
+    gradient: 'linear-gradient(135deg,#667eea,#764ba2)',
+    match: '92%', year: '2024', rating: 'Shipped', duration: '8 months',
+    desc: 'Enterprise-grade design system with 80+ accessible React components, Storybook documentation, and automated visual regression testing. Used across 12 internal applications.',
+    synopsis: 'Consistency at scale requires more than a style guide. This living design system provides battle-tested, accessible components that speak the same visual language across a dozen applications and hundreds of developers.',
+    cast: 'React, TypeScript, Storybook, Jest, Chromatic',
+    genres: 'Design Systems, Frontend, Accessibility',
+    traits: 'Accessible, Documented, Composable',
+    tech: ['React','TypeScript','Storybook','WCAG'],
+    episodes: [
+      { title: 'Core Primitives', desc: 'Foundational components: Button, Input, Select, Modal, Tooltip -- all WCAG 2.1 AA compliant.' },
+      { title: 'Data Display', desc: 'Tables, charts, cards, and list components with sorting, filtering, and virtualization.' },
+      { title: 'Theming Engine', desc: 'CSS custom property-based theming with dark mode, brand customization, and runtime switching.' }
+    ]
+  },
+  eventbus: {
+    id: 'eventbus',
+    title: 'Distributed Event Bus',
+    emoji: '&#9889;',
+    gradient: 'linear-gradient(135deg,#f093fb,#f5576c)',
+    match: '89%', year: '2024', rating: 'Shipped', duration: '4 months',
+    desc: 'High-throughput event-driven messaging system built on Kafka. Handles 2M+ events per minute with exactly-once semantics, dead letter queues, and schema evolution.',
+    synopsis: 'In a microservices world, communication is everything. This event bus is the nervous system connecting dozens of services, ensuring every message arrives exactly once, in order, and on time.',
+    cast: 'Kafka, Java, Avro, Schema Registry, Grafana',
+    genres: 'Infrastructure, Distributed Systems, Backend',
+    traits: 'Resilient, High-Throughput, Event-Driven',
+    tech: ['Kafka','Java','Avro','Grafana'],
+    episodes: [
+      { title: 'Producer SDK', desc: 'Type-safe producer library with automatic serialization, compression, and batching.' },
+      { title: 'Consumer Framework', desc: 'Resilient consumer groups with automatic offset management and dead letter queue routing.' },
+      { title: 'Monitoring', desc: 'Real-time Grafana dashboards tracking lag, throughput, error rates, and consumer health.' }
+    ]
+  },
+  cicd: {
+    id: 'cicd',
+    title: 'CI/CD Pipeline Framework',
+    emoji: '&#128640;',
+    gradient: 'linear-gradient(135deg,#00c6ff,#0072ff)',
+    match: '90%', year: '2023', rating: 'Maintained', duration: 'Ongoing',
+    desc: 'Automated CI/CD framework with reusable pipeline templates, automated testing stages, container scanning, and blue-green deployment strategies.',
+    synopsis: 'Ship fast, ship safe. This pipeline framework turns the anxiety of deployment into a one-click operation, with automated testing, security scanning, and zero-downtime deployments baked into every release.',
+    cast: 'GitHub Actions, Docker, Terraform, Kubernetes, ArgoCD',
+    genres: 'DevOps, Automation, Infrastructure',
+    traits: 'Automated, Reliable, Fast',
+    tech: ['GitHub Actions','Docker','Terraform','K8s'],
+    episodes: [
+      { title: 'Pipeline Templates', desc: 'Reusable CI/CD templates for Node.js, Java, and Python services with built-in best practices.' },
+      { title: 'Security Scanning', desc: 'Automated SAST/DAST, dependency vulnerability scanning, and container image analysis.' },
+      { title: 'Blue-Green Deploy', desc: 'Zero-downtime deployment with automated canary analysis and one-click rollback.' }
+    ]
+  },
+  openapi: {
+    id: 'openapi',
+    title: 'API Gateway & Documentation',
+    emoji: '&#128214;',
+    gradient: 'linear-gradient(135deg,#fc5c7d,#6a82fb)',
+    match: '88%', year: '2024', rating: 'Shipped', duration: '3 months',
+    desc: 'Centralized API gateway with rate limiting, request transformation, and auto-generated OpenAPI documentation. Serves as the single entry point for 30+ microservices.',
+    synopsis: 'One gateway to rule them all. This API layer simplifies the chaos of microservices into a clean, documented, and rate-limited interface that external and internal consumers actually enjoy using.',
+    cast: 'Kong, Node.js, OpenAPI, Swagger UI, Lua',
+    genres: 'API Design, Backend, Documentation',
+    traits: 'Well-Documented, Performant, Developer-Friendly',
+    tech: ['Kong','Node.js','OpenAPI','Swagger'],
+    episodes: [
+      { title: 'Rate Limiter', desc: 'Token bucket rate limiting with per-consumer quotas and graceful degradation.' },
+      { title: 'Auto-Docs', desc: 'OpenAPI spec generation from code annotations with interactive Swagger UI explorer.' },
+      { title: 'Request Transform', desc: 'Middleware for request/response transformation, header injection, and payload validation.' }
+    ]
+  },
+  portfolio: {
+    id: 'portfolio',
+    title: 'This Netflix Portfolio',
+    emoji: '&#127916;',
+    gradient: 'linear-gradient(135deg,#E50914,#B20710)',
+    match: '99%', year: '2025', rating: 'Just Released', duration: 'Weekend',
+    desc: 'A pixel-perfect Netflix-inspired portfolio built with vanilla HTML, CSS, and JavaScript. Features horizontal scroll rows, expanding cards, detail modals, and responsive design.',
+    synopsis: 'Meta? Absolutely. This portfolio recreates the Netflix browse experience from scratch to showcase projects as binge-worthy content. Every hover animation, every card expansion, every modal detail is hand-crafted.',
+    cast: 'HTML, CSS, JavaScript, Love, Coffee',
+    genres: 'Creative Coding, Portfolio, Frontend',
+    traits: 'Creative, Pixel-Perfect, Meta',
+    tech: ['HTML','CSS','JavaScript'],
+    episodes: [
+      { title: 'The Hero Banner', desc: 'Animated gradient background with cinematic vignette overlays and responsive typography.' },
+      { title: 'The Card System', desc: 'CSS-only expanding cards with smooth transforms, z-index stacking, and hover-triggered info panels.' },
+      { title: 'The Modal', desc: 'Full detail view with episode list, cast information, and Netflix-accurate layout.' }
+    ]
+  }
+};
+
+const SKILLS = [
+  { name:'React', icon:'&#9883;', gradient:'linear-gradient(135deg,#61DAFB,#20232A)' },
+  { name:'TypeScript', icon:'&#128311;', gradient:'linear-gradient(135deg,#3178C6,#235A97)' },
+  { name:'Java', icon:'&#9749;', gradient:'linear-gradient(135deg,#ED8B00,#5382A1)' },
+  { name:'Python', icon:'&#128013;', gradient:'linear-gradient(135deg,#3776AB,#FFD43B)' },
+  { name:'Node.js', icon:'&#11088;', gradient:'linear-gradient(135deg,#339933,#1A5E1A)' },
+  { name:'Kafka', icon:'&#9889;', gradient:'linear-gradient(135deg,#231F20,#E0462B)' },
+  { name:'Docker', icon:'&#128051;', gradient:'linear-gradient(135deg,#2496ED,#0B4F80)' },
+  { name:'Kubernetes', icon:'&#9784;', gradient:'linear-gradient(135deg,#326CE5,#1A3A6E)' },
+  { name:'PostgreSQL', icon:'&#128451;', gradient:'linear-gradient(135deg,#336791,#1A3A5E)' },
+  { name:'Redis', icon:'&#128308;', gradient:'linear-gradient(135deg,#DC382D,#8B1A15)' },
+  { name:'GraphQL', icon:'&#9670;', gradient:'linear-gradient(135deg,#E10098,#7B005A)' },
+  { name:'AWS', icon:'&#9729;', gradient:'linear-gradient(135deg,#FF9900,#232F3E)' },
+  { name:'Spring Boot', icon:'&#127807;', gradient:'linear-gradient(135deg,#6DB33F,#3E6E21)' },
+  { name:'Next.js', icon:'&#9650;', gradient:'linear-gradient(135deg,#000000,#333333)' },
+  { name:'Terraform', icon:'&#127959;', gradient:'linear-gradient(135deg,#7B42BC,#472688)' },
+  { name:'Git', icon:'&#128736;', gradient:'linear-gradient(135deg,#F05032,#912E1E)' },
+  { name:'Rust', icon:'&#9881;', gradient:'linear-gradient(135deg,#DEA584,#8B4513)' },
+  { name:'Go', icon:'&#128039;', gradient:'linear-gradient(135deg,#00ADD8,#007D9C)' },
+  { name:'MongoDB', icon:'&#127811;', gradient:'linear-gradient(135deg,#47A248,#2C6330)' },
+  { name:'Tailwind', icon:'&#127752;', gradient:'linear-gradient(135deg,#06B6D4,#0284C7)' }
+];
+
+const BECAUSE_REACT = [
+  { ...PROJECTS.designsystem },
+  { ...PROJECTS.checkout },
+  { ...PROJECTS.analytics },
+  { ...PROJECTS.portfolio },
+  { id:'nextjs', title:'Next.js SSR Migration', emoji:'&#9650;', gradient:'linear-gradient(135deg,#000,#333)', match:'91%', year:'2024', rating:'Completed', desc:'Migrated SPA to server-side rendered Next.js app. Improved SEO scores by 60% and First Contentful Paint by 2.3 seconds.', tech:['Next.js','React','Vercel','SEO'], synopsis:'When client-side rendering hits its limits, server-side rendering saves the day.', cast:'Next.js, React, Vercel, Node.js', genres:'Frontend, Performance, SEO', traits:'Fast, SEO-Friendly, Modern', episodes:[{title:'SSR Setup',desc:'Server-side rendering with incremental static regeneration.'},{title:'Image Optimization',desc:'Automatic image optimization with next/image and AVIF/WebP support.'},{title:'API Routes',desc:'Serverless API routes replacing standalone Express backend.'}] },
+  { id:'storybook', title:'Storybook Documentation', emoji:'&#128218;', gradient:'linear-gradient(135deg,#FF4785,#1EA7FD)', match:'87%', year:'2024', rating:'Shipped', desc:'Interactive component documentation with Storybook. Auto-generated prop tables, visual testing, and accessibility audits for 80+ components.', tech:['Storybook','React','Chromatic'], synopsis:'Documentation that developers actually want to read.', cast:'Storybook, React, Chromatic, Jest', genres:'Documentation, Testing, Frontend', traits:'Interactive, Visual, Comprehensive', episodes:[{title:'Component Stories',desc:'Stories for every component state, variant, and edge case.'},{title:'Visual Regression',desc:'Automated screenshot comparison catching visual bugs before production.'}] },
+  { id:'hooks', title:'Custom React Hooks Library', emoji:'&#129693;', gradient:'linear-gradient(135deg,#61DAFB,#764BA2)', match:'93%', year:'2025', rating:'Open Source', desc:'Collection of 25+ production-tested custom React hooks for data fetching, form management, animations, and browser APIs.', tech:['React','TypeScript','npm'], synopsis:'Hooks that do the heavy lifting so your components stay clean.', cast:'React, TypeScript, npm, Vitest', genres:'Open Source, Frontend, DX', traits:'Reusable, Well-Tested, Lightweight', episodes:[{title:'useAsync',desc:'Declarative async state management with loading, error, and retry.'},{title:'useForm',desc:'Lightweight form state with validation, dirty tracking, and submit handling.'}] }
+];
+
+/* ================================================
+   RENDER FUNCTIONS
+   ================================================ */
+function createCard(project, extra) {
+  const div = document.createElement('div');
+  div.className = 'card' + (extra || '');
+  div.innerHTML = `
+    <div class="card-img" style="background:${project.gradient}">
+      <div class="card-img-inner">${project.emoji}</div>
+    </div>
+    <div class="card-expand">
+      <div class="card-expand-btns">
+        <button class="card-mini-btn play-btn" title="View Project"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="card-mini-btn" title="Add to List"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+        <button class="card-mini-btn" title="Like"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button>
+        <button class="card-mini-btn" style="margin-left:auto" title="More Info" onclick="event.stopPropagation();openModal('${project.id}')"><svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+      </div>
+      <div class="card-expand-meta">
+        <span class="card-match">${project.match} Match</span>
+        <span class="card-year">${project.year}</span>
+        <span class="card-duration">${project.rating}</span>
+      </div>
+      <div class="card-expand-desc">${project.desc}</div>
+      <div class="card-tags">${(project.tech||[]).map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+    </div>`;
+  div.addEventListener('click', function(e) {
+    if (!e.target.closest('.card-mini-btn')) openModal(project.id);
+  });
+  return div;
+}
+
+function createSkillCard(skill) {
+  const div = document.createElement('div');
+  div.className = 'card skill-card';
+  div.innerHTML = `
+    <div class="card-img" style="background:${skill.gradient}">
+      <div class="card-img-inner">
+        <span class="skill-icon">${skill.icon}</span>
+        <span class="skill-name">${skill.name}</span>
+      </div>
+    </div>`;
+  return div;
+}
+
+function createTop10Card(project, rank) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.width = '280px';
+  div.innerHTML = `
+    <div class="top10-card">
+      <span class="top10-number">${rank}</span>
+      <div class="top10-poster" style="background:${project.gradient}">
+        <div class="top10-poster-inner">${project.emoji}</div>
+      </div>
+    </div>`;
+  div.addEventListener('click', () => openModal(project.id));
+  return div;
+}
+
+function renderRows() {
+  const trendingOrder = ['ecommerce','mlpipeline','analytics','auth','checkout','designsystem','eventbus','cicd','openapi','portfolio'];
+  const trending = document.getElementById('trendingRow');
+  trendingOrder.forEach(id => trending.appendChild(createCard(PROJECTS[id])));
+
+  const newOrder = ['portfolio','mlpipeline','designsystem','analytics','openapi'];
+  const nr = document.getElementById('newReleasesRow');
+  newOrder.forEach(id => nr.appendChild(createCard(PROJECTS[id])));
+
+  const ml = document.getElementById('myListRow');
+  SKILLS.forEach(s => ml.appendChild(createSkillCard(s)));
+
+  const br = document.getElementById('becauseReactRow');
+  BECAUSE_REACT.forEach(p => {
+    if (!allProjects[p.id]) allProjects[p.id] = p;
+    br.appendChild(createCard(p));
+  });
+
+  const top10Order = ['ecommerce','mlpipeline','analytics','checkout','designsystem','auth','eventbus','cicd','portfolio','openapi'];
+  const t10 = document.getElementById('top10Row');
+  top10Order.forEach((id,i) => t10.appendChild(createTop10Card(PROJECTS[id], i+1)));
+}
+
+/* ================================================
+   ALL PROJECTS LOOKUP
+   ================================================ */
+const allProjects = { ...PROJECTS };
+allProjects['hero'] = {
+  id:'hero', title:'Anshull Garg: Engineering at Scale', emoji:'&#128187;',
+  gradient:'linear-gradient(135deg,#1a0a2e,#16213e,#0f3460)',
+  match:'98%', year:'2025', rating:'A+',
+  desc:'Software Developer at Walmart building high-performance microservices and scalable systems.',
+  synopsis:'A Software Developer at Walmart with a deep passion for building scalable, user-centric applications. From architecting event-driven microservices handling millions of daily events to crafting pixel-perfect frontend experiences, Anshull operates at the intersection of engineering excellence and product thinking. Currently building high-performance systems at Walmart scale while exploring AI/ML integrations in retail technology.',
+  cast:'Java, React, Kafka, Python, TypeScript, Node.js, Docker, Kubernetes, PostgreSQL, Redis',
+  genres:'Full-Stack Development, Distributed Systems, Enterprise Engineering',
+  traits:'Scalable, Performance-Obsessed, User-Centric',
+  tech:['Java','React','Kafka','Python','TypeScript','Node.js'],
+  episodes:[
+    { title:'Walmart - Software Developer', desc:'Building scalable microservices and high-throughput data pipelines. Working on real-time inventory systems serving millions of users daily. Led migration of legacy monolith to event-driven architecture. (2023 - Present)' },
+    { title:'Tech Startup - Software Engineer Intern', desc:'Developed full-stack features for a SaaS platform. Built CI/CD pipelines and automated testing infrastructure. Improved API response times by 40% through query optimization. (2022 - 2023)' },
+    { title:'Open Source Contributor', desc:'Active contributor to open-source projects in the JavaScript and Rust ecosystems. Maintained community libraries and mentored new contributors. (2021 - Present)' }
+  ]
+};
+
+/* ================================================
+   MODAL
+   ================================================ */
+function openModal(id) {
+  const p = allProjects[id];
+  if (!p) return;
+  document.getElementById('modalHeroBg').style.background = p.gradient;
+  document.getElementById('modalHeroBg').innerHTML = `<span style="font-size:72px">${p.emoji}</span>`;
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalMatch').textContent = p.match + ' Match';
+  document.getElementById('modalYear').textContent = p.year;
+  document.getElementById('modalRating').textContent = p.rating;
+  document.getElementById('modalSynopsis').textContent = p.synopsis || p.desc;
+  document.getElementById('modalCast').textContent = p.cast || p.tech.join(', ');
+  document.getElementById('modalGenres').textContent = p.genres || 'Software Engineering';
+  document.getElementById('modalTraits').textContent = p.traits || 'Innovative, Clean, Scalable';
+  const epList = document.getElementById('modalEpisodeList');
+  epList.innerHTML = '';
+  if (p.episodes) {
+    p.episodes.forEach((ep, i) => {
+      const epDiv = document.createElement('div');
+      epDiv.className = 'episode';
+      epDiv.innerHTML = `
+        <div class="episode-num">${i + 1}</div>
+        <div class="episode-thumb" style="background:${p.gradient}"><span>${p.emoji}</span></div>
+        <div class="episode-info">
+          <div class="episode-title">${ep.title}</div>
+          <div class="episode-desc">${ep.desc}</div>
+        </div>`;
+      epList.appendChild(epDiv);
+    });
+  }
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay') && !e.target.closest('.modal-close')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ================================================
+   ROW SCROLL
+   ================================================ */
+function scrollRow(arrowEl, dir) {
+  const row = arrowEl.parentElement.querySelector('.row');
+  const scrollAmt = row.clientWidth * 0.75;
+  row.scrollBy({ left: dir * scrollAmt, behavior: 'smooth' });
+}
+
+/* ================================================
+   NAV SCROLL EFFECT
+   ================================================ */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ================================================
+   INIT
+   ================================================ */
+renderRows();
+</script>
+</body>
+</html>
