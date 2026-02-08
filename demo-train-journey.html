@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Train Journey Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --frame-dark: #1E1E1E;
+  --frame-mid: #2A2A2A;
+  --frame-light: #3A3A3A;
+  --rivet: #555;
+  --rail-red: #CC2936;
+  --signal-green: #22C55E;
+  --dawn-deep: #1A0A2E;
+  --dawn-mid: #FF6B35;
+  --sky-day: #87CEEB;
+  --sky-sunset: #FF4500;
+  --ticket-cream: #FFF8E7;
+  --board-bg: #1A1A1A;
+  --board-text: #FFD700;
+  --board-text-dim: #886600;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* ============================================
+   SCROLL CANVAS - the long scrollable area
+   ============================================ */
+.scroll-canvas {
+  position: relative;
+  width: 100%;
+  height: 9000px; /* Long scroll for 7 stations */
+}
+
+/* ============================================
+   TRAIN WINDOW FRAME (fixed)
+   ============================================ */
+.train-frame {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* The window border */
+.window-border {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 900px);
+  height: min(75vh, 620px);
+  border: 14px solid var(--frame-dark);
+  border-radius: 32px;
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.5),
+    0 0 0 4px var(--frame-light),
+    0 0 0 8px var(--frame-dark),
+    0 0 60px rgba(0,0,0,0.8);
+  z-index: 102;
+}
+
+/* Corner rivets */
+.rivet {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #888, var(--rivet) 40%, #333 100%);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.6);
+  z-index: 103;
+}
+.rivet-tl { top: -8px; left: -8px; }
+.rivet-tr { top: -8px; right: -8px; }
+.rivet-bl { bottom: -8px; left: -8px; }
+.rivet-br { bottom: -8px; right: -8px; }
+.rivet-ml { top: 50%; left: -8px; transform: translateY(-50%); }
+.rivet-mr { top: 50%; right: -8px; transform: translateY(-50%); }
+.rivet-mt { top: -8px; left: 50%; transform: translateX(-50%); }
+.rivet-mb { bottom: -8px; left: 50%; transform: translateX(-50%); }
+
+/* Window reflection */
+.window-reflection {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255,255,255,0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 104;
+}
+
+/* Dark vignette around window */
+.frame-vignette {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  z-index: 101;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 30%,
+      rgba(0,0,0,0.4) 55%,
+      rgba(0,0,0,0.95) 75%
+    );
+}
+
+/* Top metal strip */
+.frame-top-strip {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: calc(50vh - min(37.5vh, 310px) - 14px);
+  background: linear-gradient(180deg, #111 0%, var(--frame-dark) 80%, #1a1a1a 100%);
+  z-index: 99;
+  pointer-events: none;
+}
+
+.frame-bottom-strip {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%; height: calc(50vh - min(37.5vh, 310px) - 14px);
+  background: linear-gradient(0deg, #111 0%, var(--frame-dark) 80%, #1a1a1a 100%);
+  z-index: 99;
+  pointer-events: none;
+}
+
+/* ============================================
+   RAIN DROPLETS ON WINDOW
+   ============================================ */
+.rain-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  z-index: 105;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.raindrop {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 0 4px rgba(255,255,255,0.1);
+  animation: rainSlide linear infinite;
+}
+
+@keyframes rainSlide {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translateY(100vh) translateX(-80px);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   SKY / PARALLAX BACKGROUND
+   ============================================ */
+.sky-layer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+/* ============================================
+   PARALLAX LANDSCAPE LAYERS
+   ============================================ */
+
+/* Mountains (far) */
+.mountains-layer {
+  position: fixed;
+  bottom: calc(50vh - min(37.5vh, 310px) + 30px);
+  left: 0;
+  width: 300%;
+  height: 180px;
+  z-index: 2;
+}
+
+.mountain {
+  position: absolute;
+  bottom: 0;
+}
+
+/* Hills (mid) */
+.hills-layer {
+  position: fixed;
+  bottom: calc(50vh - min(37.5vh, 310px) + 10px);
+  left: 0;
+  width: 400%;
+  height: 140px;
+  z-index: 3;
+}
+
+/* Trees / buildings (near) */
+.trees-layer {
+  position: fixed;
+  bottom: calc(50vh - min(37.5vh, 310px) - 20px);
+  left: 0;
+  width: 500%;
+  height: 160px;
+  z-index: 4;
+}
+
+/* Railway poles (closest) */
+.poles-layer {
+  position: fixed;
+  bottom: calc(50vh - min(37.5vh, 310px) - 40px);
+  left: 0;
+  width: 800%;
+  height: 200px;
+  z-index: 5;
+}
+
+/* ============================================
+   STATION SIGNS
+   ============================================ */
+.station-sign {
+  position: fixed;
+  top: 50%;
+  right: -500px;
+  transform: translateY(-50%);
+  z-index: 50;
+  pointer-events: none;
+  transition: right 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.station-sign.visible {
+  right: calc(50% - min(46vw, 450px) - 20px);
+  pointer-events: auto;
+}
+
+.station-board {
+  background: var(--board-bg);
+  border: 3px solid #444;
+  border-radius: 4px;
+  padding: 16px 24px;
+  min-width: 220px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.station-board::before {
+  content: '';
+  position: absolute;
+  top: -24px; left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 24px;
+  background: #666;
+  border-radius: 3px 3px 0 0;
+}
+
+.station-board::after {
+  content: '';
+  position: absolute;
+  bottom: -24px; left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 24px;
+  background: #666;
+  border-radius: 0 0 3px 3px;
+}
+
+.station-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--board-text);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255,215,0,0.4);
+}
+
+.station-year {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--board-text-dim);
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 2px;
+}
+
+.station-number {
+  position: absolute;
+  top: -10px; right: -10px;
+  width: 28px; height: 28px;
+  background: var(--rail-red);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+  box-shadow: 0 2px 8px rgba(204,41,54,0.5);
+}
+
+/* ============================================
+   CONTENT PANELS (departure board style)
+   ============================================ */
+.content-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(82vw, 740px);
+  max-height: min(62vh, 520px);
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.content-panel.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.departure-board {
+  background: rgba(15, 15, 15, 0.95);
+  border: 2px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+
+.board-header {
+  background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #333;
+}
+
+.board-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--board-text);
+}
+
+.board-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--signal-green);
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--signal-green);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--signal-green); }
+  50% { opacity: 0.4; box-shadow: none; }
+}
+
+.board-content {
+  padding: 24px;
+  max-height: min(50vh, 420px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #444 transparent;
+}
+
+.board-content::-webkit-scrollbar { width: 4px; }
+.board-content::-webkit-scrollbar-track { background: transparent; }
+.board-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+
+.board-content h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.board-content h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.board-content p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+.board-content .highlight {
+  color: var(--board-text);
+  font-weight: 600;
+}
+
+/* Metrics grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.metric-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.metric-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--board-text);
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #777;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tags */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #ccc;
+  background: rgba(255,255,255,0.04);
+  transition: all 0.3s ease;
+}
+
+.tag:hover {
+  border-color: var(--board-text);
+  color: var(--board-text);
+  background: rgba(255,215,0,0.06);
+}
+
+.tag.frontend { border-color: rgba(97,218,251,0.3); color: #61DAFB; }
+.tag.backend { border-color: rgba(51,153,51,0.3); color: #33CC33; }
+.tag.tools { border-color: rgba(255,153,0,0.3); color: #FF9900; }
+.tag.practice { border-color: rgba(204,41,54,0.3); color: #FF6B6B; }
+
+/* Project cards */
+.project-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.project-card:hover {
+  border-color: rgba(255,215,0,0.2);
+}
+
+.project-card h3 {
+  margin-bottom: 6px;
+}
+
+.project-card p {
+  margin-bottom: 8px;
+}
+
+.impact-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.impact-list li {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ddd;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.impact-list li::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--signal-green);
+  flex-shrink: 0;
+}
+
+/* Skills grid */
+.skills-section {
+  margin-bottom: 20px;
+}
+
+.skills-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #666;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Contact links */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.contact-link.email {
+  background: linear-gradient(135deg, var(--rail-red), #FF6B35);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(204,41,54,0.3);
+}
+
+.contact-link.email:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(204,41,54,0.4);
+}
+
+.contact-link.github {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.contact-link.github:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+.contact-link.linkedin {
+  background: rgba(10,102,194,0.15);
+  color: #5BA3E6;
+  border: 1px solid rgba(10,102,194,0.3);
+}
+
+.contact-link.linkedin:hover {
+  background: rgba(10,102,194,0.25);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   TRAIN INTERIOR - Tray / Dashboard
+   ============================================ */
+.train-dashboard {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+}
+
+/* Ticket stub */
+.ticket-stub {
+  background: var(--ticket-cream);
+  color: #333;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  min-width: 180px;
+}
+
+.ticket-stub::before,
+.ticket-stub::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #0a0a0a;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ticket-stub::before { left: -7px; }
+.ticket-stub::after { right: -7px; }
+
+.ticket-name {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--rail-red);
+}
+
+.ticket-route {
+  font-size: 10px;
+  font-weight: 500;
+  color: #888;
+  margin-top: 2px;
+}
+
+.ticket-class {
+  position: absolute;
+  top: 6px; right: 22px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #aaa;
+}
+
+/* Next stop indicator */
+.next-stop {
+  background: rgba(15,15,15,0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 18px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.next-stop-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #666;
+}
+
+.next-stop-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--board-text);
+  margin-top: 2px;
+}
+
+/* Speed indicator */
+.speed-indicator {
+  background: rgba(15,15,15,0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.speed-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--signal-green);
+  line-height: 1;
+}
+
+.speed-unit {
+  font-size: 8px;
+  font-weight: 700;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   PROGRESS TRACK (left side)
+   ============================================ */
+.progress-track {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  pointer-events: none;
+}
+
+.track-line {
+  width: 3px;
+  height: 40px;
+  background: #333;
+  position: relative;
+}
+
+.track-line.passed {
+  background: var(--signal-green);
+}
+
+.track-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #333;
+  border: 2px solid #555;
+  position: relative;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.track-dot.active {
+  background: var(--rail-red);
+  border-color: var(--rail-red);
+  box-shadow: 0 0 12px rgba(204,41,54,0.5);
+  transform: scale(1.3);
+}
+
+.track-dot.passed {
+  background: var(--signal-green);
+  border-color: var(--signal-green);
+}
+
+.track-dot-label {
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.track-dot.active .track-dot-label,
+.track-dot.passed .track-dot-label {
+  color: #aaa;
+}
+
+/* ============================================
+   SCROLL PROMPT
+   ============================================ */
+.scroll-prompt {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: scrollBounce 2s ease-in-out infinite;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.scroll-prompt.hidden { opacity: 0; }
+
+.scroll-prompt-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.scroll-arrow {
+  width: 20px; height: 20px;
+  border-right: 2px solid rgba(255,255,255,0.3);
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+  transform: rotate(45deg);
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(10px); }
+}
+
+/* ============================================
+   LANDSCAPE SVG STYLES
+   ============================================ */
+.landscape-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+}
+
+/* ============================================
+   INTRO OVERLAY
+   ============================================ */
+.intro-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  transition: opacity 1s ease, visibility 1s ease;
+}
+
+.intro-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(32px, 6vw, 64px);
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.intro-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #777;
+  margin-bottom: 32px;
+}
+
+.intro-start {
+  padding: 14px 36px;
+  border: 2px solid var(--rail-red);
+  background: transparent;
+  color: var(--rail-red);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-start::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: var(--rail-red);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.intro-start:hover {
+  color: #fff;
+}
+
+.intro-start:hover::before {
+  left: 0;
+}
+
+.intro-train-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .window-border {
+    width: 94vw;
+    height: 60vh;
+    border-width: 10px;
+    border-radius: 24px;
+  }
+
+  .rivet { width: 12px; height: 12px; }
+  .rivet-tl { top: -6px; left: -6px; }
+  .rivet-tr { top: -6px; right: -6px; }
+  .rivet-bl { bottom: -6px; left: -6px; }
+  .rivet-br { bottom: -6px; right: -6px; }
+  .rivet-ml, .rivet-mr, .rivet-mt, .rivet-mb { display: none; }
+
+  .content-panel {
+    width: 90vw;
+    max-height: 50vh;
+  }
+
+  .board-content h2 { font-size: 22px; }
+
+  .train-dashboard {
+    gap: 8px;
+    bottom: 10px;
+  }
+
+  .ticket-stub { min-width: 120px; padding: 8px 14px; }
+  .ticket-name { font-size: 10px; }
+  .next-stop { padding: 8px 12px; }
+  .speed-indicator { padding: 8px 10px; }
+
+  .progress-track { left: 10px; }
+  .track-dot-label { display: none; }
+
+  .station-sign.visible {
+    right: 10px;
+    top: calc(50% - min(30vh, 250px) - 60px);
+  }
+
+  .station-board { min-width: 160px; padding: 12px 16px; }
+  .station-name { font-size: 16px; letter-spacing: 2px; }
+
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .train-dashboard { flex-wrap: wrap; justify-content: center; }
+  .ticket-stub { order: -1; }
+  .board-content { padding: 16px; }
+}
+
+/* ============================================
+   TRACK RHYTHM ANIMATION
+   ============================================ */
+@keyframes trackRhythm {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(1px); }
+}
+
+.track-rhythm {
+  animation: trackRhythm 0.3s ease-in-out infinite;
+}
+
+/* ============================================
+   DEPARTURE BOARD FLIP EFFECT
+   ============================================ */
+.flip-char {
+  display: inline-block;
+  animation: flipIn 0.3s ease-out both;
+}
+
+@keyframes flipIn {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO OVERLAY -->
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-train-icon">&#x1F682;</div>
+  <div class="intro-title">Anshull Garg</div>
+  <div class="intro-subtitle">Software Developer at Walmart</div>
+  <button class="intro-start" id="startBtn">Board the Train</button>
+</div>
+
+<!-- SCROLL PROMPT -->
+<div class="scroll-prompt" id="scrollPrompt">
+  <span class="scroll-prompt-text">Scroll to travel</span>
+  <div class="scroll-arrow"></div>
+</div>
+
+<!-- SKY BACKGROUND -->
+<div class="sky-layer" id="skyLayer"></div>
+
+<!-- PARALLAX LANDSCAPE -->
+<svg class="mountains-layer" id="mountainsLayer" viewBox="0 0 6000 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,180 L0,120 Q150,40 300,100 Q450,30 600,90 Q750,20 900,80 Q1050,10 1200,70 Q1350,25 1500,95 Q1650,15 1800,75 Q1950,35 2100,85 Q2250,20 2400,65 Q2550,40 2700,90 Q2850,10 3000,70 Q3150,30 3300,85 Q3450,15 3600,75 Q3750,25 3900,95 Q4050,5 4200,60 Q4350,30 4500,80 Q4650,20 4800,70 Q4950,35 5100,90 Q5250,10 5400,65 Q5550,25 5700,80 Q5850,15 6000,70 L6000,180 Z"
+        fill="#1a3a2a" opacity="0.9"/>
+  <path d="M0,180 L0,130 Q200,60 400,110 Q600,40 800,100 Q1000,50 1200,90 Q1400,30 1600,85 Q1800,45 2000,95 Q2200,35 2400,80 Q2600,50 2800,100 Q3000,40 3200,85 Q3400,55 3600,95 Q3800,30 4000,75 Q4200,45 4400,90 Q4600,35 4800,80 Q5000,50 5200,95 Q5400,25 5600,70 Q5800,40 6000,85 L6000,180 Z"
+        fill="#1a3a2a" opacity="0.6"/>
+</svg>
+
+<svg class="hills-layer" id="hillsLayer" viewBox="0 0 8000 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,140 L0,90 Q100,50 200,80 Q300,40 400,75 Q500,45 600,85 Q700,35 800,70 Q900,50 1000,80 Q1100,30 1200,65 Q1300,45 1400,75 Q1500,25 1600,70 Q1700,40 1800,80 Q1900,30 2000,65 Q2100,50 2200,75 Q2300,35 2400,80 Q2500,45 2600,70 Q2700,25 2800,65 Q2900,40 3000,75 Q3100,30 3200,70 Q3300,50 3400,80 Q3500,35 3600,65 Q3700,45 3800,75 Q3900,25 4000,70 Q4100,40 4200,80 Q4300,30 4400,65 Q4500,50 4600,75 Q4700,35 4800,80 Q4900,45 5000,70 Q5100,25 5200,65 Q5300,40 5400,75 Q5500,30 5600,70 Q5700,50 5800,80 Q5900,35 6000,65 Q6100,45 6200,75 Q6300,25 6400,70 Q6500,40 6600,80 Q6700,30 6800,65 Q6900,50 7000,75 Q7100,35 7200,80 Q7300,45 7400,70 Q7500,25 7600,65 Q7700,40 7800,75 Q7900,30 8000,70 L8000,140 Z"
+        fill="#0f2a1a" opacity="0.95"/>
+</svg>
+
+<svg class="trees-layer" id="treesLayer" viewBox="0 0 10000 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trees as triangles -->
+  <g fill="#0a1f12" opacity="0.95">
+    <polygon points="50,160 80,40 110,160"/>
+    <polygon points="150,160 175,60 200,160"/>
+    <polygon points="250,160 285,30 320,160"/>
+    <polygon points="380,160 405,50 430,160"/>
+    <polygon points="480,160 510,45 540,160"/>
+    <polygon points="600,160 630,55 660,160"/>
+    <polygon points="720,160 745,35 770,160"/>
+    <polygon points="840,160 870,50 900,160"/>
+    <polygon points="960,160 990,40 1020,160"/>
+    <polygon points="1080,160 1105,60 1130,160"/>
+    <polygon points="1200,160 1235,30 1270,160"/>
+    <polygon points="1350,160 1380,45 1410,160"/>
+    <polygon points="1480,160 1510,55 1540,160"/>
+    <polygon points="1600,160 1630,35 1660,160"/>
+    <polygon points="1750,160 1780,50 1810,160"/>
+    <polygon points="1880,160 1910,40 1940,160"/>
+    <polygon points="2020,160 2050,60 2080,160"/>
+    <polygon points="2160,160 2195,30 2230,160"/>
+    <polygon points="2300,160 2330,45 2360,160"/>
+    <polygon points="2440,160 2470,55 2500,160"/>
+    <polygon points="2580,160 2610,35 2640,160"/>
+    <polygon points="2740,160 2770,50 2800,160"/>
+    <polygon points="2880,160 2910,40 2940,160"/>
+    <polygon points="3020,160 3050,60 3080,160"/>
+    <polygon points="3200,160 3235,30 3270,160"/>
+    <polygon points="3360,160 3390,45 3420,160"/>
+    <polygon points="3520,160 3550,55 3580,160"/>
+    <polygon points="3680,160 3710,35 3740,160"/>
+    <polygon points="3840,160 3870,50 3900,160"/>
+    <polygon points="3980,160 4010,40 4040,160"/>
+    <polygon points="4140,160 4170,60 4200,160"/>
+    <polygon points="4300,160 4335,30 4370,160"/>
+    <polygon points="4460,160 4490,45 4520,160"/>
+    <polygon points="4600,160 4630,55 4660,160"/>
+    <polygon points="4760,160 4790,35 4820,160"/>
+    <polygon points="4920,160 4950,50 4980,160"/>
+    <polygon points="5080,160 5110,40 5140,160"/>
+    <polygon points="5240,160 5270,60 5300,160"/>
+    <polygon points="5400,160 5435,30 5470,160"/>
+    <polygon points="5560,160 5590,45 5620,160"/>
+    <polygon points="5720,160 5750,55 5780,160"/>
+    <polygon points="5880,160 5910,35 5940,160"/>
+    <polygon points="6040,160 6070,50 6100,160"/>
+    <polygon points="6200,160 6230,40 6260,160"/>
+    <polygon points="6360,160 6390,60 6420,160"/>
+    <polygon points="6520,160 6555,30 6590,160"/>
+    <polygon points="6680,160 6710,45 6740,160"/>
+    <polygon points="6840,160 6870,55 6900,160"/>
+    <polygon points="7020,160 7050,35 7080,160"/>
+    <polygon points="7180,160 7210,50 7240,160"/>
+    <polygon points="7340,160 7370,40 7400,160"/>
+    <polygon points="7500,160 7530,60 7560,160"/>
+    <polygon points="7660,160 7695,30 7730,160"/>
+    <polygon points="7820,160 7850,45 7880,160"/>
+    <polygon points="7980,160 8010,55 8040,160"/>
+    <polygon points="8140,160 8170,35 8200,160"/>
+    <polygon points="8300,160 8330,50 8360,160"/>
+    <polygon points="8460,160 8490,40 8520,160"/>
+    <polygon points="8620,160 8650,60 8680,160"/>
+    <polygon points="8800,160 8835,30 8870,160"/>
+    <polygon points="8960,160 8990,45 9020,160"/>
+    <polygon points="9120,160 9150,55 9180,160"/>
+    <polygon points="9280,160 9310,35 9340,160"/>
+    <polygon points="9440,160 9470,50 9500,160"/>
+    <polygon points="9600,160 9630,40 9660,160"/>
+    <polygon points="9760,160 9790,60 9820,160"/>
+  </g>
+  <!-- Building silhouettes scattered -->
+  <g fill="#0d1a12" opacity="0.8">
+    <rect x="500" y="80" width="40" height="80" rx="2"/>
+    <rect x="520" y="60" width="30" height="100" rx="2"/>
+    <rect x="1500" y="70" width="50" height="90" rx="2"/>
+    <rect x="1530" y="50" width="35" height="110" rx="2"/>
+    <rect x="1560" y="80" width="25" height="80" rx="2"/>
+    <rect x="2800" y="60" width="45" height="100" rx="2"/>
+    <rect x="2830" y="75" width="30" height="85" rx="2"/>
+    <rect x="4200" y="55" width="55" height="105" rx="2"/>
+    <rect x="4240" y="70" width="35" height="90" rx="2"/>
+    <rect x="4270" y="45" width="40" height="115" rx="2"/>
+    <rect x="5600" y="65" width="40" height="95" rx="2"/>
+    <rect x="5625" y="50" width="30" height="110" rx="2"/>
+    <rect x="7000" y="60" width="50" height="100" rx="2"/>
+    <rect x="7035" y="75" width="35" height="85" rx="2"/>
+    <rect x="8400" y="55" width="45" height="105" rx="2"/>
+    <rect x="8430" y="65" width="30" height="95" rx="2"/>
+    <rect x="8455" y="50" width="35" height="110" rx="2"/>
+    <rect x="9500" y="70" width="40" height="90" rx="2"/>
+    <rect x="9525" y="55" width="30" height="105" rx="2"/>
+  </g>
+</svg>
+
+<!-- Railway poles layer (generated via JS for more control) -->
+<div class="poles-layer" id="polesLayer"></div>
+
+<!-- RAIN -->
+<div class="rain-container" id="rainContainer"></div>
+
+<!-- TRAIN WINDOW FRAME -->
+<div class="frame-vignette"></div>
+<div class="frame-top-strip"></div>
+<div class="frame-bottom-strip"></div>
+
+<div class="train-frame">
+  <div class="window-border">
+    <div class="rivet rivet-tl"></div>
+    <div class="rivet rivet-tr"></div>
+    <div class="rivet rivet-bl"></div>
+    <div class="rivet rivet-br"></div>
+    <div class="rivet rivet-ml"></div>
+    <div class="rivet rivet-mr"></div>
+    <div class="rivet rivet-mt"></div>
+    <div class="rivet rivet-mb"></div>
+    <div class="window-reflection"></div>
+  </div>
+</div>
+
+<!-- STATION SIGNS -->
+<div class="station-sign" id="stationSign">
+  <div class="station-board">
+    <div class="station-number" id="stationNum">1</div>
+    <div class="station-name" id="stationName">ORIGIN</div>
+    <div class="station-year" id="stationYear">2020</div>
+  </div>
+</div>
+
+<!-- CONTENT PANELS -->
+<div class="content-panel" id="panel-0">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 1 -- Origin</div>
+      <div class="board-status"><div class="status-dot"></div> ARRIVED</div>
+    </div>
+    <div class="board-content">
+      <h2>Anshull Garg</h2>
+      <p class="highlight" style="font-size:16px; margin-bottom:16px;">Software Developer at Walmart</p>
+      <p>Building scalable systems that serve millions. Passionate about clean architecture, seamless user experiences, and code that performs under pressure.</p>
+      <p>I started with curiosity -- a fascination with how software can transform complex problems into elegant solutions. That curiosity became a career, and this train carries the story of that journey.</p>
+      <p style="color:#666; font-style:italic; margin-top:16px;">Scroll to travel through my career stations. Each stop reveals a chapter.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-panel" id="panel-1">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 2 -- First Steps</div>
+      <div class="board-status"><div class="status-dot"></div> ARRIVED</div>
+    </div>
+    <div class="board-content">
+      <h2>The Beginning</h2>
+      <p>Every journey starts with a single step. Mine started with a deep dive into computer science fundamentals, data structures, algorithms, and the art of writing clean, efficient code.</p>
+      <p>Built my first full-stack applications, contributed to open-source projects, and developed a relentless curiosity for how systems work under the hood. This was the foundation everything else would be built upon.</p>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--signal-green);">CS</div>
+          <div class="metric-label">Fundamentals</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: #61DAFB;">React</div>
+          <div class="metric-label">First Framework</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: #339933;">Node</div>
+          <div class="metric-label">Backend Start</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--board-text);">Git</div>
+          <div class="metric-label">Version Control</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-panel" id="panel-2">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 3 -- Growth</div>
+      <div class="board-status"><div class="status-dot"></div> ARRIVED</div>
+    </div>
+    <div class="board-content">
+      <h2>Leveling Up</h2>
+      <p>The growth phase. Moving beyond tutorials and toy projects into real-world software engineering. Learning to write code that isn't just functional but maintainable, testable, and built to last.</p>
+      <p>Developed expertise in system design, API architecture, and performance optimization. Learned the importance of code reviews, documentation, and building for the developer who comes after you.</p>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">Full</div>
+          <div class="metric-label">Stack Development</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">API</div>
+          <div class="metric-label">Architecture</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">TDD</div>
+          <div class="metric-label">Testing Mindset</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">CI/CD</div>
+          <div class="metric-label">Automation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-panel" id="panel-3">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 4 -- Walmart Central</div>
+      <div class="board-status"><div class="status-dot"></div> CURRENT</div>
+    </div>
+    <div class="board-content">
+      <h2>Walmart Global Tech</h2>
+      <p class="highlight" style="font-size:15px;">Software Developer -- 2023 to Present</p>
+      <p>Building and maintaining critical e-commerce systems that power one of the world's largest retailers. Working at Fortune 1 scale, where every millisecond matters and every decision impacts millions.</p>
+      <p>My day-to-day involves designing scalable APIs, optimizing frontend performance, and collaborating with cross-functional teams to ship features that drive real business impact.</p>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">240M+</div>
+          <div class="metric-label">Weekly Customers</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">99.9%</div>
+          <div class="metric-label">Uptime SLA</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">50ms</div>
+          <div class="metric-label">Avg Response</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">500+</div>
+          <div class="metric-label">Services</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-panel" id="panel-4">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 5 -- Projects Junction</div>
+      <div class="board-status"><div class="status-dot"></div> ARRIVED</div>
+    </div>
+    <div class="board-content">
+      <div class="project-card">
+        <h3>Checkout Optimization</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:8px;">E-commerce Platform</p>
+        <p>Led the redesign of the checkout flow, reducing cart abandonment and improving conversion rates. Implemented real-time inventory checks and streamlined the payment pipeline.</p>
+        <div class="tag-list">
+          <span class="tag frontend">React</span>
+          <span class="tag backend">Node.js</span>
+          <span class="tag frontend">GraphQL</span>
+          <span class="tag tools">Redis</span>
+          <span class="tag frontend">TypeScript</span>
+        </div>
+        <ul class="impact-list">
+          <li>15% increase in conversion rate</li>
+          <li>40% faster page load time</li>
+          <li>Reduced API calls by 60%</li>
+        </ul>
+      </div>
+      <div class="project-card">
+        <h3>Component Library</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:8px;">Design System</p>
+        <p>Architected and built a shared component library adopted across multiple product teams. Enforced design consistency and reduced development time for new features.</p>
+        <div class="tag-list">
+          <span class="tag frontend">React</span>
+          <span class="tag practice">Storybook</span>
+          <span class="tag tools">Figma</span>
+          <span class="tag frontend">TypeScript</span>
+          <span class="tag practice">Jest</span>
+        </div>
+        <ul class="impact-list">
+          <li>80+ reusable components</li>
+          <li>Adopted by 12 product teams</li>
+          <li>30% faster feature delivery</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-panel" id="panel-5">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 6 -- Skills Depot</div>
+      <div class="board-status"><div class="status-dot"></div> ARRIVED</div>
+    </div>
+    <div class="board-content">
+      <h2>Tech Stack</h2>
+      <p style="margin-bottom:20px;">The tools and technologies I work with daily, refined through years of building production systems at scale.</p>
+
+      <div class="skills-section">
+        <div class="skills-section-title">Frontend</div>
+        <div class="tag-list">
+          <span class="tag frontend">React</span>
+          <span class="tag frontend">TypeScript</span>
+          <span class="tag frontend">Next.js</span>
+          <span class="tag frontend">Tailwind CSS</span>
+          <span class="tag frontend">Redux</span>
+          <span class="tag frontend">JavaScript</span>
+        </div>
+      </div>
+
+      <div class="skills-section">
+        <div class="skills-section-title">Backend</div>
+        <div class="tag-list">
+          <span class="tag backend">Node.js</span>
+          <span class="tag backend">GraphQL</span>
+          <span class="tag backend">REST APIs</span>
+          <span class="tag backend">Redis</span>
+          <span class="tag backend">Java</span>
+        </div>
+      </div>
+
+      <div class="skills-section">
+        <div class="skills-section-title">Tools & Infrastructure</div>
+        <div class="tag-list">
+          <span class="tag tools">Docker</span>
+          <span class="tag tools">AWS</span>
+          <span class="tag tools">Kubernetes</span>
+          <span class="tag tools">Git</span>
+          <span class="tag tools">CI/CD</span>
+        </div>
+      </div>
+
+      <div class="skills-section">
+        <div class="skills-section-title">Practices</div>
+        <div class="tag-list">
+          <span class="tag practice">System Design</span>
+          <span class="tag practice">TDD</span>
+          <span class="tag practice">Agile</span>
+          <span class="tag practice">Code Review</span>
+          <span class="tag practice">Performance Optimization</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-panel" id="panel-6">
+  <div class="departure-board">
+    <div class="board-header">
+      <div class="board-title">Platform 7 -- Terminus</div>
+      <div class="board-status"><div class="status-dot" style="background:var(--rail-red); animation-name: none;"></div> FINAL STOP</div>
+    </div>
+    <div class="board-content" style="text-align:center;">
+      <h2>Let's Connect</h2>
+      <p style="max-width:400px; margin:0 auto 8px;">This train reaches its last stop, but the journey continues. Open to interesting conversations, collaborations, and new opportunities.</p>
+      <div class="contact-links">
+        <a href="mailto:anshullgarg@gmail.com" class="contact-link email">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 4l8 6 8-6"/></svg>
+          anshullgarg@gmail.com
+        </a>
+        <a href="https://github.com/anshullgarg" class="contact-link github" target="_blank" rel="noopener">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-link linkedin" target="_blank" rel="noopener">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS TRACK -->
+<div class="progress-track" id="progressTrack"></div>
+
+<!-- TRAIN DASHBOARD -->
+<div class="train-dashboard" id="trainDashboard">
+  <div class="ticket-stub">
+    <div class="ticket-class">1ST CLASS</div>
+    <div class="ticket-name">Anshull Garg</div>
+    <div class="ticket-route">Origin &#8594; Terminus</div>
+  </div>
+  <div class="next-stop">
+    <div class="next-stop-label">Next Stop</div>
+    <div class="next-stop-name" id="nextStopName">ORIGIN</div>
+  </div>
+  <div class="speed-indicator">
+    <div class="speed-value" id="speedValue">0</div>
+    <div class="speed-unit">km/h</div>
+  </div>
+</div>
+
+<!-- SCROLL CANVAS -->
+<div class="scroll-canvas"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================
+  // STATION DATA
+  // ============================================
+  const stations = [
+    { name: 'ORIGIN', year: '2020', label: 'About' },
+    { name: 'FIRST STEPS', year: '2021', label: 'Early Career' },
+    { name: 'GROWTH', year: '2022', label: 'Leveling Up' },
+    { name: 'WALMART CENTRAL', year: '2023 - Present', label: 'Current Role' },
+    { name: 'PROJECTS JUNCTION', year: 'Selected Work', label: 'Projects' },
+    { name: 'SKILLS DEPOT', year: 'Tech Stack', label: 'Skills' },
+    { name: 'TERMINUS', year: 'Contact', label: 'Connect' }
+  ];
+
+  const TOTAL_HEIGHT = 9000;
+  const STATION_SPACING = TOTAL_HEIGHT / (stations.length + 1);
+
+  // ============================================
+  // DOM REFS
+  // ============================================
+  const skyLayer = document.getElementById('skyLayer');
+  const mountainsLayer = document.getElementById('mountainsLayer');
+  const hillsLayer = document.getElementById('hillsLayer');
+  const treesLayer = document.getElementById('treesLayer');
+  const polesLayer = document.getElementById('polesLayer');
+  const stationSign = document.getElementById('stationSign');
+  const stationName = document.getElementById('stationName');
+  const stationYear = document.getElementById('stationYear');
+  const stationNum = document.getElementById('stationNum');
+  const nextStopName = document.getElementById('nextStopName');
+  const speedValue = document.getElementById('speedValue');
+  const progressTrack = document.getElementById('progressTrack');
+  const scrollPrompt = document.getElementById('scrollPrompt');
+  const introOverlay = document.getElementById('introOverlay');
+  const startBtn = document.getElementById('startBtn');
+  const trainDashboard = document.getElementById('trainDashboard');
+  const panels = stations.map((_, i) => document.getElementById('panel-' + i));
+
+  // ============================================
+  // GENERATE RAILWAY POLES
+  // ============================================
+  function generatePoles() {
+    let html = '';
+    const poleCount = 120;
+    const spacing = 100 / poleCount;
+    for (let i = 0; i < poleCount; i++) {
+      const left = i * spacing;
+      html += `
+        <div style="
+          position:absolute;
+          left:${left}%;
+          bottom:0;
+          width:4px;
+          height:${140 + Math.random() * 40}px;
+          background:linear-gradient(180deg, #333 0%, #1a1a1a 100%);
+          border-radius:2px;
+        ">
+          <div style="
+            position:absolute;
+            top:20px;
+            left:-30px;
+            width:64px;
+            height:3px;
+            background:#333;
+            transform:rotate(-5deg);
+          "></div>
+          <div style="
+            position:absolute;
+            top:35px;
+            left:-25px;
+            width:54px;
+            height:3px;
+            background:#2a2a2a;
+            transform:rotate(-3deg);
+          "></div>
+        </div>
+      `;
+    }
+    polesLayer.innerHTML = html;
+  }
+  generatePoles();
+
+  // ============================================
+  // GENERATE RAIN DROPLETS
+  // ============================================
+  function generateRain() {
+    const container = document.getElementById('rainContainer');
+    const count = 30;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      const left = Math.random() * 100;
+      const delay = Math.random() * 8;
+      const duration = 4 + Math.random() * 6;
+      const size = 2 + Math.random() * 3;
+      html += `<div class="raindrop" style="
+        left:${left}%;
+        top:${-10 - Math.random() * 20}px;
+        width:${size}px;
+        height:${size}px;
+        animation-delay:${delay}s;
+        animation-duration:${duration}s;
+        opacity:${0.15 + Math.random() * 0.2};
+      "></div>`;
+    }
+    container.innerHTML = html;
+  }
+  generateRain();
+
+  // ============================================
+  // BUILD PROGRESS TRACK
+  // ============================================
+  function buildProgressTrack() {
+    let html = '';
+    stations.forEach((s, i) => {
+      if (i > 0) {
+        html += `<div class="track-line" data-line="${i}"></div>`;
+      }
+      html += `
+        <div class="track-dot" data-dot="${i}" onclick="window.scrollTo({top:${(i + 1) * STATION_SPACING - 200}, behavior:'smooth'})">
+          <div class="track-dot-label">${s.label}</div>
+        </div>
+      `;
+    });
+    progressTrack.innerHTML = html;
+  }
+  buildProgressTrack();
+
+  // ============================================
+  // SKY COLOR INTERPOLATION
+  // ============================================
+  function lerpColor(a, b, t) {
+    const ah = parseInt(a.replace('#',''), 16);
+    const bh = parseInt(b.replace('#',''), 16);
+    const ar = (ah >> 16) & 0xFF, ag = (ah >> 8) & 0xFF, ab = ah & 0xFF;
+    const br = (bh >> 16) & 0xFF, bg = (bh >> 8) & 0xFF, bb = bh & 0xFF;
+    const rr = Math.round(ar + (br - ar) * t);
+    const rg = Math.round(ag + (bg - ag) * t);
+    const rb = Math.round(ab + (bb - ab) * t);
+    return `rgb(${rr},${rg},${rb})`;
+  }
+
+  const skyStops = [
+    { pos: 0, top: '#0A0A2E', bot: '#1A0A2E' },     // deep night
+    { pos: 0.12, top: '#1A0A3E', bot: '#4A1942' },   // pre-dawn
+    { pos: 0.25, top: '#2D1B69', bot: '#FF6B35' },   // dawn
+    { pos: 0.4, top: '#4A90D9', bot: '#FF8C42' },    // sunrise
+    { pos: 0.55, top: '#87CEEB', bot: '#B8E6FF' },   // day
+    { pos: 0.7, top: '#6BB3D9', bot: '#FFB347' },    // afternoon
+    { pos: 0.85, top: '#2D1B69', bot: '#FF4500' },   // sunset
+    { pos: 1, top: '#0A0A2E', bot: '#1A0A2E' }       // night again
+  ];
+
+  function updateSky(progress) {
+    let i = 0;
+    for (; i < skyStops.length - 1; i++) {
+      if (progress <= skyStops[i + 1].pos) break;
+    }
+    if (i >= skyStops.length - 1) i = skyStops.length - 2;
+
+    const from = skyStops[i];
+    const to = skyStops[i + 1];
+    const localT = (progress - from.pos) / (to.pos - from.pos);
+
+    const topColor = lerpColor(from.top, to.top, localT);
+    const botColor = lerpColor(from.bot, to.bot, localT);
+
+    skyLayer.style.background = `linear-gradient(180deg, ${topColor} 0%, ${botColor} 100%)`;
+  }
+
+  // ============================================
+  // PARALLAX MOVEMENT
+  // ============================================
+  function updateParallax(scrollY) {
+    const maxScroll = TOTAL_HEIGHT - window.innerHeight;
+    const progress = scrollY / maxScroll;
+
+    // Mountains move slowly
+    const mtOffset = -progress * 2000;
+    mountainsLayer.style.transform = `translateX(${mtOffset}px)`;
+
+    // Hills move medium
+    const hillOffset = -progress * 4000;
+    hillsLayer.style.transform = `translateX(${hillOffset}px)`;
+
+    // Trees move faster
+    const treeOffset = -progress * 7000;
+    treesLayer.style.transform = `translateX(${treeOffset}px)`;
+
+    // Poles move fastest
+    const poleOffset = -progress * 14000;
+    polesLayer.style.transform = `translateX(${poleOffset}px)`;
+  }
+
+  // ============================================
+  // STATION VISIBILITY
+  // ============================================
+  let currentStation = -1;
+  let lastScrollY = 0;
+
+  function updateStations(scrollY) {
+    const viewCenter = scrollY + window.innerHeight / 2;
+    let activeStation = -1;
+
+    stations.forEach((s, i) => {
+      const stationPos = (i + 1) * STATION_SPACING;
+      const dist = Math.abs(viewCenter - stationPos);
+      if (dist < STATION_SPACING * 0.4) {
+        activeStation = i;
+      }
+    });
+
+    // Update station sign
+    if (activeStation !== -1 && activeStation !== currentStation) {
+      currentStation = activeStation;
+      stationName.textContent = stations[activeStation].name;
+      stationYear.textContent = stations[activeStation].year;
+      stationNum.textContent = activeStation + 1;
+      stationSign.classList.add('visible');
+    } else if (activeStation === -1) {
+      stationSign.classList.remove('visible');
+      currentStation = -1;
+    }
+
+    // Update content panels
+    panels.forEach((panel, i) => {
+      if (i === activeStation) {
+        panel.classList.add('visible');
+      } else {
+        panel.classList.remove('visible');
+      }
+    });
+
+    // Update progress track
+    const dots = progressTrack.querySelectorAll('.track-dot');
+    const lines = progressTrack.querySelectorAll('.track-line');
+    dots.forEach((dot, i) => {
+      dot.classList.remove('active', 'passed');
+      if (i === activeStation) dot.classList.add('active');
+      else if (activeStation !== -1 && i < activeStation) dot.classList.add('passed');
+    });
+    lines.forEach((line, i) => {
+      line.classList.remove('passed');
+      if (activeStation !== -1 && i <= activeStation) line.classList.add('passed');
+    });
+
+    // Update next stop
+    if (activeStation === -1) {
+      nextStopName.textContent = stations[0].name;
+    } else if (activeStation < stations.length - 1) {
+      nextStopName.textContent = stations[activeStation + 1].name;
+    } else {
+      nextStopName.textContent = 'END OF LINE';
+    }
+  }
+
+  // ============================================
+  // SPEED INDICATOR
+  // ============================================
+  let lastTime = Date.now();
+  let smoothSpeed = 0;
+
+  function updateSpeed(scrollY) {
+    const now = Date.now();
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+
+    if (dt > 0) {
+      const rawSpeed = Math.abs(scrollY - lastScrollY) / dt;
+      const mappedSpeed = Math.min(Math.round(rawSpeed * 0.3), 320);
+      smoothSpeed += (mappedSpeed - smoothSpeed) * 0.15;
+      speedValue.textContent = Math.round(smoothSpeed);
+    }
+
+    lastScrollY = scrollY;
+  }
+
+  // ============================================
+  // TRACK RHYTHM (subtle shake when scrolling)
+  // ============================================
+  let isScrolling = false;
+  let scrollTimeout;
+
+  function handleScrollState() {
+    if (!isScrolling) {
+      isScrolling = true;
+      document.body.classList.add('track-rhythm');
+    }
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      isScrolling = false;
+      document.body.classList.remove('track-rhythm');
+      smoothSpeed = 0;
+      speedValue.textContent = '0';
+    }, 200);
+  }
+
+  // ============================================
+  // MAIN SCROLL HANDLER
+  // ============================================
+  let ticking = false;
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const maxScroll = TOTAL_HEIGHT - window.innerHeight;
+        const progress = Math.min(scrollY / maxScroll, 1);
+
+        updateSky(progress);
+        updateParallax(scrollY);
+        updateStations(scrollY);
+        updateSpeed(scrollY);
+        handleScrollState();
+
+        // Hide scroll prompt after some scrolling
+        if (scrollY > 100) {
+          scrollPrompt.classList.add('hidden');
+        } else {
+          scrollPrompt.classList.remove('hidden');
+        }
+
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // ============================================
+  // INTRO
+  // ============================================
+  startBtn.addEventListener('click', () => {
+    introOverlay.classList.add('hidden');
+    // Initial sky
+    updateSky(0);
+  });
+
+  // Initialize
+  updateSky(0);
+
+  // ============================================
+  // KEYBOARD NAV
+  // ============================================
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === ' ') {
+      // Find next station
+      const scrollY = window.scrollY;
+      const viewCenter = scrollY + window.innerHeight / 2;
+      for (let i = 0; i < stations.length; i++) {
+        const stationPos = (i + 1) * STATION_SPACING;
+        if (stationPos > viewCenter + 100) {
+          window.scrollTo({ top: stationPos - window.innerHeight / 2, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        }
+      }
+    } else if (e.key === 'ArrowUp') {
+      const scrollY = window.scrollY;
+      const viewCenter = scrollY + window.innerHeight / 2;
+      for (let i = stations.length - 1; i >= 0; i--) {
+        const stationPos = (i + 1) * STATION_SPACING;
+        if (stationPos < viewCenter - 100) {
+          window.scrollTo({ top: stationPos - window.innerHeight / 2, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        }
+      }
+    }
+  });
+
+  // ============================================
+  // STARS in the sky (for night portions)
+  // ============================================
+  function addStars() {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100vh;z-index:0;pointer-events:none;';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.insertBefore(canvas, document.body.firstChild);
+
+    const ctx = canvas.getContext('2d');
+    const starCount = 200;
+    const starsData = [];
+
+    for (let i = 0; i < starCount; i++) {
+      starsData.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.6,
+        r: 0.5 + Math.random() * 1.5,
+        alpha: 0.3 + Math.random() * 0.7,
+        twinkleSpeed: 0.5 + Math.random() * 2,
+        twinkleOffset: Math.random() * Math.PI * 2
+      });
+    }
+
+    let animFrame;
+    function drawStars() {
+      const scrollY = window.scrollY;
+      const maxScroll = TOTAL_HEIGHT - window.innerHeight;
+      const progress = Math.min(scrollY / maxScroll, 1);
+
+      // Stars visible during night portions (beginning and end)
+      let starOpacity = 0;
+      if (progress < 0.2) {
+        starOpacity = 1 - progress / 0.2;
+      } else if (progress > 0.8) {
+        starOpacity = (progress - 0.8) / 0.2;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (starOpacity > 0.01) {
+        const time = Date.now() / 1000;
+        starsData.forEach(star => {
+          const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${star.alpha * twinkle * starOpacity})`;
+          ctx.fill();
+        });
+      }
+
+      animFrame = requestAnimationFrame(drawStars);
+    }
+
+    drawStars();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  }
+
+  addStars();
+
+  // ============================================
+  // SUN / MOON element
+  // ============================================
+  function addCelestialBody() {
+    const sun = document.createElement('div');
+    sun.id = 'celestialBody';
+    sun.style.cssText = `
+      position:fixed;
+      width:60px;height:60px;
+      border-radius:50%;
+      z-index:1;
+      pointer-events:none;
+      transition: background 0.5s ease, box-shadow 0.5s ease;
+    `;
+    document.body.insertBefore(sun, document.body.firstChild);
+
+    function updateCelestial() {
+      const scrollY = window.scrollY;
+      const maxScroll = TOTAL_HEIGHT - window.innerHeight;
+      const progress = Math.min(scrollY / maxScroll, 1);
+
+      // Arc path: starts low-left, peaks at center-top, ends low-right
+      const arcProgress = progress;
+      const x = 10 + arcProgress * 80; // % from left
+      const peakY = 15; // % from top at peak
+      const edgeY = 70; // % from top at edges
+      const y = edgeY - (edgeY - peakY) * Math.sin(arcProgress * Math.PI);
+
+      sun.style.left = x + '%';
+      sun.style.top = y + '%';
+      sun.style.transform = 'translate(-50%, -50%)';
+
+      // Color: moon at night, warm sun during day
+      if (progress < 0.15 || progress > 0.85) {
+        // Moon
+        sun.style.background = 'radial-gradient(circle at 35% 35%, #ddd, #aaa)';
+        sun.style.boxShadow = '0 0 30px rgba(200,200,255,0.3)';
+        sun.style.width = '40px';
+        sun.style.height = '40px';
+      } else if (progress < 0.3) {
+        // Sunrise
+        sun.style.background = 'radial-gradient(circle, #FFD700, #FF6B35)';
+        sun.style.boxShadow = '0 0 60px rgba(255,107,53,0.5), 0 0 120px rgba(255,215,0,0.2)';
+        sun.style.width = '50px';
+        sun.style.height = '50px';
+      } else if (progress < 0.7) {
+        // Day
+        sun.style.background = 'radial-gradient(circle, #FFF, #FFD700)';
+        sun.style.boxShadow = '0 0 80px rgba(255,215,0,0.4), 0 0 160px rgba(255,255,255,0.15)';
+        sun.style.width = '60px';
+        sun.style.height = '60px';
+      } else {
+        // Sunset
+        sun.style.background = 'radial-gradient(circle, #FF6347, #FF4500)';
+        sun.style.boxShadow = '0 0 60px rgba(255,69,0,0.5), 0 0 120px rgba(255,99,71,0.2)';
+        sun.style.width = '50px';
+        sun.style.height = '50px';
+      }
+    }
+
+    window.addEventListener('scroll', () => requestAnimationFrame(updateCelestial), { passive: true });
+    updateCelestial();
+  }
+
+  addCelestialBody();
+
+  // ============================================
+  // PASSING CLOUDS
+  // ============================================
+  function addClouds() {
+    const cloudLayer = document.createElement('div');
+    cloudLayer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100vh;z-index:1;pointer-events:none;overflow:hidden;';
+    document.body.insertBefore(cloudLayer, skyLayer.nextSibling);
+
+    const cloudCount = 8;
+    for (let i = 0; i < cloudCount; i++) {
+      const cloud = document.createElement('div');
+      const w = 100 + Math.random() * 200;
+      const h = 30 + Math.random() * 40;
+      const top = 10 + Math.random() * 40;
+      const speed = 20 + Math.random() * 40;
+      const delay = Math.random() * speed;
+      const opacity = 0.05 + Math.random() * 0.1;
+
+      cloud.style.cssText = `
+        position:absolute;
+        top:${top}%;
+        width:${w}px;
+        height:${h}px;
+        background:radial-gradient(ellipse, rgba(255,255,255,${opacity}), transparent 70%);
+        border-radius:50%;
+        animation: cloudDrift ${speed}s linear ${-delay}s infinite;
+      `;
+      cloudLayer.appendChild(cloud);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes cloudDrift {
+        0% { transform: translateX(110vw); }
+        100% { transform: translateX(-300px); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  addClouds();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Clockwork Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1A1A1E;--bg-light:#222228;--brass:#B8860B;--brass-light:#D4A853;
+  --brass-dark:#8B6508;--copper:#C87941;--steel:#8B8B8B;--steel-dark:#5A5A5A;
+  --steel-light:#ABABAB;--gold:#FFD700;--text:#E8E0D0;--text-dim:#9A9080;
+  --panel-bg:#1E1E24;
+  --speed:1;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
+body{position:relative}
+
+/* === AGED METAL BACKGROUND === */
+.bg-texture{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-texture::before{content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%,rgba(184,134,11,0.04),transparent),
+    radial-gradient(ellipse 40% 30% at 20% 70%,rgba(200,121,65,0.03),transparent),
+    radial-gradient(ellipse 50% 40% at 80% 30%,rgba(139,139,139,0.03),transparent);
+}
+.bg-texture::after{content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.5;
+}
+
+/* === CLOCK FACE TICK MARKS === */
+.clock-frame{position:fixed;inset:0;z-index:1;pointer-events:none}
+.tick-mark{position:absolute;background:var(--steel-dark);opacity:0.3}
+
+/* === MAIN MECHANISM === */
+.mechanism{position:fixed;inset:0;z-index:2;display:flex;align-items:center;justify-content:center}
+.mechanism-inner{position:relative;width:100vw;height:100vh}
+
+/* === GEAR STYLES === */
+.gear-wrapper{position:absolute;cursor:pointer;z-index:5;transform:translate(-50%,-50%)}
+.gear-wrapper:hover .gear-body{filter:brightness(1.2) drop-shadow(0 0 15px rgba(184,134,11,0.4))}
+.gear-wrapper.selected .gear-body{filter:brightness(1.3) drop-shadow(0 0 25px rgba(200,121,65,0.6))}
+.gear-wrapper.selected .gear-label{color:var(--copper)}
+.gear-svg{display:block}
+.gear-body{transition:filter 0.4s ease}
+
+/* Gear rotation */
+@keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+.gear-spin-cw .gear-svg{animation:spinCW calc(20s / var(--speed)) linear infinite}
+.gear-spin-ccw .gear-svg{animation:spinCCW calc(20s / var(--speed)) linear infinite}
+.gear-spin-cw.size-sm .gear-svg{animation-duration:calc(12s / var(--speed))}
+.gear-spin-ccw.size-sm .gear-svg{animation-duration:calc(12s / var(--speed))}
+.gear-spin-cw.size-lg .gear-svg{animation-duration:calc(30s / var(--speed))}
+.gear-spin-ccw.size-lg .gear-svg{animation-duration:calc(30s / var(--speed))}
+
+/* Gear label (stays still while gear rotates) */
+.gear-label-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:6}
+.gear-label{font-family:'Cinzel',serif;font-weight:700;color:var(--brass-light);text-shadow:0 1px 3px rgba(0,0,0,0.8);letter-spacing:0.08em;text-align:center;line-height:1.2;transition:color 0.3s}
+.gear-sublabel{font-family:'JetBrains Mono',monospace;font-size:0.55em;color:var(--text-dim);font-weight:300;display:block;margin-top:2px;letter-spacing:0.15em}
+
+/* === DECORATIVE ELEMENTS === */
+/* Pendulum */
+.pendulum-wrap{position:fixed;top:0;right:60px;z-index:3;pointer-events:none}
+.pendulum{transform-origin:50% 0%;animation:swing 3s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(15deg)}50%{transform:rotate(-15deg)}}
+.pendulum line{stroke:var(--steel);stroke-width:2}
+.pendulum circle{fill:var(--brass)}
+
+/* Steam particles */
+.steam-container{position:fixed;bottom:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:hidden}
+.steam{position:absolute;width:8px;height:8px;background:radial-gradient(circle,rgba(200,200,200,0.15),transparent);border-radius:50%;animation:rise linear infinite}
+@keyframes rise{
+  0%{transform:translateY(0) scale(1);opacity:0.3}
+  50%{opacity:0.15}
+  100%{transform:translateY(-300px) scale(3);opacity:0}
+}
+
+/* Winding key */
+.winding-key{position:fixed;top:30px;left:30px;z-index:20;cursor:pointer;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,#2A2A30,#1E1E24);
+  border:1px solid var(--steel-dark);border-radius:8px;padding:10px 18px;
+  transition:all 0.3s;user-select:none}
+.winding-key:hover{border-color:var(--brass);background:linear-gradient(135deg,#2E2E34,#222228)}
+.winding-key:active{transform:scale(0.96)}
+.winding-key svg{transition:transform 0.3s}
+.winding-key:hover svg{transform:rotate(45deg)}
+.winding-key .key-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase}
+.winding-key .key-speed{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--brass-light);font-weight:700}
+
+/* Decorative springs */
+.spring{position:fixed;z-index:1;pointer-events:none;opacity:0.15}
+
+/* === CONTENT PANEL === */
+.content-panel{position:fixed;top:0;right:0;width:480px;max-width:90vw;height:100vh;
+  background:linear-gradient(180deg,var(--panel-bg) 0%,#1A1A20 100%);
+  border-left:2px solid var(--brass-dark);
+  z-index:50;transform:translateX(100%);transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto;overflow-x:hidden;
+  box-shadow:-10px 0 40px rgba(0,0,0,0.5)}
+.content-panel.open{transform:translateX(0)}
+.content-panel::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;
+  background:linear-gradient(180deg,var(--brass),var(--copper),var(--brass));opacity:0.5}
+
+.panel-close{position:absolute;top:20px;right:20px;width:40px;height:40px;
+  border:1px solid var(--steel-dark);border-radius:50%;background:var(--bg);
+  color:var(--steel-light);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;z-index:51}
+.panel-close:hover{border-color:var(--copper);color:var(--copper);transform:rotate(90deg)}
+
+.panel-content{padding:50px 40px 60px}
+.panel-section{font-family:'Cinzel',serif;font-size:28px;color:var(--brass-light);
+  letter-spacing:0.1em;margin-bottom:8px;font-weight:700}
+.panel-divider{width:60px;height:2px;background:linear-gradient(90deg,var(--copper),transparent);margin-bottom:30px}
+.panel-text{font-family:'Inter',sans-serif;font-size:14px;line-height:1.8;color:var(--text-dim);margin-bottom:20px}
+.panel-text strong{color:var(--text);font-weight:600}
+
+/* Panel cards */
+.info-card{background:linear-gradient(135deg,rgba(184,134,11,0.06),rgba(200,121,65,0.03));
+  border:1px solid rgba(184,134,11,0.15);border-radius:8px;padding:20px 24px;margin-bottom:16px;
+  transition:all 0.3s}
+.info-card:hover{border-color:rgba(184,134,11,0.35);background:linear-gradient(135deg,rgba(184,134,11,0.1),rgba(200,121,65,0.05))}
+.info-card-title{font-family:'Cinzel',serif;font-size:16px;color:var(--brass-light);margin-bottom:6px;font-weight:700}
+.info-card-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--copper);letter-spacing:0.05em;margin-bottom:10px}
+.info-card-text{font-family:'Inter',sans-serif;font-size:13px;line-height:1.7;color:var(--text-dim)}
+
+/* Skills */
+.skill-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.skill-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);width:130px;flex-shrink:0}
+.skill-bar{flex:1;height:6px;background:rgba(139,139,139,0.15);border-radius:3px;overflow:hidden;position:relative}
+.skill-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--brass-dark),var(--brass-light));
+  transition:width 1s cubic-bezier(0.4,0,0.2,1);width:0}
+.skill-pct{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--copper);width:36px;text-align:right}
+
+/* Contact */
+.contact-link{display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border:1px solid rgba(139,139,139,0.15);border-radius:8px;margin-bottom:12px;
+  text-decoration:none;color:var(--text);transition:all 0.3s;cursor:pointer}
+.contact-link:hover{border-color:var(--brass);background:rgba(184,134,11,0.06)}
+.contact-icon{width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brass-dark),var(--brass));
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.contact-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.05em}
+.contact-value{font-family:'Inter',sans-serif;font-size:14px;color:var(--text);margin-top:2px}
+
+/* Rivet decoration */
+.rivet{width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,var(--steel-light),var(--steel-dark));
+  box-shadow:inset 0 1px 2px rgba(255,255,255,0.2),0 1px 3px rgba(0,0,0,0.5);
+  position:absolute;z-index:4}
+
+/* Decorative corner brackets in panel */
+.panel-bracket{position:absolute;width:20px;height:20px;opacity:0.3}
+.panel-bracket.tl{top:15px;left:15px;border-top:2px solid var(--brass);border-left:2px solid var(--brass)}
+.panel-bracket.tr{top:15px;right:15px;border-top:2px solid var(--brass);border-right:2px solid var(--brass)}
+.panel-bracket.bl{bottom:15px;left:15px;border-bottom:2px solid var(--brass);border-left:2px solid var(--brass)}
+.panel-bracket.br{bottom:15px;right:15px;border-bottom:2px solid var(--brass);border-right:2px solid var(--brass)}
+
+/* Intro overlay */
+.intro-overlay{position:fixed;inset:0;z-index:100;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  transition:opacity 1s ease,visibility 1s ease}
+.intro-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.intro-title{font-family:'Cinzel',serif;font-size:clamp(24px,5vw,48px);color:var(--brass-light);
+  letter-spacing:0.15em;margin-bottom:8px;opacity:0;animation:fadeUp 1s 0.5s forwards}
+.intro-sub{font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.5vw,14px);color:var(--text-dim);
+  letter-spacing:0.3em;text-transform:uppercase;opacity:0;animation:fadeUp 1s 1s forwards}
+.intro-hint{font-family:'Inter',sans-serif;font-size:12px;color:var(--steel);margin-top:40px;
+  opacity:0;animation:fadeUp 1s 2s forwards;letter-spacing:0.1em}
+.intro-gear{opacity:0;animation:fadeUp 1s 0.2s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Scrollbar */
+.content-panel::-webkit-scrollbar{width:6px}
+.content-panel::-webkit-scrollbar-track{background:var(--bg)}
+.content-panel::-webkit-scrollbar-thumb{background:var(--steel-dark);border-radius:3px}
+.content-panel::-webkit-scrollbar-thumb:hover{background:var(--steel)}
+
+/* Responsive */
+@media(max-width:768px){
+  .content-panel{width:100vw;max-width:100vw}
+  .panel-content{padding:50px 24px 60px}
+  .winding-key{top:auto;bottom:20px;left:20px;padding:8px 14px}
+  .pendulum-wrap{display:none}
+  .gear-label{font-size:0.8em !important}
+}
+</style>
+</head>
+<body>
+
+<!-- Background texture -->
+<div class="bg-texture"></div>
+
+<!-- Clock face tick marks -->
+<div class="clock-frame" id="clockFrame"></div>
+
+<!-- Steam particles -->
+<div class="steam-container" id="steamContainer"></div>
+
+<!-- Decorative springs -->
+<svg class="spring" style="bottom:60px;left:40px" width="30" height="120" viewBox="0 0 30 120">
+  <path d="M5,0 Q25,10 5,20 Q-15,30 5,40 Q25,50 5,60 Q-15,70 5,80 Q25,90 5,100 Q-15,110 5,120"
+    fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+</svg>
+<svg class="spring" style="top:80px;right:520px" width="24" height="90" viewBox="0 0 24 90">
+  <path d="M4,0 Q20,8 4,16 Q-12,24 4,32 Q20,40 4,48 Q-12,56 4,64 Q20,72 4,80"
+    fill="none" stroke="#5A5A5A" stroke-width="1"/>
+</svg>
+
+<!-- Pendulum -->
+<div class="pendulum-wrap">
+  <svg class="pendulum" width="40" height="300" viewBox="0 0 40 300">
+    <line x1="20" y1="0" x2="20" y2="250"/>
+    <circle cx="20" cy="265" r="18" fill="url(#pendulumGrad)"/>
+    <circle cx="20" cy="265" r="6" fill="#1A1A1E" opacity="0.5"/>
+    <defs>
+      <radialGradient id="pendulumGrad" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#D4A853"/>
+        <stop offset="100%" stop-color="#8B6508"/>
+      </radialGradient>
+    </defs>
+  </svg>
+</div>
+
+<!-- Winding Key -->
+<div class="winding-key" id="windingKey" title="Click to change speed">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <rect x="8" y="2" width="8" height="10" rx="2" stroke="#D4A853" stroke-width="1.5" fill="none"/>
+    <circle cx="12" cy="16" r="5" stroke="#D4A853" stroke-width="1.5" fill="none"/>
+    <circle cx="12" cy="16" r="2" fill="#B8860B"/>
+    <line x1="12" y1="11" x2="12" y2="12" stroke="#D4A853" stroke-width="1.5"/>
+  </svg>
+  <div>
+    <div class="key-label">Winding Key</div>
+    <div class="key-speed" id="speedDisplay">1.0x</div>
+  </div>
+</div>
+
+<!-- Rivets -->
+<div class="rivet" style="top:20px;left:50%"></div>
+<div class="rivet" style="bottom:20px;left:50%"></div>
+<div class="rivet" style="top:50%;left:20px"></div>
+<div class="rivet" style="top:50%;right:20px"></div>
+<div class="rivet" style="top:40px;left:80px"></div>
+<div class="rivet" style="top:40px;right:80px"></div>
+<div class="rivet" style="bottom:40px;left:80px"></div>
+<div class="rivet" style="bottom:40px;right:80px"></div>
+
+<!-- Main Mechanism -->
+<div class="mechanism">
+  <div class="mechanism-inner" id="mechanismInner"></div>
+</div>
+
+<!-- Content Panel -->
+<div class="content-panel" id="contentPanel">
+  <button class="panel-close" id="panelClose">&times;</button>
+  <div class="panel-bracket tl"></div>
+  <div class="panel-bracket tr"></div>
+  <div class="panel-bracket bl"></div>
+  <div class="panel-bracket br"></div>
+  <div class="panel-content" id="panelContent"></div>
+</div>
+
+<!-- Intro Overlay -->
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-gear">
+    <svg width="80" height="80" viewBox="0 0 80 80">
+      <g transform="translate(40,40)">
+        <circle r="28" fill="none" stroke="#B8860B" stroke-width="1" opacity="0.5">
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="18" fill="none" stroke="#D4A853" stroke-width="1.5" opacity="0.7">
+          <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="7s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="4" fill="#B8860B" opacity="0.8"/>
+      </g>
+    </svg>
+  </div>
+  <div class="intro-title">ANSHULL GARG</div>
+  <div class="intro-sub">Software Developer &bull; Clockwork Portfolio</div>
+  <div class="intro-hint">Click anywhere to engage the mechanism</div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const GEARS = [
+  { id:'main',    label:'ANSHULL\nGARG',     sub:'SOFTWARE DEV',  size:160, x:0.47, y:0.48, dir:1,  section:'main' },
+  { id:'about',   label:'ABOUT',             sub:'WHO I AM',      size:110, x:0.28, y:0.35, dir:-1, section:'about' },
+  { id:'projects',label:'PROJECTS',          sub:'MY WORK',       size:115, x:0.66, y:0.32, dir:-1, section:'projects' },
+  { id:'skills',  label:'SKILLS',            sub:'EXPERTISE',     size:105, x:0.62, y:0.68, dir:-1, section:'skills' },
+  { id:'exp',     label:'EXPERIENCE',        sub:'CAREER',        size: 80, x:0.18, y:0.58, dir:1,  section:'experience' },
+  { id:'contact', label:'CONTACT',           sub:'REACH ME',      size: 75, x:0.78, y:0.52, dir:1,  section:'contact' },
+];
+
+const SECTION_CONTENT = {
+  main: `
+    <div class="panel-section">ANSHULL GARG</div>
+    <div class="panel-divider"></div>
+    <p class="panel-text">
+      <strong>Software Developer at Walmart</strong><br><br>
+      A precision-engineered developer who builds systems that work like clockwork --
+      reliable, efficient, and elegant. Every component meshes perfectly with the next,
+      creating software that runs with mechanical precision.
+    </p>
+    <div class="info-card">
+      <div class="info-card-title">Current Role</div>
+      <div class="info-card-sub">Walmart &bull; Software Developer</div>
+      <div class="info-card-text">Building scalable solutions that power one of the world's largest retailers. Focused on high-performance systems that serve millions of users daily.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Philosophy</div>
+      <div class="info-card-sub">Precision &bull; Reliability &bull; Elegance</div>
+      <div class="info-card-text">Like a master watchmaker, I believe every gear matters. Clean architecture, tested code, and thoughtful design create systems that stand the test of time.</div>
+    </div>
+  `,
+  about: `
+    <div class="panel-section">ABOUT</div>
+    <div class="panel-divider"></div>
+    <p class="panel-text">
+      I am <strong>Anshull Garg</strong>, a Software Developer at <strong>Walmart</strong> who thrives on building
+      robust, scalable applications. With a passion for clean code and elegant architecture,
+      I approach every problem like a clockmaker approaches a new timepiece -- with patience,
+      precision, and an eye for how all the pieces fit together.
+    </p>
+    <div class="info-card">
+      <div class="info-card-title">Background</div>
+      <div class="info-card-text">Computer Science graduate with deep expertise in full-stack development.
+      Experienced in designing systems that handle enterprise-scale workloads while maintaining
+      code quality and developer experience.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">What Drives Me</div>
+      <div class="info-card-text">The satisfaction of seeing complex systems work seamlessly.
+      Whether it is optimizing a database query or crafting a pixel-perfect UI, I find joy in
+      the details that make software truly excellent.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Beyond Code</div>
+      <div class="info-card-text">When not building software, I explore new technologies, contribute to
+      open-source projects, and stay curious about the ever-evolving landscape of software engineering.</div>
+    </div>
+  `,
+  projects: `
+    <div class="panel-section">PROJECTS</div>
+    <div class="panel-divider"></div>
+    <div class="info-card">
+      <div class="info-card-title">E-Commerce Platform Engine</div>
+      <div class="info-card-sub">React &bull; Node.js &bull; Microservices</div>
+      <div class="info-card-text">Architected a high-throughput order processing system capable of handling
+      thousands of transactions per second. Implemented event-driven architecture with real-time
+      inventory synchronization across distributed warehouses.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Real-Time Analytics Dashboard</div>
+      <div class="info-card-sub">TypeScript &bull; D3.js &bull; WebSocket</div>
+      <div class="info-card-text">Built a live metrics dashboard processing millions of data points.
+      Features interactive visualizations, anomaly detection alerts, and customizable reporting
+      with sub-second refresh rates.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Supply Chain Optimizer</div>
+      <div class="info-card-sub">Python &bull; ML &bull; REST API</div>
+      <div class="info-card-text">Developed a machine learning-powered tool to optimize supply chain logistics,
+      reducing delivery times by 18% and cutting operational costs. Integrated with existing
+      ERP systems via robust API layer.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Developer Productivity Toolkit</div>
+      <div class="info-card-sub">CLI &bull; Automation &bull; CI/CD</div>
+      <div class="info-card-text">Created an internal suite of developer tools that automated repetitive tasks,
+      standardized deployment pipelines, and improved team velocity by 30%. Adopted across
+      multiple engineering teams.</div>
+    </div>
+  `,
+  skills: `
+    <div class="panel-section">SKILLS</div>
+    <div class="panel-divider"></div>
+    <p class="panel-text" style="margin-bottom:28px">Each skill is a gear in the mechanism -- precisely calibrated and essential to the whole.</p>
+    <div id="skillsContainer">
+      <div class="skill-row"><span class="skill-name">JavaScript</span><div class="skill-bar"><div class="skill-fill" data-width="95"></div></div><span class="skill-pct">95%</span></div>
+      <div class="skill-row"><span class="skill-name">TypeScript</span><div class="skill-bar"><div class="skill-fill" data-width="90"></div></div><span class="skill-pct">90%</span></div>
+      <div class="skill-row"><span class="skill-name">React</span><div class="skill-bar"><div class="skill-fill" data-width="92"></div></div><span class="skill-pct">92%</span></div>
+      <div class="skill-row"><span class="skill-name">Node.js</span><div class="skill-bar"><div class="skill-fill" data-width="88"></div></div><span class="skill-pct">88%</span></div>
+      <div class="skill-row"><span class="skill-name">Python</span><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div><span class="skill-pct">85%</span></div>
+      <div class="skill-row"><span class="skill-name">Java</span><div class="skill-bar"><div class="skill-fill" data-width="82"></div></div><span class="skill-pct">82%</span></div>
+      <div class="skill-row"><span class="skill-name">SQL/NoSQL</span><div class="skill-bar"><div class="skill-fill" data-width="87"></div></div><span class="skill-pct">87%</span></div>
+      <div class="skill-row"><span class="skill-name">AWS/Cloud</span><div class="skill-bar"><div class="skill-fill" data-width="83"></div></div><span class="skill-pct">83%</span></div>
+      <div class="skill-row"><span class="skill-name">Docker/K8s</span><div class="skill-bar"><div class="skill-fill" data-width="80"></div></div><span class="skill-pct">80%</span></div>
+      <div class="skill-row"><span class="skill-name">System Design</span><div class="skill-bar"><div class="skill-fill" data-width="88"></div></div><span class="skill-pct">88%</span></div>
+      <div class="skill-row"><span class="skill-name">CI/CD</span><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div><span class="skill-pct">85%</span></div>
+      <div class="skill-row"><span class="skill-name">GraphQL</span><div class="skill-bar"><div class="skill-fill" data-width="78"></div></div><span class="skill-pct">78%</span></div>
+    </div>
+  `,
+  experience: `
+    <div class="panel-section">EXPERIENCE</div>
+    <div class="panel-divider"></div>
+    <div class="info-card">
+      <div class="info-card-title">Software Developer</div>
+      <div class="info-card-sub">Walmart &bull; Present</div>
+      <div class="info-card-text">
+        Developing and maintaining large-scale distributed systems serving millions of customers.
+        Key contributions include performance optimization of critical services, implementing
+        new microservices architecture, and mentoring junior developers.<br><br>
+        &bull; Reduced API response times by 40% through caching and query optimization<br>
+        &bull; Led migration of legacy monolith to microservices architecture<br>
+        &bull; Implemented CI/CD pipelines reducing deployment time from hours to minutes<br>
+        &bull; Collaborated with cross-functional teams across multiple time zones
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Software Engineering Intern</div>
+      <div class="info-card-sub">Previous Role</div>
+      <div class="info-card-text">
+        Built foundational skills in agile development, code review practices, and production-grade
+        software delivery. Contributed to customer-facing features used by thousands of users daily.<br><br>
+        &bull; Developed RESTful APIs and integrated third-party services<br>
+        &bull; Wrote comprehensive unit and integration tests<br>
+        &bull; Participated in sprint planning and retrospectives
+      </div>
+    </div>
+  `,
+  contact: `
+    <div class="panel-section">CONTACT</div>
+    <div class="panel-divider"></div>
+    <p class="panel-text" style="margin-bottom:28px">Every great mechanism needs a point of connection. Reach out through any of these channels.</p>
+    <a class="contact-link" href="mailto:anshull.garg@gmail.com">
+      <div class="contact-icon">&#9993;</div>
+      <div><div class="contact-label">Email</div><div class="contact-value">anshull.garg@gmail.com</div></div>
+    </a>
+    <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank">
+      <div class="contact-icon">in</div>
+      <div><div class="contact-label">LinkedIn</div><div class="contact-value">linkedin.com/in/anshullgarg</div></div>
+    </a>
+    <a class="contact-link" href="https://github.com/anshullgarg" target="_blank">
+      <div class="contact-icon">&lt;/&gt;</div>
+      <div><div class="contact-label">GitHub</div><div class="contact-value">github.com/anshullgarg</div></div>
+    </a>
+    <a class="contact-link" href="#">
+      <div class="contact-icon">&#9742;</div>
+      <div><div class="contact-label">Location</div><div class="contact-value">Available for collaboration</div></div>
+    </a>
+  `
+};
+
+// ============================================================
+// GEAR SVG GENERATOR
+// ============================================================
+function generateGearSVG(radius, numTeeth, toothDepth, id) {
+  const innerR = radius - toothDepth;
+  const anglePerTooth = (2 * Math.PI) / numTeeth;
+  const toothWidth = 0.4; // fraction of anglePerTooth for tooth top
+
+  let path = '';
+  for (let i = 0; i < numTeeth; i++) {
+    const a0 = i * anglePerTooth;
+    const a1 = a0 + anglePerTooth * 0.15;
+    const a2 = a0 + anglePerTooth * (0.15 + toothWidth * 0.5);
+    const a3 = a0 + anglePerTooth * (0.15 + toothWidth);
+    const a4 = a0 + anglePerTooth;
+
+    const p = (angle, r) => `${(Math.cos(angle) * r).toFixed(2)},${(Math.sin(angle) * r).toFixed(2)}`;
+
+    if (i === 0) {
+      path += `M${p(a0, innerR)} `;
+    }
+    path += `L${p(a1, innerR)} L${p(a1, radius)} `;
+    path += `L${p(a3, radius)} L${p(a3, innerR)} `;
+    path += `L${p(a4, innerR)} `;
+  }
+  path += 'Z';
+
+  // Center hole - cross shaped
+  const holeR = innerR * 0.28;
+  const crossW = holeR * 0.35;
+
+  const svgSize = (radius + 10) * 2;
+  const center = radius + 10;
+
+  return `<svg class="gear-svg" width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}">
+    <defs>
+      <linearGradient id="brassGrad_${id}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#D4A853"/>
+        <stop offset="30%" stop-color="#B8860B"/>
+        <stop offset="60%" stop-color="#C89B3C"/>
+        <stop offset="100%" stop-color="#8B6508"/>
+      </linearGradient>
+      <radialGradient id="brassRadial_${id}" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#E8C860"/>
+        <stop offset="50%" stop-color="#B8860B"/>
+        <stop offset="100%" stop-color="#7A5A08"/>
+      </radialGradient>
+      <filter id="gearShadow_${id}">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+      </filter>
+      <clipPath id="gearClip_${id}">
+        <path d="${path}" transform="translate(${center},${center})"/>
+      </clipPath>
+    </defs>
+    <g class="gear-body" filter="url(#gearShadow_${id})">
+      <!-- Main gear body -->
+      <path d="${path}" transform="translate(${center},${center})" fill="url(#brassGrad_${id})" stroke="#7A5A08" stroke-width="1"/>
+
+      <!-- Inner ring -->
+      <circle cx="${center}" cy="${center}" r="${innerR * 0.75}" fill="none" stroke="#9A7A20" stroke-width="0.8" opacity="0.5"/>
+
+      <!-- Engraved circles -->
+      <circle cx="${center}" cy="${center}" r="${innerR * 0.6}" fill="none" stroke="#7A5A08" stroke-width="0.5" opacity="0.4" stroke-dasharray="3,3"/>
+      <circle cx="${center}" cy="${center}" r="${innerR * 0.88}" fill="none" stroke="#A08A30" stroke-width="0.5" opacity="0.3"/>
+
+      <!-- Center hub -->
+      <circle cx="${center}" cy="${center}" r="${holeR + 4}" fill="url(#brassRadial_${id})" stroke="#6A4A08" stroke-width="1"/>
+
+      <!-- Cross cutout -->
+      <rect x="${center - crossW/2}" y="${center - holeR}" width="${crossW}" height="${holeR * 2}" rx="1" fill="#1A1A1E" opacity="0.8"/>
+      <rect x="${center - holeR}" y="${center - crossW/2}" width="${holeR * 2}" height="${crossW}" rx="1" fill="#1A1A1E" opacity="0.8"/>
+
+      <!-- Center screw -->
+      <circle cx="${center}" cy="${center}" r="${holeR * 0.35}" fill="radial-gradient(circle,#AAA,#666)" stroke="#555" stroke-width="0.5"/>
+      <circle cx="${center}" cy="${center}" r="${holeR * 0.35}"
+        fill="none" stroke="#999" stroke-width="0.5" opacity="0.8"/>
+      <!-- Screw slot -->
+      <line x1="${center - holeR * 0.25}" y1="${center}" x2="${center + holeR * 0.25}" y2="${center}"
+        stroke="#444" stroke-width="1.5" stroke-linecap="round"/>
+
+      <!-- Decorative rivets on the gear face -->
+      ${generateRivets(center, innerR * 0.65, Math.min(numTeeth, 6), holeR * 0.12)}
+    </g>
+  </svg>`;
+}
+
+function generateRivets(cx, r, count, rivetR) {
+  let rivets = '';
+  for (let i = 0; i < count; i++) {
+    const angle = (2 * Math.PI / count) * i;
+    const x = cx + Math.cos(angle) * r;
+    const y = cx + Math.sin(angle) * r;
+    rivets += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rivetR.toFixed(1)}"
+      fill="#8B8B8B" stroke="#666" stroke-width="0.3" opacity="0.6"/>
+      <circle cx="${(x - rivetR * 0.2).toFixed(1)}" cy="${(y - rivetR * 0.2).toFixed(1)}" r="${(rivetR * 0.3).toFixed(1)}"
+      fill="#BBB" opacity="0.3"/>`;
+  }
+  return rivets;
+}
+
+// ============================================================
+// BUILD THE MECHANISM
+// ============================================================
+const mechanismEl = document.getElementById('mechanismInner');
+let selectedGear = null;
+let currentSpeed = 1;
+
+function buildGears() {
+  mechanismEl.innerHTML = '';
+
+  GEARS.forEach((g, idx) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = `gear-wrapper ${g.dir === 1 ? 'gear-spin-cw' : 'gear-spin-ccw'} ${g.size > 120 ? 'size-lg' : g.size < 90 ? 'size-sm' : 'size-md'}`;
+    wrapper.dataset.section = g.section;
+    wrapper.dataset.id = g.id;
+
+    const px = g.x * window.innerWidth;
+    const py = g.y * window.innerHeight;
+    wrapper.style.left = px + 'px';
+    wrapper.style.top = py + 'px';
+
+    const numTeeth = Math.round(g.size * 0.18);
+    const toothDepth = g.size * 0.12;
+
+    wrapper.innerHTML = generateGearSVG(g.size, numTeeth, toothDepth, g.id);
+
+    // Label overlay (does not rotate)
+    const labelWrap = document.createElement('div');
+    labelWrap.className = 'gear-label-wrap';
+    const svgSize = (g.size + 10) * 2;
+    labelWrap.style.width = svgSize + 'px';
+    labelWrap.style.height = svgSize + 'px';
+
+    const fontSize = g.size > 120 ? 18 : g.size > 90 ? 14 : 11;
+    labelWrap.innerHTML = `<div class="gear-label" style="font-size:${fontSize}px">
+      ${g.label.replace('\n', '<br>')}<span class="gear-sublabel">${g.sub}</span>
+    </div>`;
+    wrapper.appendChild(labelWrap);
+
+    wrapper.addEventListener('click', () => selectGear(g.section, wrapper));
+    mechanismEl.appendChild(wrapper);
+  });
+}
+
+// ============================================================
+// GEAR SELECTION
+// ============================================================
+function selectGear(section, el) {
+  // Deselect previous
+  document.querySelectorAll('.gear-wrapper.selected').forEach(g => g.classList.remove('selected'));
+
+  if (el) el.classList.add('selected');
+  selectedGear = section;
+
+  // Show panel
+  const panel = document.getElementById('contentPanel');
+  const content = document.getElementById('panelContent');
+  content.innerHTML = SECTION_CONTENT[section] || '';
+  panel.classList.add('open');
+
+  // Animate skill bars if skills section
+  if (section === 'skills') {
+    setTimeout(() => {
+      document.querySelectorAll('.skill-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }, 300);
+  }
+
+  // Flash effect
+  if (el) {
+    el.style.transition = 'filter 0.1s';
+    el.style.filter = 'brightness(2)';
+    setTimeout(() => { el.style.filter = ''; el.style.transition = ''; }, 150);
+  }
+}
+
+function closePanel() {
+  document.getElementById('contentPanel').classList.remove('open');
+  document.querySelectorAll('.gear-wrapper.selected').forEach(g => g.classList.remove('selected'));
+  selectedGear = null;
+}
+
+document.getElementById('panelClose').addEventListener('click', closePanel);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+// ============================================================
+// WINDING KEY - SPEED CONTROL
+// ============================================================
+const speeds = [0.5, 1, 1.5, 2, 3];
+let speedIdx = 1;
+
+document.getElementById('windingKey').addEventListener('click', () => {
+  speedIdx = (speedIdx + 1) % speeds.length;
+  currentSpeed = speeds[speedIdx];
+  document.documentElement.style.setProperty('--speed', currentSpeed);
+  document.getElementById('speedDisplay').textContent = currentSpeed.toFixed(1) + 'x';
+
+  // Visual feedback
+  const key = document.getElementById('windingKey');
+  key.style.borderColor = '#D4A853';
+  setTimeout(() => { key.style.borderColor = ''; }, 300);
+});
+
+// ============================================================
+// CLOCK FACE TICK MARKS
+// ============================================================
+function buildClockFace() {
+  const frame = document.getElementById('clockFrame');
+  frame.innerHTML = '';
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const r = Math.min(cx, cy) - 20;
+
+  for (let i = 0; i < 60; i++) {
+    const angle = (i / 60) * 2 * Math.PI - Math.PI / 2;
+    const isMajor = i % 5 === 0;
+    const len = isMajor ? 20 : 10;
+    const w = isMajor ? 2 : 1;
+    const x1 = cx + Math.cos(angle) * r;
+    const y1 = cy + Math.sin(angle) * r;
+    const x2 = cx + Math.cos(angle) * (r - len);
+    const y2 = cy + Math.sin(angle) * (r - len);
+
+    const tick = document.createElement('div');
+    tick.className = 'tick-mark';
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    tick.style.width = length + 'px';
+    tick.style.height = w + 'px';
+    tick.style.left = x1 + 'px';
+    tick.style.top = y1 + 'px';
+    tick.style.transform = `rotate(${angleDeg}deg)`;
+    tick.style.transformOrigin = '0 50%';
+    if (isMajor) tick.style.opacity = '0.5';
+    frame.appendChild(tick);
+  }
+}
+
+// ============================================================
+// STEAM PARTICLES
+// ============================================================
+function createSteamParticles() {
+  const container = document.getElementById('steamContainer');
+  const sources = [
+    { x: '15%', baseY: 85 },
+    { x: '35%', baseY: 90 },
+    { x: '70%', baseY: 88 },
+    { x: '85%', baseY: 92 },
+  ];
+
+  setInterval(() => {
+    if (document.hidden) return;
+    const src = sources[Math.floor(Math.random() * sources.length)];
+    const particle = document.createElement('div');
+    particle.className = 'steam';
+    particle.style.left = src.x;
+    particle.style.bottom = (100 - src.baseY + Math.random() * 5) + '%';
+    particle.style.width = (6 + Math.random() * 10) + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+    container.appendChild(particle);
+    setTimeout(() => particle.remove(), 8000);
+  }, 600);
+}
+
+// ============================================================
+// INTRO
+// ============================================================
+function dismissIntro() {
+  document.getElementById('introOverlay').classList.add('hidden');
+  document.getElementById('introOverlay').removeEventListener('click', dismissIntro);
+}
+document.getElementById('introOverlay').addEventListener('click', dismissIntro);
+// Auto dismiss after 4s
+setTimeout(dismissIntro, 4000);
+
+// ============================================================
+// RESPONSIVE REBUILD
+// ============================================================
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    buildGears();
+    buildClockFace();
+    // Re-select if needed
+    if (selectedGear) {
+      const el = document.querySelector(`[data-section="${selectedGear}"]`);
+      if (el) el.classList.add('selected');
+    }
+  }, 200);
+});
+
+// ============================================================
+// INIT
+// ============================================================
+buildGears();
+buildClockFace();
+createSteamParticles();
+</script>
+</body>
+</html>

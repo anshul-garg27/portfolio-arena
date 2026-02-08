@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg -- Card Catalog Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --library-bg: #1A1208;
+  --wood-dark: #3A2210;
+  --wood-mid: #5C3A1A;
+  --wood-light: #7B5230;
+  --wood-highlight: #9A6B3A;
+  --brass: #B8860B;
+  --brass-light: #D4A52A;
+  --brass-dark: #8B6508;
+  --card-cream: #FFF8E7;
+  --card-aged: #F5E6C8;
+  --card-line: #C84040;
+  --ink: #1A1A2E;
+  --ink-faded: #3A3A5E;
+  --stamp-red: #8B2020;
+  --amber-glow: rgba(255, 180, 60, 0.15);
+}
+
+html { font-size: 16px; }
+
+body {
+  background: var(--library-bg);
+  color: var(--card-cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ===== LIBRARY ATMOSPHERE ===== */
+
+/* Warm amber lighting from above */
+.ambient-light {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% -5%, rgba(255, 180, 60, 0.20) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 50% at 20% 10%, rgba(200, 140, 40, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 50% at 80% 10%, rgba(200, 140, 40, 0.08) 0%, transparent 60%);
+}
+
+/* Bookshelf background */
+.bookshelves {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+  overflow: hidden;
+}
+
+.bookshelf-row {
+  display: flex;
+  gap: 2px;
+  padding: 0 20px;
+  margin-bottom: 8px;
+  filter: blur(1.5px);
+}
+
+.book {
+  height: 100%;
+  border-radius: 1px 2px 2px 1px;
+  flex-shrink: 0;
+}
+
+/* Dust motes */
+.dust-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.dust-mote {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 220, 150, 0.6);
+  animation: float-dust linear infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes float-dust {
+  0% { transform: translateY(100vh) translateX(0px) scale(0.5); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-20px) translateX(40px) scale(1.2); opacity: 0; }
+}
+
+/* Reading lamp */
+.reading-lamp {
+  position: fixed;
+  top: 0;
+  right: 8%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.lamp-arm {
+  width: 4px;
+  height: 60px;
+  background: linear-gradient(to bottom, #444, #333);
+  margin: 0 auto;
+}
+
+.lamp-shade {
+  width: 80px;
+  height: 35px;
+  background: linear-gradient(to bottom, #2A4A2A, #1A3A1A);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  position: relative;
+  margin: 0 auto;
+  box-shadow: 0 3px 15px rgba(255, 180, 60, 0.3);
+}
+
+.lamp-shade::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 120px;
+  background: radial-gradient(ellipse at top, rgba(255, 180, 60, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Quiet please sign */
+.quiet-sign {
+  position: fixed;
+  top: 20px;
+  left: 30px;
+  z-index: 10;
+  background: var(--card-cream);
+  color: var(--stamp-red);
+  font-family: 'Crimson Text', serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: 2px solid var(--stamp-red);
+  transform: rotate(-3deg);
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+  opacity: 0.85;
+  user-select: none;
+}
+
+.quiet-sign::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background: #888;
+  border-radius: 50%;
+  border: 1px solid #666;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main-wrapper {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px 60px;
+}
+
+/* Title plaque */
+.title-plaque {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.title-plaque h1 {
+  font-family: 'Crimson Text', serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  color: var(--brass-light);
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  margin-bottom: 4px;
+}
+
+.title-plaque .subtitle {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  color: rgba(212, 165, 42, 0.6);
+  letter-spacing: 0.12em;
+}
+
+.title-plaque .dewey {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  color: rgba(184, 134, 11, 0.4);
+  margin-top: 6px;
+  letter-spacing: 0.2em;
+}
+
+/* Instructions */
+.instructions {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: rgba(255, 248, 231, 0.4);
+  text-align: center;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+/* ===== CARD CATALOG CABINET ===== */
+.cabinet {
+  perspective: 1200px;
+  width: 100%;
+  max-width: 700px;
+}
+
+.cabinet-frame {
+  background:
+    linear-gradient(135deg, var(--wood-light) 0%, var(--wood-mid) 30%, var(--wood-dark) 70%, #2A1508 100%);
+  border: 3px solid var(--wood-dark);
+  border-radius: 6px;
+  padding: 16px 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 20px 60px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(0,0,0,0.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Wood grain texture overlay */
+.cabinet-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 12px,
+      rgba(0,0,0,0.03) 12px,
+      rgba(0,0,0,0.03) 14px
+    ),
+    repeating-linear-gradient(
+      87deg,
+      transparent 0px,
+      transparent 20px,
+      rgba(255,255,255,0.02) 20px,
+      rgba(255,255,255,0.02) 22px
+    );
+  pointer-events: none;
+}
+
+/* Top decorative molding */
+.cabinet-frame::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -4px;
+  right: -4px;
+  height: 10px;
+  background: linear-gradient(to bottom, var(--wood-highlight), var(--wood-mid));
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.3);
+}
+
+/* Bottom molding */
+.cabinet-bottom-molding {
+  position: absolute;
+  bottom: -8px;
+  left: -4px;
+  right: -4px;
+  height: 10px;
+  background: linear-gradient(to top, var(--wood-highlight), var(--wood-mid));
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* ===== DRAWER ===== */
+.drawer-slot {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.drawer {
+  background:
+    linear-gradient(180deg, var(--wood-light) 0%, var(--wood-mid) 40%, var(--wood-dark) 100%);
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 3px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease;
+  transform-origin: center bottom;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -2px 4px rgba(0,0,0,0.2),
+    0 2px 4px rgba(0,0,0,0.3);
+  user-select: none;
+}
+
+.drawer:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -2px 4px rgba(0,0,0,0.2),
+    0 4px 12px rgba(0,0,0,0.4),
+    0 0 20px rgba(255, 180, 60, 0.05);
+}
+
+.drawer.open {
+  transform: translateY(20px) translateZ(60px) rotateX(-8deg);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 15px 40px rgba(0,0,0,0.6),
+    0 0 30px rgba(255, 180, 60, 0.08);
+}
+
+/* Brass handle */
+.drawer-handle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.handle-bracket {
+  width: 56px;
+  height: 18px;
+  border: 2.5px solid var(--brass);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(to bottom, var(--brass-dark), var(--brass), var(--brass-light), var(--brass));
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    inset 0 -1px 2px rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.handle-bracket::before,
+.handle-bracket::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, var(--brass-light), var(--brass-dark));
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.3);
+}
+
+.handle-bracket::before { left: -2px; }
+.handle-bracket::after { right: -2px; }
+
+/* Label plate */
+.drawer-label {
+  background: linear-gradient(to bottom, #F5E6C8, #E8D5B0, #DCC8A0);
+  border: 1px solid var(--brass-dark);
+  border-radius: 2px;
+  padding: 2px 12px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  min-width: 90px;
+}
+
+.drawer-label .range {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--ink);
+}
+
+.drawer-label .category {
+  display: block;
+  font-size: 0.52rem;
+  color: var(--ink-faded);
+  letter-spacing: 0.1em;
+}
+
+/* ===== CARDS CONTAINER (inside drawer) ===== */
+.cards-tray {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 10px 20px;
+  display: none;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  animation: cardsAppear 0.5s ease-out;
+  background: linear-gradient(to bottom,
+    rgba(60, 35, 15, 0.95) 0%,
+    rgba(40, 22, 8, 0.9) 100%
+  );
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.cards-tray.visible {
+  display: flex;
+}
+
+@keyframes cardsAppear {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== INDEX CARD (thumbnail in tray) ===== */
+.index-card-thumb {
+  width: 180px;
+  min-height: 110px;
+  background: linear-gradient(175deg, var(--card-cream) 0%, var(--card-aged) 100%);
+  border: 1px solid #C8B896;
+  border-radius: 2px;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+  transform-origin: center bottom;
+}
+
+.index-card-thumb:nth-child(odd) { transform: rotate(-1.5deg); }
+.index-card-thumb:nth-child(even) { transform: rotate(1deg); }
+.index-card-thumb:nth-child(3n) { transform: rotate(-0.5deg); }
+
+.index-card-thumb:hover {
+  transform: rotate(0deg) translateY(-6px) scale(1.04) !important;
+  box-shadow: 4px 6px 20px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+/* Red line at top */
+.index-card-thumb::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--card-line);
+  opacity: 0.6;
+}
+
+/* Blue margin line */
+.index-card-thumb::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 28px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(100, 120, 200, 0.25);
+}
+
+/* Dog ear */
+.dog-ear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, transparent 50%, #E8D5B0 50%);
+  box-shadow: -1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.card-dewey {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.5rem;
+  color: var(--ink-faded);
+  padding: 3px 6px;
+  letter-spacing: 0.05em;
+}
+
+.card-title-small {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 8px 6px 2px 32px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+}
+
+.card-preview {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.52rem;
+  color: var(--ink-faded);
+  padding: 4px 6px 6px 32px;
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Library stamp on card */
+.library-stamp {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.38rem;
+  color: var(--stamp-red);
+  opacity: 0.35;
+  border: 1px solid var(--stamp-red);
+  padding: 1px 3px;
+  border-radius: 2px;
+  transform: rotate(-8deg);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* ===== MODAL: Full Card View ===== */
+.card-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 6, 2, 0.88);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.card-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.card-modal {
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(175deg, var(--card-cream) 0%, #F2E2C4 40%, var(--card-aged) 100%);
+  border: 1px solid #C8B896;
+  border-radius: 3px;
+  position: relative;
+  box-shadow:
+    4px 6px 30px rgba(0,0,0,0.6),
+    0 0 80px rgba(255, 180, 60, 0.06);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  padding: 0;
+}
+
+.card-modal-overlay.active .card-modal {
+  transform: scale(1) translateY(0);
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.5rem;
+  color: var(--ink-faded);
+  cursor: pointer;
+  z-index: 10;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.modal-close:hover { color: var(--stamp-red); }
+
+/* Card modal top section */
+.modal-red-line {
+  height: 2px;
+  background: var(--card-line);
+  opacity: 0.6;
+  margin-top: 28px;
+}
+
+.modal-blue-line {
+  position: absolute;
+  top: 0;
+  left: 48px;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(100, 120, 200, 0.2);
+}
+
+.modal-header {
+  padding: 8px 16px 4px 56px;
+}
+
+.modal-dewey {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  color: var(--ink-faded);
+  letter-spacing: 0.1em;
+  position: absolute;
+  top: 8px;
+  left: 12px;
+}
+
+.modal-title {
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 10px;
+}
+
+.modal-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  margin-top: 2px;
+}
+
+/* Card modal body */
+.modal-body {
+  padding: 16px 20px 16px 56px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.8rem;
+  color: var(--ink);
+  line-height: 1.75;
+  position: relative;
+}
+
+/* Horizontal ruled lines */
+.modal-body .typed-line {
+  border-bottom: 1px solid rgba(100, 120, 200, 0.1);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.modal-body ul {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-body ul li {
+  padding-left: 16px;
+  position: relative;
+  border-bottom: 1px solid rgba(100, 120, 200, 0.08);
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+
+.modal-body ul li::before {
+  content: '--';
+  position: absolute;
+  left: 0;
+  color: var(--ink-faded);
+}
+
+.modal-body .section-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  margin-top: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  padding-bottom: 2px;
+}
+
+.modal-body .handwritten {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: #4A3A6A;
+  transform: rotate(-1deg);
+  display: inline-block;
+  margin: 4px 0;
+}
+
+.modal-body a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  transition: color 0.2s;
+}
+
+.modal-body a:hover {
+  color: var(--brass-dark);
+}
+
+/* Library stamp on modal card */
+.modal-stamp {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.55rem;
+  color: var(--stamp-red);
+  opacity: 0.3;
+  border: 2px solid var(--stamp-red);
+  padding: 4px 8px;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dog-ear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, transparent 50%, #E0D0B0 50%);
+  box-shadow: -2px 2px 3px rgba(0,0,0,0.08);
+}
+
+/* ===== FOOTER ===== */
+.catalog-footer {
+  margin-top: 40px;
+  text-align: center;
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: rgba(184, 134, 11, 0.3);
+  letter-spacing: 0.1em;
+}
+
+/* ===== SKILL TAGS inside modal ===== */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 6px 0;
+}
+
+.skill-tag {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.62rem;
+  background: rgba(184, 134, 11, 0.1);
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  color: var(--ink);
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+}
+
+/* ===== DATE STAMP style ===== */
+.date-stamp {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  color: var(--stamp-red);
+  opacity: 0.5;
+  letter-spacing: 0.08em;
+}
+
+/* ===== SCROLLBAR ===== */
+.card-modal::-webkit-scrollbar { width: 6px; }
+.card-modal::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+.card-modal::-webkit-scrollbar-thumb {
+  background: rgba(92, 58, 26, 0.3);
+  border-radius: 3px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .cabinet { max-width: 98vw; }
+  .cabinet-frame { padding: 10px 8px; }
+  .drawer { height: 56px; }
+  .handle-bracket { width: 44px; height: 14px; }
+  .drawer-label { font-size: 0.52rem; min-width: 70px; padding: 2px 8px; }
+  .drawer-label .range { font-size: 0.62rem; }
+  .index-card-thumb { width: 150px; min-height: 95px; }
+  .card-title-small { font-size: 0.58rem; }
+  .card-preview { font-size: 0.48rem; }
+  .modal-body { padding: 12px 14px 12px 42px; font-size: 0.72rem; }
+  .modal-blue-line { left: 34px; }
+  .modal-header { padding-left: 42px; }
+  .quiet-sign { display: none; }
+  .reading-lamp { display: none; }
+}
+
+@media (max-width: 380px) {
+  .index-card-thumb { width: 130px; min-height: 85px; }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cabinet-frame {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Hover shine on brass */
+.handle-bracket:hover {
+  background: linear-gradient(to bottom, var(--brass), var(--brass-light), var(--brass), var(--brass-dark));
+}
+
+/* Card aging spots (random subtle marks) */
+.age-spot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(160, 130, 80, 0.15);
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- ATMOSPHERE LAYERS -->
+<div class="ambient-light"></div>
+<div class="bookshelves" id="bookshelves"></div>
+<div class="dust-container" id="dustContainer"></div>
+
+<!-- Reading lamp -->
+<div class="reading-lamp">
+  <div class="lamp-arm"></div>
+  <div class="lamp-shade"></div>
+</div>
+
+<!-- Quiet Please sign -->
+<div class="quiet-sign">Quiet Please</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-wrapper">
+
+  <!-- Title Plaque -->
+  <div class="title-plaque">
+    <h1>Anshull Garg</h1>
+    <div class="subtitle">Software Developer &mdash; Card Catalog</div>
+    <div class="dewey">005.1 GAR 2025</div>
+  </div>
+
+  <div class="instructions">Pull open a drawer to browse the catalog...</div>
+
+  <!-- CABINET -->
+  <div class="cabinet">
+    <div class="cabinet-frame">
+
+      <!-- Drawer 1: ABOUT -->
+      <div class="drawer-slot" data-drawer="about">
+        <div class="drawer" onclick="toggleDrawer('about')">
+          <div class="drawer-handle">
+            <div class="handle-bracket"></div>
+            <div class="drawer-label">
+              <span class="range">A &ndash; B</span>
+              <span class="category">About</span>
+            </div>
+          </div>
+        </div>
+        <div class="cards-tray" id="tray-about"></div>
+      </div>
+
+      <!-- Drawer 2: CAREER -->
+      <div class="drawer-slot" data-drawer="career">
+        <div class="drawer" onclick="toggleDrawer('career')">
+          <div class="drawer-handle">
+            <div class="handle-bracket"></div>
+            <div class="drawer-label">
+              <span class="range">C &ndash; D</span>
+              <span class="category">Career</span>
+            </div>
+          </div>
+        </div>
+        <div class="cards-tray" id="tray-career"></div>
+      </div>
+
+      <!-- Drawer 3: EXPERIENCE -->
+      <div class="drawer-slot" data-drawer="experience">
+        <div class="drawer" onclick="toggleDrawer('experience')">
+          <div class="drawer-handle">
+            <div class="handle-bracket"></div>
+            <div class="drawer-label">
+              <span class="range">E &ndash; F</span>
+              <span class="category">Experience</span>
+            </div>
+          </div>
+        </div>
+        <div class="cards-tray" id="tray-experience"></div>
+      </div>
+
+      <!-- Drawer 4: PROJECTS -->
+      <div class="drawer-slot" data-drawer="projects">
+        <div class="drawer" onclick="toggleDrawer('projects')">
+          <div class="drawer-handle">
+            <div class="handle-bracket"></div>
+            <div class="drawer-label">
+              <span class="range">P &ndash; Q</span>
+              <span class="category">Projects</span>
+            </div>
+          </div>
+        </div>
+        <div class="cards-tray" id="tray-projects"></div>
+      </div>
+
+      <!-- Drawer 5: SKILLS -->
+      <div class="drawer-slot" data-drawer="skills">
+        <div class="drawer" onclick="toggleDrawer('skills')">
+          <div class="drawer-handle">
+            <div class="handle-bracket"></div>
+            <div class="drawer-label">
+              <span class="range">S &ndash; T</span>
+              <span class="category">Skills</span>
+            </div>
+          </div>
+        </div>
+        <div class="cards-tray" id="tray-skills"></div>
+      </div>
+
+      <!-- Drawer 6: EXTRAS & CONTACT -->
+      <div class="drawer-slot" data-drawer="extras">
+        <div class="drawer" onclick="toggleDrawer('extras')">
+          <div class="drawer-handle">
+            <div class="handle-bracket"></div>
+            <div class="drawer-label">
+              <span class="range">X &ndash; Z</span>
+              <span class="category">Extras &amp; Contact</span>
+            </div>
+          </div>
+        </div>
+        <div class="cards-tray" id="tray-extras"></div>
+      </div>
+
+      <div class="cabinet-bottom-molding"></div>
+    </div>
+  </div>
+
+  <div class="catalog-footer">
+    &ldquo;A room without books is like a body without a soul.&rdquo; &mdash; Cicero
+  </div>
+
+</div>
+
+<!-- CARD MODAL -->
+<div class="card-modal-overlay" id="cardModal" onclick="closeModalOutside(event)">
+  <div class="card-modal" id="cardModalContent">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close card">&times;</button>
+    <div class="modal-dog-ear"></div>
+    <div class="modal-dewey" id="modalDewey"></div>
+    <div class="modal-red-line"></div>
+    <div class="modal-blue-line"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-subtitle" id="modalSubtitle"></div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-stamp">AG<br>LIB</div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const catalogData = {
+  about: [
+    {
+      dewey: "005.1 A-01",
+      title: "Anshull Garg",
+      subtitle: "Software Developer, Walmart",
+      preview: "Passionate builder of scalable systems and elegant interfaces...",
+      body: `
+        <div class="typed-line">SUBJECT: Anshull Garg</div>
+        <div class="typed-line">CLASSIFICATION: Software Developer</div>
+        <div class="typed-line">CURRENT POSTING: Walmart Inc.</div>
+        <br>
+        <div class="section-label">Abstract</div>
+        <div class="typed-line">A Software Developer at Walmart with deep expertise in building high-performance, scalable applications that serve millions of users. Passionate about clean architecture, developer experience, and turning complex problems into elegant solutions.</div>
+        <br>
+        <div class="handwritten">* Always learning, always building *</div>
+      `,
+      stamp: "CHECKED"
+    },
+    {
+      dewey: "005.1 A-02",
+      title: "Philosophy & Approach",
+      subtitle: "On the craft of software",
+      preview: "Code should be written for humans first, machines second...",
+      body: `
+        <div class="section-label">Core Beliefs</div>
+        <ul>
+          <li>Code should be written for humans first, machines second</li>
+          <li>The best architecture is the one that can evolve</li>
+          <li>Performance is a feature, not an afterthought</li>
+          <li>Simplicity is the ultimate sophistication</li>
+        </ul>
+        <br>
+        <div class="section-label">Working Style</div>
+        <ul>
+          <li>Systems thinker -- sees the forest and the trees</li>
+          <li>Collaborative by nature, autonomous by capability</li>
+          <li>Data-informed decisions over gut feelings</li>
+          <li>Ship early, iterate often, measure everything</li>
+        </ul>
+        <br>
+        <div class="handwritten">Quality is never an accident; it is always the result of intelligent effort. -- John Ruskin</div>
+      `,
+      stamp: "REF"
+    },
+    {
+      dewey: "005.1 A-03",
+      title: "Education",
+      subtitle: "Academic background",
+      preview: "Computer Science foundations with continuous learning...",
+      body: `
+        <div class="section-label">Academic Record</div>
+        <div class="typed-line">B.Tech in Computer Science</div>
+        <div class="typed-line">Strong foundation in algorithms, data structures, system design, and distributed computing.</div>
+        <br>
+        <div class="section-label">Continuing Education</div>
+        <ul>
+          <li>System Design & Distributed Systems</li>
+          <li>Cloud Architecture (GCP / Azure)</li>
+          <li>Frontend Performance Engineering</li>
+          <li>Machine Learning Fundamentals</li>
+        </ul>
+        <br>
+        <div class="handwritten">Never stop learning -- the field moves fast!</div>
+      `,
+      stamp: "FILED"
+    }
+  ],
+
+  career: [
+    {
+      dewey: "331.7 C-01",
+      title: "Career Timeline",
+      subtitle: "Professional journey overview",
+      preview: "From first lines of code to Walmart-scale engineering...",
+      body: `
+        <div class="section-label">Career Trajectory</div>
+        <div class="typed-line"><strong>Current:</strong> Software Developer @ Walmart</div>
+        <div class="typed-line">Building and maintaining enterprise-scale applications that power one of the world's largest retailers.</div>
+        <br>
+        <div class="section-label">Key Milestones</div>
+        <ul>
+          <li>Joined Walmart engineering team</li>
+          <li>Contributed to high-traffic customer-facing platforms</li>
+          <li>Developed internal tooling used across teams</li>
+          <li>Mentored junior developers</li>
+        </ul>
+        <br>
+        <div class="handwritten">The journey of a thousand commits begins with a single push.</div>
+      `,
+      stamp: "ACTIVE"
+    },
+    {
+      dewey: "331.7 C-02",
+      title: "Impact at Walmart",
+      subtitle: "Scale and contribution metrics",
+      preview: "Enterprise-grade systems touching millions of customers...",
+      body: `
+        <div class="section-label">Scale of Impact</div>
+        <ul>
+          <li>Applications serving millions of daily active users</li>
+          <li>Walmart-scale distributed systems</li>
+          <li>Cross-functional collaboration with product, design, and data teams</li>
+          <li>Performance optimizations improving load times measurably</li>
+        </ul>
+        <br>
+        <div class="section-label">Areas of Contribution</div>
+        <ul>
+          <li>Frontend architecture and component systems</li>
+          <li>API design and backend services</li>
+          <li>CI/CD pipeline improvements</li>
+          <li>Code review and engineering standards</li>
+        </ul>
+        <br>
+        <div class="date-stamp">LAST UPDATED: 2025</div>
+      `,
+      stamp: "VERIFIED"
+    }
+  ],
+
+  experience: [
+    {
+      dewey: "004.6 E-01",
+      title: "Walmart Inc.",
+      subtitle: "Software Developer -- Current",
+      preview: "Enterprise-scale development at one of the world's largest companies...",
+      body: `
+        <div class="section-label">Position Details</div>
+        <div class="typed-line"><strong>Role:</strong> Software Developer</div>
+        <div class="typed-line"><strong>Company:</strong> Walmart Inc.</div>
+        <div class="typed-line"><strong>Status:</strong> Current</div>
+        <br>
+        <div class="section-label">Responsibilities</div>
+        <ul>
+          <li>Design and develop scalable web applications</li>
+          <li>Build responsive, accessible user interfaces</li>
+          <li>Architect microservices and API integrations</li>
+          <li>Optimize application performance and reliability</li>
+          <li>Collaborate with cross-functional teams on feature delivery</li>
+          <li>Participate in code reviews and technical design discussions</li>
+        </ul>
+        <br>
+        <div class="section-label">Technologies Used</div>
+        <div class="skill-tags">
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">Java</span>
+          <span class="skill-tag">GCP</span>
+          <span class="skill-tag">CI/CD</span>
+        </div>
+        <br>
+        <div class="handwritten">Big challenges, bigger impact.</div>
+      `,
+      stamp: "CURRENT"
+    },
+    {
+      dewey: "004.6 E-02",
+      title: "Key Achievements",
+      subtitle: "Notable contributions and outcomes",
+      preview: "Measurable improvements to performance, reliability, and DX...",
+      body: `
+        <div class="section-label">Achievements</div>
+        <ul>
+          <li>Improved page load performance through code splitting and lazy loading strategies</li>
+          <li>Built reusable component library adopted across multiple product teams</li>
+          <li>Reduced build times by optimizing CI/CD pipeline configurations</li>
+          <li>Implemented automated testing frameworks increasing code coverage</li>
+          <li>Led technical design sessions for new feature development</li>
+          <li>Contributed to migration of legacy systems to modern tech stack</li>
+        </ul>
+        <br>
+        <div class="handwritten">Ship it, measure it, improve it.</div>
+      `,
+      stamp: "NOTED"
+    }
+  ],
+
+  projects: [
+    {
+      dewey: "005.3 P-01",
+      title: "Enterprise Web Platform",
+      subtitle: "Large-scale React application",
+      preview: "High-traffic customer-facing application built with React...",
+      body: `
+        <div class="section-label">Project Overview</div>
+        <div class="typed-line">A high-traffic, customer-facing web platform built with modern React architecture, serving millions of users with sub-second load times.</div>
+        <br>
+        <div class="section-label">Technical Details</div>
+        <ul>
+          <li>React with TypeScript for type-safe component development</li>
+          <li>Server-side rendering for optimal performance</li>
+          <li>State management with Redux / Context API</li>
+          <li>Comprehensive test coverage (unit, integration, e2e)</li>
+          <li>Accessibility-first design (WCAG 2.1 AA)</li>
+        </ul>
+        <br>
+        <div class="section-label">Outcome</div>
+        <div class="typed-line">Significant improvements in user engagement metrics and page performance scores.</div>
+        <br>
+        <div class="handwritten">When it works at scale, it's beautiful.</div>
+      `,
+      stamp: "PROD"
+    },
+    {
+      dewey: "005.3 P-02",
+      title: "Internal Developer Tools",
+      subtitle: "Tooling and automation",
+      preview: "CLI tools and dashboards that boost developer productivity...",
+      body: `
+        <div class="section-label">Project Overview</div>
+        <div class="typed-line">Internal developer tooling and automation to improve engineering velocity and reduce friction in daily workflows.</div>
+        <br>
+        <div class="section-label">Components</div>
+        <ul>
+          <li>CLI tools for scaffolding and code generation</li>
+          <li>Dashboard for monitoring build health and deploy status</li>
+          <li>Shared component library with documentation</li>
+          <li>Automated code quality checks and lint rules</li>
+        </ul>
+        <br>
+        <div class="section-label">Impact</div>
+        <div class="typed-line">Adopted by multiple teams, reducing onboarding time and improving code consistency.</div>
+      `,
+      stamp: "UTIL"
+    },
+    {
+      dewey: "005.3 P-03",
+      title: "Portfolio Experiments",
+      subtitle: "Creative web development",
+      preview: "A collection of experimental portfolio demos exploring interaction...",
+      body: `
+        <div class="section-label">Project Overview</div>
+        <div class="typed-line">A series of creative single-page portfolio experiments exploring unique interaction paradigms and visual design concepts.</div>
+        <br>
+        <div class="section-label">Experiments Include</div>
+        <ul>
+          <li>Retro terminal interface with command-line navigation</li>
+          <li>Brutalist editorial magazine layout</li>
+          <li>Dark cinematic experience with scroll-driven animations</li>
+          <li>Bento grid responsive design system</li>
+          <li>Library card catalog (you are here!)</li>
+          <li>...and many more</li>
+        </ul>
+        <br>
+        <div class="handwritten">This very page is one of them! Meta, right?</div>
+      `,
+      stamp: "META"
+    }
+  ],
+
+  skills: [
+    {
+      dewey: "005.13 S-01",
+      title: "Languages & Frameworks",
+      subtitle: "Core technical proficiencies",
+      preview: "JavaScript, TypeScript, React, Node.js, Java...",
+      body: `
+        <div class="section-label">Programming Languages</div>
+        <div class="skill-tags">
+          <span class="skill-tag">JavaScript (ES6+)</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">Java</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">HTML5</span>
+          <span class="skill-tag">CSS3 / SCSS</span>
+          <span class="skill-tag">SQL</span>
+        </div>
+        <br>
+        <div class="section-label">Frameworks & Libraries</div>
+        <div class="skill-tags">
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Next.js</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Express</span>
+          <span class="skill-tag">Redux</span>
+          <span class="skill-tag">Tailwind CSS</span>
+          <span class="skill-tag">Spring Boot</span>
+        </div>
+        <br>
+        <div class="section-label">Testing</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Jest</span>
+          <span class="skill-tag">React Testing Library</span>
+          <span class="skill-tag">Cypress</span>
+          <span class="skill-tag">JUnit</span>
+        </div>
+        <br>
+        <div class="handwritten">The right tool for the right job.</div>
+      `,
+      stamp: "INDEX"
+    },
+    {
+      dewey: "005.13 S-02",
+      title: "Infrastructure & DevOps",
+      subtitle: "Cloud, tooling, and operations",
+      preview: "GCP, Docker, Kubernetes, CI/CD pipelines...",
+      body: `
+        <div class="section-label">Cloud & Infrastructure</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Google Cloud Platform</span>
+          <span class="skill-tag">Azure</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">Kubernetes</span>
+          <span class="skill-tag">Terraform</span>
+        </div>
+        <br>
+        <div class="section-label">DevOps & Tooling</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Git / GitHub</span>
+          <span class="skill-tag">Jenkins</span>
+          <span class="skill-tag">GitHub Actions</span>
+          <span class="skill-tag">Webpack / Vite</span>
+          <span class="skill-tag">npm / yarn</span>
+        </div>
+        <br>
+        <div class="section-label">Databases</div>
+        <div class="skill-tags">
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">MongoDB</span>
+          <span class="skill-tag">Redis</span>
+          <span class="skill-tag">Elasticsearch</span>
+        </div>
+      `,
+      stamp: "INFRA"
+    },
+    {
+      dewey: "005.13 S-03",
+      title: "Soft Skills & Practices",
+      subtitle: "Beyond the code",
+      preview: "Architecture, mentorship, agile methodologies...",
+      body: `
+        <div class="section-label">Technical Practices</div>
+        <ul>
+          <li>System Design & Architecture</li>
+          <li>Code Review & Technical Mentorship</li>
+          <li>Performance Optimization & Profiling</li>
+          <li>Accessibility (WCAG 2.1 Compliance)</li>
+          <li>Responsive & Mobile-First Design</li>
+        </ul>
+        <br>
+        <div class="section-label">Collaboration</div>
+        <ul>
+          <li>Agile / Scrum methodologies</li>
+          <li>Cross-functional team collaboration</li>
+          <li>Technical writing and documentation</li>
+          <li>Stakeholder communication</li>
+          <li>Pair programming and knowledge sharing</li>
+        </ul>
+        <br>
+        <div class="handwritten">Great software is built by great teams.</div>
+      `,
+      stamp: "SOFT"
+    }
+  ],
+
+  extras: [
+    {
+      dewey: "790.1 X-01",
+      title: "Contact Information",
+      subtitle: "How to reach the author",
+      preview: "GitHub, LinkedIn, Email -- all the ways to connect...",
+      body: `
+        <div class="section-label">Professional Contact</div>
+        <ul>
+          <li><strong>GitHub:</strong> <a href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a></li>
+          <li><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a></li>
+          <li><strong>Email:</strong> <a href="mailto:anshull.garg@outlook.com">anshull.garg@outlook.com</a></li>
+        </ul>
+        <br>
+        <div class="section-label">Availability</div>
+        <div class="typed-line">Open to interesting conversations about technology, collaboration opportunities, and challenging problems.</div>
+        <br>
+        <div class="handwritten">Don't be a stranger -- drop a line!</div>
+      `,
+      stamp: "CONTACT"
+    },
+    {
+      dewey: "790.1 X-02",
+      title: "Interests & Curiosities",
+      subtitle: "Beyond the terminal",
+      preview: "Music, books, open source, and the art of good coffee...",
+      body: `
+        <div class="section-label">Interests</div>
+        <ul>
+          <li>Open source software and community contributions</li>
+          <li>Exploring new programming paradigms and languages</li>
+          <li>Reading (technical books, science fiction, philosophy)</li>
+          <li>Music and creative arts</li>
+          <li>The art and science of good coffee</li>
+          <li>Teaching and knowledge sharing</li>
+        </ul>
+        <br>
+        <div class="section-label">Currently Exploring</div>
+        <ul>
+          <li>AI/ML integration in web applications</li>
+          <li>WebAssembly and edge computing</li>
+          <li>Creative coding and generative art</li>
+        </ul>
+        <br>
+        <div class="handwritten">Curiosity is the engine of achievement.</div>
+      `,
+      stamp: "MISC"
+    },
+    {
+      dewey: "790.1 X-03",
+      title: "Colophon",
+      subtitle: "About this catalog",
+      preview: "How this portfolio was built...",
+      body: `
+        <div class="section-label">About This Portfolio</div>
+        <div class="typed-line">This card catalog portfolio is a single-file HTML document. No frameworks, no build tools -- just HTML, CSS, and vanilla JavaScript.</div>
+        <br>
+        <div class="section-label">Design References</div>
+        <ul>
+          <li>Inspired by the Library of Congress card catalog system</li>
+          <li>Dewey Decimal classification numbers are stylistic, not real</li>
+          <li>Typography: Courier Prime (typewritten), Crimson Text (headings), Caveat (annotations)</li>
+          <li>Colors drawn from aged wood, brass, and cream cardstock</li>
+        </ul>
+        <br>
+        <div class="section-label">Technical Details</div>
+        <ul>
+          <li>CSS 3D transforms for drawer mechanics</li>
+          <li>Pure CSS atmospheric effects (lighting, dust, textures)</li>
+          <li>Responsive design -- works on mobile and desktop</li>
+          <li>Zero external dependencies (fonts via Google Fonts CDN)</li>
+        </ul>
+        <br>
+        <div class="handwritten">Every portfolio is a love letter to the craft.</div>
+        <br>
+        <div class="date-stamp">CATALOGED: FEBRUARY 2025</div>
+      `,
+      stamp: "FIN"
+    }
+  ]
+};
+
+// ===== STATE =====
+let openDrawer = null;
+
+// ===== DRAWER LOGIC =====
+function toggleDrawer(drawerName) {
+  const slot = document.querySelector(`[data-drawer="${drawerName}"]`);
+  const drawer = slot.querySelector('.drawer');
+  const tray = document.getElementById(`tray-${drawerName}`);
+
+  if (openDrawer === drawerName) {
+    // Close this drawer
+    drawer.classList.remove('open');
+    tray.classList.remove('visible');
+    openDrawer = null;
+    return;
+  }
+
+  // Close any open drawer first
+  if (openDrawer) {
+    const prevSlot = document.querySelector(`[data-drawer="${openDrawer}"]`);
+    const prevDrawer = prevSlot.querySelector('.drawer');
+    const prevTray = document.getElementById(`tray-${openDrawer}`);
+    prevDrawer.classList.remove('open');
+    prevTray.classList.remove('visible');
+  }
+
+  // Open the clicked drawer
+  drawer.classList.add('open');
+  openDrawer = drawerName;
+
+  // Populate cards if not already done
+  if (!tray.dataset.populated) {
+    populateTray(drawerName, tray);
+    tray.dataset.populated = 'true';
+  }
+
+  // Show tray with a slight delay for the drawer animation
+  setTimeout(() => {
+    tray.classList.add('visible');
+    // Scroll the tray into view
+    setTimeout(() => {
+      tray.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }, 250);
+}
+
+function populateTray(drawerName, tray) {
+  const cards = catalogData[drawerName];
+  if (!cards) return;
+
+  tray.innerHTML = cards.map((card, idx) => `
+    <div class="index-card-thumb" onclick="openCard('${drawerName}', ${idx})" role="button" tabindex="0" aria-label="Open card: ${card.title}">
+      <div class="dog-ear"></div>
+      <div class="card-dewey">${card.dewey}</div>
+      <div class="card-title-small">${card.title}</div>
+      <div class="card-preview">${card.preview}</div>
+      <div class="library-stamp">${card.stamp}</div>
+      ${generateAgeSpots()}
+    </div>
+  `).join('');
+
+  // Add keyboard support
+  tray.querySelectorAll('.index-card-thumb').forEach(el => {
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        el.click();
+      }
+    });
+  });
+}
+
+function generateAgeSpots() {
+  let spots = '';
+  const count = Math.floor(Math.random() * 3) + 1;
+  for (let i = 0; i < count; i++) {
+    const top = Math.random() * 80 + 10;
+    const left = Math.random() * 80 + 10;
+    const size = Math.random() * 8 + 3;
+    spots += `<div class="age-spot" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;"></div>`;
+  }
+  return spots;
+}
+
+// ===== MODAL LOGIC =====
+function openCard(drawerName, idx) {
+  const card = catalogData[drawerName][idx];
+  if (!card) return;
+
+  document.getElementById('modalDewey').textContent = card.dewey;
+  document.getElementById('modalTitle').textContent = card.title;
+  document.getElementById('modalSubtitle').textContent = card.subtitle;
+  document.getElementById('modalBody').innerHTML = card.body;
+
+  const overlay = document.getElementById('cardModal');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Focus the close button for accessibility
+  setTimeout(() => {
+    overlay.querySelector('.modal-close').focus();
+  }, 100);
+}
+
+function closeModal() {
+  const overlay = document.getElementById('cardModal');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === e.currentTarget) {
+    closeModal();
+  }
+}
+
+// Escape key closes modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+// ===== BOOKSHELVES =====
+function generateBookshelves() {
+  const container = document.getElementById('bookshelves');
+  const rows = 12;
+  const colors = [
+    '#8B4513', '#A0522D', '#6B3A2A', '#4A2A1A', '#704214',
+    '#556B2F', '#2F4F4F', '#800020', '#1C1C6B', '#4A0E2E',
+    '#3E2723', '#33691E', '#1A237E', '#4E342E', '#5D4037',
+    '#BF360C', '#E65100', '#F57F17', '#827717', '#004D40'
+  ];
+
+  let html = '';
+  for (let r = 0; r < rows; r++) {
+    html += `<div class="bookshelf-row" style="height:${28 + Math.random() * 16}px;margin-top:${r === 0 ? 40 : 4}px;">`;
+    let x = 0;
+    while (x < 1200) {
+      const w = 8 + Math.floor(Math.random() * 18);
+      const h = 100;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const brightness = 0.6 + Math.random() * 0.6;
+      html += `<div class="book" style="width:${w}px;background:${color};opacity:${brightness};"></div>`;
+      x += w + 2;
+    }
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+// ===== DUST MOTES =====
+function generateDust() {
+  const container = document.getElementById('dustContainer');
+  const count = 25;
+  let html = '';
+
+  for (let i = 0; i < count; i++) {
+    const left = Math.random() * 100;
+    const delay = Math.random() * 15;
+    const duration = 12 + Math.random() * 18;
+    const size = 1.5 + Math.random() * 2.5;
+    const opacity = 0.2 + Math.random() * 0.5;
+
+    html += `<div class="dust-mote" style="
+      left: ${left}%;
+      width: ${size}px;
+      height: ${size}px;
+      animation-delay: ${delay}s;
+      animation-duration: ${duration}s;
+      opacity: ${opacity};
+    "></div>`;
+  }
+  container.innerHTML = html;
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  generateBookshelves();
+  generateDust();
+});
+</script>
+</body>
+</html>
