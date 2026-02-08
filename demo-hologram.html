@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOLOGRAM :: ANSHULL GARG // Software Developer</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A holographic projector portfolio experience.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   CSS CUSTOM PROPERTIES
+   ================================================================ */
+:root {
+  --bg: #050508;
+  --bg-ambient: #080A12;
+  --holo-cyan: #00F5FF;
+  --holo-blue: #00A8E8;
+  --holo-dim: #005577;
+  --holo-ghost: #002233;
+  --grid-blue: #0A2A3A;
+  --white: #FFFFFF;
+  --white-dim: #88CCDD;
+  --danger: #FF3344;
+  --warning: #FFAA00;
+  --success: #00FF88;
+  --font-hud: 'Orbitron', monospace;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(0, 245, 255, 0.25);
+  color: var(--white);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--holo-dim) var(--bg);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--holo-dim); border-radius: 2px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--holo-cyan);
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ================================================================
+   GLOBAL SCAN LINES OVERLAY
+   ================================================================ */
+#scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 245, 255, 0.015) 2px,
+    rgba(0, 245, 255, 0.015) 4px
+  );
+  animation: scanlineScroll 8s linear infinite;
+}
+
+@keyframes scanlineScroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 200px; }
+}
+
+/* ================================================================
+   NOISE TEXTURE
+   ================================================================ */
+#noise {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  mix-blend-mode: screen;
+}
+
+/* ================================================================
+   AMBIENT BACKGROUND
+   ================================================================ */
+#ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 90%, rgba(0, 100, 140, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 20% at 50% 85%, rgba(0, 245, 255, 0.04) 0%, transparent 60%),
+    var(--bg);
+}
+
+/* ================================================================
+   LOADING / BOOT SEQUENCE
+   ================================================================ */
+#boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#boot-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.boot-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--holo-dim);
+  text-align: left;
+  max-width: 500px;
+  width: 90%;
+}
+
+.boot-text .line {
+  opacity: 0;
+  transform: translateY(5px);
+  margin-bottom: 4px;
+}
+
+.boot-text .line.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.boot-text .line.success { color: var(--success); }
+.boot-text .line.highlight { color: var(--holo-cyan); }
+.boot-text .line.warning { color: var(--warning); }
+
+.boot-progress {
+  width: 90%;
+  max-width: 500px;
+  height: 2px;
+  background: var(--holo-ghost);
+  margin-top: 24px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.boot-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--holo-cyan);
+  box-shadow: 0 0 10px var(--holo-cyan);
+  transition: width 0.3s ease;
+}
+
+/* ================================================================
+   MAIN LAYOUT
+   ================================================================ */
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.app.active { opacity: 1; }
+
+/* ================================================================
+   HUD CORNER DATA
+   ================================================================ */
+.hud-corner {
+  position: fixed;
+  z-index: 100;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--holo-dim);
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  pointer-events: none;
+}
+
+.hud-corner--tl { top: 16px; left: 16px; }
+.hud-corner--tr { top: 16px; right: 16px; text-align: right; }
+.hud-corner--bl { bottom: 16px; left: 16px; }
+.hud-corner--br { bottom: 16px; right: 16px; text-align: right; }
+
+.hud-corner .hud-label {
+  color: var(--holo-cyan);
+  font-family: var(--font-hud);
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.hud-corner .hud-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Signal strength indicator */
+.signal-bars {
+  display: inline-flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 12px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.signal-bars span {
+  display: block;
+  width: 3px;
+  background: var(--holo-cyan);
+  border-radius: 1px;
+  opacity: 0.3;
+}
+
+.signal-bars span.active { opacity: 1; box-shadow: 0 0 4px var(--holo-cyan); }
+
+.signal-bars span:nth-child(1) { height: 3px; }
+.signal-bars span:nth-child(2) { height: 5px; }
+.signal-bars span:nth-child(3) { height: 7px; }
+.signal-bars span:nth-child(4) { height: 9px; }
+.signal-bars span:nth-child(5) { height: 12px; }
+
+/* ================================================================
+   HOLOGRAM AREA
+   ================================================================ */
+.hologram-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 80px 20px 180px;
+  min-height: 100vh;
+}
+
+/* Grid surface */
+.grid-surface {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45vh;
+  background:
+    linear-gradient(0deg, rgba(0, 245, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(500px) rotateX(55deg);
+  transform-origin: bottom center;
+  z-index: 0;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+  animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Light cone */
+.light-cone {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 70vh;
+  z-index: 0;
+  pointer-events: none;
+  background: conic-gradient(
+    from 250deg at 50% 100%,
+    transparent 0deg,
+    transparent 60deg,
+    rgba(0, 245, 255, 0.02) 70deg,
+    rgba(0, 245, 255, 0.05) 85deg,
+    rgba(0, 245, 255, 0.08) 90deg,
+    rgba(0, 245, 255, 0.05) 95deg,
+    rgba(0, 245, 255, 0.02) 110deg,
+    transparent 120deg,
+    transparent 360deg
+  );
+  clip-path: polygon(40% 100%, 60% 100%, 85% 0%, 15% 0%);
+  animation: coneFlicker 6s ease-in-out infinite;
+}
+
+@keyframes coneFlicker {
+  0%, 100% { opacity: 0.8; }
+  25% { opacity: 0.9; }
+  50% { opacity: 0.7; }
+  72% { opacity: 1; }
+  73% { opacity: 0.4; }
+  74% { opacity: 0.95; }
+}
+
+/* ================================================================
+   PROJECTOR DEVICE
+   ================================================================ */
+.projector {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.projector-body {
+  width: 120px;
+  height: 30px;
+  background: linear-gradient(180deg, #1A2A35 0%, #0D1A22 50%, #081218 100%);
+  border-radius: 60px / 15px;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  position: relative;
+  box-shadow:
+    0 0 20px rgba(0, 245, 255, 0.1),
+    inset 0 1px 0 rgba(0, 245, 255, 0.1);
+}
+
+.projector-lens {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #00F5FF, #005577);
+  box-shadow:
+    0 0 15px rgba(0, 245, 255, 0.6),
+    0 0 40px rgba(0, 245, 255, 0.3),
+    0 -20px 60px rgba(0, 245, 255, 0.15);
+  animation: lensPulse 2s ease-in-out infinite;
+}
+
+@keyframes lensPulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(0,245,255,0.6), 0 0 40px rgba(0,245,255,0.3), 0 -20px 60px rgba(0,245,255,0.15); }
+  50% { box-shadow: 0 0 20px rgba(0,245,255,0.8), 0 0 60px rgba(0,245,255,0.4), 0 -30px 80px rgba(0,245,255,0.2); }
+}
+
+.projector-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 50px;
+  border: 1px solid rgba(0, 245, 255, 0.15);
+  border-radius: 70px / 25px;
+  animation: ringRotate 10s linear infinite;
+}
+
+@keyframes ringRotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.projector-indicator {
+  position: absolute;
+  top: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--holo-cyan);
+  box-shadow: 0 0 6px var(--holo-cyan);
+  animation: indicatorBlink 1.5s ease-in-out infinite;
+}
+
+.projector-indicator:nth-child(3) { left: 20px; animation-delay: 0s; }
+.projector-indicator:nth-child(4) { right: 20px; animation-delay: 0.5s; }
+
+@keyframes indicatorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Progress ring SVG around projector */
+.projector-progress {
+  position: absolute;
+  top: -20px;
+  left: -30px;
+  width: 180px;
+  height: 70px;
+  pointer-events: none;
+}
+
+/* ================================================================
+   NAV HUD BUTTONS
+   ================================================================ */
+.nav-hud {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  gap: 4px;
+}
+
+.nav-btn {
+  font-family: var(--font-hud);
+  font-size: 9px;
+  letter-spacing: 2px;
+  padding: 8px 16px;
+  background: rgba(0, 245, 255, 0.04);
+  border: 1px solid rgba(0, 245, 255, 0.15);
+  color: var(--holo-dim);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+.nav-btn:hover {
+  background: rgba(0, 245, 255, 0.1);
+  color: var(--holo-cyan);
+  border-color: rgba(0, 245, 255, 0.4);
+}
+
+.nav-btn.active {
+  background: rgba(0, 245, 255, 0.12);
+  color: var(--white);
+  border-color: var(--holo-cyan);
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.2), inset 0 0 15px rgba(0, 245, 255, 0.05);
+  text-shadow: 0 0 8px var(--holo-cyan);
+}
+
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--holo-cyan);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.nav-btn.active::before {
+  transform: scaleX(1);
+  box-shadow: 0 0 8px var(--holo-cyan);
+}
+
+/* ================================================================
+   HOLOGRAM CONTENT CONTAINER
+   ================================================================ */
+.holo-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 780px;
+  min-height: 420px;
+}
+
+/* Hologram flicker wrapper */
+.holo-flicker {
+  animation: holoFlicker 8s steps(1) infinite;
+}
+
+@keyframes holoFlicker {
+  0%, 100% { opacity: 0.92; }
+  2% { opacity: 0.87; }
+  4% { opacity: 0.95; }
+  19.9% { opacity: 0.92; }
+  20% { opacity: 0.6; }
+  20.5% { opacity: 0.92; }
+  43% { opacity: 0.92; }
+  43.5% { opacity: 0.75; }
+  44% { opacity: 0.92; }
+  65% { opacity: 0.92; }
+  65.2% { opacity: 0.55; }
+  65.4% { opacity: 0.92; }
+  88% { opacity: 0.92; }
+  88.8% { opacity: 0.7; }
+  89% { opacity: 0.92; }
+}
+
+/* Section container */
+.holo-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.holo-section.active {
+  display: block;
+  animation: sectionIn 0.8s ease forwards;
+}
+
+.holo-section.exiting {
+  display: block;
+  animation: sectionOut 0.4s ease forwards;
+}
+
+@keyframes sectionIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(4px); }
+  30% { opacity: 0.5; filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes sectionOut {
+  0% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-15px) scale(1.02); filter: blur(6px); }
+}
+
+/* Scan transition overlay */
+#scan-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#scan-transition.active {
+  animation: scanTransition 0.6s ease forwards;
+}
+
+@keyframes scanTransition {
+  0% { opacity: 0; }
+  20% { opacity: 1; background: linear-gradient(0deg, transparent 40%, rgba(0,245,255,0.08) 50%, transparent 60%); }
+  50% { opacity: 1; background: linear-gradient(0deg, transparent 0%, rgba(0,245,255,0.08) 50%, transparent 100%); }
+  100% { opacity: 0; }
+}
+
+.scanning-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-hud);
+  font-size: 11px;
+  letter-spacing: 6px;
+  color: var(--holo-cyan);
+  text-shadow: 0 0 10px var(--holo-cyan);
+  z-index: 201;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scanning-text.active {
+  animation: scanText 0.6s ease forwards;
+}
+
+@keyframes scanText {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ================================================================
+   HOLOGRAM COMMON STYLES
+   ================================================================ */
+.holo-title {
+  font-family: var(--font-hud);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.6), 0 0 40px rgba(0, 245, 255, 0.3);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.holo-subtitle {
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--holo-dim);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.holo-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--holo-cyan), transparent);
+  margin: 20px 0;
+  opacity: 0.4;
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
+}
+
+.holo-label {
+  font-family: var(--font-hud);
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--holo-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.holo-text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: rgba(0, 245, 255, 0.75);
+  line-height: 1.8;
+}
+
+.holo-text strong {
+  color: var(--white);
+  font-weight: 500;
+  text-shadow: 0 0 6px rgba(0, 245, 255, 0.3);
+}
+
+.holo-highlight {
+  color: var(--holo-cyan);
+  text-shadow: 0 0 6px rgba(0, 245, 255, 0.4);
+}
+
+/* Holo card */
+.holo-card {
+  background: rgba(0, 245, 255, 0.03);
+  border: 1px solid rgba(0, 245, 255, 0.12);
+  border-radius: 2px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.holo-card:hover {
+  background: rgba(0, 245, 255, 0.06);
+  border-color: rgba(0, 245, 255, 0.25);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.08);
+}
+
+.holo-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 1px;
+  background: var(--holo-cyan);
+}
+
+.holo-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 20px;
+  background: var(--holo-cyan);
+}
+
+/* ================================================================
+   FLOATING PARTICLES
+   ================================================================ */
+#particles-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ================================================================
+   FLOATING DATA BITS
+   ================================================================ */
+.data-bit {
+  position: fixed;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(0, 245, 255, 0.12);
+  pointer-events: none;
+  z-index: 2;
+  animation: dataBitFloat 20s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes dataBitFloat {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  5% { opacity: 0.15; }
+  95% { opacity: 0.15; }
+  100% { transform: translateY(-100vh) rotate(5deg); opacity: 0; }
+}
+
+/* ================================================================
+   WIREFRAME GEOMETRY (decorative)
+   ================================================================ */
+.wireframe-geo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -55%);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.04;
+  animation: geoRotate 30s linear infinite;
+}
+
+@keyframes geoRotate {
+  0% { transform: translate(-50%, -55%) rotate(0deg); }
+  100% { transform: translate(-50%, -55%) rotate(360deg); }
+}
+
+/* ================================================================
+   SECTION: BIO
+   ================================================================ */
+.bio-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.bio-avatar {
+  width: 90px;
+  height: 90px;
+  border: 2px solid rgba(0, 245, 255, 0.3);
+  border-radius: 2px;
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 245, 255, 0.04);
+}
+
+.bio-avatar svg {
+  width: 50px;
+  height: 50px;
+  opacity: 0.5;
+}
+
+.bio-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0, 245, 255, 0.05) 2px,
+    rgba(0, 245, 255, 0.05) 4px
+  );
+}
+
+.bio-avatar-scan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--holo-cyan);
+  box-shadow: 0 0 10px var(--holo-cyan);
+  animation: avatarScan 3s linear infinite;
+}
+
+@keyframes avatarScan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.bio-info { flex: 1; }
+
+.bio-name {
+  font-family: var(--font-hud);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.bio-role {
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--holo-cyan);
+  margin-top: 4px;
+}
+
+.bio-company {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--holo-dim);
+  margin-top: 4px;
+}
+
+.bio-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.bio-stat {
+  text-align: center;
+  padding: 12px 8px;
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  background: rgba(0, 245, 255, 0.02);
+}
+
+.bio-stat-value {
+  font-family: var(--font-hud);
+  font-size: 20px;
+  color: var(--white);
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+.bio-stat-label {
+  font-family: var(--font-hud);
+  font-size: 7px;
+  letter-spacing: 2px;
+  color: var(--holo-dim);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.bio-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.bio-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(0, 245, 255, 0.15);
+  color: var(--holo-dim);
+  letter-spacing: 0.5px;
+}
+
+/* ================================================================
+   SECTION: PROJECTS
+   ================================================================ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.project-card {
+  padding: 20px;
+}
+
+.project-id {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--holo-dim);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.project-name {
+  font-family: var(--font-hud);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.project-desc {
+  font-size: 12px;
+  color: rgba(0, 245, 255, 0.6);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-tech span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 8px;
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  color: var(--holo-cyan);
+  letter-spacing: 0.5px;
+}
+
+.project-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--success);
+}
+
+.project-status .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ================================================================
+   SECTION: SKILLS
+   ================================================================ */
+.skills-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.skill-category {
+  margin-bottom: 4px;
+}
+
+.skill-category-name {
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--holo-cyan);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 245, 255, 0.15);
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: rgba(0, 245, 255, 0.02);
+  border-left: 2px solid rgba(0, 245, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.skill-item:hover {
+  background: rgba(0, 245, 255, 0.06);
+  border-left-color: var(--holo-cyan);
+}
+
+.skill-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(0, 245, 255, 0.8);
+}
+
+.skill-level {
+  display: flex;
+  gap: 3px;
+}
+
+.skill-level span {
+  width: 8px;
+  height: 8px;
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+}
+
+.skill-level span.filled {
+  background: rgba(0, 245, 255, 0.5);
+  border-color: var(--holo-cyan);
+  box-shadow: 0 0 4px rgba(0, 245, 255, 0.3);
+}
+
+/* ================================================================
+   SECTION: TIMELINE
+   ================================================================ */
+.timeline-track {
+  position: relative;
+  padding-left: 30px;
+}
+
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, var(--holo-cyan), var(--holo-ghost));
+}
+
+.timeline-entry {
+  position: relative;
+  margin-bottom: 28px;
+  padding-bottom: 4px;
+}
+
+.timeline-entry::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 6px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--holo-cyan);
+  background: var(--bg);
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
+}
+
+.timeline-entry:first-child::before {
+  background: var(--holo-cyan);
+  box-shadow: 0 0 12px rgba(0, 245, 255, 0.6);
+}
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--holo-dim);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.timeline-role {
+  font-family: var(--font-hud);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.timeline-company {
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--holo-cyan);
+  margin-top: 2px;
+}
+
+.timeline-desc {
+  font-size: 12px;
+  color: rgba(0, 245, 255, 0.55);
+  margin-top: 8px;
+  line-height: 1.7;
+  max-width: 580px;
+}
+
+.timeline-metrics {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.timeline-metric {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--holo-dim);
+}
+
+.timeline-metric strong {
+  color: var(--holo-cyan);
+  font-weight: 500;
+}
+
+/* ================================================================
+   SECTION: COMMS (Contact)
+   ================================================================ */
+.comms-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.comms-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--success);
+  margin-bottom: 16px;
+  padding: 6px 16px;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  background: rgba(0, 255, 136, 0.04);
+}
+
+.comms-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+.comms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.comms-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0, 245, 255, 0.03);
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.comms-link:hover {
+  background: rgba(0, 245, 255, 0.08);
+  border-color: rgba(0, 245, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.comms-link-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hud);
+  font-size: 14px;
+  color: var(--holo-cyan);
+  flex-shrink: 0;
+}
+
+.comms-link-text {
+  flex: 1;
+}
+
+.comms-link-label {
+  font-family: var(--font-hud);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--holo-dim);
+  text-transform: uppercase;
+}
+
+.comms-link-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--holo-cyan);
+  margin-top: 2px;
+}
+
+.comms-message {
+  text-align: center;
+  padding: 24px;
+  border: 1px solid rgba(0, 245, 255, 0.08);
+  background: rgba(0, 245, 255, 0.02);
+}
+
+.comms-message p {
+  font-size: 13px;
+  color: rgba(0, 245, 255, 0.6);
+  line-height: 1.8;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.comms-message .response-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--holo-dim);
+  margin-top: 12px;
+  letter-spacing: 1px;
+}
+
+/* ================================================================
+   GLITCH EFFECT
+   ================================================================ */
+.glitch-active {
+  animation: glitchSlice 0.3s steps(1) forwards;
+}
+
+@keyframes glitchSlice {
+  0% { clip-path: inset(0); }
+  10% { clip-path: inset(20% 0 60% 0); transform: translateX(-4px); }
+  20% { clip-path: inset(50% 0 20% 0); transform: translateX(4px); }
+  30% { clip-path: inset(10% 0 70% 0); transform: translateX(-2px); }
+  40% { clip-path: inset(0); transform: translateX(0); }
+  100% { clip-path: inset(0); transform: translateX(0); }
+}
+
+/* ================================================================
+   TRANSITION PARTICLES
+   ================================================================ */
+.transition-particle {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: var(--holo-cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 150;
+  box-shadow: 0 0 4px var(--holo-cyan);
+}
+
+/* ================================================================
+   ROTATING WIREFRAME
+   ================================================================ */
+#wireframe-canvas {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.06;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  .hud-corner--tl, .hud-corner--tr { display: none; }
+  .hud-corner--bl, .hud-corner--br { font-size: 8px; }
+
+  .hologram-stage { padding: 60px 16px 200px; }
+
+  .holo-title { font-size: 18px; letter-spacing: 2px; }
+
+  .nav-hud {
+    bottom: 65px;
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 360px;
+  }
+
+  .nav-btn { font-size: 8px; padding: 6px 10px; letter-spacing: 1px; }
+
+  .bio-header { flex-direction: column; align-items: center; text-align: center; }
+  .bio-stats { grid-template-columns: repeat(3, 1fr); }
+  .bio-tags { justify-content: center; }
+
+  .projects-grid { grid-template-columns: 1fr; }
+  .skills-matrix { grid-template-columns: 1fr; }
+  .comms-grid { grid-template-columns: 1fr; }
+
+  .light-cone { width: 300px; }
+}
+
+@media (max-width: 480px) {
+  .holo-title { font-size: 15px; }
+  .bio-name { font-size: 17px; letter-spacing: 2px; }
+  .bio-avatar { width: 70px; height: 70px; }
+}
+
+/* ================================================================
+   REDUCED MOTION
+   ================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .holo-section.active { opacity: 1; transform: none; }
+  .data-bit, .wireframe-geo, #particles-canvas { display: none !important; }
+  #scanlines { opacity: 0.3; }
+}
+</style>
+</head>
+<body>
+
+<!-- BOOT SEQUENCE -->
+<div id="boot-screen">
+  <div class="boot-text" id="boot-text"></div>
+  <div class="boot-progress"><div class="boot-progress-bar" id="boot-bar"></div></div>
+</div>
+
+<!-- OVERLAYS -->
+<div id="scanlines"></div>
+<div id="noise"></div>
+<div id="ambient-bg"></div>
+
+<!-- FLOATING PARTICLES -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- WIREFRAME -->
+<canvas id="wireframe-canvas" width="400" height="400"></canvas>
+
+<!-- FLOATING DATA BITS -->
+<div id="data-bits"></div>
+
+<!-- SCAN TRANSITION -->
+<div id="scan-transition"></div>
+<div class="scanning-text" id="scanning-text">SCANNING...</div>
+
+<!-- HUD CORNERS -->
+<div class="hud-corner hud-corner--tl">
+  <div class="hud-label">System</div>
+  <div class="hud-value">HOLO-OS v4.2.1</div>
+  <div class="hud-value" id="hud-time"></div>
+</div>
+<div class="hud-corner hud-corner--tr">
+  <div class="hud-label">Signal</div>
+  <div class="hud-value">
+    STRENGTH
+    <span class="signal-bars">
+      <span class="active"></span>
+      <span class="active"></span>
+      <span class="active"></span>
+      <span class="active"></span>
+      <span class="active"></span>
+    </span>
+  </div>
+  <div class="hud-value" id="hud-coords">47.6062N 122.3321W</div>
+</div>
+<div class="hud-corner hud-corner--bl">
+  <div class="hud-value" id="hud-fps">60 FPS</div>
+  <div class="hud-value" style="color: var(--success);">STATUS: ONLINE</div>
+</div>
+<div class="hud-corner hud-corner--br">
+  <div class="hud-label">Section</div>
+  <div class="hud-value" id="hud-section">BIO</div>
+  <div class="hud-value" id="hud-section-idx">01 / 05</div>
+</div>
+
+<!-- GRID SURFACE -->
+<div class="grid-surface"></div>
+
+<!-- LIGHT CONE -->
+<div class="light-cone"></div>
+
+<!-- MAIN APP -->
+<div class="app" id="app">
+  <div class="hologram-stage">
+
+    <div class="holo-container">
+      <div class="holo-flicker" id="holo-content">
+
+        <!-- ============ SECTION: BIO ============ -->
+        <div class="holo-section" id="section-bio" data-name="BIO" data-idx="01">
+          <div class="holo-subtitle">// Personnel Record</div>
+          <div class="holo-title">Identification</div>
+          <div class="holo-divider"></div>
+
+          <div class="bio-header">
+            <div class="bio-avatar">
+              <div class="bio-avatar-scan"></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: var(--holo-cyan);">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="bio-info">
+              <div class="bio-name">Anshull Garg</div>
+              <div class="bio-role">Software Developer</div>
+              <div class="bio-company">Walmart Global Tech // Fortune #1</div>
+            </div>
+          </div>
+
+          <div class="bio-stats">
+            <div class="bio-stat">
+              <div class="bio-stat-value" id="stat-systems">--</div>
+              <div class="bio-stat-label">Systems Built</div>
+            </div>
+            <div class="bio-stat">
+              <div class="bio-stat-value" id="stat-users">--</div>
+              <div class="bio-stat-label">Users Served (M)</div>
+            </div>
+            <div class="bio-stat">
+              <div class="bio-stat-value" id="stat-uptime">--</div>
+              <div class="bio-stat-label">Uptime %</div>
+            </div>
+          </div>
+
+          <div class="holo-text" style="margin-bottom: 16px;">
+            I build <strong>systems that serve millions</strong>. At Walmart Global Tech, I architect scalable,
+            high-performance applications that power enterprise e-commerce at Fortune 1 scale. I obsess over
+            clean architecture, seamless user experiences, and code that stands the test of production.
+          </div>
+
+          <div class="holo-label">Classification Tags</div>
+          <div class="bio-tags">
+            <span class="bio-tag">Full-Stack</span>
+            <span class="bio-tag">React</span>
+            <span class="bio-tag">Node.js</span>
+            <span class="bio-tag">TypeScript</span>
+            <span class="bio-tag">System Design</span>
+            <span class="bio-tag">Performance</span>
+            <span class="bio-tag">Scalability</span>
+          </div>
+        </div>
+
+        <!-- ============ SECTION: PROJECTS ============ -->
+        <div class="holo-section" id="section-projects" data-name="PROJECTS" data-idx="02">
+          <div class="holo-subtitle">// Project Archive</div>
+          <div class="holo-title">Selected Work</div>
+          <div class="holo-divider"></div>
+
+          <div class="projects-grid">
+            <div class="holo-card project-card">
+              <div class="project-id">PRJ-001 // E-COMMERCE PLATFORM</div>
+              <div class="project-name">Commerce Engine</div>
+              <div class="project-desc">Enterprise-grade e-commerce platform with real-time inventory management, microservice gateway reducing API latency by 35% across 12 downstream services.</div>
+              <div class="project-tech">
+                <span>React</span>
+                <span>Node.js</span>
+                <span>GraphQL</span>
+                <span>Redis</span>
+              </div>
+              <div class="project-status"><span class="dot"></span> PRODUCTION</div>
+            </div>
+
+            <div class="holo-card project-card">
+              <div class="project-id">PRJ-002 // PERFORMANCE SUITE</div>
+              <div class="project-name">Perf Monitor</div>
+              <div class="project-desc">Real-time performance monitoring dashboard tracking Core Web Vitals, bundle analysis, and automated regression detection for 50+ frontend applications.</div>
+              <div class="project-tech">
+                <span>TypeScript</span>
+                <span>Next.js</span>
+                <span>D3.js</span>
+                <span>PostgreSQL</span>
+              </div>
+              <div class="project-status"><span class="dot"></span> PRODUCTION</div>
+            </div>
+
+            <div class="holo-card project-card">
+              <div class="project-id">PRJ-003 // DEVELOPER TOOLING</div>
+              <div class="project-name">DevKit CLI</div>
+              <div class="project-desc">Internal CLI toolkit automating project scaffolding, deployment pipelines, and code quality checks. Adopted across 8 engineering teams.</div>
+              <div class="project-tech">
+                <span>Node.js</span>
+                <span>Python</span>
+                <span>Docker</span>
+                <span>CI/CD</span>
+              </div>
+              <div class="project-status"><span class="dot"></span> ACTIVE</div>
+            </div>
+
+            <div class="holo-card project-card">
+              <div class="project-id">PRJ-004 // DATA PIPELINE</div>
+              <div class="project-name">Stream Forge</div>
+              <div class="project-desc">Event-driven data processing pipeline handling 10K+ events/sec with fault-tolerant architecture and real-time analytics dashboard.</div>
+              <div class="project-tech">
+                <span>Kafka</span>
+                <span>Python</span>
+                <span>AWS</span>
+                <span>Elasticsearch</span>
+              </div>
+              <div class="project-status"><span class="dot"></span> PRODUCTION</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION: SKILLS ============ -->
+        <div class="holo-section" id="section-skills" data-name="SKILLS" data-idx="03">
+          <div class="holo-subtitle">// Capability Matrix</div>
+          <div class="holo-title">Skill Analysis</div>
+          <div class="holo-divider"></div>
+
+          <div class="skills-matrix">
+            <div class="skill-category">
+              <div class="skill-category-name">Frontend Engineering</div>
+              <div class="skill-item"><span class="skill-name">React / Next.js</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">TypeScript</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">Tailwind / CSS</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">Performance Opt.</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">Framer Motion</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+            </div>
+
+            <div class="skill-category">
+              <div class="skill-category-name">Backend & APIs</div>
+              <div class="skill-item"><span class="skill-name">Node.js / Express</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">Python</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">GraphQL</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">PostgreSQL</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">Redis / Caching</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+            </div>
+
+            <div class="skill-category">
+              <div class="skill-category-name">DevOps & Cloud</div>
+              <div class="skill-item"><span class="skill-name">Docker / K8s</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">AWS / GCP</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">CI/CD Pipelines</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">Monitoring</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+            </div>
+
+            <div class="skill-category">
+              <div class="skill-category-name">Practices</div>
+              <div class="skill-item"><span class="skill-name">System Design</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">TDD / Testing</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div></div>
+              <div class="skill-item"><span class="skill-name">Agile / Scrum</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+              <div class="skill-item"><span class="skill-name">Code Review</span><div class="skill-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION: TIMELINE ============ -->
+        <div class="holo-section" id="section-timeline" data-name="TIMELINE" data-idx="04">
+          <div class="holo-subtitle">// Chronological Record</div>
+          <div class="holo-title">Career Log</div>
+          <div class="holo-divider"></div>
+
+          <div class="timeline-track">
+            <div class="timeline-entry">
+              <div class="timeline-date">2023 - PRESENT</div>
+              <div class="timeline-role">Software Developer</div>
+              <div class="timeline-company">Walmart Global Tech</div>
+              <div class="timeline-desc">
+                Architecting and shipping production-grade applications at Fortune #1 scale. Building the systems that power
+                digital commerce for millions of customers across the globe. Full-stack engineering with a focus on
+                performance, reliability, and scalable architecture.
+              </div>
+              <div class="timeline-metrics">
+                <div class="timeline-metric"><strong>Millions</strong> users served</div>
+                <div class="timeline-metric"><strong>35%</strong> latency reduction</div>
+                <div class="timeline-metric"><strong>12+</strong> services owned</div>
+              </div>
+            </div>
+
+            <div class="timeline-entry">
+              <div class="timeline-date">2022 - 2023</div>
+              <div class="timeline-role">Software Engineer Intern</div>
+              <div class="timeline-company">Walmart Global Tech</div>
+              <div class="timeline-desc">
+                Contributed to high-impact projects across the retail tech stack. Designed and deployed internal tooling
+                adopted by multiple engineering teams, demonstrating the ability to operate at enterprise scale.
+              </div>
+              <div class="timeline-metrics">
+                <div class="timeline-metric"><strong>8</strong> teams adopted tooling</div>
+                <div class="timeline-metric"><strong>500+</strong> engineers impacted</div>
+              </div>
+            </div>
+
+            <div class="timeline-entry">
+              <div class="timeline-date">2019 - 2023</div>
+              <div class="timeline-role">Computer Science</div>
+              <div class="timeline-company">University Education</div>
+              <div class="timeline-desc">
+                Deep-dived into algorithms, data structures, system design, and software engineering principles.
+                Built a foundation in computational thinking and problem-solving that drives every line of code shipped today.
+              </div>
+            </div>
+
+            <div class="timeline-entry">
+              <div class="timeline-date">2018</div>
+              <div class="timeline-role">First Line of Code</div>
+              <div class="timeline-company">Origin Point</div>
+              <div class="timeline-desc">
+                Wrote the first program. Got hooked. Never looked back. The beginning of a trajectory
+                from curiosity to building systems that serve millions.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SECTION: COMMS ============ -->
+        <div class="holo-section" id="section-comms" data-name="COMMS" data-idx="05">
+          <div class="holo-subtitle">// Communication Channels</div>
+          <div class="holo-title">Open Frequency</div>
+          <div class="holo-divider"></div>
+
+          <div class="comms-header">
+            <div class="comms-status">
+              <span class="dot"></span>
+              TRANSMISSION CHANNEL OPEN
+            </div>
+          </div>
+
+          <div class="comms-grid">
+            <a href="mailto:anshull.garg@gmail.com" class="comms-link">
+              <div class="comms-link-icon">@</div>
+              <div class="comms-link-text">
+                <div class="comms-link-label">Email</div>
+                <div class="comms-link-value">anshull.garg@gmail.com</div>
+              </div>
+            </a>
+            <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="comms-link">
+              <div class="comms-link-icon">in</div>
+              <div class="comms-link-text">
+                <div class="comms-link-label">LinkedIn</div>
+                <div class="comms-link-value">linkedin.com/in/anshullgarg</div>
+              </div>
+            </a>
+            <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="comms-link">
+              <div class="comms-link-icon">&lt;/&gt;</div>
+              <div class="comms-link-text">
+                <div class="comms-link-label">GitHub</div>
+                <div class="comms-link-value">github.com/anshullgarg</div>
+              </div>
+            </a>
+            <a href="#" class="comms-link">
+              <div class="comms-link-icon">CV</div>
+              <div class="comms-link-text">
+                <div class="comms-link-label">Resume</div>
+                <div class="comms-link-value">Download PDF</div>
+              </div>
+            </a>
+          </div>
+
+          <div class="comms-message">
+            <p>
+              I am always open to discussing new opportunities, interesting projects, or just talking
+              about technology. Whether you have a role in mind, a collaboration idea, or want to connect
+              over software engineering -- transmit a message.
+            </p>
+            <div class="response-time">AVG RESPONSE TIME: &lt; 24 HOURS</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav-hud" id="nav-hud">
+  <button class="nav-btn active" data-section="bio" aria-label="View Bio section">BIO</button>
+  <button class="nav-btn" data-section="projects" aria-label="View Projects section">PROJECTS</button>
+  <button class="nav-btn" data-section="skills" aria-label="View Skills section">SKILLS</button>
+  <button class="nav-btn" data-section="timeline" aria-label="View Timeline section">TIMELINE</button>
+  <button class="nav-btn" data-section="comms" aria-label="View Communications section">COMMS</button>
+</nav>
+
+<!-- PROJECTOR -->
+<div class="projector">
+  <div class="projector-body">
+    <div class="projector-lens"></div>
+    <div class="projector-indicator"></div>
+    <div class="projector-indicator"></div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   BOOT SEQUENCE
+   ================================================================ */
+(function() {
+  const bootLines = [
+    { text: '> Initializing HOLO-OS v4.2.1...', delay: 200 },
+    { text: '> Loading quantum renderer...', delay: 300 },
+    { text: '> Calibrating projection matrix...', delay: 250 },
+    { text: '> Scanning personnel database...', delay: 200 },
+    { text: '> SUBJECT FOUND: GARG, ANSHULL K.', delay: 350, cls: 'highlight' },
+    { text: '> Clearance: LEVEL 5 // FULL ACCESS', delay: 200, cls: 'warning' },
+    { text: '> Mounting holographic display...', delay: 300 },
+    { text: '> Establishing signal link...', delay: 200 },
+    { text: '> Signal strength: 5/5 bars [EXCELLENT]', delay: 150, cls: 'success' },
+    { text: '> Projection ready. Activating hologram.', delay: 400, cls: 'success' },
+  ];
+
+  const bootText = document.getElementById('boot-text');
+  const bootBar = document.getElementById('boot-bar');
+  const bootScreen = document.getElementById('boot-screen');
+  const app = document.getElementById('app');
+
+  let totalDelay = 0;
+
+  bootLines.forEach((line, i) => {
+    totalDelay += line.delay;
+    const el = document.createElement('div');
+    el.className = 'line' + (line.cls ? ' ' + line.cls : '');
+    el.textContent = line.text;
+    bootText.appendChild(el);
+
+    setTimeout(() => {
+      el.classList.add('visible');
+      bootBar.style.width = ((i + 1) / bootLines.length * 100) + '%';
+    }, totalDelay);
+  });
+
+  totalDelay += 600;
+  setTimeout(() => {
+    bootScreen.classList.add('hidden');
+    app.classList.add('active');
+    initHologram();
+  }, totalDelay);
+})();
+
+/* ================================================================
+   MAIN HOLOGRAM LOGIC
+   ================================================================ */
+function initHologram() {
+  const sections = document.querySelectorAll('.holo-section');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const scanTransition = document.getElementById('scan-transition');
+  const scanningText = document.getElementById('scanning-text');
+  const hudSection = document.getElementById('hud-section');
+  const hudSectionIdx = document.getElementById('hud-section-idx');
+
+  let currentSection = 'bio';
+  let transitioning = false;
+
+  // Show initial section
+  document.getElementById('section-bio').classList.add('active');
+  animateBioStats();
+
+  // Nav click
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.section;
+      if (target === currentSection || transitioning) return;
+      switchSection(target);
+    });
+  });
+
+  // Keyboard nav
+  document.addEventListener('keydown', (e) => {
+    const sectionNames = ['bio', 'projects', 'skills', 'timeline', 'comms'];
+    const key = parseInt(e.key);
+    if (key >= 1 && key <= 5) {
+      const target = sectionNames[key - 1];
+      if (target !== currentSection && !transitioning) switchSection(target);
+    }
+    // Arrow keys
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const idx = sectionNames.indexOf(currentSection);
+      const next = sectionNames[(idx + 1) % sectionNames.length];
+      if (!transitioning) switchSection(next);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const idx = sectionNames.indexOf(currentSection);
+      const prev = sectionNames[(idx - 1 + sectionNames.length) % sectionNames.length];
+      if (!transitioning) switchSection(prev);
+    }
+  });
+
+  function switchSection(target) {
+    transitioning = true;
+
+    // Glitch + scan effect
+    const currentEl = document.getElementById('section-' + currentSection);
+    const targetEl = document.getElementById('section-' + target);
+
+    // Spawn transition particles
+    spawnTransitionParticles();
+
+    // Scanning overlay
+    scanTransition.classList.add('active');
+    scanningText.classList.add('active');
+
+    // Glitch current
+    currentEl.classList.add('glitch-active');
+
+    setTimeout(() => {
+      currentEl.classList.remove('active', 'glitch-active');
+      currentEl.classList.add('exiting');
+    }, 150);
+
+    setTimeout(() => {
+      currentEl.classList.remove('exiting');
+
+      // Activate new
+      targetEl.classList.add('active');
+      currentSection = target;
+
+      // Update nav
+      navBtns.forEach(b => b.classList.toggle('active', b.dataset.section === target));
+
+      // Update HUD
+      hudSection.textContent = targetEl.dataset.name;
+      hudSectionIdx.textContent = targetEl.dataset.idx + ' / 05';
+
+      // Clear scan
+      scanTransition.classList.remove('active');
+      scanningText.classList.remove('active');
+
+      // Animate stats if bio
+      if (target === 'bio') animateBioStats();
+
+      transitioning = false;
+    }, 500);
+  }
+
+  // Transition particles
+  function spawnTransitionParticles() {
+    const count = 40;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'transition-particle';
+      const angle = (Math.PI * 2 * i) / count;
+      const dist = 50 + Math.random() * 200;
+      const startX = centerX + (Math.random() - 0.5) * 100;
+      const startY = centerY + (Math.random() - 0.5) * 100;
+      const endX = centerX + Math.cos(angle) * dist;
+      const endY = centerY + Math.sin(angle) * dist;
+
+      p.style.left = startX + 'px';
+      p.style.top = startY + 'px';
+      p.style.opacity = '1';
+      document.body.appendChild(p);
+
+      // Scatter out
+      requestAnimationFrame(() => {
+        p.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        p.style.left = endX + 'px';
+        p.style.top = endY + 'px';
+        p.style.opacity = '0';
+      });
+
+      setTimeout(() => p.remove(), 500);
+    }
+  }
+
+  // Bio stats counter animation
+  function animateBioStats() {
+    animateCounter('stat-systems', 0, 24, 1200);
+    animateCounter('stat-users', 0, 240, 1400, 'M+');
+    animateCounter('stat-uptime', 95, 99.9, 1600, '%', 1);
+  }
+
+  function animateCounter(id, start, end, duration, suffix = '', decimals = 0) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const startTime = performance.now();
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = start + (end - start) * eased;
+      el.textContent = value.toFixed(decimals) + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+}
+
+/* ================================================================
+   HUD CLOCK
+   ================================================================ */
+function updateHudTime() {
+  const el = document.getElementById('hud-time');
+  if (!el) return;
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  el.textContent = h + ':' + m + ':' + s + ' UTC-LOCAL';
+}
+setInterval(updateHudTime, 1000);
+updateHudTime();
+
+/* ================================================================
+   FPS COUNTER
+   ================================================================ */
+(function() {
+  const el = document.getElementById('hud-fps');
+  let frames = 0;
+  let lastTime = performance.now();
+
+  function tick() {
+    frames++;
+    const now = performance.now();
+    if (now - lastTime >= 1000) {
+      el.textContent = frames + ' FPS';
+      frames = 0;
+      lastTime = now;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ================================================================
+   FLOATING DATA BITS
+   ================================================================ */
+(function() {
+  const container = document.getElementById('data-bits');
+  const fragments = [
+    '0x00F5FF', 'SYS.OK', 'ACK', '10110', 'HOLO:4.2',
+    'BUFFER', 'RENDER', '>>TX', 'NODE', '0xFF', 'SYNC',
+    'PACKET', 'DECODE', '01001', 'ALLOC', 'HEAP:OK',
+    'SIGNAL', 'PULSE', 'FRAME', 'VERTEX', 'SCAN',
+    'QUANTUM', 'MATRIX', 'VECTOR', 'FLUX', 'PRISM'
+  ];
+
+  function spawn() {
+    const bit = document.createElement('div');
+    bit.className = 'data-bit';
+    bit.textContent = fragments[Math.floor(Math.random() * fragments.length)];
+    bit.style.left = (Math.random() * 100) + 'vw';
+    bit.style.animationDuration = (15 + Math.random() * 25) + 's';
+    bit.style.animationDelay = (Math.random() * 5) + 's';
+    container.appendChild(bit);
+
+    setTimeout(() => bit.remove(), 45000);
+  }
+
+  // Initial batch
+  for (let i = 0; i < 12; i++) {
+    setTimeout(spawn, i * 600);
+  }
+
+  // Continuous
+  setInterval(spawn, 3000);
+})();
+
+/* ================================================================
+   PARTICLE SYSTEM (Canvas)
+   ================================================================ */
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const PARTICLE_COUNT = 50;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createParticle() {
+    return {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -0.2 - Math.random() * 0.4,
+      size: 1 + Math.random() * 1.5,
+      opacity: 0.1 + Math.random() * 0.3,
+      life: Math.random()
+    };
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(createParticle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life += 0.002;
+
+      if (p.y < -10 || p.life > 1) {
+        particles[i] = createParticle();
+        particles[i].y = canvas.height + 10;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 245, 255, ${p.opacity * (1 - p.life)})`;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* ================================================================
+   WIREFRAME ICOSAHEDRON (Canvas)
+   ================================================================ */
+(function() {
+  const canvas = document.getElementById('wireframe-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  const cx = W / 2;
+  const cy = H / 2;
+
+  // Generate icosahedron vertices
+  const t = (1 + Math.sqrt(5)) / 2;
+  const r = 100;
+  const rawVerts = [
+    [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
+    [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t],
+    [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]
+  ];
+
+  // Normalize
+  const len = Math.sqrt(1 + t * t);
+  const verts = rawVerts.map(v => v.map(c => (c / len) * r));
+
+  const edges = [
+    [0,1],[0,5],[0,7],[0,10],[0,11],
+    [1,5],[1,7],[1,8],[1,9],
+    [2,3],[2,4],[2,6],[2,10],[2,11],
+    [3,4],[3,6],[3,8],[3,9],
+    [4,5],[4,9],[4,11],
+    [5,9],[5,11],
+    [6,7],[6,8],[6,10],
+    [7,8],[7,10],
+    [8,9],
+    [10,11]
+  ];
+
+  let angleX = 0;
+  let angleY = 0;
+  let angleZ = 0;
+
+  function rotatePoint(x, y, z) {
+    // Rotate Y
+    let x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
+    let z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
+    // Rotate X
+    let y1 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
+    let z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
+    // Rotate Z
+    let x2 = x1 * Math.cos(angleZ) - y1 * Math.sin(angleZ);
+    let y2 = x1 * Math.sin(angleZ) + y1 * Math.cos(angleZ);
+
+    return { x: x2, y: y2, z: z2 };
+  }
+
+  function project(p) {
+    const fov = 300;
+    const scale = fov / (fov + p.z + 200);
+    return {
+      x: cx + p.x * scale,
+      y: cy + p.y * scale,
+      scale: scale
+    };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    angleY += 0.003;
+    angleX += 0.002;
+    angleZ += 0.001;
+
+    const projected = verts.map(v => {
+      const rot = rotatePoint(v[0], v[1], v[2]);
+      return project(rot);
+    });
+
+    // Draw edges
+    ctx.strokeStyle = 'rgba(0, 245, 255, 0.6)';
+    ctx.lineWidth = 0.5;
+
+    edges.forEach(([a, b]) => {
+      ctx.beginPath();
+      ctx.moveTo(projected[a].x, projected[a].y);
+      ctx.lineTo(projected[b].x, projected[b].y);
+      ctx.stroke();
+    });
+
+    // Draw vertices
+    projected.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.5 * p.scale, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 245, 255, 0.8)';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ================================================================
+   RANDOM HOLOGRAM FLICKER (extra micro-glitches)
+   ================================================================ */
+(function() {
+  const holoContent = document.getElementById('holo-content');
+  function microGlitch() {
+    holoContent.style.opacity = (0.4 + Math.random() * 0.3).toString();
+    setTimeout(() => {
+      holoContent.style.opacity = '';
+    }, 50 + Math.random() * 50);
+  }
+
+  setInterval(() => {
+    if (Math.random() < 0.15) microGlitch();
+  }, 2000);
+})();
+
+/* ================================================================
+   COORDINATE DRIFT (HUD)
+   ================================================================ */
+(function() {
+  const el = document.getElementById('hud-coords');
+  let lat = 47.6062;
+  let lng = 122.3321;
+
+  setInterval(() => {
+    lat += (Math.random() - 0.5) * 0.0001;
+    lng += (Math.random() - 0.5) * 0.0001;
+    el.textContent = lat.toFixed(4) + 'N ' + lng.toFixed(4) + 'W';
+  }, 2000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Campfire Storytelling Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #5a3a1a #0a0a1a;
+}
+
+body {
+  background: #050510;
+  color: #FFF8E7;
+  font-family: 'Crimson Text', Georgia, serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ============================================
+   FIXED SCENE - NIGHT SKY & GROUND
+   ============================================ */
+.scene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    #050510 0%,
+    #0a0820 30%,
+    #0f0c18 50%,
+    #1A1208 75%,
+    #2A1F14 90%,
+    #1a1510 100%
+  );
+}
+
+/* ============================================
+   STARS
+   ============================================ */
+.stars-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.star--tiny {
+  width: 1px;
+  height: 1px;
+  opacity: 0.5;
+}
+
+.star--small {
+  width: 2px;
+  height: 2px;
+  opacity: 0.7;
+}
+
+.star--medium {
+  width: 3px;
+  height: 3px;
+  opacity: 0.9;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.3);
+}
+
+.star--bright {
+  width: 3px;
+  height: 3px;
+  opacity: 1;
+  box-shadow: 0 0 8px 2px rgba(200, 220, 255, 0.5);
+  background: #ddeeff;
+}
+
+@keyframes twinkle1 {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+@keyframes twinkle2 {
+  0%, 100% { opacity: 0.5; }
+  30% { opacity: 0.2; }
+  70% { opacity: 1; }
+}
+@keyframes twinkle3 {
+  0%, 100% { opacity: 0.7; }
+  40% { opacity: 0.1; }
+  80% { opacity: 0.9; }
+}
+
+.star[data-twinkle="1"] { animation: twinkle1 3s ease-in-out infinite; }
+.star[data-twinkle="2"] { animation: twinkle2 4s ease-in-out infinite; }
+.star[data-twinkle="3"] { animation: twinkle3 5s ease-in-out infinite; }
+.star[data-twinkle="4"] { animation: twinkle1 2.5s ease-in-out infinite; }
+.star[data-twinkle="5"] { animation: twinkle2 6s ease-in-out infinite; }
+
+/* ============================================
+   SHOOTING STAR
+   ============================================ */
+.shooting-star {
+  position: absolute;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.8));
+  transform: rotate(-35deg);
+  opacity: 0;
+}
+
+.shooting-star:nth-child(1) {
+  top: 12%;
+  left: 60%;
+  animation: shoot 8s 3s ease-out infinite;
+}
+.shooting-star:nth-child(2) {
+  top: 20%;
+  left: 30%;
+  animation: shoot 12s 7s ease-out infinite;
+}
+
+@keyframes shoot {
+  0% { opacity: 0; transform: translateX(0) translateY(0) rotate(-35deg); }
+  2% { opacity: 1; }
+  6% { opacity: 0; transform: translateX(-200px) translateY(120px) rotate(-35deg); }
+  100% { opacity: 0; }
+}
+
+/* ============================================
+   MOON
+   ============================================ */
+.moon {
+  position: absolute;
+  top: 6%;
+  right: 12%;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffeedd, #e8d5b8);
+  box-shadow:
+    0 0 30px 10px rgba(255, 238, 200, 0.15),
+    0 0 80px 30px rgba(255, 238, 200, 0.05);
+  opacity: 0.85;
+}
+
+.moon::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(180, 160, 130, 0.3);
+}
+
+/* ============================================
+   TREE SILHOUETTES
+   ============================================ */
+.trees {
+  position: absolute;
+  bottom: 20%;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  pointer-events: none;
+}
+
+.tree {
+  position: absolute;
+  bottom: 0;
+}
+
+/* Pine tree using CSS triangles */
+.tree--pine::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  background: #0a0808;
+}
+
+.tree--pine::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: solid transparent;
+  border-right: solid transparent;
+  border-bottom: solid #0c0a08;
+}
+
+/* Individual trees */
+.tree-1 {
+  left: -2%;
+  bottom: 0;
+  width: 60px;
+  height: 180px;
+}
+.tree-1::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 180px solid #080605;
+}
+
+.tree-2 {
+  left: 4%;
+  bottom: 0;
+  width: 45px;
+  height: 150px;
+}
+.tree-2::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 22px solid transparent;
+  border-right: 22px solid transparent;
+  border-bottom: 150px solid #0a0806;
+}
+
+.tree-3 {
+  left: 9%;
+  bottom: 0;
+  width: 70px;
+  height: 200px;
+}
+.tree-3::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-bottom: 200px solid #070504;
+}
+
+.tree-4 {
+  right: -1%;
+  bottom: 0;
+  width: 55px;
+  height: 170px;
+}
+.tree-4::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 28px solid transparent;
+  border-right: 28px solid transparent;
+  border-bottom: 170px solid #080605;
+}
+
+.tree-5 {
+  right: 5%;
+  bottom: 0;
+  width: 65px;
+  height: 190px;
+}
+.tree-5::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 32px solid transparent;
+  border-right: 32px solid transparent;
+  border-bottom: 190px solid #090706;
+}
+
+.tree-6 {
+  right: 11%;
+  bottom: 0;
+  width: 50px;
+  height: 160px;
+}
+.tree-6::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 160px solid #0b0907;
+}
+
+.tree-7 {
+  left: 14%;
+  bottom: 0;
+  width: 40px;
+  height: 130px;
+}
+.tree-7::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 130px solid #0a0806;
+}
+
+.tree-8 {
+  right: 17%;
+  bottom: 0;
+  width: 48px;
+  height: 145px;
+}
+.tree-8::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 24px solid transparent;
+  border-right: 24px solid transparent;
+  border-bottom: 145px solid #080604;
+}
+
+/* ============================================
+   GROUND
+   ============================================ */
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 28%;
+  background: linear-gradient(to bottom, #1A1208, #2A1F14 40%, #221a10);
+  border-top: 1px solid rgba(50, 35, 20, 0.5);
+}
+
+.ground::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(to bottom, rgba(26, 18, 8, 0), rgba(26, 18, 8, 1));
+}
+
+/* Rocks near fire */
+.rock {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50% 50% 55% 45%;
+  background: #1a1510;
+}
+
+.rock-1 {
+  left: calc(50% - 80px);
+  width: 22px;
+  height: 16px;
+  bottom: 24%;
+  background: #1c1610;
+  transform: rotate(-10deg);
+}
+.rock-2 {
+  left: calc(50% + 58px);
+  width: 18px;
+  height: 14px;
+  bottom: 24.5%;
+  background: #1e1812;
+  transform: rotate(15deg);
+}
+.rock-3 {
+  left: calc(50% - 65px);
+  width: 15px;
+  height: 12px;
+  bottom: 23.5%;
+  background: #1b1510;
+  transform: rotate(25deg);
+}
+.rock-4 {
+  left: calc(50% + 70px);
+  width: 20px;
+  height: 13px;
+  bottom: 23.8%;
+  background: #1d1711;
+  transform: rotate(-20deg);
+}
+.rock-5 {
+  left: calc(50% - 48px);
+  width: 16px;
+  height: 11px;
+  bottom: 25%;
+  background: #191310;
+  transform: rotate(5deg);
+}
+.rock-6 {
+  left: calc(50% + 42px);
+  width: 14px;
+  height: 10px;
+  bottom: 25.2%;
+  background: #1a1410;
+  transform: rotate(-5deg);
+}
+
+/* ============================================
+   CAMPFIRE
+   ============================================ */
+.campfire {
+  position: absolute;
+  bottom: 24%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  z-index: 3;
+}
+
+/* Log base */
+.logs {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 16px;
+}
+
+.log {
+  position: absolute;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #4a3520, #2a1a0d);
+}
+
+.log-1 {
+  bottom: 0;
+  left: 0;
+  width: 70px;
+  transform: rotate(-15deg);
+}
+
+.log-2 {
+  bottom: 0;
+  right: 0;
+  width: 65px;
+  transform: rotate(12deg);
+}
+
+.log-3 {
+  bottom: 5px;
+  left: 10px;
+  width: 55px;
+  transform: rotate(3deg);
+  background: linear-gradient(to bottom, #553d28, #3a2515);
+}
+
+/* Fire container */
+.fire {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 80px;
+}
+
+/* Individual flames */
+.flame {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  filter: blur(1px);
+}
+
+.flame--main {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 70px;
+  background: linear-gradient(
+    to top,
+    #CC2936 0%,
+    #FF6B00 30%,
+    #FFD700 60%,
+    #FFFACD 85%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  animation: flame-dance 0.8s ease-in-out infinite alternate;
+  opacity: 0.95;
+}
+
+.flame--left {
+  left: 5px;
+  width: 28px;
+  height: 55px;
+  background: linear-gradient(
+    to top,
+    #CC2936 0%,
+    #FF6B00 40%,
+    #FFD700 75%,
+    #FFF8DC 100%
+  );
+  animation: flame-dance-left 0.6s ease-in-out infinite alternate;
+  opacity: 0.85;
+  transform: rotate(-8deg);
+}
+
+.flame--right {
+  right: 5px;
+  width: 25px;
+  height: 50px;
+  background: linear-gradient(
+    to top,
+    #CC2936 0%,
+    #FF6B00 35%,
+    #FFD700 70%,
+    #FFF8DC 100%
+  );
+  animation: flame-dance-right 0.7s ease-in-out infinite alternate;
+  opacity: 0.8;
+  transform: rotate(6deg);
+}
+
+.flame--inner {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 45px;
+  background: linear-gradient(
+    to top,
+    #FFD700 0%,
+    #FFFACD 40%,
+    rgba(255, 255, 255, 0.9) 80%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  animation: flame-dance-inner 0.5s ease-in-out infinite alternate;
+  opacity: 0.9;
+  filter: blur(2px);
+  z-index: 2;
+}
+
+.flame--tiny1 {
+  left: 2px;
+  width: 12px;
+  height: 30px;
+  background: linear-gradient(to top, #FF6B00, #FFD700);
+  animation: flame-dance 1s ease-in-out infinite alternate-reverse;
+  opacity: 0.6;
+  transform: rotate(-15deg);
+}
+
+.flame--tiny2 {
+  right: 0;
+  width: 14px;
+  height: 35px;
+  background: linear-gradient(to top, #FF6B00, #FFD700);
+  animation: flame-dance-right 0.9s ease-in-out infinite alternate-reverse;
+  opacity: 0.65;
+  transform: rotate(12deg);
+}
+
+@keyframes flame-dance {
+  0% { height: 70px; width: 40px; }
+  25% { height: 65px; width: 38px; }
+  50% { height: 72px; width: 42px; }
+  75% { height: 68px; width: 36px; }
+  100% { height: 74px; width: 40px; }
+}
+
+@keyframes flame-dance-left {
+  0% { height: 55px; transform: rotate(-8deg) scaleX(1); }
+  33% { height: 48px; transform: rotate(-12deg) scaleX(0.9); }
+  66% { height: 58px; transform: rotate(-5deg) scaleX(1.05); }
+  100% { height: 52px; transform: rotate(-10deg) scaleX(0.95); }
+}
+
+@keyframes flame-dance-right {
+  0% { height: 50px; transform: rotate(6deg) scaleX(1); }
+  33% { height: 54px; transform: rotate(10deg) scaleX(0.95); }
+  66% { height: 46px; transform: rotate(4deg) scaleX(1.05); }
+  100% { height: 52px; transform: rotate(8deg) scaleX(0.9); }
+}
+
+@keyframes flame-dance-inner {
+  0% { height: 45px; opacity: 0.9; }
+  50% { height: 40px; opacity: 0.7; }
+  100% { height: 48px; opacity: 0.95; }
+}
+
+/* Fire glow on ground */
+.fire-glow {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 200px;
+  background: radial-gradient(
+    ellipse at center top,
+    rgba(255, 107, 0, 0.2) 0%,
+    rgba(255, 107, 0, 0.1) 20%,
+    rgba(204, 41, 54, 0.05) 40%,
+    transparent 70%
+  );
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fire-glow-ambient {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(
+    ellipse at center bottom,
+    rgba(255, 150, 50, 0.08) 0%,
+    rgba(255, 107, 0, 0.03) 30%,
+    transparent 60%
+  );
+  animation: glow-pulse 3s ease-in-out infinite alternate-reverse;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes glow-pulse {
+  0% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.03); }
+  100% { opacity: 0.85; transform: translateX(-50%) scale(0.98); }
+}
+
+/* ============================================
+   EMBERS / SPARKS
+   ============================================ */
+.embers-container {
+  position: absolute;
+  bottom: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 300px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.ember {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  background: #FFD700;
+  opacity: 0;
+}
+
+@keyframes ember-rise {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--drift-x)) translateY(-250px) scale(0.2);
+  }
+}
+
+.ember:nth-child(1) { left: 45%; width: 3px; height: 3px; --drift-x: -20px; animation: ember-rise 2.5s 0.2s ease-out infinite; background: #FF6B00; }
+.ember:nth-child(2) { left: 55%; width: 2px; height: 2px; --drift-x: 30px; animation: ember-rise 3s 0.8s ease-out infinite; background: #FFD700; }
+.ember:nth-child(3) { left: 40%; width: 2px; height: 2px; --drift-x: -35px; animation: ember-rise 2.8s 1.5s ease-out infinite; background: #FF8C00; }
+.ember:nth-child(4) { left: 60%; width: 3px; height: 3px; --drift-x: 15px; animation: ember-rise 3.2s 0.5s ease-out infinite; background: #FFD700; }
+.ember:nth-child(5) { left: 50%; width: 2px; height: 2px; --drift-x: -10px; animation: ember-rise 2.2s 2s ease-out infinite; background: #FF6B00; }
+.ember:nth-child(6) { left: 48%; width: 2px; height: 2px; --drift-x: 25px; animation: ember-rise 2.7s 1.2s ease-out infinite; background: #FFA500; }
+.ember:nth-child(7) { left: 52%; width: 3px; height: 3px; --drift-x: -28px; animation: ember-rise 3.5s 0.3s ease-out infinite; background: #FF4500; }
+.ember:nth-child(8) { left: 42%; width: 2px; height: 2px; --drift-x: 40px; animation: ember-rise 2.9s 1.8s ease-out infinite; background: #FFD700; }
+.ember:nth-child(9) { left: 58%; width: 2px; height: 2px; --drift-x: -18px; animation: ember-rise 3.1s 2.5s ease-out infinite; background: #FF8C00; }
+.ember:nth-child(10) { left: 46%; width: 3px; height: 3px; --drift-x: 12px; animation: ember-rise 2.4s 0.9s ease-out infinite; background: #FF6347; }
+.ember:nth-child(11) { left: 53%; width: 2px; height: 2px; --drift-x: -32px; animation: ember-rise 3.3s 1.6s ease-out infinite; background: #FFD700; }
+.ember:nth-child(12) { left: 47%; width: 2px; height: 2px; --drift-x: 22px; animation: ember-rise 2.6s 2.2s ease-out infinite; background: #FF6B00; }
+
+/* ============================================
+   SMOKE
+   ============================================ */
+.smoke-container {
+  position: absolute;
+  bottom: 32%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 350px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.smoke {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(120, 110, 100, 0.08);
+  filter: blur(8px);
+  opacity: 0;
+}
+
+@keyframes smoke-rise {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) scale(0.5);
+  }
+  15% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.06;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--smoke-drift)) translateY(-300px) scale(3);
+  }
+}
+
+.smoke:nth-child(1) { left: 30%; width: 30px; height: 30px; --smoke-drift: -40px; animation: smoke-rise 5s 0s ease-out infinite; }
+.smoke:nth-child(2) { left: 50%; width: 25px; height: 25px; --smoke-drift: 30px; animation: smoke-rise 6s 1s ease-out infinite; }
+.smoke:nth-child(3) { left: 40%; width: 35px; height: 35px; --smoke-drift: -20px; animation: smoke-rise 5.5s 2s ease-out infinite; }
+.smoke:nth-child(4) { left: 55%; width: 28px; height: 28px; --smoke-drift: 45px; animation: smoke-rise 7s 3s ease-out infinite; }
+.smoke:nth-child(5) { left: 35%; width: 32px; height: 32px; --smoke-drift: -35px; animation: smoke-rise 6.5s 1.5s ease-out infinite; }
+.smoke:nth-child(6) { left: 45%; width: 26px; height: 26px; --smoke-drift: 25px; animation: smoke-rise 5.8s 4s ease-out infinite; }
+
+/* ============================================
+   FIREFLIES / MOTHS
+   ============================================ */
+.fireflies-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.firefly {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #FFE87C;
+  box-shadow: 0 0 6px 2px rgba(255, 232, 124, 0.6);
+  opacity: 0;
+}
+
+@keyframes firefly-float {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  10% { opacity: 0.8; }
+  25% { opacity: 0.3; }
+  40% { opacity: 0.9; }
+  55% { opacity: 0.2; }
+  70% { opacity: 0.7; }
+  85% { opacity: 0.4; }
+  100% {
+    opacity: 0;
+    transform: translate(var(--fly-x), var(--fly-y));
+  }
+}
+
+.firefly:nth-child(1) { top: 55%; left: 35%; --fly-x: 40px; --fly-y: -30px; animation: firefly-float 8s 0s ease-in-out infinite; }
+.firefly:nth-child(2) { top: 60%; left: 60%; --fly-x: -50px; --fly-y: -20px; animation: firefly-float 10s 2s ease-in-out infinite; }
+.firefly:nth-child(3) { top: 50%; left: 45%; --fly-x: 30px; --fly-y: 25px; animation: firefly-float 7s 4s ease-in-out infinite; }
+.firefly:nth-child(4) { top: 65%; left: 30%; --fly-x: 60px; --fly-y: -40px; animation: firefly-float 9s 1s ease-in-out infinite; }
+.firefly:nth-child(5) { top: 58%; left: 68%; --fly-x: -40px; --fly-y: 15px; animation: firefly-float 11s 3s ease-in-out infinite; }
+.firefly:nth-child(6) { top: 52%; left: 52%; --fly-x: -20px; --fly-y: -35px; animation: firefly-float 6s 5s ease-in-out infinite; }
+.firefly:nth-child(7) { top: 48%; left: 40%; --fly-x: 45px; --fly-y: 10px; animation: firefly-float 8.5s 2.5s ease-in-out infinite; }
+.firefly:nth-child(8) { top: 62%; left: 55%; --fly-x: -35px; --fly-y: -25px; animation: firefly-float 9.5s 0.5s ease-in-out infinite; }
+
+/* Moths - slightly larger, near fire */
+.moth {
+  position: absolute;
+  width: 6px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(200, 180, 150, 0.5);
+  opacity: 0;
+}
+
+@keyframes moth-orbit {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.6; }
+  25% { transform: translate(30px, -20px) rotate(90deg); opacity: 0.4; }
+  50% { transform: translate(-20px, -40px) rotate(180deg); opacity: 0.7; }
+  75% { transform: translate(-30px, -10px) rotate(270deg); opacity: 0.3; }
+  90% { opacity: 0.5; }
+  100% { transform: translate(0, 0) rotate(360deg); opacity: 0; }
+}
+
+.moth:nth-child(9) { bottom: 35%; left: calc(50% - 40px); animation: moth-orbit 6s 0s ease-in-out infinite; }
+.moth:nth-child(10) { bottom: 38%; left: calc(50% + 20px); animation: moth-orbit 8s 2s ease-in-out infinite; }
+.moth:nth-child(11) { bottom: 33%; left: calc(50% - 10px); animation: moth-orbit 7s 4s ease-in-out infinite; }
+
+/* ============================================
+   SCROLLABLE STORY CONTENT
+   ============================================ */
+.story {
+  position: relative;
+  z-index: 10;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.story-spacer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   OPENING TITLE
+   ============================================ */
+.opening {
+  text-align: center;
+  padding: 20vh 0;
+}
+
+.opening__invitation {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: rgba(255, 248, 231, 0.5);
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+  animation: gentle-fade-in 2s ease-out;
+}
+
+.opening__title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  color: #FFF8E7;
+  text-shadow:
+    0 0 30px rgba(255, 107, 0, 0.4),
+    0 0 60px rgba(255, 107, 0, 0.2);
+  line-height: 1.2;
+  margin-bottom: 16px;
+  animation: gentle-fade-in 2s 0.5s ease-out both;
+}
+
+.opening__subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(255, 248, 231, 0.4);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: gentle-fade-in 2s 1s ease-out both;
+}
+
+.opening__scroll-hint {
+  margin-top: 48px;
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: rgba(255, 200, 100, 0.4);
+  animation: gentle-fade-in 2s 2s ease-out both, float-hint 3s 3s ease-in-out infinite;
+}
+
+.opening__scroll-hint svg {
+  display: block;
+  margin: 12px auto 0;
+  opacity: 0.3;
+  animation: float-hint 3s ease-in-out infinite;
+}
+
+@keyframes gentle-fade-in {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float-hint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ============================================
+   CHAPTER STYLING
+   ============================================ */
+.chapter {
+  padding: 15vh 0;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.chapter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chapter__number {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 165, 0, 0.5);
+  margin-bottom: 8px;
+}
+
+.chapter__title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: #FFF8E7;
+  text-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+  margin-bottom: 32px;
+  line-height: 1.3;
+}
+
+.chapter__divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(to right, #FF6B00, #FFD700, transparent);
+  margin-bottom: 32px;
+  border: none;
+}
+
+.chapter__text {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  line-height: 1.9;
+  color: rgba(255, 248, 231, 0.85);
+  text-shadow: 0 0 10px rgba(255, 107, 0, 0.08);
+}
+
+.chapter__text p {
+  margin-bottom: 20px;
+}
+
+.chapter__text .narrator-voice {
+  font-style: italic;
+  color: rgba(255, 200, 120, 0.7);
+}
+
+.chapter__text .emphasis {
+  color: #FFD700;
+  font-weight: 600;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+/* ============================================
+   SKILLS GRID (Chapter 4)
+   ============================================ */
+.skills-campfire {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.skill-ember {
+  background: rgba(255, 107, 0, 0.06);
+  border: 1px solid rgba(255, 107, 0, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(255, 248, 231, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-ember::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #FF6B00, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.skill-ember:hover {
+  background: rgba(255, 107, 0, 0.12);
+  border-color: rgba(255, 107, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255, 107, 0, 0.1);
+}
+
+.skill-ember:hover::before {
+  opacity: 1;
+}
+
+.skill-ember__icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.skill-ember__label {
+  font-weight: 500;
+  color: #FFF8E7;
+  margin-bottom: 4px;
+}
+
+.skill-ember__detail {
+  font-size: 0.72rem;
+  color: rgba(255, 200, 120, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   PROJECTS / VICTORIES (Chapter 5)
+   ============================================ */
+.victory {
+  background: rgba(255, 107, 0, 0.04);
+  border-left: 3px solid rgba(255, 107, 0, 0.3);
+  padding: 24px 24px 24px 28px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  transition: all 0.3s ease;
+}
+
+.victory:hover {
+  background: rgba(255, 107, 0, 0.08);
+  border-left-color: #FF6B00;
+}
+
+.victory__name {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 8px;
+}
+
+.victory__tale {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(255, 248, 231, 0.75);
+}
+
+.victory__tech {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.victory__tech span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  color: rgba(255, 215, 0, 0.7);
+  letter-spacing: 0.03em;
+}
+
+/* ============================================
+   CONTACT / CLOSING
+   ============================================ */
+.closing {
+  text-align: center;
+  padding: 10vh 0 30vh;
+}
+
+.closing__text {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: rgba(255, 248, 231, 0.6);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.contact-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #FFF8E7;
+  text-decoration: none;
+  padding: 12px 28px;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  border-radius: 6px;
+  background: rgba(255, 107, 0, 0.05);
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+}
+
+.contact-link:hover {
+  background: rgba(255, 107, 0, 0.15);
+  border-color: #FF6B00;
+  box-shadow: 0 0 25px rgba(255, 107, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   AUDIO TOGGLE (visual crackling)
+   ============================================ */
+.crackle-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  background: rgba(42, 31, 20, 0.6);
+  border: 1px solid rgba(255, 107, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: rgba(255, 248, 231, 0.6);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.crackle-toggle:hover {
+  background: rgba(42, 31, 20, 0.8);
+  border-color: rgba(255, 107, 0, 0.4);
+  color: #FFF8E7;
+}
+
+.crackle-bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 14px;
+}
+
+.crackle-bar {
+  width: 2px;
+  background: #FF6B00;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+
+.crackle-toggle.active .crackle-bar {
+  animation: crackle-vis 0.4s ease-in-out infinite alternate;
+}
+
+.crackle-bar:nth-child(1) { height: 4px; animation-delay: 0s; }
+.crackle-bar:nth-child(2) { height: 8px; animation-delay: 0.1s; }
+.crackle-bar:nth-child(3) { height: 6px; animation-delay: 0.2s; }
+.crackle-bar:nth-child(4) { height: 10px; animation-delay: 0.05s; }
+.crackle-bar:nth-child(5) { height: 5px; animation-delay: 0.15s; }
+
+@keyframes crackle-vis {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(var(--bar-scale, 1.5)); }
+}
+
+.crackle-bar:nth-child(1) { --bar-scale: 2; }
+.crackle-bar:nth-child(2) { --bar-scale: 0.5; }
+.crackle-bar:nth-child(3) { --bar-scale: 1.8; }
+.crackle-bar:nth-child(4) { --bar-scale: 0.7; }
+.crackle-bar:nth-child(5) { --bar-scale: 2.2; }
+
+/* ============================================
+   VIGNETTE OVERLAY
+   ============================================ */
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 8;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(5, 5, 16, 0.5) 100%
+  );
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .story {
+    padding: 0 20px;
+  }
+
+  .chapter {
+    padding: 10vh 0;
+  }
+
+  .skills-campfire {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .contact-links {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-link {
+    width: 100%;
+    max-width: 240px;
+    text-align: center;
+  }
+
+  .campfire {
+    transform: translateX(-50%) scale(0.85);
+  }
+
+  .tree-1, .tree-3 { display: none; }
+  .tree-5, .tree-8 { display: none; }
+}
+
+@media (max-width: 480px) {
+  .opening__title {
+    font-size: 2rem;
+  }
+
+  .chapter__title {
+    font-size: 1.6rem;
+  }
+
+  .skills-campfire {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   SELECTION COLOR
+   ============================================ */
+::selection {
+  background: rgba(255, 107, 0, 0.3);
+  color: #FFF8E7;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     FIXED SCENE
+     ============================================ -->
+<div class="scene" aria-hidden="true">
+
+  <!-- Stars -->
+  <div class="stars-container" id="stars"></div>
+
+  <!-- Shooting stars -->
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+
+  <!-- Moon -->
+  <div class="moon"></div>
+
+  <!-- Trees -->
+  <div class="trees">
+    <div class="tree tree-1"></div>
+    <div class="tree tree-2"></div>
+    <div class="tree tree-3"></div>
+    <div class="tree tree-7"></div>
+    <div class="tree tree-4"></div>
+    <div class="tree tree-5"></div>
+    <div class="tree tree-6"></div>
+    <div class="tree tree-8"></div>
+  </div>
+
+  <!-- Ground -->
+  <div class="ground"></div>
+
+  <!-- Rocks -->
+  <div class="rock rock-1"></div>
+  <div class="rock rock-2"></div>
+  <div class="rock rock-3"></div>
+  <div class="rock rock-4"></div>
+  <div class="rock rock-5"></div>
+  <div class="rock rock-6"></div>
+
+  <!-- Fire glow -->
+  <div class="fire-glow-ambient"></div>
+  <div class="fire-glow"></div>
+
+  <!-- Campfire -->
+  <div class="campfire">
+    <div class="fire">
+      <div class="flame flame--tiny1"></div>
+      <div class="flame flame--tiny2"></div>
+      <div class="flame flame--left"></div>
+      <div class="flame flame--right"></div>
+      <div class="flame flame--main"></div>
+      <div class="flame flame--inner"></div>
+    </div>
+    <div class="logs">
+      <div class="log log-1"></div>
+      <div class="log log-2"></div>
+      <div class="log log-3"></div>
+    </div>
+  </div>
+
+  <!-- Embers -->
+  <div class="embers-container">
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+  </div>
+
+  <!-- Smoke -->
+  <div class="smoke-container">
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+    <div class="smoke"></div>
+  </div>
+
+  <!-- Fireflies & Moths -->
+  <div class="fireflies-container">
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="moth"></div>
+    <div class="moth"></div>
+    <div class="moth"></div>
+  </div>
+</div>
+
+<!-- Vignette -->
+<div class="vignette"></div>
+
+<!-- Crackling Toggle -->
+<button class="crackle-toggle" id="crackleToggle" aria-label="Toggle campfire sound visualization">
+  <div class="crackle-bars">
+    <div class="crackle-bar"></div>
+    <div class="crackle-bar"></div>
+    <div class="crackle-bar"></div>
+    <div class="crackle-bar"></div>
+    <div class="crackle-bar"></div>
+  </div>
+  <span id="crackleLabel">Crackling</span>
+</button>
+
+<!-- ============================================
+     SCROLLABLE STORY
+     ============================================ -->
+<main class="story" role="main">
+
+  <!-- Opening -->
+  <div class="story-spacer">
+    <div class="opening">
+      <p class="opening__invitation">Gather 'round. Let me tell you a story...</p>
+      <h1 class="opening__title">The Tale of<br>Anshull Garg</h1>
+      <p class="opening__subtitle">Software Developer &middot; Walmart</p>
+      <p class="opening__scroll-hint">
+        Scroll down to listen
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </p>
+    </div>
+  </div>
+
+  <!-- Chapter 1: The Beginning -->
+  <section class="chapter" aria-label="Chapter 1: The Beginning">
+    <span class="chapter__number">Chapter One</span>
+    <h2 class="chapter__title">The Beginning</h2>
+    <hr class="chapter__divider">
+    <div class="chapter__text">
+      <p class="narrator-voice">Every great story begins with a spark. A flicker of curiosity that refuses to be extinguished...</p>
+      <p>Long before the campfire, long before the code, there was a kid who couldn't stop asking <span class="emphasis">"how does this work?"</span> -- staring at screens not with the glazed eyes of consumption, but with the sharp focus of someone trying to reverse-engineer the world.</p>
+      <p>Anshull Garg discovered early that the most powerful thing about software wasn't the machines -- it was the <span class="emphasis">problems you could solve</span>. Every line of code was an incantation. Every debugged error, a small victory against chaos.</p>
+      <p class="narrator-voice">The path was never straight. Good ones never are. But it was always forward.</p>
+    </div>
+  </section>
+
+  <!-- Chapter 2: The First Quest -->
+  <section class="chapter" aria-label="Chapter 2: The First Quest">
+    <span class="chapter__number">Chapter Two</span>
+    <h2 class="chapter__title">The First Quest</h2>
+    <hr class="chapter__divider">
+    <div class="chapter__text">
+      <p class="narrator-voice">The early days. When every project felt like scaling a mountain with no map...</p>
+      <p>Armed with determination and a growing toolkit of languages and frameworks, Anshull set out into the wilderness of professional software development. The first projects were formative -- each one a <span class="emphasis">trial by fire</span>.</p>
+      <p>He learned that great software isn't built in isolation. It's forged in collaboration -- in whiteboard sessions that run long, in code reviews that sharpen thinking, in the quiet satisfaction of watching a feature ship and knowing it <span class="emphasis">actually helps people</span>.</p>
+      <p>The foundations were laid: clean architecture, relentless testing, and an obsession with user experience that would define everything to come.</p>
+      <p class="narrator-voice">But the real challenge was still ahead. A forge hot enough to temper steel.</p>
+    </div>
+  </section>
+
+  <!-- Chapter 3: The Forge -->
+  <section class="chapter" aria-label="Chapter 3: The Forge">
+    <span class="chapter__number">Chapter Three</span>
+    <h2 class="chapter__title">The Forge</h2>
+    <hr class="chapter__divider">
+    <div class="chapter__text">
+      <p class="narrator-voice">They say you learn the most where the stakes are highest. At Walmart, the stakes touch millions of lives daily...</p>
+      <p>Joining <span class="emphasis">Walmart</span> as a Software Developer was like stepping into a forge -- the heat intense, the craft demanding, the scale unlike anything before. Here, code doesn't just run on a server; it powers an ecosystem that serves <span class="emphasis">hundreds of millions of customers</span>.</p>
+      <p>Working at this scale taught lessons no textbook could: how to design systems that breathe under immense load, how to ship with confidence when downtime is measured in dollars-per-second, and how to collaborate across teams spanning continents.</p>
+      <p>The forge didn't just shape the code. It shaped the <span class="emphasis">engineer</span>. Discipline. Ownership. The understanding that every commit is a promise to the people who depend on what you build.</p>
+      <p class="narrator-voice">From the forge, the weapons were drawn...</p>
+    </div>
+  </section>
+
+  <!-- Chapter 4: The Weapons -->
+  <section class="chapter" aria-label="Chapter 4: The Weapons">
+    <span class="chapter__number">Chapter Four</span>
+    <h2 class="chapter__title">The Weapons</h2>
+    <hr class="chapter__divider">
+    <div class="chapter__text">
+      <p class="narrator-voice">A craftsman is only as sharp as the tools they have mastered...</p>
+      <p>Over years of building, breaking, and rebuilding, Anshull has honed a formidable arsenal. Each skill earned through real battle -- not tutorials, but <span class="emphasis">production deployments at scale</span>.</p>
+    </div>
+
+    <div class="skills-campfire">
+      <div class="skill-ember">
+        <span class="skill-ember__icon">JS</span>
+        <div class="skill-ember__label">JavaScript</div>
+        <div class="skill-ember__detail">Core Language</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">TS</span>
+        <div class="skill-ember__label">TypeScript</div>
+        <div class="skill-ember__detail">Type Safety</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Re</span>
+        <div class="skill-ember__label">React</div>
+        <div class="skill-ember__detail">UI Framework</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Nx</span>
+        <div class="skill-ember__label">Next.js</div>
+        <div class="skill-ember__detail">Full-Stack</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">No</span>
+        <div class="skill-ember__label">Node.js</div>
+        <div class="skill-ember__detail">Backend</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Py</span>
+        <div class="skill-ember__label">Python</div>
+        <div class="skill-ember__detail">Versatile</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Jv</span>
+        <div class="skill-ember__label">Java</div>
+        <div class="skill-ember__detail">Enterprise</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">SQ</span>
+        <div class="skill-ember__label">SQL</div>
+        <div class="skill-ember__detail">Data</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Aw</span>
+        <div class="skill-ember__label">AWS</div>
+        <div class="skill-ember__detail">Cloud</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Gc</span>
+        <div class="skill-ember__label">GCP</div>
+        <div class="skill-ember__detail">Cloud</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Dk</span>
+        <div class="skill-ember__label">Docker</div>
+        <div class="skill-ember__detail">Containers</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">CI</span>
+        <div class="skill-ember__label">CI/CD</div>
+        <div class="skill-ember__detail">Pipelines</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Gp</span>
+        <div class="skill-ember__label">GraphQL</div>
+        <div class="skill-ember__detail">APIs</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Rd</span>
+        <div class="skill-ember__label">Redis</div>
+        <div class="skill-ember__detail">Caching</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Kb</span>
+        <div class="skill-ember__label">Kubernetes</div>
+        <div class="skill-ember__detail">Orchestration</div>
+      </div>
+      <div class="skill-ember">
+        <span class="skill-ember__icon">Tf</span>
+        <div class="skill-ember__label">Terraform</div>
+        <div class="skill-ember__detail">IaC</div>
+      </div>
+    </div>
+
+    <div class="chapter__text">
+      <p class="narrator-voice">But a blade is nothing without the hand that wields it. The true weapon is the mind behind the craft.</p>
+    </div>
+  </section>
+
+  <!-- Chapter 5: The Victories -->
+  <section class="chapter" aria-label="Chapter 5: The Victories">
+    <span class="chapter__number">Chapter Five</span>
+    <h2 class="chapter__title">The Victories</h2>
+    <hr class="chapter__divider">
+    <div class="chapter__text">
+      <p class="narrator-voice">Now lean in closer. These are the tales worth telling...</p>
+    </div>
+
+    <div class="victory">
+      <div class="victory__name">Scalable E-Commerce Platform</div>
+      <div class="victory__tale">
+        Architected and delivered core features for a high-traffic e-commerce platform serving millions of daily users. Optimized critical rendering paths that reduced page load times and directly impacted conversion metrics.
+      </div>
+      <div class="victory__tech">
+        <span>React</span>
+        <span>Node.js</span>
+        <span>GraphQL</span>
+        <span>Redis</span>
+        <span>AWS</span>
+      </div>
+    </div>
+
+    <div class="victory">
+      <div class="victory__name">Real-Time Inventory System</div>
+      <div class="victory__tale">
+        Built a real-time inventory tracking system that processes thousands of events per second. Ensured data consistency across distributed services while maintaining sub-100ms response times under peak load.
+      </div>
+      <div class="victory__tech">
+        <span>Java</span>
+        <span>Kafka</span>
+        <span>Kubernetes</span>
+        <span>PostgreSQL</span>
+      </div>
+    </div>
+
+    <div class="victory">
+      <div class="victory__name">Developer Experience Tooling</div>
+      <div class="victory__tale">
+        Championed and built internal developer tools that streamlined the deployment pipeline, reducing release cycles and empowering teams to ship with greater confidence and velocity.
+      </div>
+      <div class="victory__tech">
+        <span>TypeScript</span>
+        <span>Docker</span>
+        <span>CI/CD</span>
+        <span>Terraform</span>
+      </div>
+    </div>
+
+    <div class="victory">
+      <div class="victory__name">Performance Optimization Initiative</div>
+      <div class="victory__tale">
+        Led a cross-team performance audit that identified and resolved critical bottlenecks. Implemented lazy loading strategies, code splitting, and caching layers that measurably improved Core Web Vitals across key surfaces.
+      </div>
+      <div class="victory__tech">
+        <span>Next.js</span>
+        <span>Webpack</span>
+        <span>Lighthouse</span>
+        <span>CDN</span>
+      </div>
+    </div>
+
+    <div class="chapter__text">
+      <p class="narrator-voice">Each victory earned not with luck, but with late nights, careful thinking, and the courage to refactor when it mattered.</p>
+    </div>
+  </section>
+
+  <!-- Chapter 6: What Lies Ahead -->
+  <section class="chapter" aria-label="Chapter 6: What Lies Ahead">
+    <span class="chapter__number">Chapter Six</span>
+    <h2 class="chapter__title">What Lies Ahead</h2>
+    <hr class="chapter__divider">
+    <div class="chapter__text">
+      <p class="narrator-voice">The fire still burns. The story isn't over. It's barely begun...</p>
+      <p>The best engineers never stop being curious. Anshull continues to explore the edges -- distributed systems, AI-augmented development, the next generation of web experiences. The forge is hot, and there's always <span class="emphasis">more to build</span>.</p>
+      <p>Whether it's architecting the next great system, mentoring the next generation of developers, or simply writing code that makes someone's day a little easier -- the fire keeps burning.</p>
+    </div>
+
+    <div class="closing">
+      <p class="closing__text">
+        The embers glow low now, but the warmth remains.<br>
+        If this story resonated, if you have a quest that needs a companion --<br>
+        <span class="emphasis">let's talk.</span>
+      </p>
+
+      <div class="contact-links">
+        <a href="mailto:anshull.garg@gmail.com" class="contact-link" aria-label="Send email">
+          Email
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+          LinkedIn
+        </a>
+        <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+          GitHub
+        </a>
+      </div>
+
+      <p style="margin-top: 48px; font-family: 'Inter', sans-serif; font-size: 0.7rem; color: rgba(255,248,231,0.2); letter-spacing: 0.1em;">
+        ANSHULL GARG &middot; SOFTWARE DEVELOPER &middot; WALMART
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ============================================
+// GENERATE STARS
+// ============================================
+(function generateStars() {
+  const container = document.getElementById('stars');
+  const count = 140;
+  const types = ['tiny', 'tiny', 'tiny', 'small', 'small', 'medium', 'bright'];
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    const type = types[Math.floor(Math.random() * types.length)];
+    star.className = `star star--${type}`;
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+
+    // ~40% of stars twinkle
+    if (Math.random() > 0.6) {
+      star.setAttribute('data-twinkle', String(Math.ceil(Math.random() * 5)));
+      star.style.animationDelay = `${Math.random() * 5}s`;
+    }
+
+    fragment.appendChild(star);
+  }
+
+  container.appendChild(fragment);
+})();
+
+// ============================================
+// SCROLL-TRIGGERED CHAPTER REVEAL
+// ============================================
+(function initScrollReveal() {
+  const chapters = document.querySelectorAll('.chapter');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    },
+    {
+      threshold: 0.15,
+      rootMargin: '0px 0px -50px 0px',
+    }
+  );
+
+  chapters.forEach((ch) => observer.observe(ch));
+})();
+
+// ============================================
+// CRACKLE TOGGLE (visual effect)
+// ============================================
+(function initCrackleToggle() {
+  const btn = document.getElementById('crackleToggle');
+  const label = document.getElementById('crackleLabel');
+  let active = false;
+
+  btn.addEventListener('click', () => {
+    active = !active;
+    btn.classList.toggle('active', active);
+    label.textContent = active ? 'Crackling...' : 'Crackling';
+  });
+})();
+
+// ============================================
+// PARALLAX SUBTLE EFFECT ON STARS
+// ============================================
+(function initParallax() {
+  const starsContainer = document.getElementById('stars');
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        starsContainer.style.transform = `translateY(${scrollY * 0.05}px)`;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
