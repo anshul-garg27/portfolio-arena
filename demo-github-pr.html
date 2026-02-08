@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>feat: add Anshull Garg to your team #2026</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0D1117;--surface:#161B22;--border:#30363D;--text:#C9D1D9;
+--green:#3FB950;--red:#F85149;--blue:#58A6FF;--purple:#BC8CFF;
+--text-muted:#8B949E;--text-white:#F0F6FC;--yellow:#D29922;
+--diff-green-bg:#12261E;--diff-green-line:#1B3726;
+--diff-red-bg:#2D1316;--diff-red-line:#3D1A1E;
+--avatar-border:#21262D;--hover:#1C2128;
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;line-height:1.5;min-height:100vh}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Top nav */
+.gh-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.gh-logo svg{fill:var(--text-white)}
+.gh-nav-links{display:flex;gap:14px;margin-left:8px}
+.gh-nav-links a{color:var(--text);font-size:13px;font-weight:600}
+.gh-nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.gh-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));border:2px solid var(--avatar-border);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+
+/* Repo header */
+.repo-header{padding:16px 24px 0;max-width:1280px;margin:0 auto}
+.repo-path{font-size:18px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.repo-path .owner{color:var(--blue);font-weight:400}
+.repo-path .sep{color:var(--text-muted)}
+.repo-path .repo{color:var(--blue);font-weight:600}
+
+/* PR header */
+.pr-header{max-width:1280px;margin:0 auto;padding:16px 24px}
+.pr-title{font-size:28px;font-weight:400;color:var(--text-white);line-height:1.3}
+.pr-title .number{color:var(--text-muted);font-weight:300}
+.pr-meta{margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
+.badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.badge-open{background:var(--green);color:#fff}
+.badge-open::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block}
+.label{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;margin-left:4px}
+.label-enhance{background:rgba(56,139,253,0.15);color:var(--blue);border:1px solid rgba(56,139,253,0.4)}
+.label-hire{background:rgba(63,185,80,0.15);color:var(--green);border:1px solid rgba(63,185,80,0.4)}
+.label-priority{background:rgba(248,81,73,0.15);color:var(--red);border:1px solid rgba(248,81,73,0.4)}
+.pr-meta-text{color:var(--text-muted)}
+.pr-meta-text strong{color:var(--text);font-weight:600}
+
+/* Tabs */
+.pr-tabs{max-width:1280px;margin:0 auto;padding:0 24px;border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.pr-tab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s}
+.pr-tab:hover{color:var(--text)}
+.pr-tab.active{color:var(--text-white);border-bottom-color:var(--red)}
+.pr-tab .count{background:var(--border);color:var(--text);padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600}
+.pr-tab .check{color:var(--green)}
+
+/* Main content */
+.pr-content{max-width:1280px;margin:0 auto;padding:24px;display:flex;gap:24px}
+.pr-main{flex:1;min-width:0}
+.pr-sidebar{width:260px;flex-shrink:0}
+
+/* Tab panels */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Timeline */
+.timeline-item{position:relative;padding-left:44px;margin-bottom:16px}
+.timeline-item::before{content:"";position:absolute;left:19px;top:0;bottom:-16px;width:2px;background:var(--border)}
+.timeline-item:last-child::before{display:none}
+.tl-icon{position:absolute;left:8px;top:2px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;z-index:1}
+.tl-icon-purple{background:var(--purple);color:#fff}
+.tl-icon-green{background:var(--green);color:#fff}
+.tl-icon-blue{background:var(--blue);color:#fff}
+.tl-icon-gray{background:var(--border);color:var(--text-muted)}
+.tl-text{font-size:13px;color:var(--text-muted);padding-top:2px}
+.tl-text strong{color:var(--text)}
+
+/* Comment box */
+.comment-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:16px;position:relative}
+.comment-box::before{content:"";position:absolute;left:-8px;top:14px;width:8px;height:16px;clip-path:polygon(100% 0,100% 100%,0 50%);background:var(--border)}
+.comment-box::after{content:"";position:absolute;left:-6px;top:15px;width:6px;height:14px;clip-path:polygon(100% 0,100% 100%,0 50%);background:var(--surface)}
+.comment-header{padding:10px 16px;background:rgba(56,139,253,0.08);border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;display:flex;align-items:center;gap:8px;font-size:13px}
+.comment-header.owner-header{background:rgba(63,185,80,0.06)}
+.comment-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.comment-body{padding:16px}
+.comment-body p{margin-bottom:10px;line-height:1.6}
+.comment-body p:last-child{margin-bottom:0}
+.comment-body h2{font-size:20px;color:var(--text-white);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.comment-body h3{font-size:16px;color:var(--text-white);margin:16px 0 8px}
+.comment-body code{background:rgba(110,118,129,0.2);padding:2px 6px;border-radius:4px;font-size:12px;font-family:"SFMono-Regular",Consolas,monospace}
+.comment-body ul{padding-left:20px;margin-bottom:10px}
+.comment-body li{margin-bottom:4px}
+.comment-body blockquote{border-left:3px solid var(--border);padding-left:12px;color:var(--text-muted);margin:10px 0}
+
+/* Reply button */
+.reply-row{padding:8px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end}
+.btn-reply{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer}
+.btn-reply:hover{color:var(--text);border-color:var(--text-muted)}
+
+/* Contact form */
+.contact-form{padding:12px 16px;border-top:1px solid var(--border);display:none}
+.contact-form.show{display:block}
+.contact-form textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:60px}
+.contact-form .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+
+/* CI Checks */
+.checks-box{background:var(--surface);border:1px solid var(--green);border-radius:6px;margin-bottom:16px}
+.checks-header{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;color:var(--text-white);font-size:14px}
+.checks-header svg{flex-shrink:0}
+.checks-list{border-top:1px solid var(--border);padding:8px 0}
+.check-row{padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:13px}
+.check-row .check-icon{color:var(--green);font-weight:700;width:18px;text-align:center;flex-shrink:0}
+.check-row .check-name{color:var(--text)}
+.check-row .check-detail{color:var(--text-muted);margin-left:auto;font-size:12px}
+
+/* Review box */
+.review-box{margin-bottom:16px}
+.review-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.btn{padding:6px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover{background:#2ea043}
+.btn-red{background:transparent;border-color:var(--red);color:var(--red)}
+.btn-red:hover{background:rgba(248,81,73,0.1)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--hover)}
+.btn-merge{background:var(--green);color:#fff;border:none;padding:10px 24px;font-size:15px;font-weight:700;border-radius:6px;cursor:pointer;width:100%;margin-top:12px;transition:all .2s}
+.btn-merge:hover{background:#2ea043;transform:translateY(-1px)}
+.btn-merge:active{transform:translateY(0)}
+
+/* Sidebar */
+.sidebar-section{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.sidebar-section:last-child{border-bottom:none}
+.sidebar-title{font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.sidebar-item{font-size:13px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.sidebar-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:var(--green);border-radius:4px;transition:width 1s ease}
+
+/* Files changed tab */
+.file-tree{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:16px;font-size:13px}
+.file-tree-header{padding:10px 16px;font-weight:600;color:var(--text-white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.file-tree-item{padding:6px 16px 6px 32px;display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text)}
+.file-tree-item:hover{background:var(--hover)}
+.file-tree-item .ft-icon{font-size:12px;width:16px;text-align:center}
+.file-tree-item .ft-adds{color:var(--green);margin-left:auto;font-size:12px}
+.file-tree-item .ft-dels{color:var(--red);font-size:12px}
+
+.diff-file{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:16px;overflow:hidden}
+.diff-file-header{padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:13px;font-family:"SFMono-Regular",Consolas,monospace;cursor:pointer}
+.diff-file-header .arrow{transition:transform .2s;color:var(--text-muted)}
+.diff-file-header .fname{color:var(--text)}
+.diff-file-header .fstat{margin-left:auto;font-size:12px}
+.diff-file-header .fstat-add{color:var(--green)}
+.diff-file-header .fstat-del{color:var(--red)}
+.diff-table{width:100%;border-collapse:collapse;font-family:"SFMono-Regular",Consolas,monospace;font-size:12px;table-layout:fixed}
+.diff-table td{padding:1px 10px;white-space:pre-wrap;word-break:break-word;vertical-align:top}
+.diff-ln{width:48px;min-width:48px;text-align:right;color:var(--text-muted);user-select:none;opacity:.5;padding-right:8px}
+.diff-sign{width:20px;min-width:20px;text-align:center;user-select:none}
+.diff-code{color:var(--text)}
+.diff-add{background:var(--diff-green-bg)}
+.diff-add .diff-code{color:var(--green)}
+.diff-add .diff-sign{color:var(--green)}
+.diff-del{background:var(--diff-red-bg)}
+.diff-del .diff-code{color:var(--red)}
+.diff-del .diff-sign{color:var(--red)}
+.diff-ctx{background:transparent}
+.diff-hunk{background:rgba(56,139,253,0.08);color:var(--blue)}
+.diff-hunk td{padding:4px 10px}
+.diff-expand{background:var(--bg);text-align:center;color:var(--blue);cursor:pointer;font-size:12px}
+.diff-expand td{padding:4px}
+.diff-expand:hover{background:rgba(56,139,253,0.1)}
+
+/* Commits tab */
+.commit-group{margin-bottom:24px}
+.commit-date{font-size:13px;font-weight:600;color:var(--text-white);margin-bottom:8px;padding:8px 0;display:flex;align-items:center;gap:8px}
+.commit-date::after{content:"";flex:1;height:1px;background:var(--border)}
+.commit-item{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 16px;margin-bottom:6px;display:flex;align-items:center;gap:12px;font-size:13px}
+.commit-item:hover{border-color:var(--text-muted)}
+.commit-msg{color:var(--text-white);font-weight:500;flex:1}
+.commit-hash{color:var(--blue);font-family:"SFMono-Regular",Consolas,monospace;font-size:12px;background:rgba(56,139,253,0.08);padding:2px 8px;border-radius:4px;flex-shrink:0}
+.commit-check{color:var(--green);flex-shrink:0}
+
+/* Merged overlay */
+.merged-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s}
+.merged-overlay.show{opacity:1;pointer-events:auto}
+.merged-box{background:var(--surface);border:2px solid var(--green);border-radius:12px;padding:40px;text-align:center;max-width:500px;width:90%;transform:scale(0.8);transition:transform .3s}
+.merged-overlay.show .merged-box{transform:scale(1)}
+.merged-box h2{color:var(--green);font-size:24px;margin-bottom:8px}
+.merged-box p{color:var(--text-muted);margin-bottom:16px}
+
+/* Confetti */
+.confetti{position:fixed;top:-10px;width:10px;height:10px;z-index:1001;pointer-events:none;animation:confetti-fall linear forwards}
+@keyframes confetti-fall{
+0%{transform:translateY(0) rotate(0deg);opacity:1}
+100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
+
+/* Joke overlay */
+.joke-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s}
+.joke-overlay.show{opacity:1;pointer-events:auto}
+.joke-box{background:var(--surface);border:2px solid var(--red);border-radius:12px;padding:32px;text-align:center;max-width:420px;width:90%}
+.joke-box h3{color:var(--red);font-size:20px;margin-bottom:8px}
+.joke-box p{color:var(--text-muted)}
+
+/* Approve overlay */
+.approve-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s}
+.approve-overlay.show{opacity:1;pointer-events:auto}
+.approve-box{background:var(--surface);border:2px solid var(--green);border-radius:12px;padding:40px;text-align:center;max-width:500px;width:90%}
+.approve-box h2{color:var(--green);font-size:22px;margin-bottom:12px}
+.approve-box p{color:var(--text-muted);margin-bottom:6px}
+.approve-box a{color:var(--blue)}
+.approve-box .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;text-align:left}
+.approve-box .contact-item{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px}
+.approve-box .contact-item .ci-label{color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.approve-box .contact-item .ci-value{color:var(--text-white);font-weight:600;margin-top:2px}
+
+@media(max-width:900px){
+.pr-content{flex-direction:column}
+.pr-sidebar{width:100%}
+}
+@media(max-width:600px){
+.pr-header{padding:12px 16px}
+.pr-title{font-size:20px}
+.pr-tabs{padding:0 12px}
+.pr-content{padding:16px}
+.comment-box::before,.comment-box::after{display:none}
+.approve-box .contact-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="gh-nav">
+<div class="gh-logo">
+<svg height="28" viewBox="0 0 16 16" width="28"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 01-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 010 8c0-4.42 3.58-8 8-8z"></path></svg>
+</div>
+<div class="gh-nav-links">
+<a href="#">Pull requests</a>
+<a href="#">Issues</a>
+<a href="#">Marketplace</a>
+</div>
+<div class="gh-nav-right">
+<div class="gh-avatar">AG</div>
+</div>
+</nav>
+
+<!-- Repo path -->
+<div class="repo-header">
+<div class="repo-path">
+<span class="owner">your-team</span>
+<span class="sep">/</span>
+<span class="repo">engineering</span>
+</div>
+</div>
+
+<!-- PR Header -->
+<div class="pr-header">
+<h1 class="pr-title">feat: add Anshull Garg to your team <span class="number">#2026</span></h1>
+<div class="pr-meta">
+<span class="badge badge-open">Open</span>
+<span class="label label-enhance">enhancement</span>
+<span class="label label-hire">hire-me</span>
+<span class="label label-priority">high-priority</span>
+</div>
+<div class="pr-meta" style="margin-top:6px">
+<span class="pr-meta-text"><strong>anshull-garg</strong> wants to merge <strong>47 commits</strong> into <code>your-team:main</code> from <code>anshull/career</code></span>
+</div>
+</div>
+
+<!-- Tabs -->
+<div class="pr-tabs" id="prTabs">
+<div class="pr-tab active" data-tab="conversation">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 2.75a.25.25 0 01.25-.25h8.5a.25.25 0 01.25.25v5.5a.25.25 0 01-.25.25h-3.5a.75.75 0 00-.53.22L3.5 11.44V9.25a.75.75 0 00-.75-.75h-1a.25.25 0 01-.25-.25v-5.5zM1.75 1A1.75 1.75 0 000 2.75v5.5C0 9.216.784 10 1.75 10H2v1.543a1.457 1.457 0 002.487 1.03L7.061 10h3.189A1.75 1.75 0 0012 8.25v-5.5A1.75 1.75 0 0010.25 1h-8.5z"></path></svg>
+Conversation
+</div>
+<div class="pr-tab" data-tab="commits">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.93 8.5a4.002 4.002 0 01-7.86 0H.75a.75.75 0 010-1.5h3.32a4.002 4.002 0 017.86 0h3.32a.75.75 0 010 1.5h-3.32zm-1.43-.75a2.5 2.5 0 10-5 0 2.5 2.5 0 005 0z"></path></svg>
+Commits <span class="count">47</span>
+</div>
+<div class="pr-tab" data-tab="checks">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.751.751 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.751.751 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"></path></svg>
+Checks <span class="check">12/12 passed</span>
+</div>
+<div class="pr-tab" data-tab="files">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z"></path></svg>
+Files changed <span class="count">6</span>
+</div>
+</div>
+
+<!-- Main content area -->
+<div class="pr-content">
+<div class="pr-main">
+
+<!-- ==================== CONVERSATION TAB ==================== -->
+<div class="tab-panel active" id="tab-conversation">
+
+<!-- Timeline: opened -->
+<div class="timeline-item">
+<div class="tl-icon tl-icon-green">+</div>
+<div class="tl-text"><strong>anshull-garg</strong> opened this pull request <span style="color:var(--text-muted)">2 minutes ago</span></div>
+</div>
+
+<!-- PR description comment -->
+<div class="timeline-item">
+<div class="tl-icon tl-icon-green" style="font-size:10px">AG</div>
+<div class="comment-box">
+<div class="comment-header owner-header">
+<div class="comment-avatar" style="background:linear-gradient(135deg,var(--green),var(--blue))">AG</div>
+<strong style="color:var(--text-white)">anshull-garg</strong>
+<span style="background:rgba(63,185,80,0.15);color:var(--green);padding:1px 6px;border-radius:10px;font-size:11px">Author</span>
+<span style="color:var(--text-muted);margin-left:auto;font-size:12px">just now</span>
+</div>
+<div class="comment-body">
+<h2>About This Pull Request</h2>
+<p>Hi team! I am <strong style="color:var(--text-white)">Anshull Garg</strong>, a <strong style="color:var(--green)">Software Developer at Walmart Global Tech</strong>. This PR proposes adding me to your engineering team.</p>
+
+<h3>What does this PR do?</h3>
+<ul>
+<li>Adds a full-stack engineer with expertise in <code>React</code>, <code>Node.js</code>, <code>TypeScript</code>, and <code>cloud architecture</code></li>
+<li>Improves team velocity by shipping production-grade features with clean, tested code</li>
+<li>Introduces experience from building scalable systems serving millions of users at Walmart</li>
+<li>Brings strong collaboration skills, code review culture, and mentorship mindset</li>
+</ul>
+
+<h3>Why should you merge?</h3>
+<blockquote>I believe great software is built by teams that care deeply about craft. I write code that is readable, testable, and maintainable. I optimize not just for performance, but for developer experience.</blockquote>
+
+<p>I have a proven track record of delivering impactful features, reducing technical debt, and elevating the engineering culture around me. Check the <strong>Commits</strong> and <strong>Files changed</strong> tabs for the full picture.</p>
+
+<h3>Tech Stack</h3>
+<p><code>React</code> <code>Next.js</code> <code>TypeScript</code> <code>Node.js</code> <code>Python</code> <code>PostgreSQL</code> <code>Redis</code> <code>Docker</code> <code>AWS</code> <code>GraphQL</code> <code>CI/CD</code> <code>Kafka</code></p>
+</div>
+</div>
+</div>
+
+<!-- Timeline: labels added -->
+<div class="timeline-item">
+<div class="tl-icon tl-icon-gray">L</div>
+<div class="tl-text"><strong>anshull-garg</strong> added labels <span class="label label-enhance" style="font-size:10px">enhancement</span> <span class="label label-hire" style="font-size:10px">hire-me</span> <span class="label label-priority" style="font-size:10px">high-priority</span></div>
+</div>
+
+<!-- Timeline: requested review -->
+<div class="timeline-item">
+<div class="tl-icon tl-icon-blue">R</div>
+<div class="tl-text"><strong>anshull-garg</strong> requested review from <strong>your-team</strong></div>
+</div>
+
+<!-- Timeline: pushed commits -->
+<div class="timeline-item">
+<div class="tl-icon tl-icon-purple">C</div>
+<div class="tl-text"><strong>anshull-garg</strong> pushed 47 commits including <code>feat: ship checkout optimization</code></div>
+</div>
+
+<!-- Review comment 1 -->
+<div class="timeline-item">
+<div class="tl-icon" style="background:var(--yellow);color:#fff;font-size:10px">TL</div>
+<div class="comment-box">
+<div class="comment-header">
+<div class="comment-avatar" style="background:var(--yellow)">TL</div>
+<strong style="color:var(--text-white)">tech-lead-reviewer</strong>
+<span style="background:rgba(210,153,34,0.15);color:var(--yellow);padding:1px 6px;border-radius:10px;font-size:11px">Reviewer</span>
+<span style="color:var(--text-muted);margin-left:auto;font-size:12px">5 min ago</span>
+</div>
+<div class="comment-body">
+<p><strong style="color:var(--green)">LGTM!</strong> Anshull consistently delivers high-quality code with thorough test coverage. His checkout optimization reduced page load times by 40% and directly improved conversion rates. One of the strongest engineers I have worked with -- always willing to mentor juniors and tackle the hardest problems.</p>
+</div>
+<div class="reply-row">
+<button class="btn-reply" onclick="toggleReply(this)">Reply</button>
+</div>
+<div class="contact-form">
+<textarea placeholder="Leave a comment... (or reach out to anshull.garg@email.com)"></textarea>
+<div class="form-actions">
+<button class="btn btn-outline" onclick="toggleReply(this)">Cancel</button>
+<button class="btn btn-green" onclick="toggleReply(this)">Comment</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Review comment 2 -->
+<div class="timeline-item">
+<div class="tl-icon" style="background:var(--purple);color:#fff;font-size:10px">PM</div>
+<div class="comment-box">
+<div class="comment-header">
+<div class="comment-avatar" style="background:var(--purple)">PM</div>
+<strong style="color:var(--text-white)">product-manager</strong>
+<span style="background:rgba(188,140,255,0.15);color:var(--purple);padding:1px 6px;border-radius:10px;font-size:11px">Reviewer</span>
+<span style="color:var(--text-muted);margin-left:auto;font-size:12px">3 min ago</span>
+</div>
+<div class="comment-body">
+<p>Anshull is a rare engineer who truly understands the product side. He does not just build what is asked -- he questions requirements, suggests better UX flows, and ships features that users actually love. His work on the recommendation engine drove a 25% increase in user engagement.</p>
+</div>
+<div class="reply-row">
+<button class="btn-reply" onclick="toggleReply(this)">Reply</button>
+</div>
+<div class="contact-form">
+<textarea placeholder="Leave a comment... (or reach out to anshull.garg@email.com)"></textarea>
+<div class="form-actions">
+<button class="btn btn-outline" onclick="toggleReply(this)">Cancel</button>
+<button class="btn btn-green" onclick="toggleReply(this)">Comment</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Review comment 3 -->
+<div class="timeline-item">
+<div class="tl-icon" style="background:var(--blue);color:#fff;font-size:10px">SE</div>
+<div class="comment-box">
+<div class="comment-header">
+<div class="comment-avatar" style="background:var(--blue)">SE</div>
+<strong style="color:var(--text-white)">senior-engineer</strong>
+<span style="background:rgba(88,166,255,0.15);color:var(--blue);padding:1px 6px;border-radius:10px;font-size:11px">Reviewer</span>
+<span style="color:var(--text-muted);margin-left:auto;font-size:12px">1 min ago</span>
+</div>
+<div class="comment-body">
+<p>Strong approve. Anshull architected our microservices migration from a monolith, reducing deploy times from 45 minutes to under 5. His code reviews are thorough and educational -- the whole team levels up when he is involved. Also, his PR descriptions are legendary (case in point).</p>
+</div>
+<div class="reply-row">
+<button class="btn-reply" onclick="toggleReply(this)">Reply</button>
+</div>
+<div class="contact-form">
+<textarea placeholder="Leave a comment... (or reach out to anshull.garg@email.com)"></textarea>
+<div class="form-actions">
+<button class="btn btn-outline" onclick="toggleReply(this)">Cancel</button>
+<button class="btn btn-green" onclick="toggleReply(this)">Comment</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- CI Checks -->
+<div class="checks-box" id="checksBox">
+<div class="checks-header" onclick="document.getElementById('checksList').style.display=document.getElementById('checksList').style.display==='none'?'block':'none'">
+<svg width="20" height="20" viewBox="0 0 16 16" fill="var(--green)"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.751.751 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.751.751 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"></path></svg>
+All checks have passed
+<span style="color:var(--text-muted);font-weight:400;font-size:12px;margin-left:auto">12 successful checks</span>
+</div>
+<div id="checksList">
+<div class="checks-list">
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">build / lint</span><span class="check-detail">0 warnings, 0 errors</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">build / test</span><span class="check-detail">coverage: 94%</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">build / type-check</span><span class="check-detail">0 errors</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">deploy / preview</span><span class="check-detail">Ready</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">deploy / production</span><span class="check-detail">Deployed</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">security / audit</span><span class="check-detail">0 vulnerabilities</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">skills / react</span><span class="check-detail">verified</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">skills / node</span><span class="check-detail">verified</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">skills / typescript</span><span class="check-detail">verified</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">skills / system-design</span><span class="check-detail">verified</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">skills / cloud-architecture</span><span class="check-detail">verified</span></div>
+<div class="check-row"><span class="check-icon">&#10003;</span><span class="check-name">culture / team-fit</span><span class="check-detail">excellent match</span></div>
+</div>
+</div>
+</div>
+
+<!-- Review actions -->
+<div class="review-box">
+<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="var(--yellow)" style="vertical-align:middle"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.751.751 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.751.751 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"></path></svg>
+Review required -- <strong style="color:var(--text)">your-team</strong> must approve before merging
+</div>
+<div class="review-actions">
+<button class="btn btn-green" onclick="showApprove()">Approve</button>
+<button class="btn btn-red" onclick="showJoke()">Request changes</button>
+<button class="btn btn-outline" onclick="switchTab('files')">Review code</button>
+</div>
+</div>
+
+<!-- Merge button -->
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="var(--green)"><path d="M5 3.254V3.25a.75.75 0 01.75-.75h4.5a.75.75 0 01.75.75v.004c0 .414-.336.75-.75.75h-4.5A.75.75 0 015 3.254zM3.5 5.75a.75.75 0 01.75-.75h7.5a.75.75 0 01.75.75v.004a.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V5.75zM2 8.25a.75.75 0 01.75-.75h10.5a.75.75 0 01.75.75v5a1.75 1.75 0 01-1.75 1.75H3.75A1.75 1.75 0 012 13.25v-5z"></path></svg>
+<span style="font-size:13px;color:var(--text-white);font-weight:600">This branch has no conflicts with the base branch</span>
+</div>
+<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Merging can be performed automatically once review approval is given.</div>
+<button class="btn-merge" onclick="showMerged()">Merge pull request</button>
+</div>
+
+</div>
+
+<!-- ==================== COMMITS TAB ==================== -->
+<div class="tab-panel" id="tab-commits">
+
+<div class="commit-group">
+<div class="commit-date">2026</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: open to new opportunities, ship this PR</span>
+<span class="commit-hash">a1b2c3d</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: lead platform migration to micro-frontend architecture</span>
+<span class="commit-hash">e4f5g6h</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">perf: optimize checkout flow, reduce load time by 40%</span>
+<span class="commit-hash">i7j8k9l</span>
+</div>
+</div>
+
+<div class="commit-group">
+<div class="commit-date">2025</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: build real-time inventory tracking dashboard</span>
+<span class="commit-hash">m0n1o2p</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: implement recommendation engine with ML pipeline</span>
+<span class="commit-hash">q3r4s5t</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">refactor: migrate monolith to microservices architecture</span>
+<span class="commit-hash">u6v7w8x</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: ship checkout optimization saving $2M annually</span>
+<span class="commit-hash">y9z0a1b</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">ci: set up automated testing pipeline with 94% coverage</span>
+<span class="commit-hash">c2d3e4f</span>
+</div>
+</div>
+
+<div class="commit-group">
+<div class="commit-date">2024</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: join Walmart Global Tech as Software Developer</span>
+<span class="commit-hash">g5h6i7j</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: build scalable notification service handling 10M+ events/day</span>
+<span class="commit-hash">k8l9m0n</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">refactor: learn TypeScript, rewrite core modules with strict types</span>
+<span class="commit-hash">o1p2q3r</span>
+</div>
+</div>
+
+<div class="commit-group">
+<div class="commit-date">2023</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: launch full-stack e-commerce platform (personal project)</span>
+<span class="commit-hash">s4t5u6v</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: contribute to open-source React component library</span>
+<span class="commit-hash">w7x8y9z</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">docs: complete AWS Solutions Architect certification</span>
+<span class="commit-hash">a0b1c2d</span>
+</div>
+</div>
+
+<div class="commit-group">
+<div class="commit-date">2022</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: build real-time chat app with WebSocket + Redis pub/sub</span>
+<span class="commit-hash">e3f4g5h</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">feat: develop CI/CD pipeline reducing deploy time by 80%</span>
+<span class="commit-hash">i6j7k8l</span>
+</div>
+<div class="commit-item">
+<span class="commit-check">&#10003;</span>
+<span class="commit-msg">refactor: adopt clean architecture patterns across codebase</span>
+<span class="commit-hash">m9n0o1p</span>
+</div>
+</div>
+
+<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:16px">... and 30 more commits across education, internships, and side projects</div>
+</div>
+
+<!-- ==================== CHECKS TAB ==================== -->
+<div class="tab-panel" id="tab-checks">
+<div style="text-align:center;padding:32px 0">
+<svg width="48" height="48" viewBox="0 0 16 16" fill="var(--green)"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.751.751 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.751.751 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"></path></svg>
+<h2 style="color:var(--text-white);margin:12px 0 4px;font-size:20px">All checks have passed</h2>
+<p style="color:var(--text-muted);font-size:14px">12 successful checks</p>
+</div>
+
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden">
+<div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-white)">Build & Deploy</div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">build / lint</span><span class="check-detail">0 warnings, 0 errors -- 12s</span></div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">build / test</span><span class="check-detail">coverage: 94% -- 48s</span></div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">build / type-check</span><span class="check-detail">strict mode, 0 errors -- 8s</span></div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">deploy / preview</span><span class="check-detail">Ready -- 32s</span></div>
+<div class="check-row" style="padding:10px 16px"><span class="check-icon">&#10003;</span><span class="check-name">deploy / production</span><span class="check-detail">Deployed -- 45s</span></div>
+</div>
+
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:12px">
+<div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-white)">Security</div>
+<div class="check-row" style="padding:10px 16px"><span class="check-icon">&#10003;</span><span class="check-name">security / audit</span><span class="check-detail">0 vulnerabilities found -- 6s</span></div>
+</div>
+
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:12px">
+<div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-white)">Skills Verification</div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">skills / react</span><span class="check-detail">Expert -- verified</span></div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">skills / node</span><span class="check-detail">Expert -- verified</span></div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">skills / typescript</span><span class="check-detail">Advanced -- verified</span></div>
+<div class="check-row" style="padding:10px 16px;border-bottom:1px solid var(--border)"><span class="check-icon">&#10003;</span><span class="check-name">skills / system-design</span><span class="check-detail">Advanced -- verified</span></div>
+<div class="check-row" style="padding:10px 16px"><span class="check-icon">&#10003;</span><span class="check-name">skills / cloud-architecture</span><span class="check-detail">AWS certified -- verified</span></div>
+</div>
+
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:12px">
+<div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-white)">Culture Fit</div>
+<div class="check-row" style="padding:10px 16px"><span class="check-icon">&#10003;</span><span class="check-name">culture / team-fit</span><span class="check-detail">excellent match -- verified</span></div>
+</div>
+</div>
+
+<!-- ==================== FILES CHANGED TAB ==================== -->
+<div class="tab-panel" id="tab-files">
+
+<!-- File tree -->
+<div class="file-tree">
+<div class="file-tree-header">
+<svg width="14" height="14" viewBox="0 0 16 16" fill="var(--text-muted)"><path d="M.513 1.513A1.75 1.75 0 011.75 1h3.5c.464 0 .909.184 1.237.513l.987.987h6.776A1.75 1.75 0 0116 4.25v8A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25V2.75c0-.464.184-.909.513-1.237z"></path></svg>
+6 files changed
+<span style="color:var(--green);margin-left:auto">+247</span>
+<span style="color:var(--red)">-12</span>
+</div>
+<div class="file-tree-item" onclick="scrollToDiff('about')"><span class="ft-icon" style="color:var(--blue)">M</span> about.md <span class="ft-adds">+32</span><span class="ft-dels">-0</span></div>
+<div class="file-tree-item" onclick="scrollToDiff('experience')"><span class="ft-icon" style="color:var(--green)">A</span> experience.json <span class="ft-adds">+48</span><span class="ft-dels">-0</span></div>
+<div class="file-tree-item" onclick="scrollToDiff('skills')"><span class="ft-icon" style="color:var(--green)">A</span> skills.ts <span class="ft-adds">+56</span><span class="ft-dels">-3</span></div>
+<div class="file-tree-item" onclick="scrollToDiff('projects')"><span class="ft-icon" style="color:var(--green)">A</span> projects/index.ts <span class="ft-adds">+64</span><span class="ft-dels">-0</span></div>
+<div class="file-tree-item" onclick="scrollToDiff('team')"><span class="ft-icon" style="color:var(--blue)">M</span> team.config.ts <span class="ft-adds">+18</span><span class="ft-dels">-9</span></div>
+<div class="file-tree-item" onclick="scrollToDiff('contact')"><span class="ft-icon" style="color:var(--green)">A</span> contact.md <span class="ft-adds">+29</span><span class="ft-dels">-0</span></div>
+</div>
+
+<!-- Diff: about.md -->
+<div class="diff-file" id="diff-about">
+<div class="diff-file-header" onclick="toggleDiff(this)">
+<span class="arrow">&#9660;</span>
+<span class="fname">about.md</span>
+<span class="fstat"><span class="fstat-add">+32</span> <span class="fstat-del">-0</span></span>
+</div>
+<table class="diff-table"><tbody>
+<tr class="diff-hunk"><td colspan="4">@@ -0,0 +1,32 @@ Introduction</td></tr>
+<tr class="diff-add"><td class="diff-ln">1</td><td class="diff-ln">1</td><td class="diff-sign">+</td><td class="diff-code"># Anshull Garg</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">2</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">3</td><td class="diff-sign">+</td><td class="diff-code">## Software Developer @ Walmart Global Tech</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">4</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">5</td><td class="diff-sign">+</td><td class="diff-code">Full-stack engineer with a passion for building</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">6</td><td class="diff-sign">+</td><td class="diff-code">scalable, user-centric applications. I thrive at the</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">7</td><td class="diff-sign">+</td><td class="diff-code">intersection of elegant code and impactful products.</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">8</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">9</td><td class="diff-sign">+</td><td class="diff-code">- Shipped features serving 200M+ customers</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">10</td><td class="diff-sign">+</td><td class="diff-code">- Led architecture decisions for high-traffic systems</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">11</td><td class="diff-sign">+</td><td class="diff-code">- Advocate for clean code, testing, and dev experience</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">12</td><td class="diff-sign">+</td><td class="diff-code">- Open source contributor and continuous learner</td></tr>
+</tbody></table>
+</div>
+
+<!-- Diff: experience.json -->
+<div class="diff-file" id="diff-experience">
+<div class="diff-file-header" onclick="toggleDiff(this)">
+<span class="arrow">&#9660;</span>
+<span class="fname">experience.json</span>
+<span class="fstat"><span class="fstat-add">+48</span> <span class="fstat-del">-0</span></span>
+</div>
+<table class="diff-table"><tbody>
+<tr class="diff-hunk"><td colspan="4">@@ -0,0 +1,48 @@ Career History</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">1</td><td class="diff-sign">+</td><td class="diff-code">{</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">2</td><td class="diff-sign">+</td><td class="diff-code">  "experience": [</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">3</td><td class="diff-sign">+</td><td class="diff-code">    {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">4</td><td class="diff-sign">+</td><td class="diff-code">      "company": "Walmart Global Tech",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">5</td><td class="diff-sign">+</td><td class="diff-code">      "role": "Software Developer",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">6</td><td class="diff-sign">+</td><td class="diff-code">      "period": "2024 - Present",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">7</td><td class="diff-sign">+</td><td class="diff-code">      "highlights": [</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">8</td><td class="diff-sign">+</td><td class="diff-code">        "Optimized checkout flow reducing load time by 40%",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">9</td><td class="diff-sign">+</td><td class="diff-code">        "Architected microservices migration from monolith",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">10</td><td class="diff-sign">+</td><td class="diff-code">        "Built recommendation engine driving 25% engagement lift",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">11</td><td class="diff-sign">+</td><td class="diff-code">        "Reduced deploy times from 45min to under 5min",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">12</td><td class="diff-sign">+</td><td class="diff-code">        "Maintained 94% test coverage across all services",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">13</td><td class="diff-sign">+</td><td class="diff-code">        "Mentored 4 junior developers through code reviews"</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">14</td><td class="diff-sign">+</td><td class="diff-code">      ]</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">15</td><td class="diff-sign">+</td><td class="diff-code">    }</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">16</td><td class="diff-sign">+</td><td class="diff-code">  ]</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">17</td><td class="diff-sign">+</td><td class="diff-code">}</td></tr>
+</tbody></table>
+</div>
+
+<!-- Diff: skills.ts -->
+<div class="diff-file" id="diff-skills">
+<div class="diff-file-header" onclick="toggleDiff(this)">
+<span class="arrow">&#9660;</span>
+<span class="fname">skills.ts</span>
+<span class="fstat"><span class="fstat-add">+56</span> <span class="fstat-del">-3</span></span>
+</div>
+<table class="diff-table"><tbody>
+<tr class="diff-hunk"><td colspan="4">@@ -1,3 +1,56 @@ Technical Skills</td></tr>
+<tr class="diff-del"><td class="diff-ln">1</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">const skills: string[] = [];</td></tr>
+<tr class="diff-del"><td class="diff-ln">2</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">const experience: number = 0;</td></tr>
+<tr class="diff-del"><td class="diff-ln">3</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">const readyToHire: boolean = false;</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">1</td><td class="diff-sign">+</td><td class="diff-code">interface Skill {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">2</td><td class="diff-sign">+</td><td class="diff-code">  name: string;</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">3</td><td class="diff-sign">+</td><td class="diff-code">  level: "expert" | "advanced" | "intermediate";</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">4</td><td class="diff-sign">+</td><td class="diff-code">  years: number;</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">5</td><td class="diff-sign">+</td><td class="diff-code">}</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">6</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">7</td><td class="diff-sign">+</td><td class="diff-code">const frontend: Skill[] = [</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">8</td><td class="diff-sign">+</td><td class="diff-code">  { name: "React/Next.js", level: "expert", years: 4 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">9</td><td class="diff-sign">+</td><td class="diff-code">  { name: "TypeScript", level: "expert", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">10</td><td class="diff-sign">+</td><td class="diff-code">  { name: "Tailwind CSS", level: "advanced", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">11</td><td class="diff-sign">+</td><td class="diff-code">  { name: "Redux/Zustand", level: "advanced", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">12</td><td class="diff-sign">+</td><td class="diff-code">];</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">13</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">14</td><td class="diff-sign">+</td><td class="diff-code">const backend: Skill[] = [</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">15</td><td class="diff-sign">+</td><td class="diff-code">  { name: "Node.js/Express", level: "expert", years: 4 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">16</td><td class="diff-sign">+</td><td class="diff-code">  { name: "Python/FastAPI", level: "advanced", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">17</td><td class="diff-sign">+</td><td class="diff-code">  { name: "GraphQL", level: "advanced", years: 2 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">18</td><td class="diff-sign">+</td><td class="diff-code">  { name: "PostgreSQL/Redis", level: "advanced", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">19</td><td class="diff-sign">+</td><td class="diff-code">];</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">20</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">21</td><td class="diff-sign">+</td><td class="diff-code">const devops: Skill[] = [</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">22</td><td class="diff-sign">+</td><td class="diff-code">  { name: "Docker/Kubernetes", level: "advanced", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">23</td><td class="diff-sign">+</td><td class="diff-code">  { name: "AWS (EC2/Lambda/S3)", level: "advanced", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">24</td><td class="diff-sign">+</td><td class="diff-code">  { name: "CI/CD (GitHub Actions)", level: "expert", years: 3 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">25</td><td class="diff-sign">+</td><td class="diff-code">  { name: "Kafka/Event Streaming", level: "intermediate", years: 2 },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">26</td><td class="diff-sign">+</td><td class="diff-code">];</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">27</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">28</td><td class="diff-sign">+</td><td class="diff-code">const readyToHire: boolean = true;</td></tr>
+</tbody></table>
+</div>
+
+<!-- Diff: projects/index.ts -->
+<div class="diff-file" id="diff-projects">
+<div class="diff-file-header" onclick="toggleDiff(this)">
+<span class="arrow">&#9660;</span>
+<span class="fname">projects/index.ts</span>
+<span class="fstat"><span class="fstat-add">+64</span> <span class="fstat-del">-0</span></span>
+</div>
+<table class="diff-table"><tbody>
+<tr class="diff-hunk"><td colspan="4">@@ -0,0 +1,64 @@ Notable Projects</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">1</td><td class="diff-sign">+</td><td class="diff-code">const projects = [</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">2</td><td class="diff-sign">+</td><td class="diff-code">  {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">3</td><td class="diff-sign">+</td><td class="diff-code">    name: "Checkout Optimization Engine",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">4</td><td class="diff-sign">+</td><td class="diff-code">    impact: "40% faster load, $2M annual savings",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">5</td><td class="diff-sign">+</td><td class="diff-code">    tech: ["React", "Node.js", "Redis", "Kafka"],</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">6</td><td class="diff-sign">+</td><td class="diff-code">    description: "Re-architected checkout pipeline with</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">7</td><td class="diff-sign">+</td><td class="diff-code">      optimistic UI updates and edge caching.",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">8</td><td class="diff-sign">+</td><td class="diff-code">  },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">9</td><td class="diff-sign">+</td><td class="diff-code">  {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">10</td><td class="diff-sign">+</td><td class="diff-code">    name: "Real-Time Inventory Dashboard",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">11</td><td class="diff-sign">+</td><td class="diff-code">    impact: "10M+ events/day, 99.9% uptime",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">12</td><td class="diff-sign">+</td><td class="diff-code">    tech: ["Next.js", "WebSocket", "PostgreSQL", "AWS"],</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">13</td><td class="diff-sign">+</td><td class="diff-code">    description: "Live dashboard tracking inventory across</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">14</td><td class="diff-sign">+</td><td class="diff-code">      4,700 stores with sub-second latency.",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">15</td><td class="diff-sign">+</td><td class="diff-code">  },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">16</td><td class="diff-sign">+</td><td class="diff-code">  {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">17</td><td class="diff-sign">+</td><td class="diff-code">    name: "Microservices Migration Framework",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">18</td><td class="diff-sign">+</td><td class="diff-code">    impact: "Deploy time: 45min -> 5min",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">19</td><td class="diff-sign">+</td><td class="diff-code">    tech: ["Docker", "Kubernetes", "GraphQL", "Kafka"],</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">20</td><td class="diff-sign">+</td><td class="diff-code">    description: "Led decomposition of monolith into 12</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">21</td><td class="diff-sign">+</td><td class="diff-code">      independently deployable microservices.",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">22</td><td class="diff-sign">+</td><td class="diff-code">  },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">23</td><td class="diff-sign">+</td><td class="diff-code">  {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">24</td><td class="diff-sign">+</td><td class="diff-code">    name: "AI Recommendation Engine",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">25</td><td class="diff-sign">+</td><td class="diff-code">    impact: "25% increase in user engagement",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">26</td><td class="diff-sign">+</td><td class="diff-code">    tech: ["Python", "TensorFlow", "FastAPI", "Redis"],</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">27</td><td class="diff-sign">+</td><td class="diff-code">    description: "ML-powered product recommendation</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">28</td><td class="diff-sign">+</td><td class="diff-code">      system with real-time feature serving.",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">29</td><td class="diff-sign">+</td><td class="diff-code">  },</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">30</td><td class="diff-sign">+</td><td class="diff-code">];</td></tr>
+</tbody></table>
+</div>
+
+<!-- Diff: team.config.ts -->
+<div class="diff-file" id="diff-team">
+<div class="diff-file-header" onclick="toggleDiff(this)">
+<span class="arrow">&#9660;</span>
+<span class="fname">team.config.ts</span>
+<span class="fstat"><span class="fstat-add">+18</span> <span class="fstat-del">-9</span></span>
+</div>
+<table class="diff-table"><tbody>
+<tr class="diff-hunk"><td colspan="4">@@ -1,9 +1,18 @@ Team Configuration</td></tr>
+<tr class="diff-ctx"><td class="diff-ln">1</td><td class="diff-ln">1</td><td class="diff-sign"></td><td class="diff-code">const team = {</td></tr>
+<tr class="diff-ctx"><td class="diff-ln">2</td><td class="diff-ln">2</td><td class="diff-sign"></td><td class="diff-code">  name: "your-team",</td></tr>
+<tr class="diff-del"><td class="diff-ln">3</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">  headcount: 5,</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">3</td><td class="diff-sign">+</td><td class="diff-code">  headcount: 6,</td></tr>
+<tr class="diff-del"><td class="diff-ln">4</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">  openPositions: 1,</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">4</td><td class="diff-sign">+</td><td class="diff-code">  openPositions: 0,</td></tr>
+<tr class="diff-del"><td class="diff-ln">5</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">  needsFullStackDev: true,</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">5</td><td class="diff-sign">+</td><td class="diff-code">  needsFullStackDev: false, // position filled!</td></tr>
+<tr class="diff-ctx"><td class="diff-ln">6</td><td class="diff-ln">6</td><td class="diff-sign"></td><td class="diff-code">  members: [</td></tr>
+<tr class="diff-ctx"><td class="diff-ln">7</td><td class="diff-ln">7</td><td class="diff-sign"></td><td class="diff-code">    // ... existing team members</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">8</td><td class="diff-sign">+</td><td class="diff-code">    {</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">9</td><td class="diff-sign">+</td><td class="diff-code">      name: "Anshull Garg",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">10</td><td class="diff-sign">+</td><td class="diff-code">      role: "Software Developer",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">11</td><td class="diff-sign">+</td><td class="diff-code">      skills: ["React", "Node", "TypeScript", "AWS"],</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">12</td><td class="diff-sign">+</td><td class="diff-code">      status: "ready-to-ship",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">13</td><td class="diff-sign">+</td><td class="diff-code">    },</td></tr>
+<tr class="diff-ctx"><td class="diff-ln">8</td><td class="diff-ln">14</td><td class="diff-sign"></td><td class="diff-code">  ],</td></tr>
+<tr class="diff-del"><td class="diff-ln">9</td><td class="diff-ln"></td><td class="diff-sign">-</td><td class="diff-code">  velocity: "good",</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">15</td><td class="diff-sign">+</td><td class="diff-code">  velocity: "exceptional", // after adding Anshull</td></tr>
+<tr class="diff-ctx"><td class="diff-ln">10</td><td class="diff-ln">16</td><td class="diff-sign"></td><td class="diff-code">};</td></tr>
+</tbody></table>
+</div>
+
+<!-- Diff: contact.md -->
+<div class="diff-file" id="diff-contact">
+<div class="diff-file-header" onclick="toggleDiff(this)">
+<span class="arrow">&#9660;</span>
+<span class="fname">contact.md</span>
+<span class="fstat"><span class="fstat-add">+29</span> <span class="fstat-del">-0</span></span>
+</div>
+<table class="diff-table"><tbody>
+<tr class="diff-hunk"><td colspan="4">@@ -0,0 +1,29 @@ Contact Information</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">1</td><td class="diff-sign">+</td><td class="diff-code"># Get In Touch</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">2</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">3</td><td class="diff-sign">+</td><td class="diff-code">Ready to merge this PR? Let's talk.</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">4</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">5</td><td class="diff-sign">+</td><td class="diff-code">- Email: anshull.garg@email.com</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">6</td><td class="diff-sign">+</td><td class="diff-code">- GitHub: github.com/anshullgarg</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">7</td><td class="diff-sign">+</td><td class="diff-code">- LinkedIn: linkedin.com/in/anshullgarg</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">8</td><td class="diff-sign">+</td><td class="diff-code">- Portfolio: anshullgarg.dev</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">9</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">10</td><td class="diff-sign">+</td><td class="diff-code">## Availability</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">11</td><td class="diff-sign">+</td><td class="diff-code"></td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">12</td><td class="diff-sign">+</td><td class="diff-code">Open to: Full-time, Contract, Remote, Hybrid</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">13</td><td class="diff-sign">+</td><td class="diff-code">Notice period: Ready when you are</td></tr>
+<tr class="diff-add"><td class="diff-ln"></td><td class="diff-ln">14</td><td class="diff-sign">+</td><td class="diff-code">Response time: < 24 hours (usually much faster)</td></tr>
+</tbody></table>
+</div>
+
+</div><!-- end tab-files -->
+
+</div><!-- end pr-main -->
+
+<!-- ==================== SIDEBAR ==================== -->
+<div class="pr-sidebar">
+<div class="sidebar-section">
+<div class="sidebar-title">Reviewers</div>
+<div class="sidebar-item"><div class="comment-avatar" style="width:20px;height:20px;font-size:8px;background:var(--yellow)">TL</div> tech-lead <span style="color:var(--green);margin-left:auto;font-size:12px">Approved</span></div>
+<div class="sidebar-item"><div class="comment-avatar" style="width:20px;height:20px;font-size:8px;background:var(--purple)">PM</div> product-mgr <span style="color:var(--green);margin-left:auto;font-size:12px">Approved</span></div>
+<div class="sidebar-item"><div class="comment-avatar" style="width:20px;height:20px;font-size:8px;background:var(--blue)">SE</div> sr-engineer <span style="color:var(--green);margin-left:auto;font-size:12px">Approved</span></div>
+<div class="sidebar-item" style="color:var(--yellow);font-size:12px;margin-top:4px">Awaiting review from your-team</div>
+</div>
+
+<div class="sidebar-section">
+<div class="sidebar-title">Labels</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px">
+<span class="label label-enhance">enhancement</span>
+<span class="label label-hire">hire-me</span>
+<span class="label label-priority">high-priority</span>
+</div>
+</div>
+
+<div class="sidebar-section">
+<div class="sidebar-title">Projects</div>
+<div class="sidebar-item" style="color:var(--text)">Q1 2026 Hiring</div>
+<div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+<div style="font-size:11px;color:var(--text-muted);margin-top:4px">85% complete</div>
+</div>
+
+<div class="sidebar-section">
+<div class="sidebar-title">Milestone</div>
+<div class="sidebar-item" style="color:var(--text)">Team Expansion v2.0</div>
+</div>
+
+<div class="sidebar-section">
+<div class="sidebar-title">Development</div>
+<div class="sidebar-item"><span class="dot" style="background:var(--green)"></span> 0 conflicts</div>
+<div class="sidebar-item"><span class="dot" style="background:var(--green)"></span> All checks passing</div>
+<div class="sidebar-item"><span class="dot" style="background:var(--green)"></span> 3 approving reviews</div>
+</div>
+
+<div class="sidebar-section">
+<div class="sidebar-title">Participants</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap">
+<div class="comment-avatar" style="width:24px;height:24px;font-size:9px;background:linear-gradient(135deg,var(--green),var(--blue))">AG</div>
+<div class="comment-avatar" style="width:24px;height:24px;font-size:9px;background:var(--yellow)">TL</div>
+<div class="comment-avatar" style="width:24px;height:24px;font-size:9px;background:var(--purple)">PM</div>
+<div class="comment-avatar" style="width:24px;height:24px;font-size:9px;background:var(--blue)">SE</div>
+</div>
+</div>
+
+<div class="sidebar-section" style="border-bottom:none">
+<div class="sidebar-title">Lines changed</div>
+<div style="display:flex;gap:2px;align-items:center;margin-top:4px">
+<div style="flex:247;height:8px;background:var(--green);border-radius:2px"></div>
+<div style="flex:12;height:8px;background:var(--red);border-radius:2px"></div>
+</div>
+<div style="font-size:11px;color:var(--text-muted);margin-top:4px"><span style="color:var(--green)">+247</span> / <span style="color:var(--red)">-12</span></div>
+</div>
+</div>
+
+</div><!-- end pr-content -->
+
+<!-- Merged overlay -->
+<div class="merged-overlay" id="mergedOverlay" onclick="closeMerged()">
+<div class="merged-box" onclick="event.stopPropagation()">
+<svg width="48" height="48" viewBox="0 0 16 16" fill="var(--green)" style="margin-bottom:12px"><path d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218zM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm8-9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zM4.25 4a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5z"></path></svg>
+<h2>Pull request successfully merged!</h2>
+<p style="color:var(--green);font-size:16px;font-weight:600">anshull-garg has been added to your team</p>
+<p>The branch <code style="background:rgba(110,118,129,0.2);padding:2px 6px;border-radius:4px;font-size:12px">anshull/career</code> has been merged into <code style="background:rgba(110,118,129,0.2);padding:2px 6px;border-radius:4px;font-size:12px">your-team:main</code></p>
+<div style="margin-top:20px;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:16px">
+<div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Ready to connect?</div>
+<div style="margin-bottom:6px"><span style="color:var(--text-muted)">Email:</span> <a href="mailto:anshull.garg@email.com">anshull.garg@email.com</a></div>
+<div style="margin-bottom:6px"><span style="color:var(--text-muted)">GitHub:</span> <a href="#">github.com/anshullgarg</a></div>
+<div style="margin-bottom:6px"><span style="color:var(--text-muted)">LinkedIn:</span> <a href="#">linkedin.com/in/anshullgarg</a></div>
+<div><span style="color:var(--text-muted)">Portfolio:</span> <a href="#">anshullgarg.dev</a></div>
+</div>
+<button class="btn btn-outline" style="margin-top:16px" onclick="closeMerged()">Close</button>
+</div>
+</div>
+
+<!-- Joke overlay -->
+<div class="joke-overlay" id="jokeOverlay" onclick="closeJoke()">
+<div class="joke-box" onclick="event.stopPropagation()">
+<h3>Request Changes?</h3>
+<p style="font-size:18px;margin:12px 0;color:var(--text-white)">What changes? I am perfect.</p>
+<p style="font-size:13px">Just kidding. But seriously, check the code -- 94% test coverage speaks for itself.</p>
+<button class="btn btn-outline" style="margin-top:16px" onclick="closeJoke()">Fair enough</button>
+</div>
+</div>
+
+<!-- Approve overlay -->
+<div class="approve-overlay" id="approveOverlay" onclick="closeApprove()">
+<div class="approve-box" onclick="event.stopPropagation()">
+<svg width="40" height="40" viewBox="0 0 16 16" fill="var(--green)" style="margin-bottom:8px"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.751.751 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.751.751 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"></path></svg>
+<h2>Review: Approved!</h2>
+<p>Great choice. Here is how to finalize the merge:</p>
+<div class="contact-grid">
+<div class="contact-item">
+<div class="ci-label">Email</div>
+<div class="ci-value">anshull.garg@email.com</div>
+</div>
+<div class="contact-item">
+<div class="ci-label">GitHub</div>
+<div class="ci-value">github.com/anshullgarg</div>
+</div>
+<div class="contact-item">
+<div class="ci-label">LinkedIn</div>
+<div class="ci-value">linkedin.com/in/anshullgarg</div>
+</div>
+<div class="contact-item">
+<div class="ci-label">Portfolio</div>
+<div class="ci-value">anshullgarg.dev</div>
+</div>
+</div>
+<button class="btn btn-green" style="margin-top:16px" onclick="closeApprove()">Got it!</button>
+</div>
+</div>
+
+<script>
+/* Tab switching */
+document.querySelectorAll('.pr-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    switchTab(this.getAttribute('data-tab'));
+  });
+});
+
+function switchTab(name) {
+  document.querySelectorAll('.pr-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  var tab = document.querySelector('.pr-tab[data-tab="'+name+'"]');
+  if (tab) tab.classList.add('active');
+  var panel = document.getElementById('tab-'+name);
+  if (panel) panel.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* Toggle diff collapse */
+function toggleDiff(header) {
+  var table = header.nextElementSibling;
+  var arrow = header.querySelector('.arrow');
+  if (table.style.display === 'none') {
+    table.style.display = '';
+    arrow.textContent = '\u25BC';
+  } else {
+    table.style.display = 'none';
+    arrow.textContent = '\u25B6';
+  }
+}
+
+/* Scroll to diff file */
+function scrollToDiff(id) {
+  var el = document.getElementById('diff-'+id);
+  if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* Reply toggle */
+function toggleReply(btn) {
+  var box = btn.closest('.comment-box');
+  var form = box.querySelector('.contact-form');
+  form.classList.toggle('show');
+}
+
+/* Confetti */
+function spawnConfetti() {
+  var colors = ['#3FB950','#58A6FF','#BC8CFF','#F85149','#D29922','#F0F6FC'];
+  for (var i = 0; i < 80; i++) {
+    (function(i){
+      setTimeout(function(){
+        var c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random()*100+'%';
+        c.style.background = colors[Math.floor(Math.random()*colors.length)];
+        c.style.width = (Math.random()*8+4)+'px';
+        c.style.height = (Math.random()*8+4)+'px';
+        c.style.borderRadius = Math.random()>0.5?'50%':'2px';
+        c.style.animationDuration = (Math.random()*2+2)+'s';
+        c.style.animationDelay = '0s';
+        document.body.appendChild(c);
+        setTimeout(function(){ c.remove(); },4000);
+      }, i*25);
+    })(i);
+  }
+}
+
+/* Overlays */
+function showMerged() {
+  spawnConfetti();
+  document.getElementById('mergedOverlay').classList.add('show');
+}
+function closeMerged() {
+  document.getElementById('mergedOverlay').classList.remove('show');
+}
+function showJoke() {
+  document.getElementById('jokeOverlay').classList.add('show');
+}
+function closeJoke() {
+  document.getElementById('jokeOverlay').classList.remove('show');
+}
+function showApprove() {
+  spawnConfetti();
+  document.getElementById('approveOverlay').classList.add('show');
+}
+function closeApprove() {
+  document.getElementById('approveOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
