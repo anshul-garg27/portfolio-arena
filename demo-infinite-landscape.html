@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Infinite Procedural Landscape</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. An infinite, never-repeating procedural landscape portfolio. Explore mountains, valleys, forests, rivers, and villages to discover projects, skills, experience, and more.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar { display: none; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #e8e0d4;
+  overflow: hidden;
+  cursor: default;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+canvas {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* ============================================================
+   HUD OVERLAY
+   ============================================================ */
+.hud {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-top {
+  top: 0; left: 0; right: 0;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hud-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-name {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 22px;
+  color: #f5efe6;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.hud-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(245, 239, 230, 0.6);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+}
+
+.hud-coords {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(245, 239, 230, 0.4);
+  text-align: right;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  line-height: 1.6;
+}
+
+.hud-seed {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: rgba(245, 239, 230, 0.25);
+  margin-top: 2px;
+}
+
+.hud-bottom {
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.hud-hint {
+  font-size: 12px;
+  color: rgba(245, 239, 230, 0.35);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+
+.hud-hint-arrow {
+  display: inline-block;
+  animation: hint-bob 2s ease-in-out infinite;
+  font-size: 16px;
+}
+
+@keyframes hint-bob {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+.hud-biome {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(245, 239, 230, 0.5);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  transition: color 0.8s ease;
+}
+
+/* ============================================================
+   MINIMAP
+   ============================================================ */
+.minimap-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.minimap {
+  width: 200px;
+  height: 32px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 239, 230, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.minimap canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 200px;
+  height: 32px;
+}
+
+.minimap-cursor {
+  position: absolute;
+  top: 2px;
+  width: 3px;
+  height: 28px;
+  background: rgba(245, 239, 230, 0.6);
+  border-radius: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px rgba(245, 239, 230, 0.3);
+}
+
+/* ============================================================
+   CONTENT MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 8, 6, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.active {
+  background: rgba(10, 8, 6, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: all;
+}
+
+.modal {
+  width: min(580px, 90vw);
+  max-height: 80vh;
+  background: linear-gradient(145deg, #2a2520, #1e1a16);
+  border: 1px solid rgba(200, 180, 140, 0.12);
+  border-radius: 16px;
+  padding: 40px;
+  overflow-y: auto;
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,180,140,0.15) transparent;
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: rgba(245, 239, 230, 0.5);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  pointer-events: all;
+}
+
+.modal-close:hover {
+  background: rgba(255,255,255,0.12);
+  color: #f5efe6;
+}
+
+.modal-biome-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.modal-biome-tag.mountain {
+  background: rgba(169, 142, 108, 0.2);
+  color: #c9a87c;
+}
+
+.modal-biome-tag.valley {
+  background: rgba(107, 142, 75, 0.2);
+  color: #8cb468;
+}
+
+.modal-biome-tag.forest {
+  background: rgba(75, 120, 60, 0.2);
+  color: #6b9e50;
+}
+
+.modal-biome-tag.river {
+  background: rgba(80, 130, 170, 0.2);
+  color: #6aadcf;
+}
+
+.modal-biome-tag.village {
+  background: rgba(200, 150, 80, 0.2);
+  color: #d4a84e;
+}
+
+.modal h2 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 28px;
+  color: #f5efe6;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.modal h3 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 18px;
+  color: #d4c4a8;
+  margin: 20px 0 8px;
+}
+
+.modal p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(228, 218, 200, 0.75);
+  margin-bottom: 12px;
+}
+
+.modal .subtitle {
+  font-size: 13px;
+  color: rgba(228, 218, 200, 0.5);
+  margin-bottom: 20px;
+}
+
+.modal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.modal ul li {
+  font-size: 13px;
+  color: rgba(228, 218, 200, 0.7);
+  padding: 6px 0;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.modal ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 13px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(200, 180, 140, 0.3);
+}
+
+.modal .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.modal .tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(200, 180, 140, 0.08);
+  color: rgba(228, 218, 200, 0.6);
+  border: 1px solid rgba(200, 180, 140, 0.08);
+}
+
+.modal .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.modal .stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,180,140,0.06);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+
+.modal .stat-card .stat-val {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 24px;
+  color: #d4a84e;
+}
+
+.modal .stat-card .stat-label {
+  font-size: 10px;
+  color: rgba(228,218,200,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+}
+
+.modal .timeline-entry {
+  display: flex;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(200,180,140,0.06);
+}
+
+.modal .timeline-entry:last-child {
+  border-bottom: none;
+}
+
+.modal .timeline-year {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: rgba(200, 180, 140, 0.4);
+  min-width: 80px;
+  padding-top: 2px;
+}
+
+.modal .timeline-body h4 {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e8dcc8;
+  margin-bottom: 2px;
+}
+
+.modal .timeline-body .role {
+  font-size: 12px;
+  color: rgba(228, 218, 200, 0.5);
+}
+
+.modal .contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.modal .contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200,180,140,0.06);
+  color: rgba(228, 218, 200, 0.7);
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.modal .contact-link:hover {
+  background: rgba(255,255,255,0.06);
+  color: #f5efe6;
+  border-color: rgba(200,180,140,0.15);
+}
+
+.modal .contact-link svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s;
+  background: rgba(30, 26, 22, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(200,180,140,0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  max-width: 200px;
+}
+
+.tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltip-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 14px;
+  color: #f5efe6;
+  margin-bottom: 2px;
+}
+
+.tooltip-sub {
+  font-size: 10px;
+  color: rgba(228, 218, 200, 0.45);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #1a1410;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: opacity 1s ease, visibility 1s ease;
+}
+
+.loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-text {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 18px;
+  color: rgba(245, 239, 230, 0.6);
+}
+
+.loading-subtext {
+  font-size: 11px;
+  color: rgba(245, 239, 230, 0.25);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.loading-bar {
+  width: 120px;
+  height: 2px;
+  background: rgba(245, 239, 230, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loading-bar-inner {
+  width: 0%;
+  height: 100%;
+  background: rgba(245, 239, 230, 0.4);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hud-top { padding: 16px 20px; }
+  .hud-bottom { padding: 14px 20px; }
+  .hud-name { font-size: 18px; }
+  .hud-coords { font-size: 10px; }
+  .modal { padding: 28px 24px; }
+  .modal h2 { font-size: 22px; }
+  .minimap { width: 150px; height: 26px; }
+}
+
+@media (max-width: 480px) {
+  .hud-top { padding: 12px 16px; }
+  .hud-name { font-size: 16px; }
+  .hud-title { font-size: 10px; }
+  .hud-hint { font-size: 11px; }
+  .modal { padding: 24px 20px; }
+  .minimap { width: 120px; height: 22px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loading">
+  <div class="loading-text">Generating landscape...</div>
+  <div class="loading-bar"><div class="loading-bar-inner" id="loadingBar"></div></div>
+  <div class="loading-subtext">Seed: <span id="loadingSeed"></span></div>
+</div>
+
+<!-- MAIN CANVAS -->
+<canvas id="landscape" aria-label="Interactive procedural landscape portfolio"></canvas>
+
+<!-- HUD -->
+<div class="hud hud-top">
+  <div class="hud-brand">
+    <div class="hud-name">Anshull Garg</div>
+    <div class="hud-title">Software Developer &middot; Walmart Global Tech</div>
+  </div>
+  <div>
+    <div class="hud-coords">
+      <div>x: <span id="coordX">0</span></div>
+      <div>biome: <span id="coordBiome">plains</span></div>
+    </div>
+    <div class="hud-seed">seed: <span id="hudSeed"></span></div>
+  </div>
+</div>
+
+<div class="hud hud-bottom">
+  <div class="hud-hint">
+    <span class="hud-hint-arrow">&rarr;</span>
+    Scroll or move mouse to explore &middot; Click markers to discover
+  </div>
+  <div class="hud-biome" id="biomeLabel">PLAINS</div>
+</div>
+
+<!-- MINIMAP -->
+<div class="minimap-container">
+  <div class="minimap">
+    <canvas id="minimapCanvas"></canvas>
+    <div class="minimap-cursor"></div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tooltipTitle"></div>
+  <div class="tooltip-sub" id="tooltipSub"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" style="position: relative;">
+    <button class="modal-close" id="modalClose" aria-label="Close dialog">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   SIMPLEX NOISE (compact implementation)
+   ============================================================ */
+class SimplexNoise {
+  constructor(seed) {
+    this.grad3 = [
+      [1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
+      [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
+      [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]
+    ];
+    this.p = [];
+    const rng = this._seededRandom(seed);
+    for (let i = 0; i < 256; i++) this.p[i] = i;
+    for (let i = 255; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [this.p[i], this.p[j]] = [this.p[j], this.p[i]];
+    }
+    this.perm = new Array(512);
+    this.permMod12 = new Array(512);
+    for (let i = 0; i < 512; i++) {
+      this.perm[i] = this.p[i & 255];
+      this.permMod12[i] = this.perm[i] % 12;
+    }
+  }
+
+  _seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
+  }
+
+  noise2D(xin, yin) {
+    const F2 = 0.5 * (Math.sqrt(3) - 1);
+    const G2 = (3 - Math.sqrt(3)) / 6;
+    const s = (xin + yin) * F2;
+    const i = Math.floor(xin + s);
+    const j = Math.floor(yin + s);
+    const t = (i + j) * G2;
+    const X0 = i - t, Y0 = j - t;
+    const x0 = xin - X0, y0 = yin - Y0;
+    let i1, j1;
+    if (x0 > y0) { i1 = 1; j1 = 0; }
+    else { i1 = 0; j1 = 1; }
+    const x1 = x0 - i1 + G2, y1 = y0 - j1 + G2;
+    const x2 = x0 - 1 + 2 * G2, y2 = y0 - 1 + 2 * G2;
+    const ii = i & 255, jj = j & 255;
+    const gi0 = this.permMod12[ii + this.perm[jj]];
+    const gi1 = this.permMod12[ii + i1 + this.perm[jj + j1]];
+    const gi2 = this.permMod12[ii + 1 + this.perm[jj + 1]];
+    let n0 = 0, n1 = 0, n2 = 0;
+    let t0 = 0.5 - x0*x0 - y0*y0;
+    if (t0 >= 0) { t0 *= t0; n0 = t0*t0*(this.grad3[gi0][0]*x0+this.grad3[gi0][1]*y0); }
+    let t1 = 0.5 - x1*x1 - y1*y1;
+    if (t1 >= 0) { t1 *= t1; n1 = t1*t1*(this.grad3[gi1][0]*x1+this.grad3[gi1][1]*y1); }
+    let t2 = 0.5 - x2*x2 - y2*y2;
+    if (t2 >= 0) { t2 *= t2; n2 = t2*t2*(this.grad3[gi2][0]*x2+this.grad3[gi2][1]*y2); }
+    return 70 * (n0 + n1 + n2);
+  }
+}
+
+/* ============================================================
+   PORTFOLIO CONTENT DATA
+   ============================================================ */
+const CONTENT = {
+  mountain: [
+    {
+      title: 'Scaled to Millions',
+      html: `
+        <span class="modal-biome-tag mountain">Achievement</span>
+        <h2>Scaled to Millions</h2>
+        <p class="subtitle">Mountain Peak &mdash; Milestone</p>
+        <p>At Walmart Global Tech, I architect and maintain systems that handle millions of daily transactions with sub-200ms response times. Building at Fortune 1 scale means every optimization matters.</p>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-val">M+</div><div class="stat-label">Daily Users</div></div>
+          <div class="stat-card"><div class="stat-val">40%</div><div class="stat-label">Load Time Reduction</div></div>
+          <div class="stat-card"><div class="stat-val">&lt;200ms</div><div class="stat-label">Response Time</div></div>
+        </div>
+      `
+    },
+    {
+      title: '500+ Contributions',
+      html: `
+        <span class="modal-biome-tag mountain">Achievement</span>
+        <h2>500+ Open Source Contributions</h2>
+        <p class="subtitle">Mountain Peak &mdash; Milestone</p>
+        <p>Consistently shipping code across 30+ repositories. From internal tools to open-source libraries, every contribution is a step toward better software for everyone.</p>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-val">500+</div><div class="stat-label">Contributions</div></div>
+          <div class="stat-card"><div class="stat-val">30+</div><div class="stat-label">Repositories</div></div>
+          <div class="stat-card"><div class="stat-val">4+</div><div class="stat-label">Years Building</div></div>
+        </div>
+      `
+    },
+    {
+      title: '12-Team Adoption',
+      html: `
+        <span class="modal-biome-tag mountain">Achievement</span>
+        <h2>Component Library Adopted Across 12 Teams</h2>
+        <p class="subtitle">Mountain Peak &mdash; Impact</p>
+        <p>Built and championed an internal component library with 50+ accessible, themeable components. What started as a side initiative became the standard design system across a dozen engineering teams.</p>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-val">50+</div><div class="stat-label">Components</div></div>
+          <div class="stat-card"><div class="stat-val">12</div><div class="stat-label">Teams Using It</div></div>
+          <div class="stat-card"><div class="stat-val">100%</div><div class="stat-label">Test Coverage</div></div>
+        </div>
+      `
+    }
+  ],
+  valley: [
+    {
+      title: 'Checkout Engine',
+      html: `
+        <span class="modal-biome-tag valley">Project</span>
+        <h2>Checkout Optimization Engine</h2>
+        <p class="subtitle">Valley Settlement &mdash; Featured Project</p>
+        <p>Architected and shipped a high-throughput checkout pipeline at Walmart scale, reducing page load times by 40% and increasing conversion rates. Handles millions of daily transactions with sub-200ms response times.</p>
+        <h3>Key Decisions</h3>
+        <ul>
+          <li>Parallel pipeline architecture for concurrent validation, pricing, and inventory checks</li>
+          <li>Edge caching strategy with 15-minute TTL to minimize origin hits</li>
+          <li>Optimistic UI updates with server reconciliation for perceived instant response</li>
+          <li>Circuit breaker pattern for graceful degradation under load</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">TypeScript</span>
+          <span class="tag">Redis</span><span class="tag">AWS Lambda</span><span class="tag">GraphQL</span>
+        </div>
+      `
+    },
+    {
+      title: 'Component Library',
+      html: `
+        <span class="modal-biome-tag valley">Project</span>
+        <h2>Internal Component Library</h2>
+        <p class="subtitle">Valley Settlement &mdash; Open Source</p>
+        <p>Built a design system with 50+ accessible, themeable components adopted across 12 teams. Storybook-driven development with full test coverage and comprehensive documentation.</p>
+        <h3>Architecture</h3>
+        <ul>
+          <li>Compound component pattern for composable, flexible APIs</li>
+          <li>Token-based theming system with runtime switching</li>
+          <li>Automated a11y testing with axe-core in CI pipeline</li>
+          <li>Tree-shakeable exports reducing bundle impact by 60%</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">React</span><span class="tag">Storybook</span><span class="tag">Tailwind</span>
+          <span class="tag">a11y</span><span class="tag">Jest</span><span class="tag">Chromatic</span>
+        </div>
+      `
+    },
+    {
+      title: 'Real-Time Dashboard',
+      html: `
+        <span class="modal-biome-tag valley">Project</span>
+        <h2>Real-Time Analytics Dashboard</h2>
+        <p class="subtitle">Valley Settlement &mdash; Internal Tool</p>
+        <p>Engineered a real-time monitoring dashboard used by 500+ engineers to track system health, deployment metrics, and performance KPIs across Walmart's digital commerce platform.</p>
+        <h3>Technical Highlights</h3>
+        <ul>
+          <li>WebSocket-based live data streaming with automatic reconnection</li>
+          <li>Canvas-rendered charts handling 10,000+ data points at 60fps</li>
+          <li>Configurable alert thresholds with Slack/PagerDuty integration</li>
+          <li>Custom time-series compression reducing bandwidth by 75%</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">React</span><span class="tag">D3.js</span><span class="tag">WebSockets</span>
+          <span class="tag">Go</span><span class="tag">Kubernetes</span><span class="tag">Datadog</span>
+        </div>
+      `
+    }
+  ],
+  forest: [
+    {
+      title: 'Frontend',
+      html: `
+        <span class="modal-biome-tag forest">Skills</span>
+        <h2>Frontend Engineering</h2>
+        <p class="subtitle">Forest Clearing &mdash; Core Expertise</p>
+        <p>Building fast, responsive, accessible frontends is what I do best. From React component architecture to pixel-perfect animations, I care about every detail of the user experience.</p>
+        <h3>Technologies</h3>
+        <ul>
+          <li><strong>React / Next.js</strong> &mdash; 3+ years, production at Walmart scale</li>
+          <li><strong>TypeScript</strong> &mdash; Strict typing, generics, utility types for robust code</li>
+          <li><strong>Tailwind / CSS-in-JS</strong> &mdash; Design system implementation, responsive layouts</li>
+          <li><strong>Framer Motion</strong> &mdash; Performant animations and micro-interactions</li>
+          <li><strong>Core Web Vitals</strong> &mdash; Performance profiling, code splitting, lazy loading</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">React</span><span class="tag">Next.js</span><span class="tag">TypeScript</span>
+          <span class="tag">Tailwind</span><span class="tag">Framer Motion</span><span class="tag">Webpack</span>
+        </div>
+      `
+    },
+    {
+      title: 'Backend & APIs',
+      html: `
+        <span class="modal-biome-tag forest">Skills</span>
+        <h2>Backend & API Design</h2>
+        <p class="subtitle">Forest Clearing &mdash; Core Expertise</p>
+        <p>I design scalable backend systems with an emphasis on clean API contracts, efficient data access patterns, and resilient service architectures.</p>
+        <h3>Technologies</h3>
+        <ul>
+          <li><strong>Node.js / Express</strong> &mdash; RESTful + GraphQL API design</li>
+          <li><strong>Go</strong> &mdash; High-performance microservices</li>
+          <li><strong>Python</strong> &mdash; Scripting, automation, data processing</li>
+          <li><strong>PostgreSQL / Redis</strong> &mdash; Schema design, caching, query optimization</li>
+          <li><strong>GraphQL</strong> &mdash; Federated schemas, DataLoader patterns</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Node.js</span><span class="tag">Go</span><span class="tag">Python</span>
+          <span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">GraphQL</span>
+        </div>
+      `
+    },
+    {
+      title: 'DevOps & Cloud',
+      html: `
+        <span class="modal-biome-tag forest">Skills</span>
+        <h2>DevOps & Cloud Infrastructure</h2>
+        <p class="subtitle">Forest Clearing &mdash; Supporting Expertise</p>
+        <p>Shipping code is only half the job. I build and maintain the CI/CD pipelines, container orchestration, and cloud infrastructure that keeps everything running reliably at scale.</p>
+        <h3>Technologies</h3>
+        <ul>
+          <li><strong>Docker / Kubernetes</strong> &mdash; Container orchestration, Helm charts</li>
+          <li><strong>AWS</strong> &mdash; Lambda, ECS, S3, CloudFront, DynamoDB</li>
+          <li><strong>CI/CD</strong> &mdash; GitHub Actions, Jenkins, automated testing pipelines</li>
+          <li><strong>Monitoring</strong> &mdash; Datadog, Grafana, custom alerting</li>
+          <li><strong>IaC</strong> &mdash; Terraform for reproducible infrastructure</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Docker</span><span class="tag">Kubernetes</span><span class="tag">AWS</span>
+          <span class="tag">Terraform</span><span class="tag">GitHub Actions</span><span class="tag">Datadog</span>
+        </div>
+      `
+    }
+  ],
+  river: [
+    {
+      title: 'Walmart Global Tech',
+      html: `
+        <span class="modal-biome-tag river">Experience</span>
+        <h2>Career Journey</h2>
+        <p class="subtitle">River Crossing &mdash; Professional Timeline</p>
+        <p>Four years of building software at increasing scale, from early-stage startups to the Fortune 1 company. Every role taught me something different about what it means to ship great software.</p>
+        <div class="timeline-entry">
+          <div class="timeline-year">2023 - Now</div>
+          <div class="timeline-body">
+            <h4>Walmart Global Tech</h4>
+            <div class="role">Software Developer</div>
+          </div>
+        </div>
+        <div class="timeline-entry">
+          <div class="timeline-year">2021 - 2023</div>
+          <div class="timeline-body">
+            <h4>Full Stack Engineer</h4>
+            <div class="role">Building end-to-end product features</div>
+          </div>
+        </div>
+        <div class="timeline-entry">
+          <div class="timeline-year">2020 - 2021</div>
+          <div class="timeline-body">
+            <h4>Software Engineer Intern</h4>
+            <div class="role">Early career foundations in startup environment</div>
+          </div>
+        </div>
+      `
+    },
+    {
+      title: 'Engineering Philosophy',
+      html: `
+        <span class="modal-biome-tag river">Experience</span>
+        <h2>How I Write Code</h2>
+        <p class="subtitle">River Crossing &mdash; Engineering Values</p>
+        <p>After four years of shipping production software, these are the principles that guide every line of code I write.</p>
+        <ul>
+          <li><strong>Readability is not optional</strong> &mdash; Code is read 10x more than it is written</li>
+          <li><strong>Tests are documentation that executes</strong> &mdash; If it is not tested, it is not finished</li>
+          <li><strong>The best abstraction is the one you do not need yet</strong> &mdash; Resist premature complexity</li>
+          <li><strong>Performance matters, but measure first</strong> &mdash; Premature optimization is the root of all evil</li>
+          <li><strong>Every PR should leave the codebase better</strong> &mdash; The Boy Scout rule, applied daily</li>
+          <li><strong>Accessibility is a baseline, not a feature</strong> &mdash; Everyone deserves to use what we build</li>
+          <li><strong>Ship, measure, iterate</strong> &mdash; Perfection is the enemy of progress</li>
+        </ul>
+      `
+    }
+  ],
+  village: [
+    {
+      title: 'Get in Touch',
+      html: `
+        <span class="modal-biome-tag village">Contact</span>
+        <h2>Let's Build Something Together</h2>
+        <p class="subtitle">Village Square &mdash; Open to Conversations</p>
+        <p>I am always open to discussing new opportunities, interesting projects, or just talking about technology. Whether you have a role in mind, a collaboration idea, or just want to connect -- I would love to hear from you.</p>
+        <div class="contact-links">
+          <a href="mailto:anshull.garg@gmail.com" class="contact-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            anshull.garg@gmail.com
+          </a>
+          <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            github.com/anshullgarg
+          </a>
+          <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            linkedin.com/in/anshullgarg
+          </a>
+        </div>
+      `
+    },
+    {
+      title: 'About Me',
+      html: `
+        <span class="modal-biome-tag village">Contact</span>
+        <h2>About Anshull</h2>
+        <p class="subtitle">Village Square &mdash; Who I Am</p>
+        <p>I am a software engineer who thinks in systems and ships in sprints. By day, I build production-grade applications at Walmart Global Tech -- the kind that handle traffic spikes, edge cases, and the unpredictable reality of serving millions of users.</p>
+        <p>I specialize in React ecosystems, Node.js microservices, and performance optimization. I have contributed to systems serving millions, reduced critical load times by 40%, and shipped features used across the entire Walmart digital platform.</p>
+        <p>I believe great software is built at the intersection of clean architecture, deep user empathy, and relentless iteration.</p>
+        <h3>Currently</h3>
+        <ul>
+          <li>Building scalable commerce systems at Walmart Global Tech</li>
+          <li>Exploring edge computing and serverless architectures</li>
+          <li>Contributing to open-source developer tooling</li>
+        </ul>
+      `
+    }
+  ]
+};
+
+/* ============================================================
+   MAIN APPLICATION
+   ============================================================ */
+(function() {
+  'use strict';
+
+  // --- Seed from timestamp ---
+  const SEED = Math.floor(Date.now() / 1000);
+  document.getElementById('loadingSeed').textContent = SEED;
+  document.getElementById('hudSeed').textContent = SEED;
+
+  const noise = new SimplexNoise(SEED);
+  const noise2 = new SimplexNoise(SEED + 12345);
+  const noise3 = new SimplexNoise(SEED + 67890);
+
+  // --- Canvas setup ---
+  const canvas = document.getElementById('landscape');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // --- Camera state ---
+  let cameraX = 0;
+  let targetCameraX = 0;
+  const SCROLL_SPEED = 1.8;
+
+  // --- Mouse / touch tracking ---
+  let mouseX = W / 2, mouseY = H / 2;
+  let mouseScreenX = W / 2, mouseScreenY = H / 2;
+
+  // --- Scroll input ---
+  window.addEventListener('wheel', (e) => {
+    targetCameraX += e.deltaY * SCROLL_SPEED;
+    targetCameraX += e.deltaX * SCROLL_SPEED;
+  }, { passive: true });
+
+  // --- Mouse movement scrolling ---
+  let isMouseDown = false;
+  let lastMousePageX = 0;
+
+  canvas.addEventListener('mousemove', (e) => {
+    mouseScreenX = e.clientX;
+    mouseScreenY = e.clientY;
+    mouseX = e.clientX + cameraX;
+    mouseY = e.clientY;
+
+    // Edge scrolling
+    const edgeZone = W * 0.15;
+    if (e.clientX < edgeZone) {
+      const strength = 1 - (e.clientX / edgeZone);
+      targetCameraX -= strength * 12;
+    } else if (e.clientX > W - edgeZone) {
+      const strength = (e.clientX - (W - edgeZone)) / edgeZone;
+      targetCameraX += strength * 12;
+    }
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    isMouseDown = true;
+    lastMousePageX = e.clientX;
+  });
+
+  window.addEventListener('mouseup', () => { isMouseDown = false; });
+
+  window.addEventListener('mousemove', (e) => {
+    if (isMouseDown) {
+      const dx = lastMousePageX - e.clientX;
+      targetCameraX += dx * 2;
+      lastMousePageX = e.clientX;
+    }
+  });
+
+  // --- Touch support ---
+  let touchStartX = 0;
+  let lastTouchX = 0;
+
+  canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    lastTouchX = touchStartX;
+  }, { passive: true });
+
+  canvas.addEventListener('touchmove', (e) => {
+    const tx = e.touches[0].clientX;
+    const dx = lastTouchX - tx;
+    targetCameraX += dx * 2.5;
+    lastTouchX = tx;
+    mouseScreenX = tx;
+    mouseScreenY = e.touches[0].clientY;
+  }, { passive: true });
+
+  // --- Keyboard ---
+  const keys = {};
+  window.addEventListener('keydown', (e) => {
+    keys[e.key] = true;
+    if (e.key === 'Escape') closeModal();
+  });
+  window.addEventListener('keyup', (e) => { keys[e.key] = false; });
+
+  // --- Terrain generation functions ---
+  function getTerrainHeight(worldX) {
+    const scale1 = 0.0008;
+    const scale2 = 0.002;
+    const scale3 = 0.006;
+    const scale4 = 0.015;
+
+    let h = 0;
+    h += noise.noise2D(worldX * scale1, 0.5) * 0.5;   // Major features
+    h += noise.noise2D(worldX * scale2, 1.5) * 0.25;   // Medium hills
+    h += noise.noise2D(worldX * scale3, 2.5) * 0.15;   // Small bumps
+    h += noise.noise2D(worldX * scale4, 3.5) * 0.06;   // Micro detail
+
+    return h;
+  }
+
+  function getBiome(worldX) {
+    const v = noise2.noise2D(worldX * 0.0003, 10);
+    const v2 = noise3.noise2D(worldX * 0.0005, 20);
+
+    if (v > 0.35) return 'mountain';
+    if (v < -0.35) return 'valley';
+    if (v2 > 0.3) return 'forest';
+    if (v2 < -0.3) return 'river';
+    if (Math.abs(v) < 0.1 && Math.abs(v2) < 0.15) return 'village';
+    return 'plains';
+  }
+
+  function getBiomeColor(biome) {
+    switch (biome) {
+      case 'mountain': return { r: 140, g: 128, b: 110 };
+      case 'valley':   return { r: 85, g: 120, b: 60 };
+      case 'forest':   return { r: 50, g: 90, b: 40 };
+      case 'river':    return { r: 60, g: 100, b: 130 };
+      case 'village':  return { r: 160, g: 130, b: 80 };
+      default:         return { r: 90, g: 110, b: 70 };
+    }
+  }
+
+  // --- POI (Points of Interest) generation ---
+  const poiCache = new Map();
+  const POI_SPACING = 600;
+
+  function getPOIsInRange(startX, endX) {
+    const result = [];
+    const startSlot = Math.floor(startX / POI_SPACING) - 1;
+    const endSlot = Math.ceil(endX / POI_SPACING) + 1;
+
+    for (let slot = startSlot; slot <= endSlot; slot++) {
+      if (poiCache.has(slot)) {
+        result.push(poiCache.get(slot));
+        continue;
+      }
+
+      const baseX = slot * POI_SPACING;
+      const offsetNoise = noise3.noise2D(slot * 0.73, 50);
+      const worldX = baseX + offsetNoise * POI_SPACING * 0.3;
+      const biome = getBiome(worldX);
+      const terrainH = getTerrainHeight(worldX);
+
+      if (biome === 'plains') {
+        poiCache.set(slot, null);
+        continue;
+      }
+
+      const contentArr = CONTENT[biome];
+      if (!contentArr || contentArr.length === 0) {
+        poiCache.set(slot, null);
+        continue;
+      }
+
+      const contentIdx = Math.abs(Math.floor(noise.noise2D(slot * 1.37, 100) * 1000)) % contentArr.length;
+
+      const poi = {
+        worldX,
+        terrainH,
+        biome,
+        contentIdx,
+        title: contentArr[contentIdx].title,
+        slot
+      };
+
+      poiCache.set(slot, poi);
+      result.push(poi);
+    }
+
+    return result.filter(Boolean);
+  }
+
+  // --- Sky rendering ---
+  function drawSky(timeOfDay) {
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+
+    // Dynamic sky based on subtle noise-driven "time"
+    const t = (Math.sin(cameraX * 0.00005) + 1) / 2;
+
+    // Dawn/dusk colors blended
+    const topR = Math.floor(25 + t * 20);
+    const topG = Math.floor(20 + t * 15);
+    const topB = Math.floor(50 + t * 30);
+
+    const midR = Math.floor(60 + t * 80);
+    const midG = Math.floor(40 + t * 50);
+    const midB = Math.floor(50 + t * 20);
+
+    const botR = Math.floor(80 + t * 120);
+    const botG = Math.floor(60 + t * 70);
+    const botB = Math.floor(40 + t * 20);
+
+    skyGrad.addColorStop(0, `rgb(${topR},${topG},${topB})`);
+    skyGrad.addColorStop(0.4, `rgb(${midR},${midG},${midB})`);
+    skyGrad.addColorStop(0.7, `rgb(${botR},${botG},${botB})`);
+    skyGrad.addColorStop(1, `rgb(${Math.floor(botR*0.6)},${Math.floor(botG*0.5)},${Math.floor(botB*0.4)})`);
+
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // --- Stars ---
+  const starPositions = [];
+  for (let i = 0; i < 200; i++) {
+    starPositions.push({
+      x: Math.random(),
+      y: Math.random() * 0.5,
+      size: Math.random() * 1.5 + 0.5,
+      brightness: Math.random() * 0.5 + 0.3,
+      twinkleSpeed: Math.random() * 2 + 1
+    });
+  }
+
+  function drawStars(time) {
+    const t = (Math.sin(cameraX * 0.00005) + 1) / 2;
+    const starAlpha = Math.max(0, 1 - t * 1.5);
+
+    if (starAlpha < 0.05) return;
+
+    starPositions.forEach(star => {
+      const twinkle = Math.sin(time * star.twinkleSpeed + star.x * 100) * 0.3 + 0.7;
+      const alpha = star.brightness * twinkle * starAlpha;
+      const sx = ((star.x * W * 3 - cameraX * 0.02) % W + W) % W;
+      const sy = star.y * H;
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 248, 235, ${alpha})`;
+      ctx.fill();
+    });
+  }
+
+  // --- Cloud layer ---
+  function drawClouds(time) {
+    const t = (Math.sin(cameraX * 0.00005) + 1) / 2;
+    const cloudAlpha = 0.03 + t * 0.04;
+
+    for (let i = 0; i < 8; i++) {
+      const baseX = ((i * 350 + noise.noise2D(i * 2.3, 30) * 200 - cameraX * 0.08 + time * 4) % (W + 400)) - 200;
+      const baseY = 40 + i * 25 + Math.sin(time * 0.2 + i) * 8;
+      const w = 120 + noise.noise2D(i * 3.7, 40) * 80;
+      const h = 20 + noise.noise2D(i * 4.1, 50) * 15;
+
+      ctx.beginPath();
+      ctx.ellipse(baseX, baseY, w, h, 0, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 190, 170, ${cloudAlpha})`;
+      ctx.fill();
+    }
+  }
+
+  // --- Sun/Moon ---
+  function drawCelestial() {
+    const t = (Math.sin(cameraX * 0.00005) + 1) / 2;
+
+    // Sun
+    const sunX = W * 0.7 + Math.sin(cameraX * 0.00003) * W * 0.2;
+    const sunY = H * 0.15 + (1 - t) * H * 0.2;
+    const sunAlpha = t * 0.6;
+
+    if (sunAlpha > 0.05) {
+      const sunGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 80);
+      sunGrad.addColorStop(0, `rgba(255, 220, 150, ${sunAlpha})`);
+      sunGrad.addColorStop(0.3, `rgba(255, 180, 100, ${sunAlpha * 0.5})`);
+      sunGrad.addColorStop(1, `rgba(255, 150, 80, 0)`);
+      ctx.fillStyle = sunGrad;
+      ctx.fillRect(sunX - 80, sunY - 80, 160, 160);
+    }
+
+    // Moon
+    const moonAlpha = (1 - t) * 0.4;
+    if (moonAlpha > 0.05) {
+      const moonX = W * 0.3 - Math.sin(cameraX * 0.00003) * W * 0.15;
+      const moonY = H * 0.12 + t * H * 0.15;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 16, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(230, 225, 210, ${moonAlpha})`;
+      ctx.fill();
+
+      const moonGlow = ctx.createRadialGradient(moonX, moonY, 10, moonX, moonY, 60);
+      moonGlow.addColorStop(0, `rgba(200, 210, 230, ${moonAlpha * 0.3})`);
+      moonGlow.addColorStop(1, 'rgba(200, 210, 230, 0)');
+      ctx.fillStyle = moonGlow;
+      ctx.fillRect(moonX - 60, moonY - 60, 120, 120);
+    }
+  }
+
+  // --- Mountains (background parallax layers) ---
+  function drawMountainLayer(parallax, baseY, amplitude, colorFunc, step) {
+    ctx.beginPath();
+    ctx.moveTo(-2, H);
+
+    for (let sx = -2; sx <= W + 2; sx += step) {
+      const worldX = sx + cameraX * parallax;
+      const th = getTerrainHeight(worldX);
+      const y = baseY - th * amplitude;
+      if (sx === -2) ctx.moveTo(sx, y);
+      else ctx.lineTo(sx, y);
+    }
+
+    ctx.lineTo(W + 2, H);
+    ctx.closePath();
+    ctx.fillStyle = colorFunc();
+    ctx.fill();
+  }
+
+  // --- Draw terrain silhouette layers ---
+  function drawTerrain() {
+    // Far mountain range (very dark, misty)
+    drawMountainLayer(0.15, H * 0.55, H * 0.45, () => {
+      const grad = ctx.createLinearGradient(0, H * 0.2, 0, H);
+      grad.addColorStop(0, 'rgba(45, 40, 50, 0.6)');
+      grad.addColorStop(1, 'rgba(35, 30, 40, 0.8)');
+      return grad;
+    }, 4);
+
+    // Mid mountain range
+    drawMountainLayer(0.3, H * 0.6, H * 0.4, () => {
+      const grad = ctx.createLinearGradient(0, H * 0.25, 0, H);
+      grad.addColorStop(0, 'rgba(55, 52, 45, 0.7)');
+      grad.addColorStop(1, 'rgba(40, 38, 35, 0.85)');
+      return grad;
+    }, 3);
+
+    // Near hills
+    drawMountainLayer(0.55, H * 0.65, H * 0.32, () => {
+      const grad = ctx.createLinearGradient(0, H * 0.35, 0, H);
+      grad.addColorStop(0, 'rgba(50, 60, 38, 0.85)');
+      grad.addColorStop(1, 'rgba(35, 42, 28, 0.95)');
+      return grad;
+    }, 2);
+  }
+
+  // --- Main ground layer with biome coloring ---
+  function drawGround() {
+    const groundBaseY = H * 0.68;
+    const groundAmp = H * 0.22;
+
+    // Fill colored ground
+    for (let sx = 0; sx < W; sx += 2) {
+      const worldX = sx + cameraX;
+      const th = getTerrainHeight(worldX);
+      const biome = getBiome(worldX);
+      const bc = getBiomeColor(biome);
+      const y = groundBaseY - th * groundAmp;
+
+      const grad = ctx.createLinearGradient(0, y, 0, H);
+
+      // Biome-specific ground colors
+      const darken = 0.45;
+      grad.addColorStop(0, `rgb(${bc.r}, ${bc.g}, ${bc.b})`);
+      grad.addColorStop(0.4, `rgb(${Math.floor(bc.r*0.7)}, ${Math.floor(bc.g*0.65)}, ${Math.floor(bc.b*0.55)})`);
+      grad.addColorStop(1, `rgb(${Math.floor(bc.r*darken)}, ${Math.floor(bc.g*darken)}, ${Math.floor(bc.b*darken)})`);
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(sx, y, 3, H - y);
+    }
+
+    // Ground outline (top edge)
+    ctx.beginPath();
+    for (let sx = -2; sx <= W + 2; sx += 1) {
+      const worldX = sx + cameraX;
+      const th = getTerrainHeight(worldX);
+      const y = groundBaseY - th * groundAmp;
+      if (sx === -2) ctx.moveTo(sx, y);
+      else ctx.lineTo(sx, y);
+    }
+    ctx.strokeStyle = 'rgba(180, 170, 140, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // --- Trees ---
+  function drawTree(x, baseY, height, biome) {
+    const trunkW = height * 0.08;
+    const trunkH = height * 0.35;
+
+    // Trunk
+    ctx.fillStyle = 'rgba(60, 45, 30, 0.9)';
+    ctx.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+
+    // Canopy (triangular for conifers, round for deciduous)
+    if (biome === 'forest' || biome === 'mountain') {
+      // Conifer
+      for (let i = 0; i < 3; i++) {
+        const layerY = baseY - trunkH - i * height * 0.18;
+        const layerW = height * (0.35 - i * 0.06);
+        ctx.beginPath();
+        ctx.moveTo(x, layerY - height * 0.22);
+        ctx.lineTo(x - layerW, layerY);
+        ctx.lineTo(x + layerW, layerY);
+        ctx.closePath();
+        const shade = biome === 'mountain' ? 50 + i * 10 : 35 + i * 10;
+        ctx.fillStyle = `rgba(${shade}, ${shade + 30}, ${shade - 10}, 0.92)`;
+        ctx.fill();
+      }
+    } else {
+      // Deciduous / round canopy
+      const canopyR = height * 0.3;
+      const canopyY = baseY - trunkH - canopyR * 0.5;
+      ctx.beginPath();
+      ctx.arc(x, canopyY, canopyR, 0, Math.PI * 2);
+      const shade = biome === 'valley' ? 55 : 50;
+      ctx.fillStyle = `rgba(${shade}, ${shade + 35}, ${shade - 15}, 0.9)`;
+      ctx.fill();
+
+      // Add a slightly offset smaller circle
+      ctx.beginPath();
+      ctx.arc(x + canopyR * 0.3, canopyY - canopyR * 0.2, canopyR * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${shade + 10}, ${shade + 40}, ${shade - 5}, 0.7)`;
+      ctx.fill();
+    }
+  }
+
+  function drawTrees() {
+    const groundBaseY = H * 0.68;
+    const groundAmp = H * 0.22;
+    const treeSpacing = 45;
+
+    const startX = Math.floor(cameraX / treeSpacing) * treeSpacing - treeSpacing;
+    const endX = cameraX + W + treeSpacing;
+
+    for (let wx = startX; wx < endX; wx += treeSpacing) {
+      const n = noise3.noise2D(wx * 0.01, 200);
+      if (n < 0.1) continue; // Not all positions get trees
+
+      const biome = getBiome(wx);
+      if (biome === 'river') continue;
+
+      let density;
+      switch (biome) {
+        case 'forest': density = 0.8; break;
+        case 'mountain': density = 0.3; break;
+        case 'valley': density = 0.5; break;
+        case 'village': density = 0.2; break;
+        default: density = 0.35;
+      }
+
+      if (n < 1 - density) continue;
+
+      const th = getTerrainHeight(wx);
+      const sx = wx - cameraX;
+      const baseY = groundBaseY - th * groundAmp;
+      const treeHeight = 18 + n * 28;
+
+      drawTree(sx, baseY, treeHeight, biome);
+    }
+  }
+
+  // --- River drawing ---
+  function drawRivers(time) {
+    const groundBaseY = H * 0.68;
+    const groundAmp = H * 0.22;
+
+    for (let sx = 0; sx < W; sx += 2) {
+      const worldX = sx + cameraX;
+      const biome = getBiome(worldX);
+      if (biome !== 'river') continue;
+
+      const th = getTerrainHeight(worldX);
+      const y = groundBaseY - th * groundAmp;
+
+      // River water
+      const shimmer = Math.sin(time * 2 + worldX * 0.02) * 0.1 + 0.5;
+      ctx.fillStyle = `rgba(60, 110, 150, ${shimmer})`;
+      ctx.fillRect(sx, y + 2, 3, 12);
+
+      // Water reflection
+      ctx.fillStyle = `rgba(120, 170, 200, ${shimmer * 0.3})`;
+      ctx.fillRect(sx, y + 1, 3, 3);
+    }
+  }
+
+  // --- Village structures ---
+  function drawVillages() {
+    const groundBaseY = H * 0.68;
+    const groundAmp = H * 0.22;
+    const houseSpacing = 120;
+
+    const startX = Math.floor(cameraX / houseSpacing) * houseSpacing - houseSpacing;
+    const endX = cameraX + W + houseSpacing;
+
+    for (let wx = startX; wx < endX; wx += houseSpacing) {
+      const biome = getBiome(wx);
+      if (biome !== 'village') continue;
+
+      const n = noise.noise2D(wx * 0.05, 300);
+      if (n < 0) continue;
+
+      const th = getTerrainHeight(wx);
+      const sx = wx - cameraX;
+      const baseY = groundBaseY - th * groundAmp;
+
+      const houseW = 16 + n * 12;
+      const houseH = 12 + n * 10;
+
+      // House body
+      ctx.fillStyle = 'rgba(140, 110, 70, 0.9)';
+      ctx.fillRect(sx - houseW / 2, baseY - houseH, houseW, houseH);
+
+      // Roof
+      ctx.beginPath();
+      ctx.moveTo(sx - houseW / 2 - 4, baseY - houseH);
+      ctx.lineTo(sx, baseY - houseH - houseH * 0.6);
+      ctx.lineTo(sx + houseW / 2 + 4, baseY - houseH);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(100, 60, 35, 0.95)';
+      ctx.fill();
+
+      // Window
+      ctx.fillStyle = 'rgba(255, 220, 120, 0.5)';
+      ctx.fillRect(sx - 3, baseY - houseH + 3, 5, 5);
+
+      // Chimney smoke (subtle)
+      for (let s = 0; s < 3; s++) {
+        const smokeY = baseY - houseH - houseH * 0.6 - s * 8 - 5;
+        const smokeX = sx + houseW * 0.2 + Math.sin(performance.now() * 0.001 + s) * 3;
+        ctx.beginPath();
+        ctx.arc(smokeX, smokeY, 3 + s * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 170, 160, ${0.12 - s * 0.03})`;
+        ctx.fill();
+      }
+    }
+  }
+
+  // --- POI Markers / Flags ---
+  let hoveredPOI = null;
+  let nearPOIs = [];
+
+  function drawPOIMarkers(time) {
+    const groundBaseY = H * 0.68;
+    const groundAmp = H * 0.22;
+
+    nearPOIs = getPOIsInRange(cameraX - 100, cameraX + W + 100);
+    hoveredPOI = null;
+
+    const tooltip = document.getElementById('tooltip');
+    let showTooltip = false;
+
+    nearPOIs.forEach(poi => {
+      const sx = poi.worldX - cameraX;
+      const th = poi.terrainH;
+      const baseY = groundBaseY - th * groundAmp;
+
+      // Flag pole
+      const poleH = 40 + Math.sin(time * 1.5 + poi.slot) * 2;
+      const flagX = sx;
+      const flagY = baseY - poleH;
+
+      ctx.strokeStyle = 'rgba(180, 160, 130, 0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(flagX, baseY);
+      ctx.lineTo(flagX, flagY);
+      ctx.stroke();
+
+      // Flag banner with biome color
+      const bc = getBiomeColor(poi.biome);
+      const wave = Math.sin(time * 3 + poi.slot * 2) * 2;
+
+      ctx.beginPath();
+      ctx.moveTo(flagX, flagY);
+      ctx.quadraticCurveTo(flagX + 8, flagY + 3 + wave, flagX + 16, flagY + 2);
+      ctx.lineTo(flagX + 14, flagY + 10);
+      ctx.quadraticCurveTo(flagX + 7, flagY + 8 + wave, flagX, flagY + 11);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${bc.r + 40}, ${bc.g + 40}, ${bc.b + 40}, 0.85)`;
+      ctx.fill();
+
+      // Glow pulse
+      const pulse = (Math.sin(time * 2 + poi.slot) + 1) / 2;
+      const glowR = 10 + pulse * 6;
+      const glowGrad = ctx.createRadialGradient(flagX, flagY + 5, 0, flagX, flagY + 5, glowR);
+      glowGrad.addColorStop(0, `rgba(${bc.r + 80}, ${bc.g + 80}, ${bc.b + 80}, ${0.15 + pulse * 0.1})`);
+      glowGrad.addColorStop(1, `rgba(${bc.r + 80}, ${bc.g + 80}, ${bc.b + 80}, 0)`);
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(flagX, flagY + 5, glowR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hover detection
+      const dx = mouseScreenX - sx;
+      const dy = mouseScreenY - (flagY + 5);
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 30) {
+        hoveredPOI = poi;
+        showTooltip = true;
+
+        // Hover ring
+        ctx.beginPath();
+        ctx.arc(flagX, flagY + 5, 18 + pulse * 4, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${bc.r + 80}, ${bc.g + 80}, ${bc.b + 80}, 0.3)`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Position tooltip
+        tooltip.style.left = (sx + 20) + 'px';
+        tooltip.style.top = (flagY - 10) + 'px';
+        document.getElementById('tooltipTitle').textContent = poi.title;
+
+        const biomeLabels = {
+          mountain: 'Achievement',
+          valley: 'Project',
+          forest: 'Skills',
+          river: 'Experience',
+          village: 'Contact'
+        };
+        document.getElementById('tooltipSub').textContent = biomeLabels[poi.biome] || poi.biome;
+      }
+
+      // Base marker dot
+      ctx.beginPath();
+      ctx.arc(flagX, baseY, 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${bc.r + 60}, ${bc.g + 60}, ${bc.b + 60}, 0.8)`;
+      ctx.fill();
+    });
+
+    if (showTooltip) {
+      tooltip.classList.add('visible');
+      canvas.style.cursor = 'pointer';
+    } else {
+      tooltip.classList.remove('visible');
+      canvas.style.cursor = isMouseDown ? 'grabbing' : 'default';
+    }
+  }
+
+  // --- Atmospheric effects ---
+  function drawAtmosphere(time) {
+    // Fog layer
+    const fogY = H * 0.6;
+    const fogGrad = ctx.createLinearGradient(0, fogY - 30, 0, fogY + 50);
+    fogGrad.addColorStop(0, 'rgba(60, 55, 50, 0)');
+    fogGrad.addColorStop(0.5, 'rgba(60, 55, 50, 0.08)');
+    fogGrad.addColorStop(1, 'rgba(60, 55, 50, 0)');
+    ctx.fillStyle = fogGrad;
+    ctx.fillRect(0, fogY - 30, W, 80);
+
+    // Drifting particles
+    for (let i = 0; i < 15; i++) {
+      const px = ((i * 137 + time * 8 + noise.noise2D(i * 2.1, time * 0.3) * 50 - cameraX * 0.3) % (W + 100)) - 50;
+      const py = H * 0.4 + noise.noise2D(i * 3.7, time * 0.5) * H * 0.25;
+      const alpha = 0.08 + Math.sin(time + i) * 0.04;
+      const size = 1 + noise.noise2D(i * 5, 60) * 1.5;
+
+      ctx.beginPath();
+      ctx.arc(px, py, size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 190, 170, ${alpha})`;
+      ctx.fill();
+    }
+
+    // Vignette
+    const vigGrad = ctx.createRadialGradient(W/2, H/2, H*0.35, W/2, H/2, H*0.85);
+    vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    vigGrad.addColorStop(1, 'rgba(0,0,0,0.35)');
+    ctx.fillStyle = vigGrad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // --- Click handling ---
+  canvas.addEventListener('click', (e) => {
+    if (hoveredPOI) {
+      openModal(hoveredPOI);
+    }
+  });
+
+  canvas.addEventListener('touchend', (e) => {
+    if (hoveredPOI) {
+      openModal(hoveredPOI);
+    }
+  });
+
+  // --- Modal ---
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalContent = document.getElementById('modalContent');
+  const modalCloseBtn = document.getElementById('modalClose');
+
+  function openModal(poi) {
+    const content = CONTENT[poi.biome][poi.contentIdx];
+    modalContent.innerHTML = content.html;
+    modalOverlay.classList.add('active');
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+  }
+
+  modalCloseBtn.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  // --- Minimap ---
+  const minimapCanvas = document.getElementById('minimapCanvas');
+  const mctx = minimapCanvas.getContext('2d');
+  minimapCanvas.width = 200;
+  minimapCanvas.height = 32;
+
+  function drawMinimap() {
+    mctx.clearRect(0, 0, 200, 32);
+
+    const range = 8000;
+    const startX = cameraX + W / 2 - range / 2;
+
+    for (let px = 0; px < 200; px++) {
+      const worldX = startX + (px / 200) * range;
+      const th = getTerrainHeight(worldX);
+      const biome = getBiome(worldX);
+      const bc = getBiomeColor(biome);
+
+      const y = 16 - th * 14;
+
+      mctx.fillStyle = `rgba(${bc.r}, ${bc.g}, ${bc.b}, 0.6)`;
+      mctx.fillRect(px, y, 1, 32 - y);
+    }
+
+    // POI dots on minimap
+    nearPOIs.forEach(poi => {
+      const relX = ((poi.worldX - startX) / range) * 200;
+      if (relX < 0 || relX > 200) return;
+      const bc = getBiomeColor(poi.biome);
+      mctx.beginPath();
+      mctx.arc(relX, 4, 2, 0, Math.PI * 2);
+      mctx.fillStyle = `rgba(${bc.r + 80}, ${bc.g + 80}, ${bc.b + 80}, 0.8)`;
+      mctx.fill();
+    });
+  }
+
+  // --- HUD updates ---
+  function updateHUD() {
+    const centerX = cameraX + W / 2;
+    document.getElementById('coordX').textContent = Math.floor(centerX);
+    const biome = getBiome(centerX);
+    document.getElementById('coordBiome').textContent = biome;
+
+    const biomeDisplayNames = {
+      mountain: 'MOUNTAIN PEAKS',
+      valley: 'VERDANT VALLEY',
+      forest: 'DEEP FOREST',
+      river: 'RIVER CROSSING',
+      village: 'VILLAGE SQUARE',
+      plains: 'OPEN PLAINS'
+    };
+
+    const biomeLabel = document.getElementById('biomeLabel');
+    biomeLabel.textContent = biomeDisplayNames[biome] || 'PLAINS';
+
+    const biomeColors = {
+      mountain: 'rgba(200, 180, 140, 0.6)',
+      valley: 'rgba(140, 180, 100, 0.6)',
+      forest: 'rgba(100, 160, 80, 0.6)',
+      river: 'rgba(100, 170, 210, 0.6)',
+      village: 'rgba(210, 170, 80, 0.6)',
+      plains: 'rgba(180, 180, 160, 0.5)'
+    };
+    biomeLabel.style.color = biomeColors[biome] || biomeColors.plains;
+  }
+
+  // --- Main render loop ---
+  let lastTime = 0;
+  let frameCount = 0;
+
+  function render(timestamp) {
+    const time = timestamp * 0.001;
+    const dt = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+
+    // Keyboard input
+    if (keys['ArrowRight'] || keys['d']) targetCameraX += 8;
+    if (keys['ArrowLeft'] || keys['a']) targetCameraX -= 8;
+
+    // Smooth camera
+    cameraX += (targetCameraX - cameraX) * 0.08;
+
+    // Update mouse world position
+    mouseX = mouseScreenX + cameraX;
+
+    // --- DRAW EVERYTHING ---
+    ctx.clearRect(0, 0, W, H);
+
+    drawSky();
+    drawStars(time);
+    drawCelestial();
+    drawClouds(time);
+    drawTerrain();
+    drawGround();
+    drawRivers(time);
+    drawVillages();
+    drawTrees();
+    drawPOIMarkers(time);
+    drawAtmosphere(time);
+
+    // Update peripherals
+    frameCount++;
+    if (frameCount % 3 === 0) {
+      updateHUD();
+      drawMinimap();
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  // --- Loading sequence ---
+  let loadProgress = 0;
+  const loadingBar = document.getElementById('loadingBar');
+  const loadingScreen = document.getElementById('loading');
+
+  function simulateLoading() {
+    loadProgress += Math.random() * 15 + 5;
+    if (loadProgress > 100) loadProgress = 100;
+    loadingBar.style.width = loadProgress + '%';
+
+    if (loadProgress >= 100) {
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        requestAnimationFrame(render);
+      }, 400);
+    } else {
+      setTimeout(simulateLoading, 80 + Math.random() * 120);
+    }
+  }
+
+  // Pre-cache some POIs
+  getPOIsInRange(-2000, 4000);
+
+  simulateLoading();
+
+})();
+</script>
+</body>
+</html>

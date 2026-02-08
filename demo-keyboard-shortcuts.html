@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyboard Shortcuts Portfolio | Anshull Garg</title>
+<meta name="description" content="Anshull Garg - Software Engineer at Walmart. An interactive keyboard-driven portfolio. Every key does something.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-surface: #12121a;
+  --bg-elevated: #1a1a26;
+  --bg-key: #1e1e2e;
+  --bg-key-active: #3b82f6;
+  --text-primary: #e8e8f0;
+  --text-secondary: #8888a8;
+  --text-dim: #55556a;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.4);
+  --accent-subtle: rgba(59, 130, 246, 0.1);
+  --accent-2: #8b5cf6;
+  --accent-3: #06b6d4;
+  --accent-4: #f59e0b;
+  --accent-5: #ef4444;
+  --accent-6: #10b981;
+  --border: #2a2a3a;
+  --border-active: #3b82f6;
+  --key-shadow: #08080d;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --transition-fast: 0.15s ease;
+  --transition-med: 0.3s ease;
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+  cursor: default;
+}
+
+body::-webkit-scrollbar { width: 6px; }
+body::-webkit-scrollbar-track { background: var(--bg); }
+body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ============================================================
+   SPLASH / PRESS ANY KEY SCREEN
+   ============================================================ */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#splash-screen.hidden {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.splash-title {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.splash-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  color: var(--text-secondary);
+  margin-bottom: 3rem;
+}
+
+.splash-prompt {
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: var(--text-dim);
+  animation: pulse-text 2s ease-in-out infinite;
+}
+
+.splash-prompt .key-hint {
+  display: inline-block;
+  background: var(--bg-key);
+  border: 1px solid var(--border);
+  border-bottom: 3px solid var(--key-shadow);
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin: 0 4px;
+  color: var(--text-primary);
+  font-size: 0.85em;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.splash-keyboard-art {
+  margin-bottom: 2rem;
+  opacity: 0.15;
+  font-family: var(--font-mono);
+  font-size: clamp(0.4rem, 1vw, 0.65rem);
+  line-height: 1.3;
+  color: var(--accent);
+  white-space: pre;
+  text-align: center;
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+#main-content {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  min-height: 100vh;
+}
+
+#main-content.visible {
+  opacity: 1;
+}
+
+/* ============================================================
+   NAVIGATION BAR (top)
+   ============================================================ */
+#nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform var(--transition-med);
+}
+
+.nav-logo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.nav-link:hover, .nav-link:focus {
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.nav-link.active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.nav-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--bg-key);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--key-shadow);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ============================================================
+   KEY PRESS INDICATOR (floating)
+   ============================================================ */
+#key-press-display {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.key-press-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  animation: key-pop-in 0.2s ease-out, key-fade-out 0.4s ease-in 1.2s forwards;
+  white-space: nowrap;
+}
+
+@keyframes key-pop-in {
+  from { opacity: 0; transform: translateX(20px) scale(0.9); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes key-fade-out {
+  to { opacity: 0; transform: translateX(20px); }
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section {
+  min-height: 100vh;
+  padding: 120px 2rem 80px;
+  max-width: 1000px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  padding: 4px 10px;
+  background: var(--accent-subtle);
+  border-radius: 4px;
+}
+
+.section-label .shortcut-badge {
+  background: var(--bg-key);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--key-shadow);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 0.65rem;
+  color: var(--accent);
+}
+
+.section-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+#hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+.hero-name {
+  font-family: var(--font-sans);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fff 0%, #c8c8e0 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-tagline {
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.hero-description {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  max-width: 550px;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.hero-shortcuts-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.hint-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.hint-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  background: var(--bg-key);
+  border: 1px solid var(--border);
+  border-bottom: 3px solid var(--key-shadow);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.hint-key.pressed {
+  border-bottom-width: 1px;
+  transform: translateY(2px);
+  background: var(--bg-key-active);
+  color: #fff;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* ============================================================
+   ABOUT SECTION
+   ============================================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.about-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all var(--transition-med);
+}
+
+.about-card:hover, .about-card:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px var(--accent-subtle);
+}
+
+.about-card h3 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.about-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.about-text {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 700px;
+}
+
+.about-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ============================================================
+   PROJECTS SECTION
+   ============================================================ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.project-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  transition: all var(--transition-med);
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-med);
+}
+
+.project-card:hover::before,
+.project-card:focus-within::before {
+  transform: scaleX(1);
+}
+
+.project-card:hover, .project-card:focus-within {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 30px var(--accent-subtle);
+}
+
+.project-number {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+
+.project-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.project-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  background: var(--accent-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--accent);
+}
+
+/* ============================================================
+   SKILLS SECTION
+   ============================================================ */
+.skills-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.skill-category {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all var(--transition-med);
+}
+
+.skill-category:hover {
+  border-color: var(--accent);
+}
+
+.skill-category h3 {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.skill-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.skill-item:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.skill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ============================================================
+   EXPERIENCE SECTION
+   ============================================================ */
+.experience-timeline {
+  margin-top: 2rem;
+  position: relative;
+  padding-left: 2rem;
+}
+
+.experience-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+}
+
+.experience-item {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all var(--transition-med);
+}
+
+.experience-item::before {
+  content: '';
+  position: absolute;
+  left: -2.35rem;
+  top: 1.75rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.experience-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+}
+
+.experience-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.experience-item h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.experience-company {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.experience-item ul {
+  list-style: none;
+  padding: 0;
+}
+
+.experience-item li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 0.35rem;
+}
+
+.experience-item li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* ============================================================
+   CONTACT SECTION
+   ============================================================ */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: all var(--transition-med);
+  cursor: pointer;
+}
+
+.contact-card:hover, .contact-card:focus {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 20px var(--accent-subtle);
+  outline: none;
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-subtle);
+  border-radius: 12px;
+  transition: all var(--transition-fast);
+}
+
+.contact-card:hover .contact-icon {
+  background: var(--accent);
+  color: #fff;
+}
+
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============================================================
+   VISUAL KEYBOARD
+   ============================================================ */
+#visual-keyboard {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  background: rgba(10, 10, 15, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px 16px;
+  transform: translateY(100%);
+  transition: transform var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+#visual-keyboard.visible {
+  transform: translateY(0);
+}
+
+.kb-toggle {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 950;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 4px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.kb-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.kb-toggle.hidden {
+  display: none;
+}
+
+.kb-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.kb-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  background: var(--bg-key);
+  border: 1px solid var(--border);
+  border-bottom: 3px solid var(--key-shadow);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.08s ease;
+  user-select: none;
+  position: relative;
+}
+
+.kb-key.bound {
+  color: var(--text-secondary);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.kb-key.bound::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+}
+
+.kb-key.active {
+  border-bottom-width: 1px;
+  transform: translateY(2px);
+  background: var(--bg-key-active);
+  color: #fff;
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(59, 130, 246, 0.15);
+  border-color: var(--accent);
+}
+
+.kb-key.wide-1 { min-width: 54px; }
+.kb-key.wide-15 { min-width: 54px; }
+.kb-key.wide-175 { min-width: 64px; }
+.kb-key.wide-2 { min-width: 72px; }
+.kb-key.wide-225 { min-width: 82px; }
+.kb-key.space { min-width: 220px; }
+
+.kb-key .key-sub {
+  display: block;
+  font-size: 0.45rem;
+  opacity: 0.5;
+  margin-top: 1px;
+}
+
+/* ============================================================
+   CHEAT SHEET (floating panel)
+   ============================================================ */
+#cheat-sheet {
+  position: fixed;
+  top: 70px;
+  left: 20px;
+  z-index: 8000;
+  width: 280px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: rgba(18, 18, 26, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transform: translateX(-320px);
+  transition: transform var(--transition-slow);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+#cheat-sheet.visible {
+  transform: translateX(0);
+}
+
+.cheat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cheat-header h3 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.cheat-toggle-hint {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+}
+
+.cheat-group {
+  margin-bottom: 1rem;
+}
+
+.cheat-group h4 {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.cheat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.cheat-item .cheat-keys {
+  display: flex;
+  gap: 3px;
+}
+
+.cheat-item .ck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 5px;
+  background: var(--bg-key);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--key-shadow);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.cheat-item .cheat-desc {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   VIM COMMAND LINE
+   ============================================================ */
+#vim-cmdline {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9500;
+  height: 36px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  display: none;
+  align-items: center;
+  padding: 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+#vim-cmdline.active {
+  display: flex;
+}
+
+#vim-cmdline-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  flex: 1;
+  caret-color: var(--accent);
+}
+
+/* ============================================================
+   EASTER EGG OVERLAY
+   ============================================================ */
+#easter-egg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#easter-egg-overlay.active {
+  display: flex;
+}
+
+.easter-egg-content {
+  text-align: center;
+  animation: egg-appear 0.6s ease-out;
+}
+
+@keyframes egg-appear {
+  from { opacity: 0; transform: scale(0.8) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.easter-egg-content h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 1rem;
+}
+
+.easter-egg-content p {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.easter-egg-dismiss {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2rem;
+  animation: pulse-text 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   KONAMI OVERLAY
+   ============================================================ */
+#konami-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: #000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#konami-overlay.active {
+  display: flex;
+}
+
+.konami-content {
+  text-align: center;
+  animation: konami-appear 0.8s ease-out;
+}
+
+@keyframes konami-appear {
+  from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+.konami-content h2 {
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 900;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6, #3b82f6, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-shift 2s linear infinite;
+  background-size: 200% auto;
+}
+
+@keyframes rainbow-shift {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.konami-content p {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.konami-code-display {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.konami-code-display span {
+  padding: 8px 14px;
+  background: #1a1a2e;
+  border: 1px solid #333;
+  border-bottom: 3px solid #111;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #f59e0b;
+}
+
+/* ============================================================
+   SECTION INDICATOR (right side)
+   ============================================================ */
+#section-indicator {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.section-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all var(--transition-med);
+  cursor: pointer;
+  position: relative;
+}
+
+.section-dot.active {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  transform: scale(1.3);
+}
+
+.section-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.section-dot:hover::after {
+  opacity: 1;
+}
+
+/* ============================================================
+   TAB HIGHLIGHT SYSTEM
+   ============================================================ */
+.tab-focusable:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.tab-focusable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ============================================================
+   KEY RIPPLE EFFECT (full page)
+   ============================================================ */
+.key-ripple {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 500;
+  animation: ripple-expand 0.6s ease-out forwards;
+}
+
+@keyframes ripple-expand {
+  from { width: 0; height: 0; opacity: 0.6; }
+  to { width: 200px; height: 200px; opacity: 0; }
+}
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+#scroll-progress {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  z-index: 1001;
+  transition: width 0.1s linear;
+  width: 0%;
+}
+
+/* ============================================================
+   MODE INDICATOR
+   ============================================================ */
+#mode-indicator {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 950;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 4px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  display: none;
+}
+
+#mode-indicator.active {
+  display: block;
+}
+
+/* ============================================================
+   EASTER EGG BUFFER DISPLAY
+   ============================================================ */
+#easter-buffer {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 950;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+}
+
+#easter-buffer.visible {
+  opacity: 1;
+}
+
+/* ============================================================
+   THEME SWITCHER TOAST
+   ============================================================ */
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 9999;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 10px 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  opacity: 0;
+  transition: all var(--transition-med);
+  pointer-events: none;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .skills-categories { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr 1fr; }
+  .section { padding: 100px 1.25rem 60px; }
+  #cheat-sheet { width: 260px; }
+  .nav-links { display: none; }
+  #section-indicator { display: none; }
+  .kb-key { min-width: 26px; height: 28px; font-size: 0.5rem; }
+  .kb-key.space { min-width: 120px; }
+  .kb-key.wide-1,
+  .kb-key.wide-15,
+  .kb-key.wide-175,
+  .kb-key.wide-2,
+  .kb-key.wide-225 { min-width: 36px; }
+}
+
+@media (max-width: 480px) {
+  .contact-grid { grid-template-columns: 1fr; }
+  .hero-name { font-size: 2.5rem; }
+  #visual-keyboard { display: none; }
+  .kb-toggle { display: none; }
+}
+
+/* ============================================================
+   PARTICLE BACKGROUND
+   ============================================================ */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SPLASH SCREEN
+     ============================================================ -->
+<div id="splash-screen" role="dialog" aria-label="Welcome screen">
+  <div class="splash-keyboard-art" aria-hidden="true">
+ _____________________________________
+|  _  _  _  _  _  _  _  _  _  _  _  |
+| |_||_||_||_||_||_||_||_||_||_||_|  |
+|  _  _  _  _  _  _  _  _  _  _  _  |
+| |Q||W||E||R||T||Y||U||I||O||P||[|  |
+|  _  _  _  _  _  _  _  _  _  _     |
+| |A||S||D||F||G||H||J||K||L||;|    |
+|  _  _  _  _  _  _  _  _  _        |
+| |Z||X||C||V||B||N||M||,||.|       |
+|  ___________________________       |
+| |___________________________|      |
+|_____________________________________|
+  </div>
+  <div class="splash-title">ANSHULL GARG</div>
+  <div class="splash-subtitle">keyboard-driven portfolio // v1.0</div>
+  <div class="splash-prompt">
+    <span class="key-hint">Press any key</span> to begin
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div id="main-content" aria-hidden="true">
+
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- Scroll Progress -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav id="nav-bar" role="navigation" aria-label="Main navigation">
+    <div class="nav-logo">AG://</div>
+    <ul class="nav-links">
+      <li><a class="nav-link tab-focusable" href="#about" data-section="about">
+        <span class="nav-key">A</span> About
+      </a></li>
+      <li><a class="nav-link tab-focusable" href="#projects" data-section="projects">
+        <span class="nav-key">P</span> Projects
+      </a></li>
+      <li><a class="nav-link tab-focusable" href="#skills" data-section="skills">
+        <span class="nav-key">S</span> Skills
+      </a></li>
+      <li><a class="nav-link tab-focusable" href="#experience" data-section="experience">
+        <span class="nav-key">E</span> Experience
+      </a></li>
+      <li><a class="nav-link tab-focusable" href="#contact" data-section="contact">
+        <span class="nav-key">C</span> Contact
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- Section Dots -->
+  <div id="section-indicator" aria-label="Section navigation" role="navigation">
+    <div class="section-dot active" data-section="hero" data-label="Home" tabindex="0" role="button" aria-label="Go to Home"></div>
+    <div class="section-dot" data-section="about" data-label="About [A]" tabindex="0" role="button" aria-label="Go to About"></div>
+    <div class="section-dot" data-section="projects" data-label="Projects [P]" tabindex="0" role="button" aria-label="Go to Projects"></div>
+    <div class="section-dot" data-section="skills" data-label="Skills [S]" tabindex="0" role="button" aria-label="Go to Skills"></div>
+    <div class="section-dot" data-section="experience" data-label="Experience [E]" tabindex="0" role="button" aria-label="Go to Experience"></div>
+    <div class="section-dot" data-section="contact" data-label="Contact [C]" tabindex="0" role="button" aria-label="Go to Contact"></div>
+  </div>
+
+  <!-- ========== HERO ========== -->
+  <section id="hero" class="section visible" aria-label="Hero section">
+    <div class="section-label"><span class="shortcut-badge">HOME</span> Welcome</div>
+    <h1 class="hero-name">Anshull<br>Garg</h1>
+    <p class="hero-tagline">Software Engineer @ Walmart Global Tech</p>
+    <p class="hero-description">
+      I build systems that serve millions. Full-stack engineer focused on scalable architecture,
+      performance optimization, and exceptional user experiences at Fortune 1 scale.
+    </p>
+    <div class="hero-shortcuts-hint" aria-label="Available keyboard shortcuts">
+      <div class="hint-item"><span class="hint-key" data-key="a">A</span> About</div>
+      <div class="hint-item"><span class="hint-key" data-key="p">P</span> Projects</div>
+      <div class="hint-item"><span class="hint-key" data-key="s">S</span> Skills</div>
+      <div class="hint-item"><span class="hint-key" data-key="e">E</span> Experience</div>
+      <div class="hint-item"><span class="hint-key" data-key="c">C</span> Contact</div>
+      <div class="hint-item"><span class="hint-key" data-key="?">?</span> Cheat Sheet</div>
+      <div class="hint-item"><span class="hint-key" data-key="j">J</span>/<span class="hint-key" data-key="k">K</span> Scroll</div>
+    </div>
+  </section>
+
+  <!-- ========== ABOUT ========== -->
+  <section id="about" class="section" aria-label="About section">
+    <div class="section-label"><span class="shortcut-badge">A</span> About</div>
+    <h2 class="section-title">A bit about me.</h2>
+    <p class="about-text">
+      I am a software engineer who thinks in systems and ships in sprints. At <strong>Walmart Global Tech</strong>,
+      I work on the platforms that power digital commerce for millions of customers daily. My day-to-day involves
+      designing scalable APIs, optimizing frontend performance, and collaborating with cross-functional teams
+      to ship features that matter.
+    </p>
+    <br>
+    <p class="about-text">
+      I believe great software is built at the intersection of <strong>clean architecture</strong>,
+      deep <strong>user empathy</strong>, and <strong>relentless iteration</strong>. I read the PR description
+      before the code diff, and I think "it works on my machine" is not a deployment strategy.
+    </p>
+    <div class="about-grid">
+      <div class="about-card tab-focusable" tabindex="0">
+        <h3>What drives me</h3>
+        <p>Writing code that is readable, testable, and built to last. Understanding the "why" before jumping to the "how". Continuous learning and pushing boundaries.</p>
+      </div>
+      <div class="about-card tab-focusable" tabindex="0">
+        <h3>Beyond the code</h3>
+        <p>When I am not engineering, you will find me exploring new technologies, contributing to open source, and refining my craft through side projects and experimentation.</p>
+      </div>
+      <div class="about-card tab-focusable" tabindex="0">
+        <h3>My approach</h3>
+        <p>Component-first thinking, mobile-first responsive design, performance budgets aiming for sub-3s load times, and semantic HTML with proper accessibility throughout.</p>
+      </div>
+      <div class="about-card tab-focusable" tabindex="0">
+        <h3>Philosophy</h3>
+        <p>The best documentation is the one someone actually reads. The best code is the code you do not have to write. The best features are the ones users never have to think about.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PROJECTS ========== -->
+  <section id="projects" class="section" aria-label="Projects section">
+    <div class="section-label"><span class="shortcut-badge">P</span> Projects</div>
+    <h2 class="section-title">Selected work.</h2>
+    <p class="section-subtitle">A curated collection of projects demonstrating full-stack engineering, scalable architecture, and thoughtful design.</p>
+    <div class="projects-grid">
+      <article class="project-card tab-focusable" tabindex="0">
+        <div class="project-number">01</div>
+        <h3>Enterprise E-Commerce Platform</h3>
+        <p>Architected a high-performance digital commerce platform handling millions of daily transactions with sub-200ms response times and 99.99% uptime.</p>
+        <div class="project-tags">
+          <span class="project-tag">React</span>
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">GraphQL</span>
+          <span class="project-tag">Kubernetes</span>
+        </div>
+      </article>
+      <article class="project-card tab-focusable" tabindex="0">
+        <div class="project-number">02</div>
+        <h3>Real-Time Analytics Dashboard</h3>
+        <p>Built a live monitoring dashboard aggregating data from multiple microservices, featuring intelligent caching that reduced API calls by 60%.</p>
+        <div class="project-tags">
+          <span class="project-tag">TypeScript</span>
+          <span class="project-tag">Next.js</span>
+          <span class="project-tag">WebSocket</span>
+          <span class="project-tag">Redis</span>
+        </div>
+      </article>
+      <article class="project-card tab-focusable" tabindex="0">
+        <div class="project-number">03</div>
+        <h3>CI/CD Pipeline Automation</h3>
+        <p>Designed end-to-end deployment pipelines reducing release cycles from hours to minutes, with automated testing and canary deployments.</p>
+        <div class="project-tags">
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">GitHub Actions</span>
+          <span class="project-tag">Terraform</span>
+          <span class="project-tag">AWS</span>
+        </div>
+      </article>
+      <article class="project-card tab-focusable" tabindex="0">
+        <div class="project-number">04</div>
+        <h3>Internal Developer Tooling</h3>
+        <p>Created internal tools used by 500+ engineers, streamlining code review workflows and automating repetitive tasks across teams.</p>
+        <div class="project-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">React</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">REST API</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== SKILLS ========== -->
+  <section id="skills" class="section" aria-label="Skills section">
+    <div class="section-label"><span class="shortcut-badge">S</span> Skills</div>
+    <h2 class="section-title">What I build with.</h2>
+    <p class="section-subtitle">Organized by role in the development process -- not just logos on a grid.</p>
+    <div class="skills-categories">
+      <div class="skill-category tab-focusable" tabindex="0">
+        <h3>Frontend Engineering</h3>
+        <div class="skill-items">
+          <div class="skill-item"><span class="skill-dot"></span>React</div>
+          <div class="skill-item"><span class="skill-dot"></span>Next.js</div>
+          <div class="skill-item"><span class="skill-dot"></span>TypeScript</div>
+          <div class="skill-item"><span class="skill-dot"></span>Tailwind CSS</div>
+          <div class="skill-item"><span class="skill-dot"></span>Framer Motion</div>
+          <div class="skill-item"><span class="skill-dot"></span>Performance</div>
+        </div>
+      </div>
+      <div class="skill-category tab-focusable" tabindex="0">
+        <h3>Backend & APIs</h3>
+        <div class="skill-items">
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-2)"></span>Node.js</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-2)"></span>Express</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-2)"></span>GraphQL</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-2)"></span>Python</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-2)"></span>PostgreSQL</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-2)"></span>MongoDB</div>
+        </div>
+      </div>
+      <div class="skill-category tab-focusable" tabindex="0">
+        <h3>DevOps & Cloud</h3>
+        <div class="skill-items">
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-3)"></span>Docker</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-3)"></span>Kubernetes</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-3)"></span>AWS</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-3)"></span>CI/CD</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-3)"></span>Terraform</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-3)"></span>GitHub Actions</div>
+        </div>
+      </div>
+      <div class="skill-category tab-focusable" tabindex="0">
+        <h3>Practices & Principles</h3>
+        <div class="skill-items">
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-6)"></span>TDD</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-6)"></span>Agile / Scrum</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-6)"></span>Code Review</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-6)"></span>Jest / Cypress</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-6)"></span>System Design</div>
+          <div class="skill-item"><span class="skill-dot" style="background:var(--accent-6)"></span>Accessibility</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== EXPERIENCE ========== -->
+  <section id="experience" class="section" aria-label="Experience section">
+    <div class="section-label"><span class="shortcut-badge">E</span> Experience</div>
+    <h2 class="section-title">Where I have been.</h2>
+    <p class="section-subtitle">Building at enterprise scale. Shipping features that impact millions.</p>
+    <div class="experience-timeline">
+      <div class="experience-item tab-focusable" tabindex="0">
+        <div class="experience-date">2023 - Present</div>
+        <h3>Software Engineer</h3>
+        <div class="experience-company">Walmart Global Tech // Fortune #1</div>
+        <ul>
+          <li>Architected scalable full-stack applications powering digital commerce for millions of daily users</li>
+          <li>Optimized frontend performance, reducing page load times by 40% through code splitting and lazy loading</li>
+          <li>Designed and deployed microservices handling thousands of requests per second with 99.99% uptime</li>
+          <li>Led cross-functional initiatives across multiple teams, improving deployment velocity by 3x</li>
+          <li>Built internal tooling adopted by 500+ engineers, streamlining development workflows</li>
+        </ul>
+      </div>
+      <div class="experience-item tab-focusable" tabindex="0">
+        <div class="experience-date">2021 - 2023</div>
+        <h3>Software Developer</h3>
+        <div class="experience-company">Previous Role</div>
+        <ul>
+          <li>Developed responsive web applications with React, TypeScript, and modern CSS frameworks</li>
+          <li>Implemented RESTful APIs and database architectures supporting complex business logic</li>
+          <li>Introduced automated testing practices, increasing code coverage from 30% to 85%</li>
+          <li>Mentored junior developers and established code review standards for the team</li>
+        </ul>
+      </div>
+      <div class="experience-item tab-focusable" tabindex="0">
+        <div class="experience-date">2019 - 2021</div>
+        <h3>Education & Early Career</h3>
+        <div class="experience-company">Foundation Years</div>
+        <ul>
+          <li>Studied Computer Science with focus on algorithms, data structures, and system design</li>
+          <li>Built full-stack projects exploring React ecosystems, Node.js, and cloud deployment</li>
+          <li>Contributed to open-source projects and participated in hackathons</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CONTACT ========== -->
+  <section id="contact" class="section" aria-label="Contact section">
+    <div class="section-label"><span class="shortcut-badge">C</span> Contact</div>
+    <h2 class="section-title">Let's connect.</h2>
+    <p class="section-subtitle">Open to conversations about engineering, collaboration, and new opportunities. Reach out through any of these channels.</p>
+    <div class="contact-grid">
+      <a class="contact-card tab-focusable" href="mailto:anshullgarg@gmail.com" tabindex="0" aria-label="Send email">
+        <div class="contact-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <span class="contact-label">Email</span>
+      </a>
+      <a class="contact-card tab-focusable" href="https://github.com/anshullgarg" target="_blank" rel="noopener" tabindex="0" aria-label="View GitHub profile">
+        <div class="contact-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </div>
+        <span class="contact-label">GitHub</span>
+      </a>
+      <a class="contact-card tab-focusable" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" tabindex="0" aria-label="View LinkedIn profile">
+        <div class="contact-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </div>
+        <span class="contact-label">LinkedIn</span>
+      </a>
+      <a class="contact-card tab-focusable" href="#" tabindex="0" aria-label="Download resume">
+        <div class="contact-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <span class="contact-label">Resume</span>
+      </a>
+    </div>
+  </section>
+
+</div><!-- end main-content -->
+
+<!-- ============================================================
+     CHEAT SHEET
+     ============================================================ -->
+<div id="cheat-sheet" role="dialog" aria-label="Keyboard shortcuts cheat sheet">
+  <div class="cheat-header">
+    <h3>Shortcuts</h3>
+    <span class="cheat-toggle-hint">? to toggle</span>
+  </div>
+
+  <div class="cheat-group">
+    <h4>Navigation</h4>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">A</span></span>
+      <span class="cheat-desc">About</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">P</span></span>
+      <span class="cheat-desc">Projects</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">S</span></span>
+      <span class="cheat-desc">Skills</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">E</span></span>
+      <span class="cheat-desc">Experience</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">C</span></span>
+      <span class="cheat-desc">Contact</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">H</span></span>
+      <span class="cheat-desc">Home / Hero</span>
+    </div>
+  </div>
+
+  <div class="cheat-group">
+    <h4>Vim-Style</h4>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">J</span></span>
+      <span class="cheat-desc">Scroll down</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">K</span></span>
+      <span class="cheat-desc">Scroll up</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">G</span><span class="ck">G</span></span>
+      <span class="cheat-desc">Go to top</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">Shift</span><span class="ck">G</span></span>
+      <span class="cheat-desc">Go to bottom</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">:</span><span class="ck">q</span></span>
+      <span class="cheat-desc">Quit (splash)</span>
+    </div>
+  </div>
+
+  <div class="cheat-group">
+    <h4>Arrow Keys</h4>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">&uarr;</span><span class="ck">&darr;</span></span>
+      <span class="cheat-desc">Prev / Next section</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">&larr;</span><span class="ck">&rarr;</span></span>
+      <span class="cheat-desc">Prev / Next section</span>
+    </div>
+  </div>
+
+  <div class="cheat-group">
+    <h4>UI Controls</h4>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">?</span></span>
+      <span class="cheat-desc">Toggle cheat sheet</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">V</span></span>
+      <span class="cheat-desc">Toggle keyboard</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">T</span></span>
+      <span class="cheat-desc">Change theme</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">Tab</span></span>
+      <span class="cheat-desc">Focus elements</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">Esc</span></span>
+      <span class="cheat-desc">Close overlays</span>
+    </div>
+  </div>
+
+  <div class="cheat-group">
+    <h4>Secrets</h4>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">?</span><span class="ck">?</span><span class="ck">?</span></span>
+      <span class="cheat-desc">Type "anshull"</span>
+    </div>
+    <div class="cheat-item">
+      <span class="cheat-keys"><span class="ck">&uarr;</span><span class="ck">&uarr;</span><span class="ck">&darr;</span><span class="ck">&darr;</span></span>
+      <span class="cheat-desc">Konami code</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     KEY PRESS DISPLAY (floating)
+     ============================================================ -->
+<div id="key-press-display" aria-live="polite" aria-label="Recent key presses"></div>
+
+<!-- ============================================================
+     VISUAL KEYBOARD
+     ============================================================ -->
+<div id="visual-keyboard" aria-label="Visual keyboard display" role="img">
+  <!-- Row 1: Number row -->
+  <div class="kb-row">
+    <div class="kb-key" data-keycode="Escape">Esc</div>
+    <div class="kb-key" data-keycode="Digit1">1</div>
+    <div class="kb-key" data-keycode="Digit2">2</div>
+    <div class="kb-key" data-keycode="Digit3">3</div>
+    <div class="kb-key" data-keycode="Digit4">4</div>
+    <div class="kb-key" data-keycode="Digit5">5</div>
+    <div class="kb-key" data-keycode="Digit6">6</div>
+    <div class="kb-key" data-keycode="Digit7">7</div>
+    <div class="kb-key" data-keycode="Digit8">8</div>
+    <div class="kb-key" data-keycode="Digit9">9</div>
+    <div class="kb-key" data-keycode="Digit0">0</div>
+    <div class="kb-key" data-keycode="Minus">-</div>
+    <div class="kb-key" data-keycode="Equal">=</div>
+    <div class="kb-key wide-2" data-keycode="Backspace">Bksp</div>
+  </div>
+  <!-- Row 2: QWERTY -->
+  <div class="kb-row">
+    <div class="kb-key wide-15" data-keycode="Tab">Tab</div>
+    <div class="kb-key bound" data-keycode="KeyQ">Q</div>
+    <div class="kb-key bound" data-keycode="KeyW">W</div>
+    <div class="kb-key bound" data-keycode="KeyE">E</div>
+    <div class="kb-key bound" data-keycode="KeyR">R</div>
+    <div class="kb-key bound" data-keycode="KeyT">T</div>
+    <div class="kb-key bound" data-keycode="KeyY">Y</div>
+    <div class="kb-key bound" data-keycode="KeyU">U</div>
+    <div class="kb-key bound" data-keycode="KeyI">I</div>
+    <div class="kb-key bound" data-keycode="KeyO">O</div>
+    <div class="kb-key bound" data-keycode="KeyP">P</div>
+    <div class="kb-key" data-keycode="BracketLeft">[</div>
+    <div class="kb-key" data-keycode="BracketRight">]</div>
+    <div class="kb-key wide-15" data-keycode="Backslash">\</div>
+  </div>
+  <!-- Row 3: Home row -->
+  <div class="kb-row">
+    <div class="kb-key wide-175" data-keycode="CapsLock">Caps</div>
+    <div class="kb-key bound" data-keycode="KeyA">A</div>
+    <div class="kb-key bound" data-keycode="KeyS">S</div>
+    <div class="kb-key bound" data-keycode="KeyD">D</div>
+    <div class="kb-key bound" data-keycode="KeyF">F</div>
+    <div class="kb-key bound" data-keycode="KeyG">G</div>
+    <div class="kb-key bound" data-keycode="KeyH">H</div>
+    <div class="kb-key bound" data-keycode="KeyJ">J</div>
+    <div class="kb-key bound" data-keycode="KeyK">K</div>
+    <div class="kb-key bound" data-keycode="KeyL">L</div>
+    <div class="kb-key" data-keycode="Semicolon">;</div>
+    <div class="kb-key" data-keycode="Quote">'</div>
+    <div class="kb-key wide-225" data-keycode="Enter">Enter</div>
+  </div>
+  <!-- Row 4: Bottom row -->
+  <div class="kb-row">
+    <div class="kb-key wide-225" data-keycode="ShiftLeft">Shift</div>
+    <div class="kb-key bound" data-keycode="KeyZ">Z</div>
+    <div class="kb-key bound" data-keycode="KeyX">X</div>
+    <div class="kb-key bound" data-keycode="KeyC">C</div>
+    <div class="kb-key bound" data-keycode="KeyV">V</div>
+    <div class="kb-key bound" data-keycode="KeyB">B</div>
+    <div class="kb-key bound" data-keycode="KeyN">N</div>
+    <div class="kb-key bound" data-keycode="KeyM">M</div>
+    <div class="kb-key" data-keycode="Comma">,</div>
+    <div class="kb-key" data-keycode="Period">.</div>
+    <div class="kb-key" data-keycode="Slash">/</div>
+    <div class="kb-key wide-225" data-keycode="ShiftRight">Shift</div>
+  </div>
+  <!-- Row 5: Space bar row -->
+  <div class="kb-row">
+    <div class="kb-key wide-15" data-keycode="ControlLeft">Ctrl</div>
+    <div class="kb-key wide-1" data-keycode="AltLeft">Alt</div>
+    <div class="kb-key wide-15" data-keycode="MetaLeft">Cmd</div>
+    <div class="kb-key space bound" data-keycode="Space">Space</div>
+    <div class="kb-key wide-15" data-keycode="MetaRight">Cmd</div>
+    <div class="kb-key wide-1" data-keycode="AltRight">Alt</div>
+    <div class="kb-key" data-keycode="ArrowLeft">&larr;</div>
+    <div class="kb-key" data-keycode="ArrowUp">&uarr;</div>
+    <div class="kb-key" data-keycode="ArrowDown">&darr;</div>
+    <div class="kb-key" data-keycode="ArrowRight">&rarr;</div>
+  </div>
+</div>
+
+<button class="kb-toggle" id="kb-toggle-btn" aria-label="Toggle visual keyboard">
+  Press V to show keyboard
+</button>
+
+<!-- ============================================================
+     VIM COMMAND LINE
+     ============================================================ -->
+<div id="vim-cmdline" role="textbox" aria-label="Vim command line">
+  <span>:</span>
+  <input id="vim-cmdline-input" type="text" autocomplete="off" spellcheck="false" aria-label="Enter vim command">
+</div>
+
+<!-- ============================================================
+     EASTER EGG OVERLAY
+     ============================================================ -->
+<div id="easter-egg-overlay" role="dialog" aria-label="Easter egg">
+  <div class="easter-egg-content">
+    <h2 style="background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      You found me.
+    </h2>
+    <p>You typed "anshull" -- the secret passphrase.</p>
+    <p style="color: var(--text-dim); font-size: 0.85rem; max-width: 400px; margin: 1rem auto 0;">
+      This portfolio was built to be navigated entirely by keyboard. Every key has a purpose.
+      Thanks for taking the time to explore every corner.
+    </p>
+    <div class="easter-egg-dismiss">Press Escape to close</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     KONAMI CODE OVERLAY
+     ============================================================ -->
+<div id="konami-overlay" role="dialog" aria-label="Konami code easter egg">
+  <div class="konami-content">
+    <h2>KONAMI CODE</h2>
+    <p>30 lives unlocked.</p>
+    <p style="font-size: 0.9rem;">You clearly know your way around a keyboard.</p>
+    <div class="konami-code-display">
+      <span>&uarr;</span><span>&uarr;</span><span>&darr;</span><span>&darr;</span>
+      <span>&larr;</span><span>&rarr;</span><span>&larr;</span><span>&rarr;</span>
+      <span>B</span><span>A</span>
+    </div>
+    <div class="easter-egg-dismiss" style="margin-top: 2rem;">Press Escape to close</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOAST NOTIFICATION
+     ============================================================ -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     EASTER EGG BUFFER
+     ============================================================ -->
+<div id="easter-buffer" aria-hidden="true"></div>
+
+<!-- ============================================================
+     MODE INDICATOR
+     ============================================================ -->
+<div id="mode-indicator"></div>
+
+<!-- Screen reader announcement area -->
+<div id="sr-announcer" class="sr-only" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   APP STATE
+   ============================================================ */
+const state = {
+  started: false,
+  currentSection: 0,
+  sections: ['hero', 'about', 'projects', 'skills', 'experience', 'contact'],
+  cheatSheetOpen: false,
+  keyboardOpen: false,
+  vimMode: false,
+  vimBuffer: '',
+  easterBuffer: '',
+  easterTarget: 'anshull',
+  konamiSequence: [],
+  konamiCode: ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'],
+  ggBuffer: '',
+  ggTimer: null,
+  themes: ['blue', 'green', 'purple', 'amber', 'red'],
+  currentTheme: 0,
+  activeKeys: new Set(),
+  scrollSpeed: 80,
+};
+
+/* ============================================================
+   DOM REFERENCES
+   ============================================================ */
+const $splash = document.getElementById('splash-screen');
+const $main = document.getElementById('main-content');
+const $cheatSheet = document.getElementById('cheat-sheet');
+const $keyboard = document.getElementById('visual-keyboard');
+const $kbToggle = document.getElementById('kb-toggle-btn');
+const $vimCmd = document.getElementById('vim-cmdline');
+const $vimInput = document.getElementById('vim-cmdline-input');
+const $easterOverlay = document.getElementById('easter-egg-overlay');
+const $konamiOverlay = document.getElementById('konami-overlay');
+const $keyDisplay = document.getElementById('key-press-display');
+const $scrollProgress = document.getElementById('scroll-progress');
+const $toast = document.getElementById('toast');
+const $easterBufferEl = document.getElementById('easter-buffer');
+const $modeIndicator = document.getElementById('mode-indicator');
+const $announcer = document.getElementById('sr-announcer');
+const $canvas = document.getElementById('particle-canvas');
+
+/* ============================================================
+   PARTICLE BACKGROUND
+   ============================================================ */
+const ctx = $canvas.getContext('2d');
+let particles = [];
+
+function initParticles() {
+  $canvas.width = window.innerWidth;
+  $canvas.height = window.innerHeight;
+  particles = [];
+  const count = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * $canvas.width,
+      y: Math.random() * $canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 1.5 + 0.5,
+      opacity: Math.random() * 0.5 + 0.1,
+    });
+  }
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, $canvas.width, $canvas.height);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(59, 130, 246, ${p.opacity})`;
+    ctx.fill();
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0) p.x = $canvas.width;
+    if (p.x > $canvas.width) p.x = 0;
+    if (p.y < 0) p.y = $canvas.height;
+    if (p.y > $canvas.height) p.y = 0;
+  });
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(59, 130, 246, ${0.08 * (1 - dist / 100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+
+initParticles();
+drawParticles();
+window.addEventListener('resize', initParticles);
+
+/* ============================================================
+   ANNOUNCE (screen reader)
+   ============================================================ */
+function announce(text) {
+  $announcer.textContent = text;
+}
+
+/* ============================================================
+   TOAST SYSTEM
+   ============================================================ */
+let toastTimer;
+function showToast(message) {
+  $toast.textContent = message;
+  $toast.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $toast.classList.remove('visible'), 2000);
+}
+
+/* ============================================================
+   KEY PRESS DISPLAY (floating)
+   ============================================================ */
+function showKeyPress(key, action) {
+  const el = document.createElement('div');
+  el.className = 'key-press-item';
+  el.innerHTML = `<strong>${escapeHtml(key)}</strong> ${action ? '&mdash; ' + escapeHtml(action) : ''}`;
+  $keyDisplay.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ============================================================
+   VISUAL KEYBOARD -- LIGHT UP KEYS
+   ============================================================ */
+function lightKey(code) {
+  const key = $keyboard.querySelector(`[data-keycode="${code}"]`);
+  if (key) {
+    key.classList.add('active');
+  }
+}
+
+function unlightKey(code) {
+  const key = $keyboard.querySelector(`[data-keycode="${code}"]`);
+  if (key) {
+    key.classList.remove('active');
+  }
+}
+
+/* ============================================================
+   HINT KEYS -- PRESS EFFECT
+   ============================================================ */
+function pressHintKey(keyChar) {
+  const hints = document.querySelectorAll(`.hint-key[data-key="${keyChar}"]`);
+  hints.forEach(h => {
+    h.classList.add('pressed');
+    setTimeout(() => h.classList.remove('pressed'), 300);
+  });
+}
+
+/* ============================================================
+   KEY RIPPLE EFFECT
+   ============================================================ */
+function createRipple() {
+  const ripple = document.createElement('div');
+  ripple.className = 'key-ripple';
+  ripple.style.left = (Math.random() * window.innerWidth - 100) + 'px';
+  ripple.style.top = (Math.random() * window.innerHeight - 100) + 'px';
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function navigateToSection(index) {
+  if (index < 0) index = 0;
+  if (index >= state.sections.length) index = state.sections.length - 1;
+  state.currentSection = index;
+  const sectionId = state.sections[index];
+  const el = document.getElementById(sectionId);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    updateActiveNav(sectionId);
+    announce('Navigated to ' + sectionId);
+  }
+}
+
+function navigateToSectionByName(name) {
+  const idx = state.sections.indexOf(name);
+  if (idx !== -1) navigateToSection(idx);
+}
+
+function updateActiveNav(sectionId) {
+  // Nav links
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.toggle('active', link.dataset.section === sectionId);
+  });
+  // Section dots
+  document.querySelectorAll('.section-dot').forEach(dot => {
+    dot.classList.toggle('active', dot.dataset.section === sectionId);
+  });
+}
+
+/* ============================================================
+   SCROLL-BASED SECTION DETECTION
+   ============================================================ */
+function detectCurrentSection() {
+  const scrollY = window.scrollY + window.innerHeight / 3;
+  let current = 0;
+  state.sections.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollY) current = i;
+  });
+  if (current !== state.currentSection) {
+    state.currentSection = current;
+    updateActiveNav(state.sections[current]);
+  }
+  // Scroll progress
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+  $scrollProgress.style.width = progress + '%';
+}
+
+/* ============================================================
+   INTERSECTION OBSERVER -- SECTION VISIBILITY
+   ============================================================ */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+
+/* ============================================================
+   START THE EXPERIENCE
+   ============================================================ */
+function startExperience() {
+  if (state.started) return;
+  state.started = true;
+  $splash.classList.add('hidden');
+  $main.classList.add('visible');
+  $main.setAttribute('aria-hidden', 'false');
+  setTimeout(() => {
+    $splash.style.display = 'none';
+    $kbToggle.classList.remove('hidden');
+  }, 600);
+  announce('Portfolio loaded. Use keyboard shortcuts to navigate. Press ? for help.');
+}
+
+/* ============================================================
+   TOGGLE CHEAT SHEET
+   ============================================================ */
+function toggleCheatSheet() {
+  state.cheatSheetOpen = !state.cheatSheetOpen;
+  $cheatSheet.classList.toggle('visible', state.cheatSheetOpen);
+  announce(state.cheatSheetOpen ? 'Cheat sheet opened' : 'Cheat sheet closed');
+}
+
+/* ============================================================
+   TOGGLE VISUAL KEYBOARD
+   ============================================================ */
+function toggleKeyboard() {
+  state.keyboardOpen = !state.keyboardOpen;
+  $keyboard.classList.toggle('visible', state.keyboardOpen);
+  $kbToggle.textContent = state.keyboardOpen ? 'Press V to hide keyboard' : 'Press V to show keyboard';
+  announce(state.keyboardOpen ? 'Visual keyboard shown' : 'Visual keyboard hidden');
+}
+
+/* ============================================================
+   VIM COMMAND MODE
+   ============================================================ */
+function enterVimMode() {
+  state.vimMode = true;
+  $vimCmd.classList.add('active');
+  $vimInput.value = '';
+  $vimInput.focus();
+  $modeIndicator.textContent = '-- COMMAND --';
+  $modeIndicator.classList.add('active');
+}
+
+function exitVimMode() {
+  state.vimMode = false;
+  $vimCmd.classList.remove('active');
+  $vimInput.blur();
+  $modeIndicator.classList.remove('active');
+}
+
+function executeVimCommand(cmd) {
+  cmd = cmd.trim().toLowerCase();
+  switch (cmd) {
+    case 'q':
+    case 'q!':
+    case 'quit':
+      // Return to splash
+      state.started = false;
+      $splash.style.display = '';
+      $main.classList.remove('visible');
+      $main.setAttribute('aria-hidden', 'true');
+      setTimeout(() => $splash.classList.remove('hidden'), 50);
+      showToast(':q -- Returning to start');
+      announce('Returned to splash screen');
+      break;
+    case 'w':
+      showToast(':w -- Portfolio saved (just kidding)');
+      break;
+    case 'wq':
+      showToast(':wq -- Saved and quit');
+      setTimeout(() => {
+        state.started = false;
+        $splash.style.display = '';
+        $main.classList.remove('visible');
+        setTimeout(() => $splash.classList.remove('hidden'), 50);
+      }, 1000);
+      break;
+    case 'help':
+    case 'h':
+      toggleCheatSheet();
+      break;
+    case 'about':
+      navigateToSectionByName('about');
+      break;
+    case 'projects':
+      navigateToSectionByName('projects');
+      break;
+    case 'skills':
+      navigateToSectionByName('skills');
+      break;
+    case 'experience':
+      navigateToSectionByName('experience');
+      break;
+    case 'contact':
+      navigateToSectionByName('contact');
+      break;
+    case 'home':
+      navigateToSectionByName('hero');
+      break;
+    case 'theme':
+    case 'colors':
+      cycleTheme();
+      break;
+    default:
+      showToast('E492: Not a valid command: ' + cmd);
+      break;
+  }
+  exitVimMode();
+}
+
+$vimInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    executeVimCommand($vimInput.value);
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    exitVimMode();
+  }
+  e.stopPropagation();
+});
+
+$vimInput.addEventListener('keyup', (e) => e.stopPropagation());
+
+/* ============================================================
+   THEME CYCLING
+   ============================================================ */
+const themeConfigs = [
+  { name: 'Midnight Blue', accent: '#3b82f6', glow: 'rgba(59,130,246,0.4)' },
+  { name: 'Emerald',       accent: '#10b981', glow: 'rgba(16,185,129,0.4)' },
+  { name: 'Violet',        accent: '#8b5cf6', glow: 'rgba(139,92,246,0.4)' },
+  { name: 'Amber',         accent: '#f59e0b', glow: 'rgba(245,158,11,0.4)' },
+  { name: 'Rose',          accent: '#f43f5e', glow: 'rgba(244,63,94,0.4)' },
+  { name: 'Cyan',          accent: '#06b6d4', glow: 'rgba(6,182,212,0.4)' },
+];
+
+function cycleTheme() {
+  state.currentTheme = (state.currentTheme + 1) % themeConfigs.length;
+  const theme = themeConfigs[state.currentTheme];
+  document.documentElement.style.setProperty('--accent', theme.accent);
+  document.documentElement.style.setProperty('--accent-glow', theme.glow);
+  document.documentElement.style.setProperty('--accent-subtle', theme.accent + '1a');
+  document.documentElement.style.setProperty('--bg-key-active', theme.accent);
+  document.documentElement.style.setProperty('--border-active', theme.accent);
+  showToast('Theme: ' + theme.name);
+  announce('Theme changed to ' + theme.name);
+}
+
+/* ============================================================
+   EASTER EGG: TYPE "anshull"
+   ============================================================ */
+function checkEasterEgg(key) {
+  if (state.vimMode) return;
+  state.easterBuffer += key.toLowerCase();
+  // Show buffer if partially matching
+  if (state.easterTarget.startsWith(state.easterBuffer)) {
+    $easterBufferEl.textContent = state.easterBuffer + '_';
+    $easterBufferEl.classList.add('visible');
+  } else {
+    state.easterBuffer = '';
+    $easterBufferEl.classList.remove('visible');
+    // Check if this key starts the sequence
+    if (state.easterTarget.startsWith(key.toLowerCase())) {
+      state.easterBuffer = key.toLowerCase();
+      $easterBufferEl.textContent = state.easterBuffer + '_';
+      $easterBufferEl.classList.add('visible');
+    }
+  }
+  if (state.easterBuffer === state.easterTarget) {
+    state.easterBuffer = '';
+    $easterBufferEl.classList.remove('visible');
+    $easterOverlay.classList.add('active');
+    announce('Easter egg found! You typed anshull.');
+  }
+}
+
+/* ============================================================
+   KONAMI CODE
+   ============================================================ */
+function checkKonami(code) {
+  state.konamiSequence.push(code);
+  if (state.konamiSequence.length > 10) state.konamiSequence.shift();
+  const match = state.konamiSequence.length === 10 &&
+    state.konamiSequence.every((c, i) => c === state.konamiCode[i]);
+  if (match) {
+    state.konamiSequence = [];
+    $konamiOverlay.classList.add('active');
+    announce('Konami code activated! 30 lives unlocked.');
+  }
+}
+
+/* ============================================================
+   GG (vim go to top)
+   ============================================================ */
+function checkGG(key) {
+  if (key === 'g') {
+    if (state.ggBuffer === 'g') {
+      // gg -> go to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      state.currentSection = 0;
+      updateActiveNav('hero');
+      showKeyPress('gg', 'Go to top');
+      state.ggBuffer = '';
+      clearTimeout(state.ggTimer);
+      return true;
+    } else {
+      state.ggBuffer = 'g';
+      state.ggTimer = setTimeout(() => { state.ggBuffer = ''; }, 500);
+    }
+  } else {
+    state.ggBuffer = '';
+  }
+  return false;
+}
+
+/* ============================================================
+   MAIN KEYBOARD HANDLER
+   ============================================================ */
+document.addEventListener('keydown', (e) => {
+  const code = e.code;
+  const key = e.key;
+
+  // Light up visual keyboard
+  lightKey(code);
+
+  // Ripple effect
+  createRipple();
+
+  // Splash screen: any key starts
+  if (!state.started) {
+    startExperience();
+    return;
+  }
+
+  // If vim mode is active, let the input handle it
+  if (state.vimMode) return;
+
+  // Easter egg / Konami (always listen)
+  checkKonami(code);
+  if (/^[a-zA-Z]$/.test(key)) {
+    checkEasterEgg(key);
+  }
+
+  // Close overlays with Escape
+  if (key === 'Escape') {
+    if ($easterOverlay.classList.contains('active')) {
+      $easterOverlay.classList.remove('active');
+      return;
+    }
+    if ($konamiOverlay.classList.contains('active')) {
+      $konamiOverlay.classList.remove('active');
+      return;
+    }
+    if (state.cheatSheetOpen) {
+      toggleCheatSheet();
+      return;
+    }
+    return;
+  }
+
+  // Colon -> vim command mode
+  if (key === ':') {
+    e.preventDefault();
+    enterVimMode();
+    showKeyPress(':', 'Command mode');
+    pressHintKey(':');
+    return;
+  }
+
+  // Don't capture if user is in an input/textarea
+  if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+  // Prevent default for our shortcuts
+  const handledKeys = ['a','p','s','e','c','h','j','k','v','t','?','g',
+    'ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '];
+
+  // GG check
+  if (!e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (checkGG(key)) return;
+  }
+
+  // Shift+G -> go to bottom
+  if (key === 'G' && e.shiftKey) {
+    e.preventDefault();
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    state.currentSection = state.sections.length - 1;
+    updateActiveNav(state.sections[state.currentSection]);
+    showKeyPress('Shift+G', 'Go to bottom');
+    return;
+  }
+
+  // Only handle unmodified keys (except shift for ? and G)
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  switch (key.toLowerCase()) {
+    case 'a':
+      if (!e.shiftKey) {
+        navigateToSectionByName('about');
+        showKeyPress('A', 'About');
+        pressHintKey('a');
+      }
+      break;
+    case 'p':
+      navigateToSectionByName('projects');
+      showKeyPress('P', 'Projects');
+      pressHintKey('p');
+      break;
+    case 's':
+      navigateToSectionByName('skills');
+      showKeyPress('S', 'Skills');
+      pressHintKey('s');
+      break;
+    case 'e':
+      if (!e.shiftKey) {
+        navigateToSectionByName('experience');
+        showKeyPress('E', 'Experience');
+        pressHintKey('e');
+      }
+      break;
+    case 'c':
+      navigateToSectionByName('contact');
+      showKeyPress('C', 'Contact');
+      pressHintKey('c');
+      break;
+    case 'h':
+      navigateToSectionByName('hero');
+      showKeyPress('H', 'Home');
+      pressHintKey('h');
+      break;
+    case 'j':
+      e.preventDefault();
+      window.scrollBy({ top: state.scrollSpeed, behavior: 'smooth' });
+      showKeyPress('J', 'Scroll down');
+      pressHintKey('j');
+      break;
+    case 'k':
+      e.preventDefault();
+      window.scrollBy({ top: -state.scrollSpeed, behavior: 'smooth' });
+      showKeyPress('K', 'Scroll up');
+      pressHintKey('k');
+      break;
+    case 'v':
+      toggleKeyboard();
+      showKeyPress('V', 'Toggle keyboard');
+      break;
+    case 't':
+      cycleTheme();
+      showKeyPress('T', 'Change theme');
+      break;
+    case '?':
+      toggleCheatSheet();
+      showKeyPress('?', 'Cheat sheet');
+      pressHintKey('?');
+      break;
+    case ' ':
+      e.preventDefault();
+      // Space scrolls down a viewport
+      window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+      showKeyPress('Space', 'Page down');
+      break;
+    case 'arrowup':
+      e.preventDefault();
+      navigateToSection(state.currentSection - 1);
+      showKeyPress('\u2191', 'Previous section');
+      break;
+    case 'arrowdown':
+      e.preventDefault();
+      navigateToSection(state.currentSection + 1);
+      showKeyPress('\u2193', 'Next section');
+      break;
+    case 'arrowleft':
+      e.preventDefault();
+      navigateToSection(state.currentSection - 1);
+      showKeyPress('\u2190', 'Previous section');
+      break;
+    case 'arrowright':
+      e.preventDefault();
+      navigateToSection(state.currentSection + 1);
+      showKeyPress('\u2192', 'Next section');
+      break;
+    case 'd':
+      // Vim half-page down
+      e.preventDefault();
+      window.scrollBy({ top: window.innerHeight / 2, behavior: 'smooth' });
+      showKeyPress('D', 'Half page down');
+      break;
+    case 'u':
+      // Vim half-page up
+      e.preventDefault();
+      window.scrollBy({ top: -window.innerHeight / 2, behavior: 'smooth' });
+      showKeyPress('U', 'Half page up');
+      break;
+    case 'r':
+      // Random section
+      const rand = Math.floor(Math.random() * state.sections.length);
+      navigateToSection(rand);
+      showKeyPress('R', 'Random section');
+      break;
+    case 'n':
+      // Next section
+      navigateToSection(state.currentSection + 1);
+      showKeyPress('N', 'Next');
+      break;
+    case 'b':
+      // Back section
+      navigateToSection(state.currentSection - 1);
+      showKeyPress('B', 'Back');
+      break;
+    case 'f':
+      // Toggle fullscreen (if supported)
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+        showKeyPress('F', 'Exit fullscreen');
+      } else {
+        document.documentElement.requestFullscreen().catch(() => {});
+        showKeyPress('F', 'Fullscreen');
+      }
+      break;
+    case 'i':
+      // Info/About shortcut (alternative)
+      showToast('Anshull Garg -- Software Engineer @ Walmart Global Tech');
+      showKeyPress('I', 'Info');
+      break;
+    case 'l':
+      // Jump to last section
+      navigateToSection(state.sections.length - 1);
+      showKeyPress('L', 'Last section');
+      break;
+    case 'm':
+      // Toggle dark mode variant
+      showToast('Mode: Focused');
+      showKeyPress('M', 'Mode toggle');
+      break;
+    case 'o':
+      // Open links section
+      navigateToSectionByName('contact');
+      showKeyPress('O', 'Open links');
+      break;
+    case 'w':
+      // Warp to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showKeyPress('W', 'Warp to top');
+      break;
+    case 'x':
+      // Clear all popups
+      $easterOverlay.classList.remove('active');
+      $konamiOverlay.classList.remove('active');
+      if (state.cheatSheetOpen) toggleCheatSheet();
+      showKeyPress('X', 'Clear overlays');
+      break;
+    case 'y':
+      // Copy URL
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showToast('URL copied to clipboard');
+      }).catch(() => {});
+      showKeyPress('Y', 'Yank URL');
+      break;
+    case 'z':
+      // Zen mode - hide UI elements
+      document.getElementById('nav-bar').style.transform =
+        document.getElementById('nav-bar').style.transform === 'translateY(-100%)'
+          ? '' : 'translateY(-100%)';
+      showKeyPress('Z', 'Zen mode');
+      break;
+    case 'q':
+      // q without colon shows hint
+      showToast('Did you mean :q? Press : first');
+      showKeyPress('Q', 'Hint: use :q');
+      break;
+    default:
+      if (/^[0-9]$/.test(key)) {
+        // Number keys jump to section by index
+        const idx = parseInt(key);
+        if (idx >= 1 && idx <= state.sections.length) {
+          navigateToSection(idx - 1);
+          showKeyPress(key, state.sections[idx - 1]);
+        }
+      }
+      break;
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  unlightKey(e.code);
+});
+
+/* ============================================================
+   SCROLL LISTENER
+   ============================================================ */
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => {
+      detectCurrentSection();
+      scrollTicking = false;
+    });
+    scrollTicking = true;
+  }
+});
+
+/* ============================================================
+   SECTION DOT CLICKS
+   ============================================================ */
+document.querySelectorAll('.section-dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    navigateToSectionByName(dot.dataset.section);
+  });
+  dot.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigateToSectionByName(dot.dataset.section);
+    }
+  });
+});
+
+/* ============================================================
+   KB TOGGLE BUTTON
+   ============================================================ */
+$kbToggle.addEventListener('click', toggleKeyboard);
+
+/* ============================================================
+   VISUAL KEYBOARD CLICK HANDLER
+   ============================================================ */
+$keyboard.querySelectorAll('.kb-key').forEach(key => {
+  key.addEventListener('mousedown', () => {
+    key.classList.add('active');
+    // Simulate keypress action
+    const code = key.dataset.keycode;
+    const keyMap = {
+      'KeyA': 'a', 'KeyP': 'p', 'KeyS': 's', 'KeyE': 'e', 'KeyC': 'c',
+      'KeyH': 'h', 'KeyJ': 'j', 'KeyK': 'k', 'KeyV': 'v', 'KeyT': 't',
+      'ArrowUp': 'ArrowUp', 'ArrowDown': 'ArrowDown',
+      'ArrowLeft': 'ArrowLeft', 'ArrowRight': 'ArrowRight',
+    };
+    if (keyMap[code]) {
+      const synth = new KeyboardEvent('keydown', { key: keyMap[code], code: code, bubbles: true });
+      document.dispatchEvent(synth);
+    }
+  });
+  key.addEventListener('mouseup', () => {
+    key.classList.remove('active');
+  });
+  key.addEventListener('mouseleave', () => {
+    key.classList.remove('active');
+  });
+});
+
+/* ============================================================
+   NAV LINK CLICKS
+   ============================================================ */
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateToSectionByName(link.dataset.section);
+  });
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+detectCurrentSection();
+
+// Add focus styles on tab
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    document.body.classList.add('keyboard-nav');
+  }
+});
+document.addEventListener('mousedown', () => {
+  document.body.classList.remove('keyboard-nav');
+});
+</script>
+</body>
+</html>

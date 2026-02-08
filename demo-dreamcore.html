@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg -- you've been here before</title>
+<meta name="description" content="Anshull Garg -- Software Developer at Walmart. A liminal portfolio. You have been here before.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DREAMCORE / LIMINAL SPACES PORTFOLIO
+   VHS blur, pastel fog, familiar-yet-unsettling aesthetic
+   "You've been here before."
+   ============================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #E8E0D8;
+  --bg-warm: #EDE6DE;
+  --bg-cold: #DDD8D2;
+  --pink: #FFD1DC;
+  --pink-deep: #E8A8B8;
+  --teal: #88B5C4;
+  --teal-muted: #7AA3B0;
+  --yellow: #E8D5A0;
+  --yellow-pale: #F0E4C0;
+  --lavender: #C4B8D8;
+  --lavender-pale: #D8D0E4;
+  --fog-white: rgba(232, 224, 216, 0.85);
+  --text: #6B6260;
+  --text-faded: #9A9290;
+  --text-ghost: #B8B0A8;
+  --text-deep: #4A4442;
+  --vhs-red: #C85050;
+  --vhs-blue: #5070A0;
+  --corridor-dark: #C8C0B8;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: crosshair;
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--text-deep);
+}
+
+a {
+  color: var(--teal-muted);
+  text-decoration: none;
+  transition: all 0.6s ease;
+}
+
+a:hover {
+  color: var(--pink-deep);
+  filter: blur(0.3px);
+}
+
+/* ============================================================
+   VHS OVERLAY SYSTEM
+   Tracking lines, scanlines, chromatic aberration
+   ============================================================ */
+
+.vhs-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+  mix-blend-mode: multiply;
+}
+
+/* Scanlines */
+.vhs-scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10001;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(107, 98, 96, 0.03) 2px,
+    rgba(107, 98, 96, 0.03) 4px
+  );
+  opacity: 0.6;
+}
+
+/* VHS tracking distortion bar */
+.vhs-tracking {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(200, 80, 80, 0.15) 10%,
+    rgba(232, 224, 216, 0.6) 20%,
+    rgba(232, 224, 216, 0.8) 50%,
+    rgba(232, 224, 216, 0.6) 80%,
+    rgba(80, 112, 160, 0.15) 90%,
+    transparent 100%
+  );
+  z-index: 10002;
+  pointer-events: none;
+  animation: vhsTrack 8s linear infinite;
+  filter: blur(0.5px);
+  box-shadow: 0 0 20px 5px rgba(232, 224, 216, 0.2);
+}
+
+.vhs-tracking-2 {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(232, 224, 216, 0.3);
+  z-index: 10002;
+  pointer-events: none;
+  animation: vhsTrack2 12s linear infinite;
+  filter: blur(1px);
+}
+
+@keyframes vhsTrack {
+  0% { top: -5px; opacity: 0; }
+  2% { opacity: 1; }
+  98% { opacity: 1; }
+  100% { top: 100vh; opacity: 0; }
+}
+
+@keyframes vhsTrack2 {
+  0% { top: 100vh; opacity: 0; }
+  5% { opacity: 0.5; }
+  95% { opacity: 0.5; }
+  100% { top: -5px; opacity: 0; }
+}
+
+/* VHS timestamp */
+.vhs-timestamp {
+  position: fixed;
+  bottom: 24px;
+  right: 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-faded);
+  z-index: 9999;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  text-shadow:
+    1px 0 rgba(200, 80, 80, 0.3),
+    -1px 0 rgba(80, 112, 160, 0.3);
+  animation: vhsFlicker 4s ease-in-out infinite;
+}
+
+/* REC indicator */
+.vhs-rec {
+  position: fixed;
+  top: 24px;
+  left: 28px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--vhs-red);
+  z-index: 9999;
+  letter-spacing: 0.15em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.6;
+  animation: vhsFlicker 3s ease-in-out infinite;
+}
+
+.vhs-rec-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--vhs-red);
+  border-radius: 50%;
+  animation: recBlink 2s ease-in-out infinite;
+}
+
+@keyframes recBlink {
+  0%, 40% { opacity: 1; }
+  50%, 70% { opacity: 0; }
+  80%, 100% { opacity: 1; }
+}
+
+@keyframes vhsFlicker {
+  0%, 100% { opacity: 0.5; }
+  10% { opacity: 0.55; }
+  20% { opacity: 0.45; }
+  30% { opacity: 0.6; }
+  50% { opacity: 0.4; }
+  70% { opacity: 0.55; }
+  90% { opacity: 0.5; }
+}
+
+/* SP/EP indicator */
+.vhs-speed {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 300;
+  color: var(--text-ghost);
+  z-index: 9999;
+  letter-spacing: 0.2em;
+  opacity: 0.4;
+}
+
+/* ============================================================
+   FOG LAYERS
+   Multiple translucent gradients creating depth
+   ============================================================ */
+
+.fog-system {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fog-layer {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  top: 0;
+  left: -50%;
+  opacity: 0.4;
+}
+
+.fog-1 {
+  background: radial-gradient(
+    ellipse 800px 300px at 30% 20%,
+    rgba(255, 209, 220, 0.25) 0%,
+    transparent 70%
+  );
+  animation: fogDrift1 30s ease-in-out infinite;
+}
+
+.fog-2 {
+  background: radial-gradient(
+    ellipse 600px 250px at 70% 60%,
+    rgba(136, 181, 196, 0.2) 0%,
+    transparent 70%
+  );
+  animation: fogDrift2 25s ease-in-out infinite;
+}
+
+.fog-3 {
+  background: radial-gradient(
+    ellipse 700px 200px at 50% 80%,
+    rgba(232, 213, 160, 0.15) 0%,
+    transparent 70%
+  );
+  animation: fogDrift3 35s ease-in-out infinite;
+}
+
+.fog-4 {
+  background: radial-gradient(
+    ellipse 500px 350px at 20% 50%,
+    rgba(196, 184, 216, 0.18) 0%,
+    transparent 70%
+  );
+  animation: fogDrift4 28s ease-in-out infinite;
+}
+
+.fog-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    180deg,
+    rgba(232, 224, 216, 0.9) 0%,
+    rgba(232, 224, 216, 0.5) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+.fog-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(
+    0deg,
+    rgba(232, 224, 216, 0.9) 0%,
+    rgba(232, 224, 216, 0.4) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes fogDrift1 {
+  0%, 100% { transform: translateX(0) translateY(0); opacity: 0.4; }
+  25% { transform: translateX(40px) translateY(-10px); opacity: 0.35; }
+  50% { transform: translateX(-30px) translateY(15px); opacity: 0.45; }
+  75% { transform: translateX(20px) translateY(-5px); opacity: 0.3; }
+}
+
+@keyframes fogDrift2 {
+  0%, 100% { transform: translateX(0) translateY(0); opacity: 0.35; }
+  33% { transform: translateX(-50px) translateY(20px); opacity: 0.3; }
+  66% { transform: translateX(35px) translateY(-15px); opacity: 0.4; }
+}
+
+@keyframes fogDrift3 {
+  0%, 100% { transform: translateX(0); opacity: 0.3; }
+  50% { transform: translateX(60px); opacity: 0.2; }
+}
+
+@keyframes fogDrift4 {
+  0%, 100% { transform: translateX(0) translateY(0); opacity: 0.25; }
+  40% { transform: translateX(-40px) translateY(10px); opacity: 0.35; }
+  80% { transform: translateX(30px) translateY(-20px); opacity: 0.2; }
+}
+
+/* ============================================================
+   GRAIN / NOISE TEXTURE
+   VHS-quality degradation
+   ============================================================ */
+
+.grain {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 10003;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grainShift 0.5s steps(2) infinite;
+}
+
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-2%, -1%); }
+  100% { transform: translate(1%, 2%); }
+}
+
+/* ============================================================
+   LIMINAL SPACE BACKGROUNDS (CSS-only)
+   Empty corridors, abandoned malls, poolrooms
+   ============================================================ */
+
+.liminal-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+  opacity: 0.12;
+  filter: blur(2px) saturate(0.6);
+}
+
+/* Corridor - converging perspective lines */
+.liminal-corridor {
+  background:
+    /* ceiling lights repeating */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(232, 213, 160, 0.3) 80px,
+      rgba(232, 213, 160, 0.3) 82px
+    ),
+    /* floor tiles */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 60px,
+      rgba(200, 192, 184, 0.2) 60px,
+      rgba(200, 192, 184, 0.2) 62px
+    ),
+    /* perspective vanishing */
+    radial-gradient(
+      ellipse 30% 80% at 50% 50%,
+      rgba(255, 209, 220, 0.15) 0%,
+      rgba(200, 192, 184, 0.1) 40%,
+      rgba(107, 98, 96, 0.08) 100%
+    ),
+    /* walls */
+    linear-gradient(
+      180deg,
+      rgba(196, 184, 216, 0.1) 0%,
+      rgba(232, 224, 216, 0.05) 30%,
+      rgba(200, 192, 184, 0.15) 70%,
+      rgba(136, 181, 196, 0.08) 100%
+    );
+}
+
+/* Poolroom - tiled floor with water reflections */
+.liminal-pool {
+  background:
+    /* water reflection */
+    radial-gradient(
+      ellipse 60% 20% at 50% 70%,
+      rgba(136, 181, 196, 0.25) 0%,
+      transparent 70%
+    ),
+    /* tiles */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 40px,
+      rgba(136, 181, 196, 0.06) 40px,
+      rgba(136, 181, 196, 0.06) 42px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 40px,
+      rgba(136, 181, 196, 0.06) 40px,
+      rgba(136, 181, 196, 0.06) 42px
+    ),
+    linear-gradient(
+      180deg,
+      rgba(232, 224, 216, 0.3) 0%,
+      rgba(136, 181, 196, 0.15) 100%
+    );
+}
+
+/* Mall atrium - empty, echoing */
+.liminal-mall {
+  background:
+    /* skylights */
+    radial-gradient(
+      ellipse 15% 40% at 25% 0%,
+      rgba(232, 213, 160, 0.2) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 15% 40% at 75% 0%,
+      rgba(232, 213, 160, 0.15) 0%,
+      transparent 70%
+    ),
+    /* store outlines */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 120px,
+      rgba(107, 98, 96, 0.06) 120px,
+      rgba(107, 98, 96, 0.06) 122px
+    ),
+    /* floor */
+    linear-gradient(
+      180deg,
+      rgba(255, 209, 220, 0.08) 0%,
+      rgba(232, 224, 216, 0.1) 50%,
+      rgba(200, 192, 184, 0.15) 100%
+    );
+}
+
+/* Empty stairwell */
+.liminal-stairs {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 30px,
+      rgba(200, 192, 184, 0.1) 30px,
+      rgba(200, 192, 184, 0.1) 32px,
+      rgba(200, 192, 184, 0.05) 32px,
+      rgba(200, 192, 184, 0.05) 50px
+    ),
+    /* railing shadow */
+    linear-gradient(
+      135deg,
+      transparent 40%,
+      rgba(107, 98, 96, 0.04) 41%,
+      rgba(107, 98, 96, 0.04) 42%,
+      transparent 43%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(196, 184, 216, 0.1) 0%,
+      rgba(232, 224, 216, 0.05) 100%
+    );
+}
+
+/* ============================================================
+   NAVIGATION -- barely there, slightly off-center
+   ============================================================ */
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 28px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(
+    180deg,
+    rgba(232, 224, 216, 0.85) 0%,
+    rgba(232, 224, 216, 0.4) 70%,
+    transparent 100%
+  );
+  backdrop-filter: blur(8px) saturate(0.9);
+  -webkit-backdrop-filter: blur(8px) saturate(0.9);
+  transition: all 0.8s ease;
+}
+
+.nav-logo {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  opacity: 0.7;
+  filter: blur(0.2px);
+  /* intentional slight misalignment */
+  transform: translateY(1px) rotate(-0.2deg);
+}
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+  /* slightly off from perfect center */
+  transform: translateX(3px);
+}
+
+.nav-links a {
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text-faded);
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  position: relative;
+  padding-bottom: 2px;
+  transition: all 0.8s ease;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--pink-deep);
+  transition: width 1s ease;
+  opacity: 0.5;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+  filter: blur(0);
+}
+
+/* Mobile nav */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 200;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 1px;
+  background: var(--text-faded);
+  margin: 5px 0;
+  transition: all 0.4s ease;
+}
+
+/* ============================================================
+   CONTENT WRAPPER
+   ============================================================ */
+
+.content {
+  position: relative;
+  z-index: 5;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ============================================================
+   SECTION TRANSITIONS -- fog dividers
+   ============================================================ */
+
+.section-fog {
+  width: 100%;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.section-fog::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 50%,
+    rgba(232, 224, 216, 0.6) 0%,
+    transparent 70%
+  );
+  animation: fogPulse 8s ease-in-out infinite;
+}
+
+@keyframes fogPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* ============================================================
+   HERO SECTION -- the empty room you remember
+   ============================================================ */
+
+.hero {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero .liminal-bg {
+  opacity: 0.08;
+}
+
+.hero-content {
+  text-align: center;
+  position: relative;
+  z-index: 5;
+  padding: 40px;
+  /* subtle off-center drift */
+  transform: translateX(-2px) translateY(3px);
+}
+
+.hero-whisper {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: var(--text-ghost);
+  letter-spacing: 0.3em;
+  text-transform: lowercase;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: whisperIn 3s ease-out 0.5s forwards;
+  filter: blur(0.5px);
+}
+
+@keyframes whisperIn {
+  0% { opacity: 0; filter: blur(4px); transform: translateY(10px); }
+  100% { opacity: 0.6; filter: blur(0.5px); transform: translateY(0); }
+}
+
+.hero-name {
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 400;
+  color: var(--text-deep);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: nameReveal 4s ease-out 1s forwards;
+  filter: blur(0.3px);
+  /* slightly off vertical rhythm */
+  text-indent: -3px;
+}
+
+@keyframes nameReveal {
+  0% { opacity: 0; filter: blur(8px); transform: scale(1.02); }
+  50% { filter: blur(1px); }
+  100% { opacity: 0.85; filter: blur(0.3px); transform: scale(1); }
+}
+
+.hero-title {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  font-weight: 200;
+  color: var(--text-faded);
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 3s ease-out 2s forwards;
+  /* misaligned on purpose */
+  transform: translateX(4px);
+}
+
+.hero-location {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: var(--text-ghost);
+  letter-spacing: 0.2em;
+  opacity: 0;
+  animation: fadeUp 3s ease-out 2.5s forwards;
+}
+
+.hero-location span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: var(--pink-deep);
+  border-radius: 50%;
+  margin: 0 12px;
+  opacity: 0.4;
+  vertical-align: middle;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; filter: blur(3px); transform: translateY(8px) translateX(4px); }
+  100% { opacity: 0.65; filter: blur(0.2px); transform: translateY(0) translateX(4px); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.3); }
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 3s ease-out 3.5s forwards;
+}
+
+.hero-scroll-text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.2em;
+  text-transform: lowercase;
+}
+
+.hero-scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(180deg, var(--text-ghost), transparent);
+  opacity: 0.3;
+  animation: scrollPulse 3s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { height: 40px; opacity: 0.3; }
+  50% { height: 55px; opacity: 0.15; }
+}
+
+/* ============================================================
+   ABOUT -- the room you think you recognize
+   ============================================================ */
+
+.about {
+  padding: 120px 0 80px;
+  position: relative;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: var(--text-ghost);
+  letter-spacing: 0.3em;
+  text-transform: lowercase;
+  margin-bottom: 48px;
+  opacity: 0.5;
+  /* misalignment */
+  transform: translateX(-2px);
+}
+
+.section-label::before {
+  content: '//';
+  margin-right: 8px;
+  opacity: 0.3;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.about-divider {
+  width: 1px;
+  height: 100%;
+  min-height: 200px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--corridor-dark) 30%,
+    var(--corridor-dark) 70%,
+    transparent
+  );
+  opacity: 0.25;
+}
+
+.about-text h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 400;
+  color: var(--text-deep);
+  line-height: 1.3;
+  margin-bottom: 28px;
+  filter: blur(0.2px);
+  opacity: 0.85;
+  /* deliberate slight tilt */
+  transform: rotate(-0.15deg);
+}
+
+.about-text p {
+  font-size: 0.92rem;
+  line-height: 1.9;
+  color: var(--text);
+  margin-bottom: 20px;
+  opacity: 0.75;
+}
+
+.about-text p:last-child {
+  margin-bottom: 0;
+}
+
+.about-aside {
+  padding-top: 8px;
+}
+
+.about-aside .memory-fragment {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-faded);
+  line-height: 1.8;
+  margin-bottom: 32px;
+  padding-left: 20px;
+  border-left: 1px solid var(--pink);
+  opacity: 0.6;
+  filter: blur(0.3px);
+  /* slightly misaligned */
+  transform: translateX(2px) rotate(0.1deg);
+}
+
+.about-values {
+  list-style: none;
+  padding: 0;
+}
+
+.about-values li {
+  font-size: 0.82rem;
+  color: var(--text-faded);
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(200, 192, 184, 0.15);
+  opacity: 0.6;
+  transition: opacity 0.8s ease;
+  letter-spacing: 0.01em;
+}
+
+.about-values li:hover {
+  opacity: 0.9;
+}
+
+.about-values li:last-child {
+  border-bottom: none;
+}
+
+.about-values li::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: var(--teal);
+  border-radius: 50%;
+  margin-right: 12px;
+  opacity: 0.4;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   PROJECTS -- rooms you've walked through before
+   ============================================================ */
+
+.projects {
+  padding: 80px 0 100px;
+  position: relative;
+}
+
+.projects-grid {
+  display: grid;
+  gap: 48px;
+  margin-top: 48px;
+}
+
+.project-card {
+  position: relative;
+  padding: 48px;
+  background: rgba(237, 230, 222, 0.4);
+  border: 1px solid rgba(200, 192, 184, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: all 1s ease;
+  /* each card slightly off */
+  filter: blur(0.15px);
+}
+
+.project-card:nth-child(odd) {
+  transform: translateX(-1px) rotate(-0.05deg);
+}
+
+.project-card:nth-child(even) {
+  transform: translateX(2px) rotate(0.08deg);
+}
+
+.project-card:hover {
+  background: rgba(237, 230, 222, 0.6);
+  filter: blur(0);
+  box-shadow: 0 20px 80px rgba(107, 98, 96, 0.04);
+}
+
+.project-card .liminal-bg {
+  opacity: 0.04;
+  transition: opacity 1s ease;
+}
+
+.project-card:hover .liminal-bg {
+  opacity: 0.08;
+}
+
+.project-number {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 300;
+  color: var(--text-ghost);
+  letter-spacing: 0.3em;
+  margin-bottom: 20px;
+  opacity: 0.4;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.project-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+  font-weight: 400;
+  color: var(--text-deep);
+  line-height: 1.3;
+  opacity: 0.8;
+  filter: blur(0.2px);
+}
+
+.project-context {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+  white-space: nowrap;
+  /* misaligned */
+  transform: translateY(2px);
+}
+
+.project-body {
+  font-size: 0.88rem;
+  line-height: 1.9;
+  color: var(--text-faded);
+  margin-bottom: 28px;
+  max-width: 680px;
+  opacity: 0.7;
+}
+
+.project-metrics {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-value {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--text-deep);
+  opacity: 0.7;
+  filter: blur(0.3px);
+}
+
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  opacity: 0.5;
+}
+
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stack-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: var(--text-faded);
+  padding: 5px 12px;
+  background: rgba(200, 192, 184, 0.12);
+  border: 1px solid rgba(200, 192, 184, 0.15);
+  border-radius: 1px;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  transition: all 0.6s ease;
+}
+
+.stack-tag:hover {
+  opacity: 0.9;
+  background: rgba(255, 209, 220, 0.1);
+  border-color: rgba(255, 209, 220, 0.2);
+}
+
+/* ============================================================
+   EXPERIENCE -- corridors that stretch on forever
+   ============================================================ */
+
+.experience {
+  padding: 80px 0 100px;
+  position: relative;
+}
+
+.timeline {
+  position: relative;
+  margin-top: 48px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--corridor-dark) 10%,
+    var(--corridor-dark) 90%,
+    transparent
+  );
+  opacity: 0.2;
+}
+
+.timeline-entry {
+  position: relative;
+  padding: 0 0 64px 48px;
+  opacity: 0.75;
+  transition: opacity 0.8s ease;
+}
+
+.timeline-entry:hover {
+  opacity: 1;
+}
+
+.timeline-entry:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -3px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--corridor-dark);
+  opacity: 0.4;
+  transition: all 0.8s ease;
+}
+
+.timeline-entry:hover .timeline-dot {
+  background: var(--pink);
+  border-color: var(--pink-deep);
+  opacity: 0.7;
+  box-shadow: 0 0 20px rgba(255, 209, 220, 0.2);
+}
+
+.timeline-entry.current .timeline-dot {
+  background: var(--pink);
+  border-color: var(--pink-deep);
+  opacity: 0.6;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.timeline-company {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--text-deep);
+  margin-bottom: 4px;
+  opacity: 0.8;
+  filter: blur(0.2px);
+}
+
+.timeline-role {
+  font-size: 0.85rem;
+  color: var(--text-faded);
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.timeline-body {
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--text-faded);
+  margin-bottom: 16px;
+  opacity: 0.65;
+  max-width: 580px;
+}
+
+.timeline-details {
+  list-style: none;
+  padding: 0;
+}
+
+.timeline-details li {
+  font-size: 0.8rem;
+  color: var(--text-faded);
+  padding: 6px 0;
+  opacity: 0.55;
+  line-height: 1.7;
+}
+
+.timeline-details li::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 1px;
+  background: var(--corridor-dark);
+  margin-right: 10px;
+  vertical-align: middle;
+  opacity: 0.4;
+}
+
+.current-tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--pink-deep);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   SKILLS -- tiles on the floor of an empty room
+   ============================================================ */
+
+.skills {
+  padding: 80px 0 100px;
+  position: relative;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-top: 48px;
+}
+
+.skill-column {
+  opacity: 0.7;
+}
+
+.skill-category {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-deep);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(200, 192, 184, 0.15);
+  opacity: 0.7;
+  filter: blur(0.2px);
+}
+
+.skill-list {
+  list-style: none;
+  padding: 0;
+}
+
+.skill-list li {
+  font-size: 0.8rem;
+  color: var(--text-faded);
+  padding: 7px 0;
+  opacity: 0.55;
+  transition: all 0.6s ease;
+  letter-spacing: 0.01em;
+}
+
+.skill-list li:hover {
+  opacity: 0.9;
+  transform: translateX(3px);
+  color: var(--text);
+}
+
+.skill-list li .core {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--pink-deep);
+  letter-spacing: 0.1em;
+  margin-left: 8px;
+  opacity: 0.4;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   CONTACT -- the exit you can't quite find
+   ============================================================ */
+
+.contact {
+  padding: 100px 0 60px;
+  position: relative;
+}
+
+.contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 60px;
+  margin-top: 48px;
+}
+
+.contact-divider {
+  width: 1px;
+  height: 100%;
+  min-height: 200px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--corridor-dark) 30%,
+    var(--corridor-dark) 70%,
+    transparent
+  );
+  opacity: 0.2;
+}
+
+.contact-message {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  opacity: 0.65;
+  filter: blur(0.2px);
+  /* deliberate slight off */
+  transform: rotate(-0.1deg);
+}
+
+.contact-subtext {
+  font-size: 0.85rem;
+  color: var(--text-faded);
+  line-height: 1.8;
+  opacity: 0.6;
+}
+
+.contact-links {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-links li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(200, 192, 184, 0.12);
+  transition: all 0.6s ease;
+}
+
+.contact-links li:first-child {
+  border-top: 1px solid rgba(200, 192, 184, 0.12);
+}
+
+.contact-links li:hover {
+  padding-left: 8px;
+}
+
+.contact-link-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  opacity: 0.5;
+}
+
+.contact-link-value {
+  font-size: 0.85rem;
+  color: var(--text-faded);
+  opacity: 0.6;
+  transition: all 0.6s ease;
+}
+
+.contact-link-value a {
+  color: var(--text-faded);
+  position: relative;
+}
+
+.contact-link-value a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--pink-deep);
+  transition: width 0.8s ease;
+  opacity: 0.4;
+}
+
+.contact-link-value a:hover {
+  color: var(--text);
+  filter: blur(0);
+}
+
+.contact-link-value a:hover::after {
+  width: 100%;
+}
+
+/* Contact form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.2em;
+  text-transform: lowercase;
+  opacity: 0.4;
+}
+
+.form-input,
+.form-textarea {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text);
+  background: rgba(237, 230, 222, 0.3);
+  border: 1px solid rgba(200, 192, 184, 0.15);
+  border-radius: 1px;
+  padding: 14px 16px;
+  outline: none;
+  transition: all 0.6s ease;
+  -webkit-appearance: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: rgba(255, 209, 220, 0.3);
+  background: rgba(237, 230, 222, 0.5);
+  box-shadow: 0 0 30px rgba(255, 209, 220, 0.05);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-submit {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: var(--text-faded);
+  background: rgba(200, 192, 184, 0.1);
+  border: 1px solid rgba(200, 192, 184, 0.2);
+  padding: 14px 28px;
+  cursor: pointer;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  transition: all 0.8s ease;
+  align-self: flex-start;
+  border-radius: 1px;
+}
+
+.form-submit:hover {
+  background: rgba(255, 209, 220, 0.1);
+  border-color: rgba(255, 209, 220, 0.25);
+  color: var(--text);
+}
+
+/* ============================================================
+   FOOTER -- the last room
+   ============================================================ */
+
+footer {
+  padding: 60px 0 100px;
+  text-align: center;
+  position: relative;
+}
+
+.footer-text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+  letter-spacing: 0.15em;
+  opacity: 0.35;
+  line-height: 2.2;
+}
+
+.footer-whisper {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-faded);
+  opacity: 0.25;
+  margin-top: 20px;
+  filter: blur(0.5px);
+}
+
+/* ============================================================
+   LIMINAL INTERSTITIALS -- between sections
+   ============================================================ */
+
+.interstitial {
+  padding: 80px 0;
+  text-align: center;
+  position: relative;
+}
+
+.interstitial-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: var(--text-faded);
+  opacity: 0.3;
+  filter: blur(0.5px);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.8;
+  /* intentional misalignment */
+  transform: rotate(-0.3deg) translateX(-5px);
+}
+
+/* ============================================================
+   VHS GLITCH EFFECTS
+   ============================================================ */
+
+.vhs-glitch {
+  position: relative;
+}
+
+.vhs-glitch::before,
+.vhs-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.vhs-glitch::before {
+  color: var(--vhs-red);
+  animation: glitchR 8s ease-in-out infinite;
+}
+
+.vhs-glitch::after {
+  color: var(--vhs-blue);
+  animation: glitchB 8s ease-in-out infinite;
+}
+
+@keyframes glitchR {
+  0%, 90%, 100% { opacity: 0; transform: translate(0); }
+  92% { opacity: 0.1; transform: translate(2px, -1px); }
+  94% { opacity: 0; }
+  96% { opacity: 0.08; transform: translate(-1px, 1px); }
+  98% { opacity: 0; }
+}
+
+@keyframes glitchB {
+  0%, 90%, 100% { opacity: 0; transform: translate(0); }
+  91% { opacity: 0.08; transform: translate(-2px, 1px); }
+  93% { opacity: 0; }
+  95% { opacity: 0.1; transform: translate(1px, -1px); }
+  97% { opacity: 0; }
+}
+
+/* ============================================================
+   SCROLL REVEAL -- things emerging from fog
+   ============================================================ */
+
+.reveal {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(20px);
+  transition: opacity 1.5s ease, filter 2s ease, transform 1.5s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* ============================================================
+   CHROMATIC ABERRATION on hover
+   ============================================================ */
+
+.chromatic:hover {
+  text-shadow:
+    1px 0 rgba(200, 80, 80, 0.15),
+    -1px 0 rgba(80, 112, 160, 0.15);
+}
+
+/* ============================================================
+   RESPONSIVE -- the rooms resize
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .container { padding: 0 28px; }
+
+  nav { padding: 20px 28px; }
+
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(232, 224, 216, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    z-index: 150;
+  }
+
+  .nav-links.open a {
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+
+  .nav-toggle { display: block; }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .about-divider { display: none; }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .contact-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .contact-divider { display: none; }
+
+  .project-card {
+    padding: 32px;
+  }
+
+  .project-header {
+    flex-direction: column;
+  }
+
+  .project-metrics {
+    gap: 24px;
+  }
+
+  .hero-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 0 20px; }
+
+  nav { padding: 16px 20px; }
+
+  .hero-name {
+    font-size: 2.4rem;
+  }
+
+  .project-card {
+    padding: 24px;
+  }
+
+  .timeline-entry {
+    padding-left: 32px;
+  }
+
+  .vhs-timestamp { font-size: 9px; bottom: 16px; right: 16px; }
+  .vhs-rec { top: 16px; left: 16px; font-size: 8px; }
+  .vhs-speed { top: 16px; right: 16px; font-size: 7px; }
+}
+
+/* ============================================================
+   ACCESSIBILITY -- reduce motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .fog-layer { animation: none; opacity: 0.2; }
+  .grain { animation: none; }
+  .vhs-tracking, .vhs-tracking-2 { display: none; }
+  .reveal { opacity: 1; filter: none; transform: none; }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+
+@media print {
+  .vhs-overlay, .vhs-scanlines, .vhs-tracking, .vhs-tracking-2,
+  .vhs-timestamp, .vhs-rec, .vhs-speed, .fog-system, .fog-top,
+  .fog-bottom, .grain, .liminal-bg { display: none !important; }
+
+  body { background: #fff; color: #333; }
+  .reveal { opacity: 1; filter: none; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     VHS OVERLAY SYSTEM
+     ============================================================ -->
+<div class="vhs-overlay" aria-hidden="true"></div>
+<div class="vhs-scanlines" aria-hidden="true"></div>
+<div class="vhs-tracking" aria-hidden="true"></div>
+<div class="vhs-tracking-2" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- VHS Indicators -->
+<div class="vhs-rec" aria-hidden="true">
+  <span class="vhs-rec-dot"></span>
+  <span>REC</span>
+</div>
+<div class="vhs-speed" aria-hidden="true">SP</div>
+<div class="vhs-timestamp" aria-hidden="true" id="vhsTime">00:00:00</div>
+
+<!-- ============================================================
+     FOG SYSTEM
+     ============================================================ -->
+<div class="fog-system" aria-hidden="true">
+  <div class="fog-layer fog-1"></div>
+  <div class="fog-layer fog-2"></div>
+  <div class="fog-layer fog-3"></div>
+  <div class="fog-layer fog-4"></div>
+</div>
+<div class="fog-top" aria-hidden="true"></div>
+<div class="fog-bottom" aria-hidden="true"></div>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav role="navigation" aria-label="Main navigation">
+  <div class="nav-logo chromatic">anshull garg</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">about</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#experience">experience</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="hero" aria-label="Introduction">
+  <div class="liminal-bg liminal-corridor" aria-hidden="true"></div>
+  <div class="hero-content">
+    <p class="hero-whisper">you have been here before</p>
+    <h1 class="hero-name vhs-glitch" data-text="Anshull Garg">Anshull  Garg</h1>
+    <p class="hero-title">software developer</p>
+    <p class="hero-location">
+      walmart inc.
+      <span aria-hidden="true"></span>
+      building systems for 240 million
+    </p>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <span class="hero-scroll-text">scroll down</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     INTERSTITIAL
+     ============================================================ -->
+<div class="interstitial" aria-hidden="true">
+  <p class="interstitial-text reveal">
+    the corridor stretches ahead of you.<br>
+    the lights hum. nothing moves.
+  </p>
+</div>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<section class="about container" id="about" aria-label="About">
+  <div class="section-label reveal">about</div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <h2>Software engineering is structured thinking applied to unstructured problems.</h2>
+      <p>
+        That principle has guided every line of code I have written -- from early
+        experiments with JavaScript to architecting production systems at the
+        Fortune 1 company.
+      </p>
+      <p>
+        Today, as a Software Developer at Walmart, I work across the full stack
+        to deliver high-impact features for one of the world's largest digital
+        retail platforms. My work involves designing scalable APIs, optimizing
+        frontend performance, and collaborating with cross-functional teams to
+        ship features that serve 240 million customers weekly.
+      </p>
+      <p>
+        I specialize in React ecosystems, Node.js services, and performance
+        optimization. I have contributed to systems that handle traffic spikes,
+        edge cases, and the unpredictable reality of enterprise-scale commerce.
+      </p>
+    </div>
+    <div class="about-divider" aria-hidden="true"></div>
+    <div class="about-aside reveal">
+      <div class="memory-fragment">
+        "The best software is invisible -- it works so well that
+        no one thinks about it. I build the kind of systems people
+        trust without knowing they exist."
+      </div>
+      <ul class="about-values">
+        <li>Code is read 10x more than it is written</li>
+        <li>Tests are documentation that executes</li>
+        <li>The best abstraction is the one you do not need yet</li>
+        <li>Ship first, measure second, optimize third</li>
+        <li>Every PR should leave the codebase better</li>
+        <li>Accessibility is a baseline, not a feature</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     INTERSTITIAL
+     ============================================================ -->
+<div class="interstitial" aria-hidden="true">
+  <p class="interstitial-text reveal">
+    you recognize this place.<br>
+    the floor tiles. the ceiling panels.<br>
+    but no one is here.
+  </p>
+</div>
+
+<!-- ============================================================
+     PROJECTS
+     ============================================================ -->
+<section class="projects container" id="projects" aria-label="Projects">
+  <div class="section-label reveal">selected work</div>
+  <div class="projects-grid">
+
+    <!-- Project 1 -->
+    <article class="project-card reveal">
+      <div class="liminal-bg liminal-pool" aria-hidden="true"></div>
+      <div class="project-number">001</div>
+      <div class="project-header">
+        <h3 class="project-title chromatic">Checkout Pipeline Optimization</h3>
+        <span class="project-context">walmart -- 2025</span>
+      </div>
+      <p class="project-body">
+        Led a comprehensive optimization initiative targeting Walmart's checkout
+        flow -- one of the highest-traffic pages in global e-commerce. Deep
+        performance profiling, strategic code splitting, and a complete
+        rearchitecture of the client-side rendering pipeline. Implemented
+        optimistic UI updates that cut perceived latency for payment processing
+        by half.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <span class="metric-value">-35%</span>
+          <span class="metric-label">page load time</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">-40%</span>
+          <span class="metric-label">bundle size</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">1.8s</span>
+          <span class="metric-label">lcp achieved</span>
+        </div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">React</span>
+        <span class="stack-tag">Node.js</span>
+        <span class="stack-tag">Webpack</span>
+        <span class="stack-tag">Performance APIs</span>
+        <span class="stack-tag">Lighthouse</span>
+      </div>
+    </article>
+
+    <!-- Project 2 -->
+    <article class="project-card reveal">
+      <div class="liminal-bg liminal-mall" aria-hidden="true"></div>
+      <div class="project-number">002</div>
+      <div class="project-header">
+        <h3 class="project-title chromatic">Internal Developer Platform</h3>
+        <span class="project-context">walmart -- 2024</span>
+      </div>
+      <p class="project-body">
+        Architected and shipped an internal tooling platform used by 500+
+        engineers across multiple teams. The platform standardizes deployment
+        workflows, provides real-time monitoring dashboards, and automates
+        repetitive configuration tasks that previously consumed 12+ engineering
+        hours per sprint.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <span class="metric-value">500+</span>
+          <span class="metric-label">engineers using it</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">12h</span>
+          <span class="metric-label">saved per sprint</span>
+        </div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">TypeScript</span>
+        <span class="stack-tag">React</span>
+        <span class="stack-tag">GraphQL</span>
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">CI/CD</span>
+      </div>
+    </article>
+
+    <!-- Project 3 -->
+    <article class="project-card reveal">
+      <div class="liminal-bg liminal-stairs" aria-hidden="true"></div>
+      <div class="project-number">003</div>
+      <div class="project-header">
+        <h3 class="project-title chromatic">Microservice API Gateway</h3>
+        <span class="project-context">walmart -- 2024</span>
+      </div>
+      <p class="project-body">
+        Designed a centralized API gateway that reduced latency by 35% across
+        12 downstream services. Implemented intelligent caching, rate limiting,
+        and circuit breaker patterns for fault tolerance at enterprise scale.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <span class="metric-value">-35%</span>
+          <span class="metric-label">latency reduction</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">12</span>
+          <span class="metric-label">services connected</span>
+        </div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">Java</span>
+        <span class="stack-tag">Spring Boot</span>
+        <span class="stack-tag">Redis</span>
+        <span class="stack-tag">AWS</span>
+      </div>
+    </article>
+
+    <!-- Project 4 -->
+    <article class="project-card reveal">
+      <div class="liminal-bg liminal-corridor" aria-hidden="true"></div>
+      <div class="project-number">004</div>
+      <div class="project-header">
+        <h3 class="project-title chromatic">Real-Time Inventory Tracker</h3>
+        <span class="project-context">walmart -- 2024</span>
+      </div>
+      <p class="project-body">
+        Built an event-driven inventory management system processing thousands
+        of stock updates per second. Provides real-time availability data to
+        storefront applications with sub-100ms response times.
+      </p>
+      <div class="project-metrics">
+        <div class="metric">
+          <span class="metric-value">&lt;100ms</span>
+          <span class="metric-label">response time</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">1000s</span>
+          <span class="metric-label">updates per second</span>
+        </div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">Node.js</span>
+        <span class="stack-tag">Kafka</span>
+        <span class="stack-tag">PostgreSQL</span>
+        <span class="stack-tag">WebSocket</span>
+      </div>
+    </article>
+
+    <!-- Project 5 -->
+    <article class="project-card reveal">
+      <div class="liminal-bg liminal-pool" aria-hidden="true"></div>
+      <div class="project-number">005</div>
+      <div class="project-header">
+        <h3 class="project-title chromatic">Accessible Component Library</h3>
+        <span class="project-context">open source</span>
+      </div>
+      <p class="project-body">
+        Open-source React component library with WCAG AA compliance built into
+        every component. Adopted by three internal teams. Features automated
+        accessibility testing integrated into CI pipelines.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">React</span>
+        <span class="stack-tag">TypeScript</span>
+        <span class="stack-tag">Storybook</span>
+        <span class="stack-tag">Jest</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     INTERSTITIAL
+     ============================================================ -->
+<div class="interstitial" aria-hidden="true">
+  <p class="interstitial-text reveal">
+    the escalator keeps moving<br>
+    but there is no one on it.
+  </p>
+</div>
+
+<!-- ============================================================
+     EXPERIENCE
+     ============================================================ -->
+<section class="experience container" id="experience" aria-label="Experience">
+  <div class="section-label reveal">experience</div>
+  <div class="timeline reveal">
+
+    <!-- Walmart -->
+    <div class="timeline-entry current">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2024 -- present</div>
+      <div class="timeline-company">
+        Walmart Inc.
+        <span class="current-tag">current</span>
+      </div>
+      <div class="timeline-role">Software Developer</div>
+      <p class="timeline-body">
+        Building production-grade applications at enterprise scale for the
+        world's largest retailer. Working across the full stack to deliver
+        features that serve hundreds of millions of customers weekly.
+      </p>
+      <ul class="timeline-details">
+        <li>Architected checkout optimization reducing page load by 35%</li>
+        <li>Shipped internal developer platform adopted by 500+ engineers</li>
+        <li>Designed API gateway reducing latency across 12 downstream services</li>
+        <li>Led code reviews and mentored junior engineers on best practices</li>
+      </ul>
+    </div>
+
+    <!-- Intern -->
+    <div class="timeline-entry">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2022 -- 2024</div>
+      <div class="timeline-company">Software Engineering Intern</div>
+      <div class="timeline-role">Full-Stack Development</div>
+      <p class="timeline-body">
+        Gained hands-on experience building and maintaining web applications
+        in fast-paced environments. Contributed to production codebases and
+        participated in agile development cycles.
+      </p>
+      <ul class="timeline-details">
+        <li>Developed responsive frontend interfaces used by thousands of users</li>
+        <li>Built RESTful APIs and integrated third-party services</li>
+        <li>Implemented automated testing pipelines reducing bug escape rate</li>
+      </ul>
+    </div>
+
+    <!-- Education -->
+    <div class="timeline-entry">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2018 -- 2022</div>
+      <div class="timeline-company">University</div>
+      <div class="timeline-role">Computer Science</div>
+      <p class="timeline-body">
+        Studied Computer Science with a focus on software engineering,
+        algorithms, and distributed systems. Led multiple capstone projects
+        and contributed to research in performance optimization.
+      </p>
+      <ul class="timeline-details">
+        <li>Built multiple full-stack applications as capstone projects</li>
+        <li>Contributed to open-source projects during academic tenure</li>
+        <li>Explored systems design, data structures, and algorithm optimization</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     INTERSTITIAL
+     ============================================================ -->
+<div class="interstitial" aria-hidden="true">
+  <p class="interstitial-text reveal">
+    the fluorescent lights buzz overhead.<br>
+    they have always been on.
+  </p>
+</div>
+
+<!-- ============================================================
+     SKILLS
+     ============================================================ -->
+<section class="skills container" id="skills" aria-label="Skills">
+  <div class="section-label reveal">capabilities</div>
+  <div class="skills-grid reveal">
+
+    <!-- Frontend -->
+    <div class="skill-column">
+      <div class="skill-category">Frontend</div>
+      <ul class="skill-list">
+        <li>React / React Native <span class="core">core</span></li>
+        <li>TypeScript</li>
+        <li>Next.js</li>
+        <li>JavaScript (ES2024+)</li>
+        <li>HTML5 / Semantic Markup</li>
+        <li>CSS3 / Tailwind / CSS Grid</li>
+        <li>Framer Motion</li>
+        <li>Webpack / Vite</li>
+        <li>Performance Optimization <span class="core">core</span></li>
+        <li>Accessibility (WCAG AA)</li>
+        <li>Responsive Design</li>
+        <li>State Management (Redux, Zustand)</li>
+      </ul>
+    </div>
+
+    <!-- Backend -->
+    <div class="skill-column">
+      <div class="skill-category">Backend & APIs</div>
+      <ul class="skill-list">
+        <li>Node.js / Express <span class="core">core</span></li>
+        <li>Java / Spring Boot <span class="core">core</span></li>
+        <li>Python</li>
+        <li>GraphQL</li>
+        <li>REST API Design</li>
+        <li>PostgreSQL</li>
+        <li>MongoDB</li>
+        <li>Redis</li>
+        <li>Kafka / Event-Driven</li>
+        <li>Microservices Architecture</li>
+        <li>Authentication / OAuth</li>
+      </ul>
+    </div>
+
+    <!-- DevOps -->
+    <div class="skill-column">
+      <div class="skill-category">DevOps & Practices</div>
+      <ul class="skill-list">
+        <li>AWS (EC2, S3, Lambda) <span class="core">core</span></li>
+        <li>Docker / Containerization</li>
+        <li>Kubernetes</li>
+        <li>CI/CD (GitHub Actions, Jenkins)</li>
+        <li>Git / Git Workflow</li>
+        <li>Jest / Cypress / Playwright</li>
+        <li>Datadog / Monitoring</li>
+        <li>Agile / Scrum</li>
+        <li>Code Review Culture</li>
+        <li>System Design</li>
+        <li>Technical Documentation</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     INTERSTITIAL
+     ============================================================ -->
+<div class="interstitial" aria-hidden="true">
+  <p class="interstitial-text reveal">
+    there is a door at the end of the hall.<br>
+    it has always been open.
+  </p>
+</div>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<section class="contact container" id="contact" aria-label="Contact">
+  <div class="section-label reveal">contact</div>
+  <div class="contact-inner reveal">
+    <div>
+      <p class="contact-message">
+        If you have made it this far through the fog, we should probably talk.
+      </p>
+      <p class="contact-subtext">
+        Whether you have a role in mind, a project idea, or just want to
+        talk about software engineering -- I would like to hear from you.
+        I typically respond within 24 hours.
+      </p>
+      <ul class="contact-links" style="margin-top: 32px;">
+        <li>
+          <span class="contact-link-label">email</span>
+          <span class="contact-link-value"><a href="mailto:hello@anshullgarg.dev">hello@anshullgarg.dev</a></span>
+        </li>
+        <li>
+          <span class="contact-link-label">github</span>
+          <span class="contact-link-value"><a href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a></span>
+        </li>
+        <li>
+          <span class="contact-link-label">linkedin</span>
+          <span class="contact-link-value"><a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a></span>
+        </li>
+        <li>
+          <span class="contact-link-label">status</span>
+          <span class="contact-link-value">open to opportunities</span>
+        </li>
+      </ul>
+    </div>
+    <div class="contact-divider" aria-hidden="true"></div>
+    <div>
+      <form class="contact-form" onsubmit="handleFormSubmit(event)" aria-label="Contact form">
+        <div class="form-group">
+          <label class="form-label" for="contactName">name</label>
+          <input class="form-input" type="text" id="contactName" name="name" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contactEmail">email</label>
+          <input class="form-input" type="email" id="contactEmail" name="email" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contactMessage">message</label>
+          <textarea class="form-textarea" id="contactMessage" name="message" required placeholder="say something into the void..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">transmit</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer role="contentinfo">
+  <div class="container">
+    <p class="footer-text">
+      &copy; 2026 anshull garg -- all rights reserved<br>
+      built with html, css, and an eerie attention to detail
+    </p>
+    <p class="footer-whisper">you will come back here again.</p>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  /* ============================================
+     VHS TIMESTAMP -- running clock
+     ============================================ */
+  const vhsTimeEl = document.getElementById('vhsTime');
+  let vhsSeconds = 0;
+
+  function updateVHSTime() {
+    vhsSeconds++;
+    const h = String(Math.floor(vhsSeconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((vhsSeconds % 3600) / 60)).padStart(2, '0');
+    const s = String(vhsSeconds % 60).padStart(2, '0');
+    if (vhsTimeEl) {
+      vhsTimeEl.textContent = h + ':' + m + ':' + s;
+    }
+  }
+  setInterval(updateVHSTime, 1000);
+
+  /* ============================================
+     MOBILE NAV TOGGLE
+     ============================================ */
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('open');
+      const isOpen = navLinks.classList.contains('open');
+      navToggle.setAttribute('aria-expanded', isOpen);
+      // Animate burger to X
+      const spans = navToggle.querySelectorAll('span');
+      if (isOpen) {
+        spans[0].style.transform = 'rotate(45deg) translate(4px, 4px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(4px, -4px)';
+      } else {
+        spans[0].style.transform = '';
+        spans[1].style.opacity = '';
+        spans[2].style.transform = '';
+      }
+    });
+
+    // Close on link click (mobile)
+    navLinks.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        const spans = navToggle.querySelectorAll('span');
+        spans[0].style.transform = '';
+        spans[1].style.opacity = '';
+        spans[2].style.transform = '';
+      });
+    });
+  }
+
+  /* ============================================
+     SCROLL REVEAL -- elements emerge from fog
+     ============================================ */
+  const revealElements = document.querySelectorAll('.reveal');
+
+  function checkReveal() {
+    const windowHeight = window.innerHeight;
+    revealElements.forEach(function(el) {
+      const rect = el.getBoundingClientRect();
+      const revealPoint = windowHeight * 0.85;
+      if (rect.top < revealPoint) {
+        el.classList.add('visible');
+      }
+    });
+  }
+
+  // Throttled scroll handler
+  let scrollTicking = false;
+  window.addEventListener('scroll', function() {
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        checkReveal();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  });
+
+  // Initial check
+  checkReveal();
+
+  /* ============================================
+     OCCASIONAL VHS GLITCH
+     Random tracking distortion bursts
+     ============================================ */
+  function vhsGlitchBurst() {
+    const body = document.body;
+    // Brief horizontal shift
+    const offset = (Math.random() - 0.5) * 4;
+    body.style.transform = 'translateX(' + offset + 'px)';
+    body.style.transition = 'transform 0.05s';
+
+    setTimeout(function() {
+      body.style.transform = '';
+      body.style.transition = 'transform 0.3s ease';
+    }, 80);
+
+    // Schedule next glitch
+    const nextGlitch = 5000 + Math.random() * 15000;
+    setTimeout(vhsGlitchBurst, nextGlitch);
+  }
+
+  // Start glitching after a delay
+  setTimeout(vhsGlitchBurst, 8000);
+
+  /* ============================================
+     CHROMATIC ABERRATION on mouse proximity
+     Subtle color shifting near cursor
+     ============================================ */
+  let mouseX = 0;
+  let mouseY = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  /* ============================================
+     SMOOTH NAV BACKGROUND on scroll
+     ============================================ */
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 100) {
+      nav.style.background = 'rgba(232, 224, 216, 0.92)';
+      nav.style.backdropFilter = 'blur(12px) saturate(0.8)';
+      nav.style.webkitBackdropFilter = 'blur(12px) saturate(0.8)';
+    } else {
+      nav.style.background = '';
+      nav.style.backdropFilter = '';
+      nav.style.webkitBackdropFilter = '';
+    }
+  });
+
+  /* ============================================
+     CONTACT FORM HANDLER
+     ============================================ */
+  window.handleFormSubmit = function(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit');
+    btn.textContent = 'transmitted';
+    btn.style.color = 'var(--pink-deep)';
+    btn.style.borderColor = 'rgba(255, 209, 220, 0.3)';
+    btn.disabled = true;
+
+    setTimeout(function() {
+      btn.textContent = 'transmit';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      btn.disabled = false;
+      e.target.reset();
+    }, 3000);
+  };
+
+  /* ============================================
+     PARALLAX FOG on scroll
+     Fog layers move at different speeds
+     ============================================ */
+  const fogLayers = document.querySelectorAll('.fog-layer');
+
+  window.addEventListener('scroll', function() {
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        const scrollY = window.scrollY;
+        fogLayers.forEach(function(layer, i) {
+          const speed = 0.02 + (i * 0.01);
+          layer.style.transform = 'translateY(' + (scrollY * speed) + 'px)';
+        });
+      });
+    }
+  });
+
+  /* ============================================
+     RANDOM SUBTLE OPACITY FLICKER
+     on project cards -- things shifting
+     ============================================ */
+  const cards = document.querySelectorAll('.project-card');
+  function subtleFlicker() {
+    if (cards.length > 0) {
+      const card = cards[Math.floor(Math.random() * cards.length)];
+      const original = getComputedStyle(card).opacity;
+      card.style.transition = 'opacity 0.15s';
+      card.style.opacity = '0.92';
+      setTimeout(function() {
+        card.style.opacity = '';
+        card.style.transition = '';
+      }, 150);
+    }
+    setTimeout(subtleFlicker, 4000 + Math.random() * 8000);
+  }
+  setTimeout(subtleFlicker, 6000);
+
+  /* ============================================
+     EERIE CURSOR TRAIL
+     Faint afterimage following the cursor
+     ============================================ */
+  let trailTimeout;
+  document.addEventListener('mousemove', function(e) {
+    clearTimeout(trailTimeout);
+    trailTimeout = setTimeout(function() {
+      const trail = document.createElement('div');
+      trail.style.cssText = 'position:fixed;width:6px;height:6px;border-radius:50%;' +
+        'background:rgba(255,209,220,0.15);pointer-events:none;z-index:9998;' +
+        'left:' + e.clientX + 'px;top:' + e.clientY + 'px;' +
+        'transition:opacity 2s ease,transform 2s ease;';
+      document.body.appendChild(trail);
+
+      requestAnimationFrame(function() {
+        trail.style.opacity = '0';
+        trail.style.transform = 'scale(3)';
+      });
+
+      setTimeout(function() {
+        if (trail.parentNode) trail.parentNode.removeChild(trail);
+      }, 2200);
+    }, 50);
+  });
+
+})();
+</script>
+
+</body>
+</html>

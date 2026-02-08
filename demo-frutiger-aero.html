@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg — Frutiger Aero Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   FRUTIGER AERO -- Windows Vista / iPhone 2007 Glossy Optimism
+   ================================================================
+   Bright sky blue #87CEEB | Glossy white | Fresh green #7CCD7C
+   Aurora gradient | Warm sunshine #FFD700
+   ================================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --sky-blue: #87CEEB;
+  --sky-light: #B8E4F9;
+  --sky-deep: #4AA8D8;
+  --sky-darker: #2E8BC0;
+  --fresh-green: #7CCD7C;
+  --green-light: #A8E6A8;
+  --green-deep: #5CB85C;
+  --sunshine: #FFD700;
+  --sunshine-light: #FFE44D;
+  --sunshine-deep: #E6C200;
+  --white: #FFFFFF;
+  --white-soft: #F4FAFF;
+  --glass-white: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --text-dark: #1A3A52;
+  --text-medium: #2D5F7A;
+  --text-light: #5B8FA8;
+  --aurora-1: #87CEEB;
+  --aurora-2: #7CCD7C;
+  --aurora-3: #FFD700;
+  --aurora-4: #87CEEB;
+  --bubble-glow: rgba(255, 255, 255, 0.6);
+  --reflection: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 50%);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Nunito', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  overflow-x: hidden;
+  line-height: 1.7;
+  background: var(--white-soft);
+}
+
+/* ================================================================
+   SKY GRADIENT BACKGROUND -- Animated Aurora Borealis
+   ================================================================ */
+.sky-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    #D4F1FF 0%,
+    #87CEEB 25%,
+    #A8E6CF 50%,
+    #87CEEB 75%,
+    #C4E4FF 100%
+  );
+  background-size: 100% 400%;
+  animation: skyShift 30s ease-in-out infinite;
+}
+
+@keyframes skyShift {
+  0%   { background-position: 0% 0%; }
+  25%  { background-position: 0% 50%; }
+  50%  { background-position: 0% 100%; }
+  75%  { background-position: 0% 50%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Aurora overlay */
+.aurora-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  background:
+    radial-gradient(ellipse 800px 400px at 20% 20%, rgba(124, 205, 124, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 300px at 70% 15%, rgba(255, 215, 0, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 900px 500px at 50% 80%, rgba(135, 206, 235, 0.3) 0%, transparent 60%);
+  animation: auroraShimmer 20s ease-in-out infinite alternate;
+}
+
+@keyframes auroraShimmer {
+  0%   { opacity: 0.25; transform: scale(1) translateY(0); }
+  33%  { opacity: 0.4; transform: scale(1.05) translateY(-10px); }
+  66%  { opacity: 0.3; transform: scale(0.98) translateY(5px); }
+  100% { opacity: 0.35; transform: scale(1.02) translateY(-5px); }
+}
+
+/* ================================================================
+   FLOATING BUBBLES / BOKEH
+   ================================================================ */
+.bubble-field {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.4) 30%,
+    rgba(135, 206, 235, 0.15) 60%,
+    rgba(135, 206, 235, 0.05) 80%,
+    transparent 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset -4px -4px 12px rgba(135, 206, 235, 0.15),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.8),
+    0 0 20px rgba(255, 255, 255, 0.15);
+  animation: bubbleFloat linear infinite;
+}
+
+.bubble::after {
+  content: '';
+  position: absolute;
+  width: 35%;
+  height: 20%;
+  top: 15%;
+  left: 20%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  filter: blur(1px);
+}
+
+@keyframes bubbleFloat {
+  0%   { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
+  5%   { opacity: 0.8; }
+  50%  { transform: translateY(50vh) translateX(30px) scale(1.05); opacity: 0.6; }
+  95%  { opacity: 0.3; }
+  100% { transform: translateY(-10vh) translateX(-20px) scale(0.9); opacity: 0; }
+}
+
+/* ================================================================
+   CLOUD WISPS
+   ================================================================ */
+.cloud-layer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  mask-image: linear-gradient(180deg, transparent 0%, black 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 100%);
+}
+
+/* ================================================================
+   MAIN CONTENT CONTAINER
+   ================================================================ */
+.main-content {
+  position: relative;
+  z-index: 10;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section {
+  padding: 80px 0;
+}
+
+/* ================================================================
+   GLASS PANEL -- Frutiger Aero translucent panels
+   ================================================================ */
+.glass-panel {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.55) 40%,
+    rgba(240, 250, 255, 0.5) 100%
+  );
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(26, 58, 82, 0.08),
+    0 2px 8px rgba(26, 58, 82, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s ease;
+}
+
+/* Top glossy reflection bar on glass panels */
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.1) 40%,
+    transparent 100%
+  );
+  border-radius: 20px 20px 0 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-panel:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 48px rgba(26, 58, 82, 0.12),
+    0 4px 16px rgba(26, 58, 82, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* ================================================================
+   SKEUOMORPHIC GLOSSY BUTTONS -- Vista / iPhone style
+   ================================================================ */
+.btn-glossy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: 0.02em;
+}
+
+/* Primary glossy button -- sky blue gradient */
+.btn-primary {
+  background: linear-gradient(
+    180deg,
+    #A8DFF7 0%,
+    #87CEEB 30%,
+    #5BB8DE 70%,
+    #4AA8D8 100%
+  );
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(26, 58, 82, 0.3);
+  border: 1px solid rgba(74, 168, 216, 0.6);
+  box-shadow:
+    0 4px 16px rgba(74, 168, 216, 0.35),
+    0 1px 3px rgba(26, 58, 82, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(26, 58, 82, 0.1);
+}
+
+/* Top highlight reflection */
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 10%;
+  right: 10%;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: 30px 30px 50% 50%;
+  pointer-events: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 8px 24px rgba(74, 168, 216, 0.45),
+    0 2px 6px rgba(26, 58, 82, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(26, 58, 82, 0.15);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow:
+    0 2px 8px rgba(74, 168, 216, 0.3),
+    inset 0 2px 4px rgba(26, 58, 82, 0.15);
+}
+
+/* Secondary glossy button -- green */
+.btn-secondary {
+  background: linear-gradient(
+    180deg,
+    #A8E6A8 0%,
+    #7CCD7C 30%,
+    #5CB85C 70%,
+    #4CAF50 100%
+  );
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(26, 82, 26, 0.3);
+  border: 1px solid rgba(76, 175, 80, 0.6);
+  box-shadow:
+    0 4px 16px rgba(92, 184, 92, 0.35),
+    0 1px 3px rgba(26, 58, 26, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(26, 58, 26, 0.1);
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 10%;
+  right: 10%;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: 30px 30px 50% 50%;
+  pointer-events: none;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 8px 24px rgba(92, 184, 92, 0.45),
+    0 2px 6px rgba(26, 58, 26, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(26, 58, 26, 0.15);
+}
+
+/* Outline glass button */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-dark);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 4px 16px rgba(26, 58, 82, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.btn-glass::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 10%;
+  right: 10%;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: 30px 30px 50% 50%;
+  pointer-events: none;
+}
+
+.btn-glass:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 8px 24px rgba(26, 58, 82, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Golden sunshine button */
+.btn-sunshine {
+  background: linear-gradient(
+    180deg,
+    #FFE44D 0%,
+    #FFD700 30%,
+    #E6C200 70%,
+    #D4B100 100%
+  );
+  color: #5A4800;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(214, 177, 0, 0.6);
+  box-shadow:
+    0 4px 16px rgba(255, 215, 0, 0.4),
+    0 1px 3px rgba(90, 72, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(90, 72, 0, 0.1);
+}
+
+.btn-sunshine::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 10%;
+  right: 10%;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: 30px 30px 50% 50%;
+  pointer-events: none;
+}
+
+.btn-sunshine:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 8px 24px rgba(255, 215, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ================================================================
+   NAVIGATION -- Glossy pill bar
+   ================================================================ */
+.nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 2px;
+  padding: 5px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 40px;
+  box-shadow:
+    0 8px 32px rgba(26, 58, 82, 0.1),
+    0 2px 8px rgba(26, 58, 82, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Nav glossy top reflection */
+.nav::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 8px;
+  right: 8px;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    transparent 100%
+  );
+  border-radius: 40px 40px 50% 50%;
+  pointer-events: none;
+}
+
+.nav a {
+  position: relative;
+  z-index: 1;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-medium);
+  text-decoration: none;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+}
+
+.nav a:hover {
+  color: var(--sky-deeper, #2E8BC0);
+  background: rgba(135, 206, 235, 0.15);
+}
+
+.nav a.active {
+  color: #FFFFFF;
+  background: linear-gradient(
+    180deg,
+    #A8DFF7 0%,
+    #87CEEB 40%,
+    #5BB8DE 100%
+  );
+  text-shadow: 0 1px 2px rgba(26, 58, 82, 0.25);
+  box-shadow:
+    0 2px 8px rgba(74, 168, 216, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ================================================================
+   SECTION LABELS
+   ================================================================ */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sky-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: linear-gradient(
+    135deg,
+    rgba(135, 206, 235, 0.2) 0%,
+    rgba(124, 205, 124, 0.15) 100%
+  );
+  border: 1px solid rgba(135, 206, 235, 0.3);
+  border-radius: 30px;
+  margin-bottom: 16px;
+}
+
+.section-label::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky-blue), var(--fresh-green));
+  box-shadow: 0 0 8px rgba(135, 206, 235, 0.5);
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.section-subtitle {
+  font-size: 16px;
+  color: var(--text-light);
+  max-width: 520px;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+/* ================================================================
+   SCROLL REVEAL
+   ================================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ================================================================
+   HERO SECTION
+   ================================================================ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-text {
+  animation: heroFadeIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 30px;
+  font-size: 13px;
+  color: var(--text-medium);
+  font-weight: 700;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(26, 58, 82, 0.06);
+}
+
+.hero-badge .pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7CCD7C, #5CB85C);
+  box-shadow: 0 0 12px rgba(92, 184, 92, 0.5);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 12px rgba(92, 184, 92, 0.5); }
+  50%      { opacity: 0.7; transform: scale(0.85); box-shadow: 0 0 6px rgba(92, 184, 92, 0.3); }
+}
+
+.hero-greeting {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--sky-deep);
+  margin-bottom: 8px;
+}
+
+.hero-wave {
+  display: inline-block;
+  font-size: 1.8rem;
+  animation: waveHand 2.5s ease-in-out infinite;
+  transform-origin: 70% 70%;
+}
+
+@keyframes waveHand {
+  0%, 100% { transform: rotate(0deg); }
+  10%      { transform: rotate(14deg); }
+  20%      { transform: rotate(-8deg); }
+  30%      { transform: rotate(14deg); }
+  40%      { transform: rotate(-4deg); }
+  50%      { transform: rotate(10deg); }
+  60%      { transform: rotate(0deg); }
+}
+
+.hero-name {
+  font-size: clamp(3rem, 6vw, 4.8rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #1A3A52, #2E8BC0, #4AA8D8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(26, 58, 82, 0.15));
+}
+
+.hero-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-medium);
+  margin-bottom: 8px;
+}
+
+.hero-title span {
+  background: linear-gradient(135deg, var(--sky-deep), var(--fresh-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.hero-tagline {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  max-width: 460px;
+  margin-bottom: 32px;
+  font-weight: 500;
+  line-height: 1.8;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Hero Aero Orb -- glossy sphere with nature + tech */
+.hero-orb-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: heroOrbIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+
+@keyframes heroOrbIn {
+  from { opacity: 0; transform: translateY(50px) scale(0.7); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.hero-orb {
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(135, 206, 235, 0.3) 0%,
+    rgba(124, 205, 124, 0.2) 30%,
+    rgba(255, 215, 0, 0.15) 60%,
+    rgba(135, 206, 235, 0.25) 100%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 20px 60px rgba(74, 168, 216, 0.2),
+    0 0 100px rgba(135, 206, 235, 0.1),
+    inset 0 -30px 60px rgba(135, 206, 235, 0.15),
+    inset 0 30px 60px rgba(255, 255, 255, 0.4);
+  animation: orbBreath 5s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Glossy reflection on the orb */
+.hero-orb::before {
+  content: '';
+  position: absolute;
+  top: 5%;
+  left: 15%;
+  width: 55%;
+  height: 35%;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  filter: blur(2px);
+  z-index: 2;
+}
+
+/* Bottom inner glow */
+.hero-orb::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  left: 20%;
+  width: 60%;
+  height: 25%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(135, 206, 235, 0.2) 0%,
+    transparent 70%
+  );
+  z-index: 2;
+}
+
+@keyframes orbBreath {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 20px 60px rgba(74, 168, 216, 0.2),
+      0 0 100px rgba(135, 206, 235, 0.1),
+      inset 0 -30px 60px rgba(135, 206, 235, 0.15),
+      inset 0 30px 60px rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow:
+      0 25px 80px rgba(74, 168, 216, 0.25),
+      0 0 120px rgba(135, 206, 235, 0.15),
+      inset 0 -30px 60px rgba(135, 206, 235, 0.2),
+      inset 0 30px 60px rgba(255, 255, 255, 0.45);
+  }
+}
+
+.orb-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+}
+
+.orb-emoji {
+  font-size: 5rem;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+  animation: emojiFloat 3.5s ease-in-out infinite;
+}
+
+@keyframes emojiFloat {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-12px) rotate(3deg); }
+}
+
+.orb-subtext {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-medium);
+  margin-top: 8px;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+/* Floating leaf/droplet elements around the orb */
+.orb-floating-el {
+  position: absolute;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  z-index: 4;
+  animation: floatElement ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 4px 16px rgba(26, 58, 82, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.orb-el-1 {
+  width: 70px; height: 70px;
+  top: -10px; right: 10px;
+  animation-duration: 5s;
+}
+
+.orb-el-2 {
+  width: 60px; height: 60px;
+  bottom: 10px; right: -15px;
+  animation-duration: 4.5s;
+  animation-delay: 0.5s;
+}
+
+.orb-el-3 {
+  width: 55px; height: 55px;
+  bottom: -10px; left: 25px;
+  animation-duration: 5.5s;
+  animation-delay: 1s;
+}
+
+.orb-el-4 {
+  width: 50px; height: 50px;
+  top: 25px; left: -10px;
+  animation-duration: 4s;
+  animation-delay: 0.3s;
+}
+
+@keyframes floatElement {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25%      { transform: translateY(-12px) rotate(5deg); }
+  50%      { transform: translateY(-6px) rotate(-3deg); }
+  75%      { transform: translateY(-16px) rotate(4deg); }
+}
+
+/* Scroll indicator */
+.scroll-cue {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+.scroll-cue span {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--sky-deep);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.scroll-cue-mouse {
+  width: 26px;
+  height: 42px;
+  border-radius: 13px;
+  border: 2px solid var(--sky-deep);
+  position: relative;
+  opacity: 0.6;
+}
+
+.scroll-cue-mouse::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  background: var(--sky-deep);
+  border-radius: 2px;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: scrollWheel 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(8px); }
+}
+
+@keyframes scrollWheel {
+  0%, 100% { top: 8px; opacity: 1; }
+  50%      { top: 22px; opacity: 0.3; }
+}
+
+/* ================================================================
+   ABOUT SECTION
+   ================================================================ */
+#about {
+  position: relative;
+}
+
+.about-panel {
+  padding: 56px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.about-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(135, 206, 235, 0.4) 0%,
+    rgba(124, 205, 124, 0.3) 50%,
+    rgba(255, 215, 0, 0.2) 100%
+  );
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 8px 32px rgba(74, 168, 216, 0.15),
+    inset 0 -10px 20px rgba(135, 206, 235, 0.1),
+    inset 0 10px 20px rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Glossy reflection */
+.about-avatar::before {
+  content: '';
+  position: absolute;
+  top: 3%;
+  left: 15%;
+  width: 55%;
+  height: 35%;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  z-index: 2;
+}
+
+.about-avatar span {
+  position: relative;
+  z-index: 3;
+  font-size: 48px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--sky-deep), var(--fresh-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-content h2 {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.about-text {
+  color: var(--text-medium);
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 32px;
+  max-width: 560px;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.stat-bubble {
+  text-align: center;
+  padding: 24px 16px;
+  border-radius: 20px;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(240, 250, 255, 0.5) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 4px 16px rgba(26, 58, 82, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mini glossy reflection */
+.stat-bubble::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 15%;
+  right: 15%;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    transparent 100%
+  );
+  border-radius: 20px 20px 50% 50%;
+  pointer-events: none;
+}
+
+.stat-bubble:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 8px 24px rgba(74, 168, 216, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.stat-number {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--sky-deep), var(--fresh-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================
+   PROJECTS SECTION
+   ================================================================ */
+.projects-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.projects-header .section-subtitle {
+  margin: 0 auto;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.project-card {
+  padding: 36px 28px;
+  position: relative;
+  cursor: pointer;
+}
+
+.project-card .glass-panel-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Color accent stripe on top */
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  z-index: 5;
+  transition: opacity 0.4s ease;
+}
+
+.project-card:nth-child(1)::after {
+  background: linear-gradient(90deg, var(--sky-blue), var(--sky-deep));
+}
+
+.project-card:nth-child(2)::after {
+  background: linear-gradient(90deg, var(--fresh-green), var(--green-deep));
+}
+
+.project-card:nth-child(3)::after {
+  background: linear-gradient(90deg, var(--sunshine), var(--sunshine-deep));
+}
+
+.project-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 4px 12px rgba(26, 58, 82, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.project-icon::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 10%;
+  right: 10%;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+  border-radius: 14px 14px 50% 50%;
+  pointer-events: none;
+}
+
+.project-icon-blue {
+  background: linear-gradient(180deg, #A8DFF7 0%, #5BB8DE 100%);
+}
+
+.project-icon-green {
+  background: linear-gradient(180deg, #A8E6A8 0%, #5CB85C 100%);
+}
+
+.project-icon-gold {
+  background: linear-gradient(180deg, #FFE44D 0%, #E6C200 100%);
+}
+
+.project-name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+  position: relative;
+  z-index: 2;
+}
+
+.project-desc {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.75;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.tag {
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-medium);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.project-card:hover .tag {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-dark);
+}
+
+/* ================================================================
+   SKILLS SECTION
+   ================================================================ */
+.skills-panel {
+  padding: 56px;
+}
+
+.skills-header {
+  margin-bottom: 40px;
+}
+
+.skills-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.skill-category h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sky-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Skill pills -- glossy bubble style */
+.skill-pill {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.5) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 30px;
+  cursor: default;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2px 8px rgba(26, 58, 82, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Mini highlight */
+.skill-pill::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 15%;
+  right: 15%;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+  border-radius: 30px 30px 50% 50%;
+  pointer-events: none;
+}
+
+.skill-pill:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: linear-gradient(
+    180deg,
+    rgba(168, 223, 247, 0.5) 0%,
+    rgba(135, 206, 235, 0.3) 100%
+  );
+  border-color: rgba(135, 206, 235, 0.5);
+  box-shadow:
+    0 6px 20px rgba(74, 168, 216, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: var(--text-dark);
+}
+
+/* ================================================================
+   EXPERIENCE TIMELINE
+   ================================================================ */
+.experience-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.experience-header .section-subtitle {
+  margin: 0 auto;
+}
+
+.timeline {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 28px;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    var(--sky-blue),
+    var(--fresh-green),
+    var(--sunshine),
+    transparent
+  );
+  border-radius: 3px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 72px;
+  padding-bottom: 36px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 18px;
+  top: 28px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  z-index: 2;
+  border: 3px solid white;
+  box-shadow:
+    0 0 16px rgba(135, 206, 235, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.timeline-item:nth-child(1) .timeline-dot {
+  background: linear-gradient(135deg, #87CEEB, #4AA8D8);
+}
+
+.timeline-item:nth-child(2) .timeline-dot {
+  background: linear-gradient(135deg, #7CCD7C, #5CB85C);
+}
+
+.timeline-item:nth-child(3) .timeline-dot {
+  background: linear-gradient(135deg, #FFD700, #E6C200);
+}
+
+.timeline-card {
+  padding: 32px;
+}
+
+.timeline-date {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sky-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-role {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  color: var(--text-dark);
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-company {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 14px;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-desc {
+  font-size: 14px;
+  color: var(--text-medium);
+  line-height: 1.75;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-desc ul {
+  list-style: none;
+  padding: 0;
+}
+
+.timeline-desc li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 6px;
+}
+
+.timeline-desc li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky-blue), var(--fresh-green));
+  box-shadow: 0 0 6px rgba(135, 206, 235, 0.3);
+}
+
+/* ================================================================
+   CONTACT SECTION
+   ================================================================ */
+#contact {
+  padding-bottom: 120px;
+}
+
+.contact-panel {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 56px;
+  position: relative;
+}
+
+/* Aurora gradient top stripe */
+.contact-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 40px;
+  right: 40px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--sky-blue),
+    var(--fresh-green),
+    var(--sunshine),
+    var(--sky-blue)
+  );
+  background-size: 200% 100%;
+  animation: auroraStripe 4s ease infinite;
+  border-radius: 3px;
+  z-index: 5;
+}
+
+@keyframes auroraStripe {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.contact-title {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.contact-subtitle {
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  font-weight: 500;
+}
+
+.contact-links {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text-dark);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.5) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 30px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 4px 16px rgba(26, 58, 82, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.contact-btn::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 12%;
+  right: 12%;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+  border-radius: 30px 30px 50% 50%;
+  pointer-events: none;
+}
+
+.contact-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: linear-gradient(
+    180deg,
+    rgba(168, 223, 247, 0.6) 0%,
+    rgba(135, 206, 235, 0.3) 100%
+  );
+  border-color: rgba(135, 206, 235, 0.5);
+  box-shadow:
+    0 8px 24px rgba(74, 168, 216, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.contact-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   WATER REFLECTION DIVIDERS
+   ================================================================ */
+.water-reflection {
+  width: 100%;
+  height: 60px;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  margin: -10px 0;
+}
+
+.water-reflection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(135, 206, 235, 0.15) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(135, 206, 235, 0.15) 80%,
+    transparent 100%
+  );
+  animation: waterShimmer 3s ease-in-out infinite;
+}
+
+@keyframes waterShimmer {
+  0%, 100% { transform: scaleY(1) translateX(-5%); opacity: 0.7; }
+  50%      { transform: scaleY(1.2) translateX(5%); opacity: 1; }
+}
+
+.water-reflection::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(255, 255, 255, 0.15) 80px,
+      transparent 160px
+    );
+  animation: waterRipple 5s linear infinite;
+}
+
+@keyframes waterRipple {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(160px); }
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.footer {
+  text-align: center;
+  padding: 32px 0;
+  font-size: 13px;
+  color: var(--text-light);
+  font-weight: 600;
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.footer span {
+  background: linear-gradient(135deg, var(--sky-deep), var(--fresh-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 40px;
+  }
+
+  .hero-text {
+    order: 2;
+  }
+
+  .hero-orb-wrapper {
+    order: 1;
+  }
+
+  .hero-tagline {
+    margin: 0 auto 32px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-orb {
+    width: 260px;
+    height: 260px;
+  }
+
+  .orb-emoji {
+    font-size: 3.5rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .about-panel {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 40px 28px;
+  }
+
+  .about-avatar {
+    margin: 0 auto;
+  }
+
+  .about-text {
+    margin: 0 auto 32px;
+  }
+
+  .about-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .skills-categories {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-panel {
+    padding: 40px 28px;
+  }
+
+  .contact-panel {
+    padding: 40px 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav {
+    top: 10px;
+    gap: 1px;
+    padding: 4px;
+  }
+
+  .nav a {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .about-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-links {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  section {
+    padding: 60px 0;
+  }
+
+  .timeline::before {
+    left: 16px;
+  }
+
+  .timeline-item {
+    padding-left: 52px;
+  }
+
+  .timeline-dot {
+    left: 7px;
+  }
+
+  .orb-floating-el {
+    display: none;
+  }
+}
+
+/* ================================================================
+   LEAF / NATURE DECORATIVE PARTICLES (CSS-only)
+   ================================================================ */
+.nature-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.leaf {
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0;
+  animation: leafFall linear infinite;
+}
+
+@keyframes leafFall {
+  0%   { transform: translateY(-5vh) translateX(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.6; }
+  50%  { transform: translateY(50vh) translateX(40px) rotate(180deg); opacity: 0.4; }
+  90%  { opacity: 0.2; }
+  100% { transform: translateY(105vh) translateX(-30px) rotate(360deg); opacity: 0; }
+}
+
+/* ================================================================
+   LUMINOUS HOVER SPOTLIGHT (mouse-tracked glow)
+   ================================================================ */
+.spotlight {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(135, 206, 235, 0.06) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease-out, top 0.15s ease-out;
+  display: none;
+}
+
+/* ================================================================
+   PRINT-FRIENDLY
+   ================================================================ */
+@media print {
+  .sky-bg, .aurora-overlay, .bubble-field, .cloud-layer, .nature-particles, .spotlight, .scroll-cue, .nav {
+    display: none !important;
+  }
+  .glass-panel {
+    background: #fff !important;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+  .glass-panel::before {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BACKGROUND LAYERS
+     ============================================================ -->
+<div class="sky-bg"></div>
+<div class="aurora-overlay"></div>
+<div class="cloud-layer"></div>
+
+<!-- Floating bubbles -->
+<div class="bubble-field" id="bubbleField" aria-hidden="true"></div>
+
+<!-- Nature particles (leaves) -->
+<div class="nature-particles" id="natureParticles" aria-hidden="true"></div>
+
+<!-- Mouse spotlight -->
+<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="#hero" class="active">Home</a>
+  <a href="#about">About</a>
+  <a href="#projects">Work</a>
+  <a href="#skills">Skills</a>
+  <a href="#experience">Experience</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="main-content">
+
+  <!-- ======================== HERO ======================== -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          Available for collaboration
+        </div>
+        <p class="hero-greeting"><span class="hero-wave">&#x1F44B;</span> Hello, world!</p>
+        <h1 class="hero-name">Anshull Garg</h1>
+        <p class="hero-title">Software Developer at <span>Walmart</span></p>
+        <p class="hero-tagline">
+          Building scalable, performant applications that serve millions of users. Full-stack engineer who blends craftsmanship with velocity.
+        </p>
+        <div class="hero-buttons">
+          <a href="#projects" class="btn-glossy btn-primary">
+            <span>View My Work</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+          </a>
+          <a href="#contact" class="btn-glossy btn-secondary">
+            <span>Get in Touch</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-orb-wrapper">
+        <div class="hero-orb">
+          <div class="orb-content">
+            <div class="orb-emoji">&#x1F331;</div>
+            <p class="orb-subtext">Nature + Technology</p>
+          </div>
+        </div>
+        <!-- Floating elements around the orb -->
+        <div class="orb-floating-el orb-el-1">&#x1F4A7;</div>
+        <div class="orb-floating-el orb-el-2">&#x2728;</div>
+        <div class="orb-floating-el orb-el-3">&#x1F343;</div>
+        <div class="orb-floating-el orb-el-4">&#x2601;&#xFE0F;</div>
+      </div>
+    </div>
+
+    <div class="scroll-cue">
+      <span>Scroll</span>
+      <div class="scroll-cue-mouse"></div>
+    </div>
+  </section>
+
+  <!-- Water reflection divider -->
+  <div class="water-reflection" aria-hidden="true"></div>
+
+  <!-- ======================== ABOUT ======================== -->
+  <section id="about">
+    <div class="about-panel glass-panel reveal">
+      <div class="about-avatar reveal reveal-delay-1">
+        <span>AG</span>
+      </div>
+      <div class="about-content">
+        <div class="section-label reveal reveal-delay-1">About</div>
+        <h2 class="reveal reveal-delay-2">Building digital experiences that matter</h2>
+        <p class="about-text reveal reveal-delay-2">
+          Software Developer at Walmart focused on building scalable, performant applications that serve millions of users. I specialize in crafting elegant solutions to complex problems, with deep expertise in full-stack development, system design, and delivering production-grade software at enterprise scale.
+        </p>
+        <div class="about-stats">
+          <div class="stat-bubble reveal reveal-delay-2">
+            <div class="stat-number" data-target="3">0</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div class="stat-bubble reveal reveal-delay-3">
+            <div class="stat-number" data-target="20">0</div>
+            <div class="stat-label">Projects Shipped</div>
+          </div>
+          <div class="stat-bubble reveal reveal-delay-4">
+            <div class="stat-number" data-target="10">0</div>
+            <div class="stat-label">Technologies</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="water-reflection" aria-hidden="true"></div>
+
+  <!-- ======================== PROJECTS ======================== -->
+  <section id="projects">
+    <div class="projects-header">
+      <div class="section-label reveal">Selected Work</div>
+      <h2 class="section-title reveal reveal-delay-1">Featured Projects</h2>
+      <p class="section-subtitle reveal reveal-delay-2">A curated selection of projects showcasing full-stack expertise, system design, and product thinking.</p>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card glass-panel reveal reveal-delay-1">
+        <div class="project-icon project-icon-blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </div>
+        <h3 class="project-name">Supply Chain Platform</h3>
+        <p class="project-desc">End-to-end supply chain management system handling real-time inventory tracking, demand forecasting, and automated replenishment for thousands of stores.</p>
+        <div class="project-tags">
+          <span class="tag">React</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">Kafka</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="project-card glass-panel reveal reveal-delay-2">
+        <div class="project-icon project-icon-green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3 class="project-name">Performance Analytics</h3>
+        <p class="project-desc">Real-time analytics dashboard for monitoring application performance, user engagement, and business KPIs across distributed microservices.</p>
+        <div class="project-tags">
+          <span class="tag">TypeScript</span>
+          <span class="tag">D3.js</span>
+          <span class="tag">GraphQL</span>
+          <span class="tag">Redis</span>
+        </div>
+      </div>
+      <div class="project-card glass-panel reveal reveal-delay-3">
+        <div class="project-icon project-icon-gold">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3 class="project-name">API Gateway Service</h3>
+        <p class="project-desc">High-throughput API gateway with intelligent routing, rate limiting, circuit breakers, and observability baked in. Handles millions of requests daily.</p>
+        <div class="project-tags">
+          <span class="tag">Java</span>
+          <span class="tag">Spring Boot</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Kubernetes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="water-reflection" aria-hidden="true"></div>
+
+  <!-- ======================== SKILLS ======================== -->
+  <section id="skills">
+    <div class="skills-panel glass-panel reveal">
+      <div class="skills-header">
+        <div class="section-label">Expertise</div>
+        <h2 class="section-title">Skills & Technologies</h2>
+      </div>
+      <div class="skills-categories">
+        <div class="skill-category reveal reveal-delay-1">
+          <h4>Languages</h4>
+          <div class="skill-tags">
+            <span class="skill-pill">JavaScript</span>
+            <span class="skill-pill">TypeScript</span>
+            <span class="skill-pill">Java</span>
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">SQL</span>
+            <span class="skill-pill">Go</span>
+          </div>
+        </div>
+        <div class="skill-category reveal reveal-delay-2">
+          <h4>Frontend</h4>
+          <div class="skill-tags">
+            <span class="skill-pill">React</span>
+            <span class="skill-pill">Next.js</span>
+            <span class="skill-pill">Tailwind CSS</span>
+            <span class="skill-pill">Redux</span>
+            <span class="skill-pill">HTML/CSS</span>
+          </div>
+        </div>
+        <div class="skill-category reveal reveal-delay-3">
+          <h4>Backend & Cloud</h4>
+          <div class="skill-tags">
+            <span class="skill-pill">Node.js</span>
+            <span class="skill-pill">Spring Boot</span>
+            <span class="skill-pill">GraphQL</span>
+            <span class="skill-pill">REST APIs</span>
+            <span class="skill-pill">AWS</span>
+            <span class="skill-pill">GCP</span>
+          </div>
+        </div>
+        <div class="skill-category reveal reveal-delay-4">
+          <h4>Tools & Practices</h4>
+          <div class="skill-tags">
+            <span class="skill-pill">Docker</span>
+            <span class="skill-pill">Kubernetes</span>
+            <span class="skill-pill">CI/CD</span>
+            <span class="skill-pill">Git</span>
+            <span class="skill-pill">Kafka</span>
+            <span class="skill-pill">Redis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="water-reflection" aria-hidden="true"></div>
+
+  <!-- ======================== EXPERIENCE ======================== -->
+  <section id="experience">
+    <div class="experience-header">
+      <div class="section-label reveal">Career</div>
+      <h2 class="section-title reveal reveal-delay-1">Experience</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Professional journey building enterprise-scale software at industry-leading companies.</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card glass-panel">
+          <div class="timeline-date">2022 - Present</div>
+          <h3 class="timeline-role">Software Developer</h3>
+          <p class="timeline-company">Walmart Global Tech</p>
+          <div class="timeline-desc">
+            <ul>
+              <li>Building scalable microservices and full-stack applications serving millions of users across Walmart's e-commerce ecosystem</li>
+              <li>Architecting high-performance APIs and real-time data pipelines using modern cloud-native technologies</li>
+              <li>Collaborating with cross-functional teams to deliver features that directly impact business metrics and customer experience</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item reveal reveal-delay-1">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card glass-panel">
+          <div class="timeline-date">2021 - 2022</div>
+          <h3 class="timeline-role">Software Engineering Intern</h3>
+          <p class="timeline-company">Walmart Global Tech</p>
+          <div class="timeline-desc">
+            <ul>
+              <li>Developed internal tools and automation workflows that improved developer productivity across teams</li>
+              <li>Contributed to production codebases in an Agile environment with code reviews, testing, and deployments</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item reveal reveal-delay-2">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card glass-panel">
+          <div class="timeline-date">2018 - 2022</div>
+          <h3 class="timeline-role">B.Tech in Computer Science</h3>
+          <p class="timeline-company">University</p>
+          <div class="timeline-desc">
+            <ul>
+              <li>Focused on data structures, algorithms, system design, and software engineering principles</li>
+              <li>Built multiple full-stack projects and contributed to open-source communities</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="water-reflection" aria-hidden="true"></div>
+
+  <!-- ======================== CONTACT ======================== -->
+  <section id="contact">
+    <div class="contact-panel glass-panel reveal">
+      <div class="section-label">Get in Touch</div>
+      <h2 class="contact-title">Let's Connect</h2>
+      <p class="contact-subtitle">
+        Always open to discussing new projects, interesting ideas, or opportunities to collaborate on something meaningful.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:anshullgarg@gmail.com" class="contact-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email
+        </a>
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" class="contact-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="main-content">
+    Designed & Built by <span>Anshull Garg</span>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ============================================================
+   FLOATING BUBBLES / BOKEH GENERATOR
+   ============================================================ */
+(function createBubbles() {
+  const field = document.getElementById('bubbleField');
+  const count = 18;
+
+  for (let i = 0; i < count; i++) {
+    const bubble = document.createElement('div');
+    bubble.classList.add('bubble');
+    const size = Math.random() * 60 + 15;
+    bubble.style.width = size + 'px';
+    bubble.style.height = size + 'px';
+    bubble.style.left = Math.random() * 100 + '%';
+    bubble.style.animationDuration = (Math.random() * 20 + 15) + 's';
+    bubble.style.animationDelay = (Math.random() * 15) + 's';
+    bubble.style.opacity = Math.random() * 0.4 + 0.1;
+    field.appendChild(bubble);
+  }
+})();
+
+/* ============================================================
+   NATURE PARTICLES (falling leaves)
+   ============================================================ */
+(function createLeaves() {
+  const container = document.getElementById('natureParticles');
+  const leaves = ['\u{1F343}', '\u{1F33F}', '\u{1F33A}', '\u{2618}\uFE0F', '\u{1F340}'];
+  const count = 10;
+
+  for (let i = 0; i < count; i++) {
+    const leaf = document.createElement('div');
+    leaf.classList.add('leaf');
+    leaf.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+    leaf.style.left = Math.random() * 100 + '%';
+    leaf.style.fontSize = (Math.random() * 0.8 + 0.8) + 'rem';
+    leaf.style.animationDuration = (Math.random() * 20 + 20) + 's';
+    leaf.style.animationDelay = (Math.random() * 20) + 's';
+    container.appendChild(leaf);
+  }
+})();
+
+/* ============================================================
+   MOUSE SPOTLIGHT
+   ============================================================ */
+(function initSpotlight() {
+  const spot = document.getElementById('spotlight');
+  let isDesktop = window.matchMedia('(min-width: 768px) and (hover: hover)').matches;
+
+  if (isDesktop) {
+    spot.style.display = 'block';
+    document.addEventListener('mousemove', function(e) {
+      spot.style.left = e.clientX + 'px';
+      spot.style.top = e.clientY + 'px';
+    }, { passive: true });
+  }
+})();
+
+/* ============================================================
+   SCROLL REVEAL -- Intersection Observer
+   ============================================================ */
+const revealObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  root: null,
+  rootMargin: '0px 0px -60px 0px',
+  threshold: 0.1
+});
+
+document.querySelectorAll('.reveal').forEach(function(el) {
+  revealObserver.observe(el);
+});
+
+/* ============================================================
+   NAV ACTIVE STATE ON SCROLL
+   ============================================================ */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav a');
+
+function updateNav() {
+  var scrollY = window.scrollY + 200;
+
+  sections.forEach(function(section) {
+    var top = section.offsetTop;
+    var height = section.offsetHeight;
+    var id = section.getAttribute('id');
+
+    if (scrollY >= top && scrollY < top + height) {
+      navLinks.forEach(function(link) {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + id) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}
+
+window.addEventListener('scroll', updateNav, { passive: true });
+
+/* ============================================================
+   STAT COUNTER ANIMATION
+   ============================================================ */
+var statNumbers = document.querySelectorAll('.stat-number');
+
+var counterObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      var el = entry.target;
+      var target = parseInt(el.getAttribute('data-target'));
+      animateCounter(el, 0, target, 2000);
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+statNumbers.forEach(function(el) { counterObserver.observe(el); });
+
+function animateCounter(el, start, end, duration) {
+  var startTime = performance.now();
+
+  function update(currentTime) {
+    var elapsed = currentTime - startTime;
+    var progress = Math.min(elapsed / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    var current = Math.round(start + (end - start) * eased);
+    el.textContent = current + '+';
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+/* ============================================================
+   SMOOTH SCROLL FOR NAV LINKS
+   ============================================================ */
+navLinks.forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    var targetId = this.getAttribute('href');
+    var targetEl = document.querySelector(targetId);
+    if (targetEl) {
+      var offset = targetEl.offsetTop - 80;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+
+/* ============================================================
+   SUBTLE PARALLAX ON HERO ORB (mouse tracking)
+   ============================================================ */
+(function initParallax() {
+  var orb = document.querySelector('.hero-orb-wrapper');
+  var floatingEls = document.querySelectorAll('.orb-floating-el');
+  if (!orb) return;
+
+  var mouseX = 0, mouseY = 0;
+  var currentX = 0, currentY = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  function animate() {
+    currentX += (mouseX - currentX) * 0.03;
+    currentY += (mouseY - currentY) * 0.03;
+
+    orb.style.transform = 'translate(' + (currentX * 8) + 'px, ' + (currentY * 6) + 'px)';
+
+    floatingEls.forEach(function(el, i) {
+      var factor = (i + 1) * 4;
+      el.style.transform = 'translate(' + (currentX * factor) + 'px, ' + (currentY * factor) + 'px)';
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
+</script>
+</body>
+</html>

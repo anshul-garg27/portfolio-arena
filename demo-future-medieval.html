@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Software Developer | Future Medieval Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A portfolio forged where blackletter gothic meets holographic neon. Illuminated manuscripts reimagined for the cyberpunk age.">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   FUTURE MEDIEVAL DESIGN SYSTEM
+   Blackletter Gothic x Holographic Neon x Illuminated Manuscripts
+   ======================================================================== */
+:root {
+  --black: #0A0A0A;
+  --black-surface: #111111;
+  --black-elevated: #1A1A1A;
+  --black-border: #252525;
+  --gold: #D4AF37;
+  --gold-light: #E0C255;
+  --gold-dark: #B8942E;
+  --gold-muted: rgba(212, 175, 55, 0.15);
+  --gold-glow: rgba(212, 175, 55, 0.4);
+  --cyan: #00F5FF;
+  --cyan-muted: rgba(0, 245, 255, 0.15);
+  --cyan-glow: rgba(0, 245, 255, 0.4);
+  --crimson: #8B0000;
+  --crimson-light: #A31010;
+  --crimson-muted: rgba(139, 0, 0, 0.2);
+  --crimson-glow: rgba(139, 0, 0, 0.4);
+  --parchment: #E8D5B7;
+  --parchment-muted: rgba(232, 213, 183, 0.12);
+  --parchment-text: rgba(232, 213, 183, 0.7);
+  --text-heading: #F0ECE4;
+  --text-body: rgba(232, 213, 183, 0.65);
+  --text-bright: rgba(232, 213, 183, 0.9);
+
+  --font-gothic: 'UnifrakturMaguntia', cursive;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --ease-medieval: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-glide: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Holographic gradient */
+  --holo-gradient: linear-gradient(135deg, #00F5FF 0%, #D4AF37 25%, #8B0000 50%, #00F5FF 75%, #D4AF37 100%);
+  --holo-text: linear-gradient(90deg, #00F5FF, #D4AF37, #8B0000, #00F5FF);
+}
+
+/* ========================================================================
+   RESET & BASE
+   ======================================================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .holo-border::before { animation: none !important; }
+  .particle, .rune-float { display: none !important; }
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--text-body);
+  overflow-x: hidden;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--black);
+}
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+  transition: color 0.3s var(--ease-glide);
+}
+
+a:hover { color: var(--gold); }
+
+img { max-width: 100%; display: block; }
+
+/* ========================================================================
+   MANUSCRIPT TEXTURE OVERLAY
+   ======================================================================== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image:
+    radial-gradient(circle 1px at 20px 20px, var(--gold) 0.5px, transparent 0.5px),
+    radial-gradient(circle 1px at 60px 60px, var(--gold) 0.5px, transparent 0.5px);
+  background-size: 80px 80px;
+}
+
+/* Scanline overlay for cyberpunk */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 245, 255, 0.03) 2px,
+    rgba(0, 245, 255, 0.03) 4px
+  );
+}
+
+/* ========================================================================
+   HOLOGRAPHIC BORDER UTILITY
+   ======================================================================== */
+.holo-border {
+  position: relative;
+  border: 1px solid var(--black-border);
+}
+
+.holo-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: var(--holo-gradient);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: holoShift 6s ease-in-out infinite;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+@keyframes holoShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ========================================================================
+   ILLUMINATED DROP CAP
+   ======================================================================== */
+.drop-cap {
+  position: relative;
+  display: inline;
+}
+
+.drop-cap::first-letter {
+  font-family: var(--font-gothic);
+  font-size: 4em;
+  float: left;
+  line-height: 0.8;
+  margin-right: 0.1em;
+  margin-top: 0.05em;
+  color: var(--gold);
+  text-shadow:
+    0 0 20px var(--gold-glow),
+    0 0 40px rgba(212, 175, 55, 0.2);
+  -webkit-text-stroke: 0.5px var(--gold-dark);
+  padding: 0.05em 0.12em 0.05em 0;
+  border-left: 3px solid var(--crimson);
+  border-bottom: 3px solid var(--crimson);
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1), transparent);
+}
+
+/* ========================================================================
+   ILLUMINATED MANUSCRIPT BORDER FRAMES
+   ======================================================================== */
+.manuscript-frame {
+  position: relative;
+  padding: 2rem;
+}
+
+.manuscript-frame::before,
+.manuscript-frame::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Corner ornaments */
+.corner-ornament {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.corner-ornament::before,
+.corner-ornament::after {
+  content: '';
+  position: absolute;
+  background: var(--gold);
+}
+
+.corner-ornament::before {
+  width: 100%;
+  height: 2px;
+  top: 0;
+  left: 0;
+}
+
+.corner-ornament::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.corner-ornament.tl { top: 0; left: 0; }
+.corner-ornament.tr { top: 0; right: 0; transform: scaleX(-1); }
+.corner-ornament.bl { bottom: 0; left: 0; transform: scaleY(-1); }
+.corner-ornament.br { bottom: 0; right: 0; transform: scale(-1); }
+
+/* Neon corner variant */
+.corner-ornament.neon::before { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+.corner-ornament.neon::after { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+
+/* ========================================================================
+   HERALDIC SHIELD SVG
+   ======================================================================== */
+.heraldic-shield {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.heraldic-shield svg {
+  filter: drop-shadow(0 0 12px var(--gold-glow));
+}
+
+/* ========================================================================
+   NAVIGATION
+   ======================================================================== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: all 0.4s var(--ease-medieval);
+}
+
+.nav.scrolled {
+  background: rgba(10, 10, 10, 0.92);
+  border-bottom-color: var(--gold-muted);
+  padding: 0.75rem 2.5rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), 0 0 1px var(--gold-muted);
+}
+
+.nav-crest {
+  font-family: var(--font-gothic);
+  font-size: 1.4rem;
+  color: var(--gold);
+  text-shadow: 0 0 20px var(--gold-glow);
+  letter-spacing: 0.02em;
+  transition: text-shadow 0.3s ease;
+}
+
+.nav-crest:hover {
+  text-shadow: 0 0 30px var(--gold-glow), 0 0 60px rgba(212, 175, 55, 0.2);
+  color: var(--gold-light);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--parchment-text);
+  transition: all 0.3s var(--ease-glide);
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-glow);
+  transition: width 0.4s var(--ease-medieval);
+}
+
+.nav-links a:hover {
+  color: var(--cyan);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Mobile nav toggle */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 10001;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 1.5px;
+  background: var(--gold);
+  transition: all 0.3s var(--ease-glide);
+  transform-origin: center;
+}
+
+.nav-toggle.active span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ========================================================================
+   SECTION COMMON
+   ======================================================================== */
+section {
+  position: relative;
+  z-index: 2;
+  padding: 7rem 2rem;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 0 10px var(--cyan-glow);
+}
+
+.section-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-glow);
+}
+
+.section-title {
+  font-family: var(--font-gothic);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--gold);
+  margin-bottom: 1rem;
+  text-shadow: 0 0 30px var(--gold-glow), 0 2px 4px rgba(0,0,0,0.5);
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-body);
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+
+/* Horizontal rule - manuscript style */
+.manuscript-hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-muted), var(--gold), var(--gold-muted), transparent);
+  margin: 3rem 0;
+  position: relative;
+}
+
+.manuscript-hr::after {
+  content: '\2726';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--black);
+  padding: 0 12px;
+  color: var(--gold);
+  font-size: 0.8rem;
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--ease-medieval), transform 0.8s var(--ease-medieval);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ========================================================================
+   PAGE LOADER - Manuscript Unfurling
+   ======================================================================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1s var(--ease-medieval), visibility 1s;
+}
+
+.loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-sigil {
+  font-family: var(--font-gothic);
+  font-size: 2.5rem;
+  color: var(--gold);
+  text-shadow: 0 0 30px var(--gold-glow);
+  margin-bottom: 1.5rem;
+  animation: sigilPulse 2s ease-in-out infinite;
+}
+
+@keyframes sigilPulse {
+  0%, 100% { opacity: 0.5; text-shadow: 0 0 20px var(--gold-glow); }
+  50% { opacity: 1; text-shadow: 0 0 50px var(--gold-glow), 0 0 80px rgba(212, 175, 55, 0.2); }
+}
+
+.loader-bar-track {
+  width: 160px;
+  height: 2px;
+  background: var(--black-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-bar-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--cyan), var(--gold), var(--crimson-light));
+  animation: loaderFill 1.8s var(--ease-medieval) forwards;
+  transform-origin: left;
+}
+
+@keyframes loaderFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.loader-text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--parchment-text);
+  margin-top: 1rem;
+  animation: loaderTextBlink 1s step-end infinite;
+}
+
+@keyframes loaderTextBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ========================================================================
+   FLOATING PARTICLES - Rune Dust
+   ======================================================================== */
+.particles-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  opacity: 0;
+  animation: particleDrift linear infinite;
+}
+
+.particle.gold-dust {
+  width: 2px;
+  height: 2px;
+  background: var(--gold);
+  box-shadow: 0 0 4px var(--gold-glow);
+}
+
+.particle.cyan-mote {
+  width: 1px;
+  height: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-glow);
+}
+
+@keyframes particleDrift {
+  0% { opacity: 0; transform: translateY(100vh) rotate(0deg); }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-10vh) rotate(360deg); }
+}
+
+/* ========================================================================
+   HERO SECTION - The Codex Opens
+   ======================================================================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+/* Radial glow behind hero */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.06) 0%,
+    rgba(0, 245, 255, 0.03) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Manuscript border lines */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 30px;
+  border: 1px solid var(--gold-muted);
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 5;
+  max-width: 900px;
+}
+
+/* Heraldic Shield / Crest */
+.hero-crest {
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 1s ease 0.3s, transform 1s var(--ease-medieval) 0.3s;
+}
+
+.hero-crest.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.crest-svg {
+  width: 120px;
+  height: 140px;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 20px var(--gold-glow)) drop-shadow(0 0 40px rgba(0, 245, 255, 0.15));
+}
+
+/* Hero decree */
+.hero-decree {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: 0 0 12px var(--cyan-glow);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.8s;
+}
+
+.hero-decree.visible { opacity: 1; }
+
+/* Hero name - massive gothic */
+.hero-name {
+  font-family: var(--font-gothic);
+  font-size: clamp(3rem, 10vw, 7rem);
+  color: var(--gold);
+  text-shadow:
+    0 0 30px var(--gold-glow),
+    0 0 80px rgba(212, 175, 55, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.6);
+  line-height: 1.05;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1.2s ease 1.2s, transform 1.2s var(--ease-medieval) 1.2s;
+  position: relative;
+}
+
+.hero-name.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Holographic underline */
+.hero-name::after {
+  content: '';
+  display: block;
+  width: 60%;
+  height: 2px;
+  margin: 0.5rem auto 0;
+  background: var(--holo-gradient);
+  background-size: 300% 100%;
+  animation: holoShift 4s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--cyan-glow);
+}
+
+.hero-role {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  color: var(--parchment-text);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.8s ease 1.8s;
+}
+
+.hero-role.visible { opacity: 1; }
+
+.hero-allegiance {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-body);
+  opacity: 0;
+  transition: opacity 0.8s ease 2.2s;
+}
+
+.hero-allegiance.visible { opacity: 1; }
+
+.hero-allegiance strong {
+  color: var(--cyan);
+  font-weight: 600;
+  text-shadow: 0 0 10px var(--cyan-glow);
+}
+
+/* Ornamental divider */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 2rem 0;
+  opacity: 0;
+  transition: opacity 0.8s ease 2.5s;
+}
+
+.ornament-divider.visible { opacity: 1; }
+
+.ornament-divider .line {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+
+.ornament-divider .line:last-child {
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+.ornament-divider .diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* Hero CTA */
+.hero-ctas {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease 2.8s, transform 0.8s var(--ease-medieval) 2.8s;
+}
+
+.hero-ctas.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-primary,
+.btn-secondary {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-medieval);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease-medieval);
+  z-index: -1;
+}
+
+.btn-primary:hover {
+  color: var(--black);
+  border-color: var(--gold);
+  text-shadow: none;
+}
+
+.btn-primary:hover::before {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  border-color: var(--black-border);
+  color: var(--parchment-text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 15px var(--cyan-muted);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: scrollFadeIn 1s ease 3.5s forwards;
+}
+
+@keyframes scrollFadeIn {
+  to { opacity: 0.5; }
+}
+
+.scroll-indicator span {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--parchment-text);
+}
+
+.scroll-indicator .arrow {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  position: relative;
+  animation: scrollArrow 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollArrow {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.8; transform: translateY(6px); }
+}
+
+/* ========================================================================
+   ABOUT SECTION - The Illuminated Dossier
+   ======================================================================== */
+.about {
+  background:
+    linear-gradient(180deg, var(--black) 0%, var(--black-surface) 50%, var(--black) 100%);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 4rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+/* Portrait frame - illuminated manuscript style */
+.about-portrait {
+  position: relative;
+}
+
+.about-portrait-frame {
+  aspect-ratio: 3/4;
+  background:
+    linear-gradient(135deg, var(--black-elevated) 0%, var(--black-surface) 100%);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Inner manuscript border */
+.about-portrait-frame::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--gold-muted);
+}
+
+/* Holographic shimmer */
+.about-portrait-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(0, 245, 255, 0.05) 45%,
+    rgba(212, 175, 55, 0.05) 55%,
+    transparent 70%
+  );
+  background-size: 200% 200%;
+  animation: shimmerPortrait 5s ease-in-out infinite;
+}
+
+@keyframes shimmerPortrait {
+  0% { background-position: 100% 100%; }
+  50% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+.about-portrait-initials {
+  font-family: var(--font-gothic);
+  font-size: 4rem;
+  color: var(--gold);
+  text-shadow: 0 0 40px var(--gold-glow);
+  position: relative;
+  z-index: 2;
+}
+
+/* Manuscript seal */
+.about-portrait-seal {
+  position: absolute;
+  bottom: -16px;
+  right: -16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--crimson);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 0 20px var(--crimson-glow);
+}
+
+.about-portrait-seal span {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--gold);
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
+}
+
+.about-text p {
+  margin-bottom: 1.25rem;
+  color: var(--text-body);
+  line-height: 1.85;
+  font-size: 0.95rem;
+}
+
+.about-text p:first-child {
+  font-size: 1rem;
+  color: var(--text-bright);
+}
+
+/* Virtue tags */
+.about-virtues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.virtue-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: 1px solid var(--gold-muted);
+  color: var(--gold);
+  transition: all 0.3s var(--ease-glide);
+}
+
+.virtue-tag:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan-muted);
+  background: rgba(0, 245, 255, 0.03);
+}
+
+/* ========================================================================
+   PROJECTS SECTION - Illuminated Commissions
+   ======================================================================== */
+.projects {
+  background: var(--black);
+  position: relative;
+}
+
+/* Background vine/scroll ornament */
+.projects::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  opacity: 0.04;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 40px,
+      var(--gold) 40px,
+      var(--gold) 41px
+    ),
+    linear-gradient(90deg, var(--gold) 1px, transparent 1px);
+  background-size: 20px 80px, 60px 100%;
+  pointer-events: none;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.project-card {
+  background: var(--black-surface);
+  border: 1px solid var(--black-border);
+  padding: 2rem;
+  position: relative;
+  transition: all 0.5s var(--ease-medieval);
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--cyan), var(--crimson-light));
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: holoShift 4s ease-in-out infinite;
+}
+
+.project-card:hover {
+  border-color: var(--gold-muted);
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 1px var(--gold-muted);
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+/* Featured project spanning full width */
+.project-card.featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  border-color: var(--gold-muted);
+}
+
+.project-card.featured::before {
+  opacity: 0.6;
+}
+
+.project-visual {
+  background:
+    linear-gradient(135deg, var(--black-elevated), var(--black));
+  border: 1px solid var(--black-border);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(45deg, transparent 40%, rgba(0, 245, 255, 0.03) 50%, transparent 60%);
+  background-size: 300% 300%;
+  animation: shimmerPortrait 6s ease-in-out infinite;
+}
+
+.project-visual-numeral {
+  font-family: var(--font-gothic);
+  font-size: 5rem;
+  color: var(--gold-muted);
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+  user-select: none;
+}
+
+.project-numeral {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan-glow);
+  margin-bottom: 0.75rem;
+}
+
+.project-title {
+  font-family: var(--font-gothic);
+  font-size: 1.6rem;
+  color: var(--gold);
+  text-shadow: 0 0 15px var(--gold-glow);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.project-desc {
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.75;
+  margin-bottom: 1.25rem;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.project-tech span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border: 1px solid var(--black-border);
+  color: var(--parchment-text);
+  transition: all 0.3s ease;
+}
+
+.project-card:hover .project-tech span {
+  border-color: var(--gold-muted);
+  color: var(--gold);
+}
+
+/* ========================================================================
+   SKILLS SECTION - The Arsenal Codex
+   ======================================================================== */
+.skills {
+  background:
+    linear-gradient(180deg, var(--black) 0%, rgba(139, 0, 0, 0.03) 50%, var(--black) 100%);
+  position: relative;
+}
+
+/* Manuscript margin rule */
+.skills::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  opacity: 0.04;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 40px,
+      var(--crimson) 40px,
+      var(--crimson) 41px
+    ),
+    linear-gradient(-90deg, var(--crimson) 1px, transparent 1px);
+  background-size: 20px 80px, 60px 100%;
+  pointer-events: none;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.skill-domain {
+  background: var(--black-surface);
+  border: 1px solid var(--black-border);
+  padding: 1.75rem;
+  position: relative;
+  transition: all 0.5s var(--ease-medieval);
+}
+
+.skill-domain:hover {
+  border-color: var(--gold-muted);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Gold corner accent */
+.skill-domain::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-top: 2px solid var(--gold);
+  border-left: 2px solid var(--gold);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.skill-domain:hover::before {
+  opacity: 1;
+  box-shadow: -2px -2px 8px var(--gold-glow);
+}
+
+.skill-domain-icon {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  filter: grayscale(0.3);
+}
+
+.skill-domain-title {
+  font-family: var(--font-gothic);
+  font-size: 1.2rem;
+  color: var(--gold);
+  text-shadow: 0 0 10px var(--gold-glow);
+  margin-bottom: 1rem;
+}
+
+.skill-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.skill-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--parchment-text);
+}
+
+.skill-bar {
+  display: flex;
+  gap: 3px;
+}
+
+.skill-bar span {
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--black-border);
+  transition: all 0.3s ease;
+}
+
+.skill-bar span.filled {
+  background: var(--gold);
+  box-shadow: 0 0 4px var(--gold-glow);
+}
+
+.skill-domain:hover .skill-bar span.filled {
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ========================================================================
+   EXPERIENCE SECTION - The Chronicle
+   ======================================================================== */
+.experience {
+  background: var(--black);
+}
+
+.timeline {
+  position: relative;
+  margin-top: 2.5rem;
+  padding-left: 3rem;
+}
+
+/* Timeline trunk - illuminated vine */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--cyan),
+    var(--gold) 50%,
+    var(--crimson)
+  );
+  box-shadow: 0 0 8px var(--cyan-muted);
+}
+
+.timeline-entry {
+  position: relative;
+  padding-bottom: 3.5rem;
+}
+
+.timeline-entry:last-child {
+  padding-bottom: 0;
+}
+
+/* Timeline marker - diamond + neon glow */
+.timeline-marker {
+  position: absolute;
+  left: -3rem;
+  top: 0.25rem;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-5px) rotate(45deg);
+  background: var(--gold);
+  border: 2px solid var(--black);
+  box-shadow: 0 0 12px var(--gold-glow);
+  z-index: 2;
+  transition: all 0.3s var(--ease-medieval);
+}
+
+.timeline-entry:hover .timeline-marker {
+  background: var(--cyan);
+  box-shadow: 0 0 20px var(--cyan-glow);
+}
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan-glow);
+  margin-bottom: 0.4rem;
+}
+
+.timeline-role {
+  font-family: var(--font-gothic);
+  font-size: 1.5rem;
+  color: var(--gold);
+  text-shadow: 0 0 15px var(--gold-glow);
+  margin-bottom: 0.2rem;
+  line-height: 1.2;
+}
+
+.timeline-org {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--crimson-light);
+  margin-bottom: 0.75rem;
+}
+
+.timeline-desc {
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.8;
+  max-width: 600px;
+  margin-bottom: 0.75rem;
+}
+
+.timeline-achievements {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.timeline-achievements li {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--parchment-text);
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.timeline-achievements li::before {
+  content: '\2726';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 0.55rem;
+  top: 0.15rem;
+}
+
+/* ========================================================================
+   CONTACT SECTION - Summon the Guild
+   ======================================================================== */
+.contact {
+  background:
+    linear-gradient(180deg, var(--black) 0%, rgba(139, 0, 0, 0.04) 50%, var(--black) 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gothic arch background motif */
+.contact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 100%;
+  opacity: 0.03;
+  background:
+    radial-gradient(ellipse 300px 400px at 50% 30%, var(--gold) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.contact .section-label {
+  justify-content: center;
+}
+
+.contact .section-label::before { display: none; }
+
+.contact .section-title {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-decree {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--parchment-text);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  position: relative;
+  z-index: 1;
+  line-height: 1.8;
+}
+
+.contact-channels {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-link {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--parchment-text);
+  padding: 12px 28px;
+  border: 1px solid var(--gold-muted);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-medieval);
+}
+
+.contact-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease-medieval);
+  z-index: -1;
+}
+
+.contact-link:hover {
+  color: var(--black);
+  border-color: var(--gold);
+}
+
+.contact-link:hover::before {
+  transform: translateY(0);
+}
+
+/* Guild Seal */
+.contact-seal {
+  margin-top: 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.seal-ring {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: sealRotate 25s linear infinite;
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.seal-ring::before {
+  content: '';
+  position: absolute;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-muted);
+}
+
+.seal-ring::after {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px dashed var(--gold-muted);
+  animation: sealRotateReverse 25s linear infinite;
+}
+
+.seal-initials {
+  font-family: var(--font-gothic);
+  font-size: 1.3rem;
+  color: var(--gold);
+  text-shadow: 0 0 15px var(--gold-glow);
+  animation: sealRotateReverse 25s linear infinite;
+}
+
+@keyframes sealRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes sealRotateReverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+/* ========================================================================
+   FOOTER
+   ======================================================================== */
+.footer {
+  background: var(--black);
+  border-top: 1px solid var(--black-border);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-muted), transparent);
+}
+
+.footer-text {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(232, 213, 183, 0.35);
+  letter-spacing: 0.1em;
+}
+
+.footer-text .gold { color: var(--gold); text-shadow: 0 0 8px var(--gold-glow); }
+.footer-text .cyan { color: var(--cyan); text-shadow: 0 0 8px var(--cyan-glow); }
+
+/* ========================================================================
+   SCROLL PROGRESS
+   ======================================================================== */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--gold), var(--crimson-light));
+  z-index: 9999;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--cyan-glow);
+}
+
+/* ========================================================================
+   CUSTOM CURSOR
+   ======================================================================== */
+.cursor-outer {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--gold);
+  pointer-events: none;
+  z-index: 10002;
+  transform: translate(-50%, -50%) rotate(45deg);
+  transition: width 0.4s var(--ease-medieval),
+              height 0.4s var(--ease-medieval),
+              border-color 0.3s ease,
+              background 0.3s ease;
+  opacity: 0;
+}
+
+.cursor-outer.visible { opacity: 0.7; }
+
+.cursor-outer.hovering {
+  width: 48px;
+  height: 48px;
+  border-color: var(--cyan);
+  background: rgba(0, 245, 255, 0.03);
+  box-shadow: 0 0 15px var(--cyan-muted);
+}
+
+.cursor-dot {
+  position: fixed;
+  width: 3px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10003;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  box-shadow: 0 0 6px var(--gold-glow);
+}
+
+.cursor-dot.visible { opacity: 1; }
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-outer, .cursor-dot { display: none !important; }
+  body { cursor: auto; }
+}
+
+@media (hover: hover) {
+  body { cursor: none; }
+  a, button { cursor: none; }
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 968px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .about-portrait {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card.featured {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 10, 0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 2rem;
+    z-index: 10000;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+  }
+
+  .nav-toggle {
+    display: flex;
+    z-index: 10001;
+  }
+
+  section {
+    padding: 5rem 1.5rem;
+  }
+
+  .hero {
+    padding: 6rem 1.5rem 4rem;
+  }
+
+  .hero::after {
+    inset: 15px;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline {
+    padding-left: 2rem;
+  }
+
+  .timeline-marker {
+    left: -2rem;
+  }
+
+  .contact-channels {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-link {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-name {
+    font-size: 2.6rem;
+  }
+
+  .about-virtues {
+    gap: 0.4rem;
+  }
+
+  .virtue-tag {
+    font-size: 0.58rem;
+    padding: 5px 10px;
+  }
+
+  .nav-crest {
+    font-size: 1.1rem;
+  }
+
+  .crest-svg {
+    width: 80px;
+    height: 96px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PAGE LOADER -->
+<div class="loader" id="loader" role="status" aria-label="Loading portfolio">
+  <div class="loader-sigil">AG</div>
+  <div class="loader-bar-track"></div>
+  <div class="loader-text">Unfurling the Codex</div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-outer" id="cursorOuter" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+<!-- FLOATING PARTICLES -->
+<div class="particles-container" id="particles" aria-hidden="true"></div>
+
+<!-- NAVIGATION -->
+<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+  <a href="#hero" class="nav-crest" aria-label="Anshull Garg - Home">Anshull Garg</a>
+  <ul class="nav-links" id="navLinks" role="list">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Arsenal</a></li>
+    <li><a href="#experience">Chronicle</a></li>
+    <li><a href="#contact">Summon</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- ================================================================
+     HERO SECTION - The Codex Opens
+     ================================================================ -->
+<section class="hero" id="hero">
+  <!-- Corner ornaments -->
+  <div class="corner-ornament tl" aria-hidden="true"></div>
+  <div class="corner-ornament tr" aria-hidden="true"></div>
+  <div class="corner-ornament bl" aria-hidden="true"></div>
+  <div class="corner-ornament br" aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <!-- Heraldic Crest SVG -->
+    <div class="hero-crest" id="heroCrest">
+      <svg class="crest-svg" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Shield shape -->
+        <path d="M60 5 L110 25 L110 75 Q110 120 60 135 Q10 120 10 75 L10 25 Z"
+              fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.8"/>
+        <!-- Inner shield -->
+        <path d="M60 15 L100 32 L100 73 Q100 112 60 125 Q20 112 20 73 L20 32 Z"
+              fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.3"/>
+        <!-- Cross pattern -->
+        <line x1="60" y1="30" x2="60" y2="110" stroke="#D4AF37" stroke-width="1" opacity="0.4"/>
+        <line x1="25" y1="60" x2="95" y2="60" stroke="#D4AF37" stroke-width="1" opacity="0.4"/>
+        <!-- Central diamond -->
+        <polygon points="60,45 75,60 60,75 45,60" fill="none" stroke="#00F5FF" stroke-width="1.5" opacity="0.6"/>
+        <polygon points="60,50 70,60 60,70 50,60" fill="#D4AF37" opacity="0.3"/>
+        <!-- Top fleur detail -->
+        <circle cx="60" cy="22" r="3" fill="#D4AF37" opacity="0.5"/>
+        <!-- Side runes -->
+        <circle cx="35" cy="45" r="2" fill="#00F5FF" opacity="0.4"/>
+        <circle cx="85" cy="45" r="2" fill="#00F5FF" opacity="0.4"/>
+        <circle cx="35" cy="80" r="2" fill="#8B0000" opacity="0.5"/>
+        <circle cx="85" cy="80" r="2" fill="#8B0000" opacity="0.5"/>
+        <!-- Bottom vertex glow -->
+        <circle cx="60" cy="125" r="4" fill="#D4AF37" opacity="0.2"/>
+        <circle cx="60" cy="125" r="2" fill="#D4AF37" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <div class="hero-decree" id="heroDecree">Presenting to the Digital Realm</div>
+
+    <h1 class="hero-name" id="heroName">Anshull Garg</h1>
+
+    <p class="hero-role" id="heroRole">Software Developer &amp; Architect of Digital Kingdoms</p>
+
+    <p class="hero-allegiance" id="heroAllegiance">Sworn to the service of <strong>Walmart Global Tech</strong> &mdash; engineering systems that serve millions</p>
+
+    <div class="ornament-divider" id="heroOrnament">
+      <div class="line"></div>
+      <div class="diamond"></div>
+      <div class="line"></div>
+    </div>
+
+    <div class="hero-ctas" id="heroCtas">
+      <a href="#projects" class="btn-primary">View Commissions</a>
+      <a href="#contact" class="btn-secondary">Summon Me</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ================================================================
+     ABOUT SECTION - The Illuminated Dossier
+     ================================================================ -->
+<section class="about" id="about">
+  <div class="section-inner">
+    <div class="section-label reveal">The Illuminated Dossier</div>
+    <h2 class="section-title reveal reveal-delay-1">About the Developer</h2>
+
+    <div class="about-grid">
+      <div class="about-portrait reveal reveal-delay-2">
+        <div class="about-portrait-frame">
+          <div class="corner-ornament tl neon" aria-hidden="true"></div>
+          <div class="corner-ornament tr neon" aria-hidden="true"></div>
+          <div class="corner-ornament bl neon" aria-hidden="true"></div>
+          <div class="corner-ornament br neon" aria-hidden="true"></div>
+          <div class="about-portrait-initials">AG</div>
+        </div>
+        <div class="about-portrait-seal" aria-hidden="true">
+          <span>Est.<br>2020</span>
+        </div>
+      </div>
+
+      <div class="about-text reveal reveal-delay-3">
+        <p class="drop-cap">Within the grand digital halls of modern commerce, I serve as a Software Developer at Walmart, where code is not merely written but illuminated -- each function a gilded letter in the manuscript of production systems. Every service I architect carries the weight of responsibility, serving millions of souls who depend upon seamless, reliable experiences each day.</p>
+
+        <p>My approach to software development mirrors the philosophy of the great cathedral builders: construct with intention, design with empathy, and always leave the codebase more beautiful than you found it. From distributed systems to elegant interfaces, I believe in the nobility of clean, purposeful engineering -- where ancient craft meets neon-lit innovation.</p>
+
+        <div class="about-virtues">
+          <div class="virtue-tag">Distributed Systems</div>
+          <div class="virtue-tag">Full-Stack Engineering</div>
+          <div class="virtue-tag">Performance Optimization</div>
+          <div class="virtue-tag">System Architecture</div>
+          <div class="virtue-tag">Team Collaboration</div>
+          <div class="virtue-tag">Continuous Learning</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="manuscript-hr" aria-hidden="true">
+
+<!-- ================================================================
+     PROJECTS SECTION - Illuminated Commissions
+     ================================================================ -->
+<section class="projects" id="projects">
+  <div class="section-inner">
+    <div class="section-label reveal">Illuminated Commissions</div>
+    <h2 class="section-title reveal reveal-delay-1">Notable Projects</h2>
+    <p class="section-subtitle reveal reveal-delay-2">Each commission forged in the crucible of production, tempered by the fires of scale.</p>
+
+    <div class="projects-grid">
+      <!-- Featured Project -->
+      <div class="project-card featured reveal reveal-delay-2">
+        <div class="project-visual" aria-hidden="true">
+          <div class="project-visual-numeral">I</div>
+        </div>
+        <div>
+          <div class="project-numeral">Commission I</div>
+          <h3 class="project-title">Enterprise Inventory Platform</h3>
+          <p class="project-desc">A high-throughput inventory management system processing millions of SKU updates daily across Walmart's supply chain. Built for resilience, designed for the scale of empires.</p>
+          <div class="project-tech">
+            <span>Java</span>
+            <span>Kafka</span>
+            <span>Cassandra</span>
+            <span>Kubernetes</span>
+            <span>React</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card reveal reveal-delay-2">
+        <div class="corner-ornament tl" aria-hidden="true"></div>
+        <div class="corner-ornament br" aria-hidden="true"></div>
+        <div class="project-numeral">Commission II</div>
+        <h3 class="project-title">Real-Time Analytics Dashboard</h3>
+        <p class="project-desc">Interactive monitoring suite providing real-time visibility into system health, user engagement metrics, and business KPIs with sub-second refresh rates.</p>
+        <div class="project-tech">
+          <span>React</span>
+          <span>D3.js</span>
+          <span>WebSocket</span>
+          <span>Node.js</span>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card reveal reveal-delay-3">
+        <div class="corner-ornament tl" aria-hidden="true"></div>
+        <div class="corner-ornament br" aria-hidden="true"></div>
+        <div class="project-numeral">Commission III</div>
+        <h3 class="project-title">Microservices Migration</h3>
+        <p class="project-desc">Led the decomposition of a monolithic application into a suite of microservices, improving deployment velocity by 300% and reducing incident response time.</p>
+        <div class="project-tech">
+          <span>Spring Boot</span>
+          <span>Docker</span>
+          <span>gRPC</span>
+          <span>Terraform</span>
+        </div>
+      </div>
+
+      <!-- Project 4 -->
+      <div class="project-card reveal reveal-delay-2">
+        <div class="corner-ornament tl" aria-hidden="true"></div>
+        <div class="corner-ornament br" aria-hidden="true"></div>
+        <div class="project-numeral">Commission IV</div>
+        <h3 class="project-title">Checkout Optimization Engine</h3>
+        <p class="project-desc">Performance-critical checkout flow handling peak traffic during major retail events. Reduced page load times by 40% and cart abandonment by 15%.</p>
+        <div class="project-tech">
+          <span>TypeScript</span>
+          <span>Next.js</span>
+          <span>Redis</span>
+          <span>GraphQL</span>
+        </div>
+      </div>
+
+      <!-- Project 5 -->
+      <div class="project-card reveal reveal-delay-3">
+        <div class="corner-ornament tl" aria-hidden="true"></div>
+        <div class="corner-ornament br" aria-hidden="true"></div>
+        <div class="project-numeral">Commission V</div>
+        <h3 class="project-title">Developer Tooling Suite</h3>
+        <p class="project-desc">Internal CLI and dashboard that streamlined the developer experience -- automated deployments, log aggregation, and incident triage into a single pane of glass.</p>
+        <div class="project-tech">
+          <span>Go</span>
+          <span>React</span>
+          <span>ElasticSearch</span>
+          <span>CI/CD</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SKILLS SECTION - The Arsenal Codex
+     ================================================================ -->
+<section class="skills" id="skills">
+  <div class="section-inner">
+    <div class="section-label reveal">The Arsenal Codex</div>
+    <h2 class="section-title reveal reveal-delay-1">Skills &amp; Expertise</h2>
+
+    <div class="skills-grid">
+      <!-- Languages -->
+      <div class="skill-domain reveal reveal-delay-2">
+        <div class="skill-domain-icon" aria-hidden="true">&#9876;</div>
+        <h3 class="skill-domain-title">Languages</h3>
+        <ul class="skill-list">
+          <li>
+            Java / Spring
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            JavaScript / TypeScript
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Python
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Go
+            <div class="skill-bar" aria-label="Proficiency: 3 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span>
+            </div>
+          </li>
+          <li>
+            SQL
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Frontend -->
+      <div class="skill-domain reveal reveal-delay-3">
+        <div class="skill-domain-icon" aria-hidden="true">&#9881;</div>
+        <h3 class="skill-domain-title">Frontend</h3>
+        <ul class="skill-list">
+          <li>
+            React / Next.js
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            CSS / Tailwind
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Redux / State Mgmt
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Web Performance
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Accessibility
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Infrastructure -->
+      <div class="skill-domain reveal reveal-delay-4">
+        <div class="skill-domain-icon" aria-hidden="true">&#9878;</div>
+        <h3 class="skill-domain-title">Infrastructure</h3>
+        <ul class="skill-list">
+          <li>
+            Kubernetes / Docker
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Kafka / Messaging
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            CI/CD Pipelines
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Cloud (GCP / Azure)
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            System Design
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Databases -->
+      <div class="skill-domain reveal reveal-delay-2">
+        <div class="skill-domain-icon" aria-hidden="true">&#9906;</div>
+        <h3 class="skill-domain-title">Databases</h3>
+        <ul class="skill-list">
+          <li>
+            PostgreSQL
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Redis
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Cassandra
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            ElasticSearch
+            <div class="skill-bar" aria-label="Proficiency: 3 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span>
+            </div>
+          </li>
+          <li>
+            MongoDB
+            <div class="skill-bar" aria-label="Proficiency: 3 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Practices -->
+      <div class="skill-domain reveal reveal-delay-3">
+        <div class="skill-domain-icon" aria-hidden="true">&#9873;</div>
+        <h3 class="skill-domain-title">Practices</h3>
+        <ul class="skill-list">
+          <li>
+            Agile / Scrum
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Code Review
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            TDD / Testing
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Monitoring / SRE
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Technical Writing
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Leadership -->
+      <div class="skill-domain reveal reveal-delay-4">
+        <div class="skill-domain-icon" aria-hidden="true">&#9812;</div>
+        <h3 class="skill-domain-title">Leadership</h3>
+        <ul class="skill-list">
+          <li>
+            Mentorship
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Architecture Decisions
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Cross-team Collab
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+          <li>
+            Stakeholder Mgmt
+            <div class="skill-bar" aria-label="Proficiency: 4 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span>
+            </div>
+          </li>
+          <li>
+            Problem Solving
+            <div class="skill-bar" aria-label="Proficiency: 5 of 5">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     EXPERIENCE SECTION - The Chronicle
+     ================================================================ -->
+<section class="experience" id="experience">
+  <div class="section-inner">
+    <div class="section-label reveal">The Chronicle</div>
+    <h2 class="section-title reveal reveal-delay-1">Experience</h2>
+
+    <div class="timeline">
+      <!-- Entry 1 -->
+      <div class="timeline-entry reveal reveal-delay-2">
+        <div class="timeline-marker" aria-hidden="true"></div>
+        <div class="timeline-date">2022 &mdash; Present</div>
+        <h3 class="timeline-role">Software Developer</h3>
+        <div class="timeline-org">Walmart Global Tech</div>
+        <p class="timeline-desc">Building and scaling enterprise systems that power one of the world's largest retailers. Working across the full stack with a focus on distributed services and frontend performance.</p>
+        <ul class="timeline-achievements">
+          <li>Architected high-throughput inventory services processing millions of daily transactions</li>
+          <li>Led frontend performance initiative reducing core web vitals by 40%</li>
+          <li>Mentored junior developers and conducted 100+ code reviews</li>
+          <li>Drove adoption of TypeScript and modern React patterns across the team</li>
+        </ul>
+      </div>
+
+      <!-- Entry 2 -->
+      <div class="timeline-entry reveal reveal-delay-3">
+        <div class="timeline-marker" aria-hidden="true"></div>
+        <div class="timeline-date">2020 &mdash; 2022</div>
+        <h3 class="timeline-role">Associate Software Developer</h3>
+        <div class="timeline-org">Walmart Global Tech</div>
+        <p class="timeline-desc">Joined as an associate developer and quickly grew into an independent contributor tackling complex system challenges at retail scale.</p>
+        <ul class="timeline-achievements">
+          <li>Developed microservices for the checkout and fulfillment domain</li>
+          <li>Built internal tooling that reduced deployment time by 60%</li>
+          <li>Contributed to the migration from legacy monolith to cloud-native architecture</li>
+        </ul>
+      </div>
+
+      <!-- Entry 3 -->
+      <div class="timeline-entry reveal reveal-delay-4">
+        <div class="timeline-marker" aria-hidden="true"></div>
+        <div class="timeline-date">2019 &mdash; 2020</div>
+        <h3 class="timeline-role">Software Engineering Intern</h3>
+        <div class="timeline-org">Walmart Global Tech</div>
+        <p class="timeline-desc">First exposure to enterprise-scale engineering. Built proof-of-concept features and gained hands-on experience with production systems.</p>
+        <ul class="timeline-achievements">
+          <li>Developed a real-time notification system prototype</li>
+          <li>Participated in Agile ceremonies and sprint planning</li>
+          <li>Received a full-time offer based on intern performance</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="manuscript-hr" aria-hidden="true">
+
+<!-- ================================================================
+     CONTACT SECTION - Summon the Guild
+     ================================================================ -->
+<section class="contact" id="contact">
+  <div class="section-inner">
+    <div class="section-label reveal">Summon the Guild</div>
+    <h2 class="section-title reveal reveal-delay-1">Get in Touch</h2>
+
+    <p class="contact-decree reveal reveal-delay-2">"The gates of this digital stronghold stand ever open to those who seek collaboration, innovation, and the relentless pursuit of exceptional craft."</p>
+
+    <div class="ornament-divider visible" aria-hidden="true" style="max-width: 200px; margin: 0 auto 2rem;">
+      <div class="line"></div>
+      <div class="diamond"></div>
+      <div class="line"></div>
+    </div>
+
+    <div class="contact-channels reveal reveal-delay-3">
+      <a href="mailto:anshullgarg@gmail.com" class="contact-link" aria-label="Send email">Email</a>
+      <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">LinkedIn</a>
+      <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">GitHub</a>
+    </div>
+
+    <div class="contact-seal reveal reveal-delay-4" aria-hidden="true">
+      <div class="seal-ring">
+        <div class="seal-initials">AG</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p class="footer-text">
+    <span class="gold">&copy; MMXXVI</span> &middot; Anshull Garg &middot; Forged where <span class="cyan">neon</span> meets <span class="gold">parchment</span>
+  </p>
+</footer>
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // -- Page Loader --
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.getElementById('loader').classList.add('hidden');
+      // Trigger hero animations after loader
+      setTimeout(triggerHeroSequence, 200);
+    }, 2000);
+  });
+
+  // -- Hero Entrance Sequence --
+  function triggerHeroSequence() {
+    var heroCrest = document.getElementById('heroCrest');
+    var heroDecree = document.getElementById('heroDecree');
+    var heroName = document.getElementById('heroName');
+    var heroRole = document.getElementById('heroRole');
+    var heroAllegiance = document.getElementById('heroAllegiance');
+    var heroOrnament = document.getElementById('heroOrnament');
+    var heroCtas = document.getElementById('heroCtas');
+
+    if (heroCrest) heroCrest.classList.add('visible');
+    if (heroDecree) heroDecree.classList.add('visible');
+    if (heroName) heroName.classList.add('visible');
+    if (heroRole) heroRole.classList.add('visible');
+    if (heroAllegiance) heroAllegiance.classList.add('visible');
+    if (heroOrnament) heroOrnament.classList.add('visible');
+    if (heroCtas) heroCtas.classList.add('visible');
+  }
+
+  // -- Scroll Progress Bar --
+  var scrollProgress = document.getElementById('scrollProgress');
+  function updateScrollProgress() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    scrollProgress.style.width = progress + '%';
+  }
+
+  // -- Navbar scroll effect --
+  var nav = document.getElementById('nav');
+  function updateNav() {
+    if (window.pageYOffset > 80) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }
+
+  // Combined scroll handler with requestAnimationFrame
+  var scrollTicking = false;
+  window.addEventListener('scroll', function() {
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        updateScrollProgress();
+        updateNav();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+
+  // -- Mobile Navigation --
+  var navToggle = document.getElementById('navToggle');
+  var navLinks = document.getElementById('navLinks');
+
+  navToggle.addEventListener('click', function() {
+    var isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('active');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  navLinks.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('active');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // -- Reveal on Scroll (Intersection Observer) --
+  var revealElements = document.querySelectorAll('.reveal');
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -30px 0px'
+  });
+
+  revealElements.forEach(function(el) {
+    revealObserver.observe(el);
+  });
+
+  // -- Custom Cursor (diamond-shaped, medieval x neon) --
+  var cursorOuter = document.getElementById('cursorOuter');
+  var cursorDot = document.getElementById('cursorDot');
+  var mouseX = 0, mouseY = 0;
+  var outerX = 0, outerY = 0;
+
+  if (window.matchMedia('(hover: hover)').matches) {
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.left = mouseX + 'px';
+      cursorDot.style.top = mouseY + 'px';
+
+      if (!cursorOuter.classList.contains('visible')) {
+        cursorOuter.classList.add('visible');
+        cursorDot.classList.add('visible');
+      }
+    });
+
+    function animateCursor() {
+      outerX += (mouseX - outerX) * 0.1;
+      outerY += (mouseY - outerY) * 0.1;
+      cursorOuter.style.left = outerX + 'px';
+      cursorOuter.style.top = outerY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    var hoverTargets = document.querySelectorAll('a, button, .project-card, .skill-domain, .contact-link, .virtue-tag');
+    hoverTargets.forEach(function(el) {
+      el.addEventListener('mouseenter', function() {
+        cursorOuter.classList.add('hovering');
+      });
+      el.addEventListener('mouseleave', function() {
+        cursorOuter.classList.remove('hovering');
+      });
+    });
+
+    document.addEventListener('mouseleave', function() {
+      cursorOuter.classList.remove('visible');
+      cursorDot.classList.remove('visible');
+    });
+    document.addEventListener('mouseenter', function() {
+      cursorOuter.classList.add('visible');
+      cursorDot.classList.add('visible');
+    });
+  }
+
+  // -- Floating Particles (Gold Dust + Cyan Motes) --
+  var particlesContainer = document.getElementById('particles');
+  var totalParticles = 30;
+
+  // Check for reduced motion preference
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReducedMotion) {
+    for (var i = 0; i < totalParticles; i++) {
+      var particle = document.createElement('div');
+      particle.className = 'particle ' + (Math.random() > 0.4 ? 'gold-dust' : 'cyan-mote');
+
+      var size = Math.random() * 2 + 1;
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      particle.style.animationDelay = (Math.random() * 10) + 's';
+
+      particlesContainer.appendChild(particle);
+    }
+  }
+
+  // -- Smooth Scroll for anchor links --
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        var offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // -- Holographic shimmer on project cards (mouse tracking) --
+  var projectCards = document.querySelectorAll('.project-card');
+  projectCards.forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.background = 'radial-gradient(circle at ' + x + '% ' + y + '%, rgba(0, 245, 255, 0.03), var(--black-surface) 70%)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      card.style.background = 'var(--black-surface)';
+    });
+  });
+
+  // -- Skill domain hover glow --
+  var skillDomains = document.querySelectorAll('.skill-domain');
+  skillDomains.forEach(function(domain) {
+    domain.addEventListener('mousemove', function(e) {
+      var rect = domain.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+      domain.style.background = 'radial-gradient(circle at ' + x + '% ' + y + '%, rgba(212, 175, 55, 0.04), var(--black-surface) 60%)';
+    });
+
+    domain.addEventListener('mouseleave', function() {
+      domain.style.background = 'var(--black-surface)';
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
