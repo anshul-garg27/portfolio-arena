@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review: career.ts - Anshull Garg's Portfolio</title>
+<style>
+  /* ============================================================
+     RESET & FOUNDATIONS
+     ============================================================ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:          #0D1117;
+    --surface:     #161B22;
+    --surface-2:   #1C2128;
+    --border:      #30363D;
+    --border-light:#484F58;
+    --text:        #C9D1D9;
+    --text-muted:  #8B949E;
+    --text-bright: #F0F6FC;
+    --green-bg:    #1A4B2A;
+    --green:       #3FB950;
+    --green-dim:   #238636;
+    --red-bg:      #4B1A1A;
+    --red:         #F85149;
+    --blue:        #58A6FF;
+    --blue-dim:    #1F6FEB;
+    --yellow:      #D29922;
+    --purple:      #BC8CFF;
+    --comment-bg:  #1C2128;
+    --font-mono:   'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    --font-sans:   -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+  /* ============================================================
+     LAYOUT SHELL
+     ============================================================ */
+  .app {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .app { padding: 24px 32px; }
+  }
+
+  /* ============================================================
+     PR HEADER BAR
+     ============================================================ */
+  .pr-header {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    margin-bottom: 16px;
+    overflow: hidden;
+    animation: fadeSlideDown 0.6s ease both;
+  }
+
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .pr-title-row {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pr-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pr-title .pr-number {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .pr-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--green-dim);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .pr-state svg { width: 14px; height: 14px; }
+
+  .pr-meta {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  .pr-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pr-meta-item strong { color: var(--text); font-weight: 600; }
+
+  /* Reviewer avatars */
+  .reviewer-stack {
+    display: flex;
+    align-items: center;
+  }
+
+  .reviewer-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    position: relative;
+    margin-left: -6px;
+    cursor: default;
+    transition: transform 0.2s ease;
+  }
+
+  .reviewer-avatar:first-child { margin-left: 0; }
+  .reviewer-avatar:hover { transform: scale(1.15); z-index: 2; }
+
+  .reviewer-avatar.r1 { background: #1F6FEB; }
+  .reviewer-avatar.r2 { background: #8957E5; }
+  .reviewer-avatar.r3 { background: #DB6D28; }
+
+  .reviewer-check {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    background: var(--green);
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reviewer-check svg { width: 8px; height: 8px; color: #fff; }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab-bar::-webkit-scrollbar { height: 0; }
+
+  .tab {
+    padding: 10px 16px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--text-bright);
+    border-bottom-color: #F78166;
+  }
+
+  .tab-count {
+    background: var(--border);
+    color: var(--text);
+    font-size: 0.6875rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     DIFF FILES
+     ============================================================ */
+  .diff-file {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .diff-file.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .diff-file-header {
+    background: var(--surface);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .diff-file-header:hover { background: var(--surface-2); }
+
+  .diff-chevron {
+    transition: transform 0.2s ease;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .diff-file.collapsed .diff-chevron { transform: rotate(-90deg); }
+  .diff-file.collapsed .diff-body { display: none; }
+
+  .diff-file-icon { color: var(--yellow); flex-shrink: 0; }
+  .diff-file-name { color: var(--text-bright); font-weight: 600; font-family: var(--font-mono); font-size: 0.8125rem; }
+  .diff-file-path { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.75rem; }
+
+  .diff-stats {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .diff-stats .added { color: var(--green); }
+  .diff-stats .removed { color: var(--red); }
+
+  /* Diff hunk header */
+  .diff-hunk {
+    background: rgba(56, 139, 253, 0.1);
+    color: var(--blue);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 6px 16px 6px 72px;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+
+  @media (max-width: 600px) {
+    .diff-hunk { padding-left: 16px; }
+  }
+
+  /* Diff table */
+  .diff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    table-layout: fixed;
+  }
+
+  .diff-table td {
+    padding: 0 16px;
+    vertical-align: top;
+    border: none;
+  }
+
+  .diff-table .line-num {
+    width: 28px;
+    min-width: 28px;
+    padding: 0 8px;
+    text-align: right;
+    color: var(--text-muted);
+    opacity: 0.5;
+    user-select: none;
+    font-size: 0.75rem;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 600px) {
+    .diff-table .line-num { width: 20px; min-width: 20px; padding: 0 4px; font-size: 0.625rem; }
+    .diff-table td { padding: 0 8px; font-size: 0.75rem; }
+  }
+
+  .diff-table .line-sign {
+    width: 16px;
+    min-width: 16px;
+    padding: 0;
+    text-align: center;
+    user-select: none;
+    font-weight: 700;
+  }
+
+  .diff-table .line-code {
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+
+  /* Line types */
+  .diff-line-add .line-num,
+  .diff-line-add .line-sign,
+  .diff-line-add .line-code {
+    background: var(--green-bg);
+  }
+
+  .diff-line-add .line-sign { color: var(--green); }
+  .diff-line-add .line-code .hl { background: rgba(63, 185, 80, 0.25); border-radius: 2px; }
+
+  .diff-line-del .line-num,
+  .diff-line-del .line-sign,
+  .diff-line-del .line-code {
+    background: var(--red-bg);
+  }
+
+  .diff-line-del .line-sign { color: var(--red); }
+  .diff-line-del .line-code .hl { background: rgba(248, 81, 73, 0.25); border-radius: 2px; }
+
+  .diff-line-ctx .line-num,
+  .diff-line-ctx .line-sign,
+  .diff-line-ctx .line-code {
+    background: transparent;
+  }
+
+  /* ============================================================
+     REVIEW COMMENTS
+     ============================================================ */
+  .review-comment {
+    margin: 0;
+    border-top: 1px solid var(--border);
+    background: var(--comment-bg);
+    padding: 0;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+  }
+
+  .review-comment.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .comment-thread {
+    border-left: 3px solid var(--blue);
+    margin: 12px 16px;
+    padding: 12px 16px;
+    background: rgba(22, 27, 34, 0.6);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .comment-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .comment-author {
+    font-weight: 600;
+    color: var(--text-bright);
+    font-size: 0.8125rem;
+  }
+
+  .comment-badge {
+    font-size: 0.6875rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .badge-owner {
+    color: var(--blue);
+    border-color: var(--blue-dim);
+  }
+
+  .badge-approved {
+    color: var(--green);
+    border-color: var(--green-dim);
+  }
+
+  .badge-suggestion {
+    color: var(--yellow);
+    border-color: rgba(210, 153, 34, 0.4);
+  }
+
+  .comment-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .comment-body {
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .comment-body p { margin-bottom: 8px; }
+  .comment-body p:last-child { margin-bottom: 0; }
+
+  .comment-body code {
+    background: rgba(110, 118, 129, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--blue);
+  }
+
+  .comment-body .emoji { font-size: 1.1rem; }
+
+  .comment-reactions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .reaction {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .reaction:hover {
+    border-color: var(--blue);
+    background: rgba(56, 139, 253, 0.1);
+  }
+
+  .reaction.active {
+    border-color: var(--blue-dim);
+    background: rgba(56, 139, 253, 0.15);
+    color: var(--blue);
+  }
+
+  /* Suggestion block */
+  .suggestion-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 8px 0;
+    overflow: hidden;
+  }
+
+  .suggestion-header {
+    background: rgba(210, 153, 34, 0.1);
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    color: var(--yellow);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .suggestion-code {
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--green);
+    background: var(--green-bg);
+  }
+
+  /* ============================================================
+     REVIEW SUMMARY / MERGE SECTION
+     ============================================================ */
+  .merge-section {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    margin-top: 24px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .merge-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .merge-checks {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.875rem;
+  }
+
+  .check-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .check-icon.pass {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .check-icon.pass svg { width: 12px; height: 12px; }
+
+  .check-label { color: var(--text); }
+  .check-detail { color: var(--text-muted); font-size: 0.75rem; margin-left: auto; }
+
+  .merge-action {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .merge-btn {
+    background: var(--green-dim);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .merge-btn:hover {
+    background: var(--green);
+    box-shadow: 0 0 20px rgba(63, 185, 80, 0.3);
+  }
+
+  .merge-btn:active { transform: scale(0.97); }
+
+  .merge-btn svg { width: 18px; height: 18px; }
+
+  .merge-subtitle {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  /* Merged state */
+  .merge-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 20px;
+    text-align: center;
+  }
+
+  .merge-success.show { display: flex; }
+  .merge-action.hidden { display: none; }
+
+  .merge-success-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+
+  .merge-success-icon svg { width: 28px; height: 28px; color: #fff; }
+
+  .merge-success h3 {
+    font-size: 1.25rem;
+    color: var(--text-bright);
+  }
+
+  .merge-success p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    max-width: 400px;
+  }
+
+  .contact-cards {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .contact-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--bg);
+  }
+
+  .contact-card:hover {
+    border-color: var(--blue);
+    background: rgba(56, 139, 253, 0.08);
+    color: var(--blue);
+  }
+
+  .contact-card svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ============================================================
+     CONFETTI CANVAS
+     ============================================================ */
+  #confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ============================================================
+     TIMELINE SIDEBAR (desktop decorative element)
+     ============================================================ */
+  .files-changed-summary {
+    padding: 12px 20px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .files-changed-summary strong { color: var(--text); }
+
+  .diff-bar {
+    display: flex;
+    height: 8px;
+    width: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--border);
+  }
+
+  .diff-bar .green { background: var(--green); }
+  .diff-bar .red { background: var(--red); }
+
+  /* ============================================================
+     CONVERSATION TIMELINE
+     ============================================================ */
+  .timeline-event {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .timeline-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .timeline-dot.green { background: var(--green); }
+  .timeline-dot.blue { background: var(--blue); }
+  .timeline-dot.purple { background: var(--purple); }
+
+  .timeline-event strong { color: var(--text); font-weight: 600; }
+
+  /* ============================================================
+     RESPONSIVE ADJUSTMENTS
+     ============================================================ */
+  @media (max-width: 480px) {
+    .pr-title { font-size: 1rem; }
+    .pr-meta { font-size: 0.75rem; gap: 8px 16px; }
+    .tab { padding: 8px 10px; font-size: 0.75rem; }
+    .comment-thread { margin: 8px 8px; padding: 10px 12px; }
+    .merge-btn { padding: 10px 24px; font-size: 0.875rem; }
+    .contact-card { padding: 6px 10px; font-size: 0.75rem; }
+  }
+
+  /* ============================================================
+     TYPING INDICATOR (for comments appearing)
+     ============================================================ */
+  .typing-indicator {
+    display: inline-flex;
+    gap: 3px;
+    padding: 4px 0;
+  }
+
+  .typing-indicator span {
+    width: 5px;
+    height: 5px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite ease-in-out;
+  }
+
+  .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+  }
+
+  /* Focus visible for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  /* Skip link */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 16px;
+    background: var(--blue);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 10000;
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .skip-link:focus { top: 16px; }
+
+  /* Print styles */
+  @media print {
+    body { background: #fff; color: #000; }
+    .merge-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+<main class="app" id="main-content" role="main">
+
+  <!-- =====================================================
+       PR HEADER
+       ===================================================== -->
+  <header class="pr-header" role="banner">
+    <div class="pr-title-row">
+      <h1 class="pr-title">
+        <span class="pr-state" aria-label="Pull request open">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z"/></svg>
+          Open
+        </span>
+        feat: add Anshull Garg as Software Developer
+        <span class="pr-number">#2024</span>
+      </h1>
+    </div>
+
+    <div class="pr-meta">
+      <div class="pr-meta-item">
+        <strong>anshull-garg</strong> wants to merge <strong>12 commits</strong> into
+        <code style="background:rgba(56,139,253,0.15);color:var(--blue);padding:2px 8px;border-radius:4px;font-size:0.75rem;">main</code>
+        from
+        <code style="background:rgba(56,139,253,0.15);color:var(--blue);padding:2px 8px;border-radius:4px;font-size:0.75rem;">feat/career-progression</code>
+      </div>
+      <div class="pr-meta-item" style="margin-left:auto;">
+        <span>Reviewers:</span>
+        <div class="reviewer-stack" aria-label="3 reviewers, all approved">
+          <div class="reviewer-avatar r1" title="@engineering_manager">EM
+            <span class="reviewer-check"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg></span>
+          </div>
+          <div class="reviewer-avatar r2" title="@tech_lead">TL
+            <span class="reviewer-check"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg></span>
+          </div>
+          <div class="reviewer-avatar r3" title="@principal_engineer">PE
+            <span class="reviewer-check"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="tab-bar" role="tablist" aria-label="Pull request tabs">
+      <button class="tab" role="tab" aria-selected="false">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.93 8.5a4.002 4.002 0 01-7.86 0H.75a.75.75 0 010-1.5h3.32a4.002 4.002 0 017.86 0h3.32a.75.75 0 010 1.5h-3.32zm-1.43-.75a2.5 2.5 0 10-5 0 2.5 2.5 0 005 0z"/></svg>
+        Conversation <span class="tab-count">12</span>
+      </button>
+      <button class="tab" role="tab" aria-selected="false">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 3.25a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zm5.677-.177L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm0 9.5a.75.75 0 100 1.5.75.75 0 000-1.5z"/></svg>
+        Commits <span class="tab-count">12</span>
+      </button>
+      <button class="tab" role="tab" aria-selected="false">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75zM1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16H2.75A1.75 1.75 0 011 14.25V1.75z"/></svg>
+        Checks <span class="tab-count" style="background:var(--green-dim);color:#fff;">8/8</span>
+      </button>
+      <button class="tab active" role="tab" aria-selected="true">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.5 1.75a.75.75 0 00-1.5 0V5H3.75a.75.75 0 000 1.5H7v3.25a.75.75 0 001.5 0V6.5h3.25a.75.75 0 000-1.5H8.5V1.75z"/></svg>
+        Files changed <span class="tab-count">6</span>
+      </button>
+    </nav>
+
+    <div class="files-changed-summary">
+      Showing <strong>6 changed files</strong> with
+      <span class="added" style="color:var(--green);">+42 additions</span> and
+      <span class="removed" style="color:var(--red);">-8 deletions</span>
+      <div class="diff-bar" aria-label="42 additions, 8 deletions">
+        <div class="green" style="width:84%"></div>
+        <div class="red" style="width:16%"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================
+       TIMELINE EVENTS
+       ===================================================== -->
+  <div class="timeline-event" style="animation: fadeSlideDown 0.5s ease 0.2s both;">
+    <span class="timeline-dot green" aria-hidden="true"></span>
+    <span><strong>@engineering_manager</strong> approved these changes &middot; 2 days ago</span>
+  </div>
+  <div class="timeline-event" style="animation: fadeSlideDown 0.5s ease 0.3s both;">
+    <span class="timeline-dot purple" aria-hidden="true"></span>
+    <span><strong>@tech_lead</strong> approved these changes &middot; 1 day ago</span>
+  </div>
+  <div class="timeline-event" style="animation: fadeSlideDown 0.5s ease 0.4s both;">
+    <span class="timeline-dot blue" aria-hidden="true"></span>
+    <span><strong>@principal_engineer</strong> approved these changes &middot; 3 hours ago</span>
+  </div>
+
+  <!-- =====================================================
+       DIFF FILE 1: about.ts
+       ===================================================== -->
+  <article class="diff-file" aria-label="Diff for src/about.ts">
+    <div class="diff-file-header" onclick="toggleDiff(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDiff(this);}">
+      <svg class="diff-chevron" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"/></svg>
+      <svg class="diff-file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75z"/></svg>
+      <span class="diff-file-name">about.ts</span>
+      <span class="diff-file-path">src/core/</span>
+      <span class="diff-stats"><span class="added">+7</span> <span class="removed">-1</span></span>
+    </div>
+    <div class="diff-body">
+      <div class="diff-hunk">@@ -1,1 +1,8 @@</div>
+      <table class="diff-table" role="presentation">
+        <tbody>
+          <tr class="diff-line-add"><td class="line-num">1</td><td class="line-num">1</td><td class="line-sign">+</td><td class="line-code"><span class="hl">export const</span> developer = {</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">2</td><td class="line-sign">+</td><td class="line-code">  name: <span class="hl">"Anshull Garg"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">3</td><td class="line-sign">+</td><td class="line-code">  role: <span class="hl">"Software Developer"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">4</td><td class="line-sign">+</td><td class="line-code">  company: <span class="hl">"Walmart"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">5</td><td class="line-sign">+</td><td class="line-code">  yearsOfExperience: <span class="hl">4</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">6</td><td class="line-sign">+</td><td class="line-code">  passions: <span class="hl">["scalable systems", "clean code", "team growth"]</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">7</td><td class="line-sign">+</td><td class="line-code">  available: <span class="hl">true</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">8</td><td class="line-sign">+</td><td class="line-code">};</td></tr>
+          <tr class="diff-line-del"><td class="line-num">1</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code"><span class="hl">export const developer = null;</span> // TODO: hire someone</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Review Comment 1 -->
+      <div class="review-comment" data-line="3" aria-label="Review comment by engineering manager">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#1F6FEB;" aria-hidden="true">EM</div>
+            <span class="comment-author">@engineering_manager</span>
+            <span class="comment-badge badge-approved">Approved</span>
+            <span class="comment-time">2 days ago</span>
+          </div>
+          <div class="comment-body">
+            <p>Great hire. Anshull consistently delivers clean, tested code. His ability to break down complex requirements into well-structured implementations has been invaluable to the team.</p>
+            <p>He also mentors junior developers effectively -- our team velocity increased <strong>25%</strong> after he established our code review guidelines.</p>
+          </div>
+          <div class="comment-reactions">
+            <button class="reaction active" aria-label="thumbs up, 8 reactions"><span aria-hidden="true">+1</span> 8</button>
+            <button class="reaction" aria-label="heart, 4 reactions"><span aria-hidden="true">&#10084;</span> 4</button>
+            <button class="reaction" aria-label="rocket, 3 reactions"><span aria-hidden="true">&#128640;</span> 3</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =====================================================
+       DIFF FILE 2: skills.json
+       ===================================================== -->
+  <article class="diff-file" aria-label="Diff for src/skills.json">
+    <div class="diff-file-header" onclick="toggleDiff(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDiff(this);}">
+      <svg class="diff-chevron" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"/></svg>
+      <svg class="diff-file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75z"/></svg>
+      <span class="diff-file-name">skills.json</span>
+      <span class="diff-file-path">src/config/</span>
+      <span class="diff-stats"><span class="added">+5</span> <span class="removed">-1</span></span>
+    </div>
+    <div class="diff-body">
+      <div class="diff-hunk">@@ -1,5 +1,9 @@</div>
+      <table class="diff-table" role="presentation">
+        <tbody>
+          <tr class="diff-line-ctx"><td class="line-num">1</td><td class="line-num">1</td><td class="line-sign"></td><td class="line-code">{</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">2</td><td class="line-sign">+</td><td class="line-code">  "frontend": [<span class="hl">"React", "Next.js", "TypeScript", "Tailwind CSS"</span>],</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">3</td><td class="line-sign">+</td><td class="line-code">  "backend": [<span class="hl">"Node.js", "Java", "Python", "GraphQL"</span>],</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">4</td><td class="line-sign">+</td><td class="line-code">  "infrastructure": [<span class="hl">"AWS", "Docker", "Kubernetes", "CI/CD"</span>],</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">5</td><td class="line-sign">+</td><td class="line-code">  "databases": [<span class="hl">"PostgreSQL", "MongoDB", "Redis"</span>],</td></tr>
+          <tr class="diff-line-del"><td class="line-num">2</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code">  "experience": <span class="hl">"insufficient"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">6</td><td class="line-sign">+</td><td class="line-code">  "experience": <span class="hl">"exceptional"</span>,</td></tr>
+          <tr class="diff-line-ctx"><td class="line-num">3</td><td class="line-num">7</td><td class="line-sign"></td><td class="line-code">}</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Review Comment 2 -->
+      <div class="review-comment" aria-label="Review comment by tech lead">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#8957E5;" aria-hidden="true">TL</div>
+            <span class="comment-author">@tech_lead</span>
+            <span class="comment-badge badge-approved">Approved</span>
+            <span class="comment-time">1 day ago</span>
+          </div>
+          <div class="comment-body">
+            <p>The refactor from <code>"insufficient"</code> to <code>"exceptional"</code> checks out. Full-stack proficiency verified across multiple production systems.</p>
+            <p>Worth noting: Anshull architected our migration from a monolith to microservices, reducing deployment times from <strong>45 minutes to under 5</strong>.</p>
+          </div>
+          <div class="comment-reactions">
+            <button class="reaction active" aria-label="thumbs up, 12 reactions"><span aria-hidden="true">+1</span> 12</button>
+            <button class="reaction active" aria-label="rocket, 6 reactions"><span aria-hidden="true">&#128640;</span> 6</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggestion sub-comment -->
+      <div class="review-comment" aria-label="Suggestion by tech lead">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#8957E5;" aria-hidden="true">TL</div>
+            <span class="comment-author">@tech_lead</span>
+            <span class="comment-badge badge-suggestion">Suggestion</span>
+            <span class="comment-time">1 day ago</span>
+          </div>
+          <div class="comment-body">
+            <p>Consider adding the methodologies too:</p>
+            <div class="suggestion-block">
+              <div class="suggestion-header">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.5 1.75a.75.75 0 00-1.5 0V5H3.75a.75.75 0 000 1.5H7v3.25a.75.75 0 001.5 0V6.5h3.25a.75.75 0 000-1.5H8.5V1.75z"/></svg>
+                Suggested change
+              </div>
+              <div class="suggestion-code">+ "methodologies": ["Agile", "TDD", "System Design", "Performance Tuning"]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =====================================================
+       DIFF FILE 3: projects/checkout.ts
+       ===================================================== -->
+  <article class="diff-file" aria-label="Diff for projects/checkout.ts">
+    <div class="diff-file-header" onclick="toggleDiff(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDiff(this);}">
+      <svg class="diff-chevron" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"/></svg>
+      <svg class="diff-file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75z"/></svg>
+      <span class="diff-file-name">checkout.ts</span>
+      <span class="diff-file-path">src/projects/</span>
+      <span class="diff-stats"><span class="added">+12</span> <span class="removed">-3</span></span>
+    </div>
+    <div class="diff-body">
+      <div class="diff-hunk">@@ -1,6 +1,15 @@ // Walmart Checkout Optimization</div>
+      <table class="diff-table" role="presentation">
+        <tbody>
+          <tr class="diff-line-ctx"><td class="line-num">1</td><td class="line-num">1</td><td class="line-sign"></td><td class="line-code">/**</td></tr>
+          <tr class="diff-line-ctx"><td class="line-num">2</td><td class="line-num">2</td><td class="line-sign"></td><td class="line-code"> * Walmart Checkout Platform</td></tr>
+          <tr class="diff-line-del"><td class="line-num">3</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code"> * Status: <span class="hl">needs optimization</span></td></tr>
+          <tr class="diff-line-del"><td class="line-num">4</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code"> * Performance: <span class="hl">baseline</span></td></tr>
+          <tr class="diff-line-del"><td class="line-num">5</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code"> * Conversion: <span class="hl">standard</span></td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">3</td><td class="line-sign">+</td><td class="line-code"> * Status: <span class="hl">production - optimized</span></td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">4</td><td class="line-sign">+</td><td class="line-code"> * <span class="hl">Reduced latency by 40%</span></td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">5</td><td class="line-sign">+</td><td class="line-code"> * <span class="hl">Increased conversion by 15%</span></td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">6</td><td class="line-sign">+</td><td class="line-code"> * <span class="hl">Serves 240M+ customers weekly</span></td></tr>
+          <tr class="diff-line-ctx"><td class="line-num">6</td><td class="line-num">7</td><td class="line-sign"></td><td class="line-code"> */</td></tr>
+          <tr class="diff-line-ctx"><td class="line-num">7</td><td class="line-num">8</td><td class="line-sign"></td><td class="line-code"></td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">9</td><td class="line-sign">+</td><td class="line-code"><span class="hl">export class CheckoutOptimizer</span> {</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">10</td><td class="line-sign">+</td><td class="line-code">  private cache = new <span class="hl">DistributedCache</span>();</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">11</td><td class="line-sign">+</td><td class="line-code">  private metrics = new <span class="hl">PerformanceTracker</span>();</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">12</td><td class="line-sign">+</td><td class="line-code"></td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">13</td><td class="line-sign">+</td><td class="line-code">  async <span class="hl">processCheckout</span>(cart: Cart): Promise&lt;Order&gt; {</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">14</td><td class="line-sign">+</td><td class="line-code">    return this.pipeline(cart)</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">15</td><td class="line-sign">+</td><td class="line-code">      .validate().price().fulfill();</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">16</td><td class="line-sign">+</td><td class="line-code">  }</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">17</td><td class="line-sign">+</td><td class="line-code">}</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Review Comment 3 -->
+      <div class="review-comment" aria-label="Review comment by principal engineer">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#DB6D28;" aria-hidden="true">PE</div>
+            <span class="comment-author">@principal_engineer</span>
+            <span class="comment-badge badge-approved">Approved</span>
+            <span class="comment-time">3 hours ago</span>
+          </div>
+          <div class="comment-body">
+            <p><span class="emoji">&#128293;</span> LGTM. Ship it.</p>
+            <p>The latency reduction alone saved an estimated <strong>$2.3M annually</strong> in infrastructure costs. The pipeline pattern here is clean and extensible. This is production-grade engineering at scale.</p>
+          </div>
+          <div class="comment-reactions">
+            <button class="reaction active" aria-label="fire, 15 reactions"><span aria-hidden="true">&#128293;</span> 15</button>
+            <button class="reaction active" aria-label="rocket, 9 reactions"><span aria-hidden="true">&#128640;</span> 9</button>
+            <button class="reaction" aria-label="eyes, 7 reactions"><span aria-hidden="true">&#128064;</span> 7</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =====================================================
+       DIFF FILE 4: tests/coverage.ts
+       ===================================================== -->
+  <article class="diff-file" aria-label="Diff for tests/coverage.ts">
+    <div class="diff-file-header" onclick="toggleDiff(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDiff(this);}">
+      <svg class="diff-chevron" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"/></svg>
+      <svg class="diff-file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75z"/></svg>
+      <span class="diff-file-name">coverage.ts</span>
+      <span class="diff-file-path">src/tests/</span>
+      <span class="diff-stats"><span class="added">+6</span> <span class="removed">-2</span></span>
+    </div>
+    <div class="diff-body">
+      <div class="diff-hunk">@@ -1,4 +1,8 @@ // Quality Metrics</div>
+      <table class="diff-table" role="presentation">
+        <tbody>
+          <tr class="diff-line-ctx"><td class="line-num">1</td><td class="line-num">1</td><td class="line-sign"></td><td class="line-code">export const qualityMetrics = {</td></tr>
+          <tr class="diff-line-del"><td class="line-num">2</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code">  testCoverage: <span class="hl">"unknown"</span>,</td></tr>
+          <tr class="diff-line-del"><td class="line-num">3</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code">  codeReviewRate: <span class="hl">0</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">2</td><td class="line-sign">+</td><td class="line-code">  testCoverage: <span class="hl">"94%"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">3</td><td class="line-sign">+</td><td class="line-code">  codeReviewRate: <span class="hl">100</span>, // percent</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">4</td><td class="line-sign">+</td><td class="line-code">  bugsInProduction: <span class="hl">0</span>, // last quarter</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">5</td><td class="line-sign">+</td><td class="line-code">  deploymentFrequency: <span class="hl">"daily"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">6</td><td class="line-sign">+</td><td class="line-code">  avgPRMergeTime: <span class="hl">"&lt; 4 hours"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">7</td><td class="line-sign">+</td><td class="line-code">  incidentResponseTime: <span class="hl">"&lt; 15 minutes"</span>,</td></tr>
+          <tr class="diff-line-ctx"><td class="line-num">4</td><td class="line-num">8</td><td class="line-sign"></td><td class="line-code">};</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Review Comment 4 -->
+      <div class="review-comment" aria-label="Review comment by engineering manager">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#1F6FEB;" aria-hidden="true">EM</div>
+            <span class="comment-author">@engineering_manager</span>
+            <span class="comment-badge badge-approved">Approved</span>
+            <span class="comment-time">2 days ago</span>
+          </div>
+          <div class="comment-body">
+            <p><code>bugsInProduction: 0</code> is not a typo. Anshull's testing discipline is exceptional. He introduced our integration test framework and championed shift-left testing practices.</p>
+          </div>
+          <div class="comment-reactions">
+            <button class="reaction active" aria-label="100, 11 reactions"><span aria-hidden="true">&#128175;</span> 11</button>
+            <button class="reaction" aria-label="party, 5 reactions"><span aria-hidden="true">&#127881;</span> 5</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =====================================================
+       DIFF FILE 5: experience.ts
+       ===================================================== -->
+  <article class="diff-file" aria-label="Diff for src/experience.ts">
+    <div class="diff-file-header" onclick="toggleDiff(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDiff(this);}">
+      <svg class="diff-chevron" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"/></svg>
+      <svg class="diff-file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75z"/></svg>
+      <span class="diff-file-name">experience.ts</span>
+      <span class="diff-file-path">src/career/</span>
+      <span class="diff-stats"><span class="added">+8</span> <span class="removed">-1</span></span>
+    </div>
+    <div class="diff-body">
+      <div class="diff-hunk">@@ -0,0 +1,10 @@ // Career Timeline</div>
+      <table class="diff-table" role="presentation">
+        <tbody>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">1</td><td class="line-sign">+</td><td class="line-code"><span class="hl">export const</span> career: Role[] = [</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">2</td><td class="line-sign">+</td><td class="line-code">  {</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">3</td><td class="line-sign">+</td><td class="line-code">    company: <span class="hl">"Walmart"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">4</td><td class="line-sign">+</td><td class="line-code">    title: <span class="hl">"Software Developer"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">5</td><td class="line-sign">+</td><td class="line-code">    period: <span class="hl">"2020 - Present"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">6</td><td class="line-sign">+</td><td class="line-code">    impact: [</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">7</td><td class="line-sign">+</td><td class="line-code">      <span class="hl">"Led checkout platform optimization (240M+ weekly users)"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">8</td><td class="line-sign">+</td><td class="line-code">      <span class="hl">"Architected monolith-to-microservices migration"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">9</td><td class="line-sign">+</td><td class="line-code">      <span class="hl">"Reduced deployment pipeline from 45min to &lt;5min"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">10</td><td class="line-sign">+</td><td class="line-code">      <span class="hl">"Mentored 6 engineers, team velocity +25%"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">11</td><td class="line-sign">+</td><td class="line-code">    ],</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">12</td><td class="line-sign">+</td><td class="line-code">  },</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">13</td><td class="line-sign">+</td><td class="line-code">];</td></tr>
+          <tr class="diff-line-del"><td class="line-num">1</td><td class="line-num"></td><td class="line-sign">-</td><td class="line-code"><span class="hl">export const career: Role[] = [];</span> // no experience yet</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Review Comment 5 -->
+      <div class="review-comment" aria-label="Review comment by tech lead">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#8957E5;" aria-hidden="true">TL</div>
+            <span class="comment-author">@tech_lead</span>
+            <span class="comment-badge badge-approved">Approved</span>
+            <span class="comment-time">1 day ago</span>
+          </div>
+          <div class="comment-body">
+            <p>Each bullet point here is backed by measurable outcomes. That microservices migration was particularly impressive -- zero downtime cutover with a canary deployment strategy he designed himself.</p>
+          </div>
+          <div class="comment-reactions">
+            <button class="reaction active" aria-label="thumbs up, 7 reactions"><span aria-hidden="true">+1</span> 7</button>
+            <button class="reaction" aria-label="heart, 3 reactions"><span aria-hidden="true">&#10084;</span> 3</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =====================================================
+       DIFF FILE 6: contact.ts
+       ===================================================== -->
+  <article class="diff-file" aria-label="Diff for src/contact.ts">
+    <div class="diff-file-header" onclick="toggleDiff(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDiff(this);}">
+      <svg class="diff-chevron" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"/></svg>
+      <svg class="diff-file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V4.664a.25.25 0 00-.073-.177l-2.914-2.914a.25.25 0 00-.177-.073H2.75z"/></svg>
+      <span class="diff-file-name">contact.ts</span>
+      <span class="diff-file-path">src/</span>
+      <span class="diff-stats"><span class="added">+4</span> <span class="removed">-0</span></span>
+    </div>
+    <div class="diff-body">
+      <div class="diff-hunk">@@ -0,0 +1,6 @@</div>
+      <table class="diff-table" role="presentation">
+        <tbody>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">1</td><td class="line-sign">+</td><td class="line-code"><span class="hl">export const</span> contact = {</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">2</td><td class="line-sign">+</td><td class="line-code">  email: <span class="hl">"anshull.garg@email.com"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">3</td><td class="line-sign">+</td><td class="line-code">  linkedin: <span class="hl">"linkedin.com/in/anshull-garg"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">4</td><td class="line-sign">+</td><td class="line-code">  github: <span class="hl">"github.com/anshull-garg"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">5</td><td class="line-sign">+</td><td class="line-code">  status: <span class="hl">"open to opportunities"</span>,</td></tr>
+          <tr class="diff-line-add"><td class="line-num"></td><td class="line-num">6</td><td class="line-sign">+</td><td class="line-code">};</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Review Comment 6 -->
+      <div class="review-comment" aria-label="Review comment by principal engineer">
+        <div class="comment-thread">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:#DB6D28;" aria-hidden="true">PE</div>
+            <span class="comment-author">@principal_engineer</span>
+            <span class="comment-badge badge-approved">Approved</span>
+            <span class="comment-time">3 hours ago</span>
+          </div>
+          <div class="comment-body">
+            <p>Any team would be lucky to merge this developer. <code>status: "open to opportunities"</code> won't last long. Act fast. <span class="emoji">&#9201;</span></p>
+          </div>
+          <div class="comment-reactions">
+            <button class="reaction active" aria-label="thumbs up, 20 reactions"><span aria-hidden="true">+1</span> 20</button>
+            <button class="reaction active" aria-label="heart, 14 reactions"><span aria-hidden="true">&#10084;</span> 14</button>
+            <button class="reaction active" aria-label="rocket, 10 reactions"><span aria-hidden="true">&#128640;</span> 10</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =====================================================
+       MERGE SECTION
+       ===================================================== -->
+  <section class="merge-section" aria-label="Merge pull request">
+    <div class="merge-checks">
+      <div class="check-item">
+        <div class="check-icon pass" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+        </div>
+        <span class="check-label">All conversations resolved</span>
+        <span class="check-detail">12 / 12</span>
+      </div>
+      <div class="check-item">
+        <div class="check-icon pass" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+        </div>
+        <span class="check-label">3 of 3 reviewers approved</span>
+        <span class="check-detail">Required</span>
+      </div>
+      <div class="check-item">
+        <div class="check-icon pass" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+        </div>
+        <span class="check-label">All CI/CD checks passed</span>
+        <span class="check-detail">8 / 8</span>
+      </div>
+      <div class="check-item">
+        <div class="check-icon pass" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+        </div>
+        <span class="check-label">No merge conflicts</span>
+        <span class="check-detail">Ready</span>
+      </div>
+    </div>
+
+    <div class="merge-action" id="merge-action">
+      <button class="merge-btn" id="merge-btn" aria-label="Merge pull request - hire Anshull Garg">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218zM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm8-9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zM4.25 3.5a.75.75 0 1 0 0-.998.75.75 0 0 0 0 .998z"/></svg>
+        Merge pull request
+      </button>
+      <span class="merge-subtitle">This will add Anshull Garg to your team</span>
+    </div>
+
+    <div class="merge-success" id="merge-success">
+      <div class="merge-success-icon" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218zM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm8-9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zM4.25 3.5a.75.75 0 1 0 0-.998.75.75 0 0 0 0 .998z"/></svg>
+      </div>
+      <h3>Pull request successfully merged and closed</h3>
+      <p>Branch <code style="background:rgba(188,140,255,0.15);color:var(--purple);padding:2px 8px;border-radius:4px;font-size:0.8125rem;">feat/career-progression</code> has been merged into <code style="background:rgba(56,139,253,0.15);color:var(--blue);padding:2px 8px;border-radius:4px;font-size:0.8125rem;">your-team</code></p>
+      <p style="color:var(--text-bright);font-size:1rem;font-weight:600;">Let's build something great together.</p>
+      <div class="contact-cards">
+        <a href="mailto:anshull.garg@email.com" class="contact-card">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5C0 2.784.784 2 1.75 2zM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V5.809L8.38 9.397a.75.75 0 01-.76 0L1.5 5.809v6.442zm13-8.181v-.32a.25.25 0 00-.25-.25H1.75a.25.25 0 00-.25.25v.32L8 7.88l6.5-3.81z"/></svg>
+          Email
+        </a>
+        <a href="https://linkedin.com/in/anshull-garg" target="_blank" rel="noopener noreferrer" class="contact-card">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/anshull-garg" target="_blank" rel="noopener noreferrer" class="contact-card">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+        <a href="#" class="contact-card" onclick="event.preventDefault();navigator.clipboard&&navigator.clipboard.writeText('anshull.garg@email.com').then(function(){this.textContent='Copied!'}.bind(this));">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"/></svg>
+          Copy Email
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:32px 16px 24px;color:var(--text-muted);font-size:0.75rem;">
+    <p>Built with semantic HTML, zero dependencies, and attention to detail.</p>
+    <p style="margin-top:4px;">Anshull Garg &middot; 2024</p>
+  </footer>
+
+</main>
+
+<script>
+(function() {
+  'use strict';
+
+  // ====================================================
+  // Intersection Observer: animate elements into view
+  // ====================================================
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -40px 0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe diff files
+  document.querySelectorAll('.diff-file').forEach(function(file, i) {
+    file.style.transitionDelay = (i * 0.08) + 's';
+    observer.observe(file);
+  });
+
+  // Observe review comments
+  document.querySelectorAll('.review-comment').forEach(function(comment, i) {
+    comment.style.transitionDelay = (0.15 + i * 0.06) + 's';
+    observer.observe(comment);
+  });
+
+  // Observe merge section
+  var mergeSection = document.querySelector('.merge-section');
+  if (mergeSection) observer.observe(mergeSection);
+
+  // ====================================================
+  // Toggle diff file collapse
+  // ====================================================
+  window.toggleDiff = function(header) {
+    var file = header.closest('.diff-file');
+    file.classList.toggle('collapsed');
+    var isExpanded = !file.classList.contains('collapsed');
+    header.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  };
+
+  // ====================================================
+  // Reaction button toggle
+  // ====================================================
+  document.querySelectorAll('.reaction').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      this.classList.toggle('active');
+      var text = this.textContent.trim();
+      var parts = text.split(' ');
+      if (parts.length === 2) {
+        var count = parseInt(parts[1], 10);
+        if (this.classList.contains('active')) {
+          count++;
+        } else {
+          count--;
+        }
+        // Rebuild button content preserving emoji
+        var emoji = this.querySelector('span');
+        if (emoji) {
+          this.innerHTML = '';
+          var span = document.createElement('span');
+          span.setAttribute('aria-hidden', 'true');
+          span.textContent = emoji.textContent;
+          this.appendChild(span);
+          this.appendChild(document.createTextNode(' ' + count));
+        }
+      }
+    });
+  });
+
+  // ====================================================
+  // Merge button + confetti
+  // ====================================================
+  var mergeBtn = document.getElementById('merge-btn');
+  var mergeAction = document.getElementById('merge-action');
+  var mergeSuccess = document.getElementById('merge-success');
+  var hasMerged = false;
+
+  if (mergeBtn) {
+    mergeBtn.addEventListener('click', function() {
+      if (hasMerged) return;
+      hasMerged = true;
+
+      // Animate button
+      mergeBtn.textContent = 'Merging...';
+      mergeBtn.style.opacity = '0.7';
+      mergeBtn.style.pointerEvents = 'none';
+
+      setTimeout(function() {
+        mergeAction.classList.add('hidden');
+        mergeSuccess.classList.add('show');
+
+        // Update PR state badge
+        var stateBadge = document.querySelector('.pr-state');
+        if (stateBadge) {
+          stateBadge.style.background = '#8957E5';
+          stateBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218zM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm8-9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zM4.25 3.5a.75.75 0 1 0 0-.998.75.75 0 0 0 0 .998z"/></svg> Merged';
+        }
+
+        // Launch confetti
+        launchConfetti();
+
+        // Scroll to success
+        mergeSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 1200);
+    });
+  }
+
+  // ====================================================
+  // Confetti engine (lightweight, no dependencies)
+  // ====================================================
+  function launchConfetti() {
+    var canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var colors = ['#3FB950', '#58A6FF', '#BC8CFF', '#F85149', '#D29922', '#F78166', '#FF7B72'];
+    var particles = [];
+    var particleCount = 150;
+
+    for (var i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 4,
+        h: Math.random() * 6 + 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 2,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 10,
+        opacity: 1,
+        decay: Math.random() * 0.005 + 0.002
+      });
+    }
+
+    var animationId;
+    var startTime = Date.now();
+
+    function animate() {
+      var elapsed = Date.now() - startTime;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      var allDone = true;
+
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (p.opacity <= 0) continue;
+        allDone = false;
+
+        p.x += p.vx;
+        p.vy += 0.05; // gravity
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+
+        if (elapsed > 2000) {
+          p.opacity -= p.decay * 3;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+
+      if (allDone || elapsed > 5000) {
+        cancelAnimationFrame(animationId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    animationId = requestAnimationFrame(animate);
+
+    // Handle resize during animation
+    function onResize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', onResize);
+    setTimeout(function() {
+      window.removeEventListener('resize', onResize);
+    }, 5000);
+  }
+
+  // ====================================================
+  // Keyboard navigation for tab bar (visual only)
+  // ====================================================
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // ====================================================
+  // Prefers reduced motion: disable animations
+  // ====================================================
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.diff-file, .review-comment, .merge-section').forEach(function(el) {
+      el.style.transition = 'none';
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.classList.add('visible');
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
