@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>anCAPTCHA Verification | Anshull Garg Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Engineer at Walmart Global Tech. Prove you're human and discover a developer who's REAL.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===== RESET & VARIABLES ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f0f0f0;
+  --bg-white: #ffffff;
+  --bg-captcha: #f9f9f9;
+  --border: #d3d3d3;
+  --border-dark: #bbb;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --text-muted: #9aa0a6;
+  --blue: #4285f4;
+  --blue-dark: #1a73e8;
+  --green: #34a853;
+  --green-dark: #1e8e3e;
+  --green-light: #e6f4ea;
+  --red: #ea4335;
+  --red-light: #fce8e6;
+  --yellow: #fbbc04;
+  --captcha-header: #4285f4;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+  --shadow-xl: 0 8px 40px rgba(0,0,0,0.2);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+  --font-body: 'Roboto', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ===== BACKGROUND PATTERN (subtle grid like reCAPTCHA pages) ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(0,0,0,0.05);
+  z-index: 1000;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  transition: width 0.6s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ===== TOP BRANDING ===== */
+.top-brand {
+  text-align: center;
+  padding: 40px 20px 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.top-brand .brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.top-brand .brand-logo .an {
+  color: var(--blue);
+}
+
+.top-brand .brand-logo .captcha-text {
+  text-transform: uppercase;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.top-brand .brand-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.verification-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(66, 133, 244, 0.08);
+  color: var(--blue);
+  transition: all 0.5s ease;
+}
+
+.verification-status.complete {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--green);
+}
+
+.verification-status .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: pulse 2s infinite;
+}
+
+.verification-status.complete .status-dot {
+  background: var(--green);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ===== MAIN CONTAINER ===== */
+.main-container {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== CAPTCHA CARD BASE ===== */
+.captcha-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 32px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all 0.5s ease;
+  opacity: 1;
+}
+
+.captcha-card.locked {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: grayscale(0.3);
+  transform: scale(0.98);
+}
+
+.captcha-card.solved {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green), 0 4px 20px rgba(52, 168, 83, 0.15);
+}
+
+.captcha-card.active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue), var(--shadow-lg);
+  transform: scale(1);
+}
+
+/* ===== CAPTCHA HEADER ===== */
+.captcha-header {
+  background: var(--captcha-header);
+  color: white;
+  padding: 16px 20px;
+  position: relative;
+}
+
+.captcha-header h3 {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.captcha-header .captcha-instruction {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.captcha-header .captcha-sub {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.captcha-header .challenge-number {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.2);
+  padding: 2px 10px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ===== CAPTCHA BODY ===== */
+.captcha-body {
+  padding: 16px;
+  background: var(--bg-captcha);
+}
+
+/* ===== CAPTCHA FOOTER ===== */
+.captcha-footer {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  background: var(--bg-white);
+}
+
+.captcha-footer .footer-icons {
+  display: flex;
+  gap: 8px;
+}
+
+.captcha-footer .footer-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.captcha-footer .footer-icon:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.verify-btn {
+  padding: 8px 24px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.verify-btn:hover {
+  background: var(--blue-dark);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.verify-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.verify-btn.verified {
+  background: var(--green);
+}
+
+/* ===== SOLVED OVERLAY ===== */
+.solved-overlay {
+  display: none;
+  padding: 16px 20px;
+  background: var(--green-light);
+  border-top: 1px solid rgba(52, 168, 83, 0.2);
+  align-items: center;
+  gap: 12px;
+}
+
+.solved-overlay.show {
+  display: flex;
+}
+
+.solved-check {
+  width: 32px;
+  height: 32px;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: checkPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+.solved-check svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: white;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.solved-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--green-dark);
+}
+
+.solved-text span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ====================================================================
+   CHALLENGE 1: SELECT REACT PROJECTS (Image Grid)
+   ==================================================================== */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.image-grid .grid-tile {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  user-select: none;
+}
+
+.grid-tile .tile-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.grid-tile .tile-label {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.9;
+  line-height: 1.2;
+}
+
+.grid-tile::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.grid-tile:hover::after {
+  opacity: 1;
+}
+
+.grid-tile.selected::after {
+  opacity: 1;
+  background: var(--blue);
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--blue);
+}
+
+.grid-tile.selected::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  z-index: 2;
+}
+
+.grid-tile:hover {
+  filter: brightness(1.1);
+}
+
+.grid-tile.selected {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+/* Tile colors - project tiles get techy gradients */
+.tile-react { background: linear-gradient(135deg, #61dafb22, #20232a); background-color: #20232a; }
+.tile-ecom { background: linear-gradient(135deg, #0071dc, #004c91); }
+.tile-api { background: linear-gradient(135deg, #68a063, #3c873a); }
+.tile-food { background: linear-gradient(135deg, #ff6b35, #f7c59f); }
+.tile-landscape { background: linear-gradient(135deg, #56ab2f, #a8e063); }
+.tile-music { background: linear-gradient(135deg, #1db954, #191414); }
+.tile-dashboard { background: linear-gradient(135deg, #667eea, #764ba2); }
+.tile-pet { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.tile-car { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+
+/* ====================================================================
+   CHALLENGE 2: TYPE DISTORTED TEXT
+   ==================================================================== */
+.distorted-text-container {
+  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.distorted-text-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.02) 3px,
+      rgba(0,0,0,0.02) 4px
+    );
+  pointer-events: none;
+}
+
+.distorted-text {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+.distorted-text .char {
+  display: inline-block;
+  animation: wave 3s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes wave {
+  0%, 100% { transform: translateY(0) rotate(0deg) skewX(0deg); }
+  25% { transform: translateY(-8px) rotate(-5deg) skewX(3deg); }
+  50% { transform: translateY(4px) rotate(3deg) skewX(-2deg); }
+  75% { transform: translateY(-4px) rotate(-2deg) skewX(1deg); }
+}
+
+/* Noise lines over text */
+.distorted-text-container .noise-line {
+  position: absolute;
+  height: 2px;
+  background: rgba(0,0,0,0.15);
+  left: 10%;
+  right: 10%;
+  transform: rotate(var(--rot));
+  top: var(--top);
+  pointer-events: none;
+}
+
+.text-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.text-input-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.text-input-row input:focus {
+  border-color: var(--blue);
+}
+
+.text-input-row input.error {
+  border-color: var(--red);
+  background: var(--red-light);
+  animation: shake 0.4s;
+}
+
+.text-input-row input.success {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.refresh-captcha-btn {
+  padding: 10px;
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.refresh-captcha-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* ====================================================================
+   CHALLENGE 3: CHECKBOX (I'm ready to hire)
+   ==================================================================== */
+.checkbox-challenge {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.checkbox-challenge:hover {
+  border-color: #aaa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.captcha-checkbox {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #c1c1c1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+  position: relative;
+  background: white;
+}
+
+.captcha-checkbox.checking {
+  border-color: var(--blue);
+}
+
+.captcha-checkbox.checking::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--blue);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.captcha-checkbox.checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.captcha-checkbox.checked svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.captcha-checkbox svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: white;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s;
+}
+
+.checkbox-label {
+  font-size: 15px;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.checkbox-brand {
+  margin-left: auto;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.checkbox-brand .brand-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
+.checkbox-brand .brand-links {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* ====================================================================
+   CHALLENGE 4: SKILLS GRID
+   ==================================================================== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.skills-grid .skill-tile {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: white;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+  position: relative;
+  text-align: center;
+  padding: 4px;
+}
+
+.skill-tile .skill-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.skill-tile .skill-name {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.1;
+}
+
+.skill-tile:hover {
+  background: #f0f4ff;
+}
+
+.skill-tile.selected {
+  border-color: var(--blue);
+  background: rgba(66, 133, 244, 0.05);
+}
+
+.skill-tile.selected::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  background: var(--blue);
+  border-radius: 50%;
+}
+
+.skill-tile.selected::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  z-index: 2;
+}
+
+.skill-tile.correct {
+  border-color: var(--green);
+  background: rgba(52, 168, 83, 0.08);
+}
+
+.skill-tile.wrong {
+  border-color: var(--red);
+  background: rgba(234, 67, 53, 0.08);
+  animation: shake 0.3s;
+}
+
+/* ====================================================================
+   CHALLENGE 5: SLIDER / EXPERIENCE
+   ==================================================================== */
+.slider-challenge {
+  text-align: center;
+}
+
+.experience-equation {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.equation-part {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+.equation-answer {
+  min-width: 120px;
+  padding: 8px 16px;
+  background: #fff9e6;
+  border: 2px dashed var(--yellow);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: all 0.3s;
+}
+
+.equation-answer.solved {
+  background: var(--green-light);
+  border-color: var(--green);
+  border-style: solid;
+  color: var(--green-dark);
+}
+
+.slider-track {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin: 16px 0;
+}
+
+.slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #e8eaed 0%, var(--blue) 50%, var(--green) 100%);
+  border-radius: 4px;
+  outline: none;
+  margin-top: 20px;
+}
+
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.15s;
+}
+
+.slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.slider-input::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.experience-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.experience-items.show {
+  opacity: 1;
+}
+
+.exp-item {
+  padding: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: all 0.3s;
+}
+
+.exp-item .exp-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue);
+  font-family: var(--font-mono);
+}
+
+.exp-item .exp-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* ====================================================================
+   REVEALED CONTENT SECTIONS
+   ==================================================================== */
+.revealed-section {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s, padding 0.5s;
+  opacity: 0;
+  padding: 0 16px;
+}
+
+.revealed-section.show {
+  max-height: 2000px;
+  opacity: 1;
+  padding: 20px 16px;
+}
+
+.revealed-section .section-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--green);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.revealed-section .section-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.revealed-section h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.revealed-section p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.project-cards {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.project-card {
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--blue);
+}
+
+.project-card h5 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.project-card .project-tech {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.project-card .tech-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(66, 133, 244, 0.08);
+  color: var(--blue);
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.project-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Skills list in revealed section */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.skills-list .skill-badge {
+  padding: 6px 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-badge .proficiency {
+  width: 40px;
+  height: 4px;
+  background: #e8eaed;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-badge .proficiency-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 2px;
+}
+
+/* Contact in revealed section */
+.contact-grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.contact-item {
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.contact-item:hover {
+  border-color: var(--blue);
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.1);
+  transform: translateX(4px);
+}
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(66, 133, 244, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.contact-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.contact-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Experience items in revealed section */
+.timeline-items {
+  margin-top: 12px;
+}
+
+.timeline-item {
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--green);
+  margin-bottom: 8px;
+}
+
+.timeline-item h5 {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.timeline-item .company {
+  font-size: 13px;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.timeline-item .dates {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.timeline-item p {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* ====================================================================
+   FINAL VERIFICATION
+   ==================================================================== */
+.final-verification {
+  text-align: center;
+  padding: 40px 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.final-verification.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.final-check-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--green);
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 8px rgba(52, 168, 83, 0.15), 0 0 0 16px rgba(52, 168, 83, 0.08);
+  animation: finalPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform: scale(0);
+}
+
+@keyframes finalPop {
+  to { transform: scale(1); }
+}
+
+.final-check-circle svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: white;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.final-verification h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin-bottom: 8px;
+}
+
+.final-verification p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 400px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+
+.final-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto 24px;
+}
+
+.final-stat {
+  padding: 12px;
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.final-stat .stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--green);
+  font-family: var(--font-mono);
+}
+
+.final-stat .stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.final-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(52, 168, 83, 0.3);
+}
+
+.final-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
+}
+
+/* ===== BOTTOM BRANDING ===== */
+.bottom-brand {
+  text-align: center;
+  padding: 30px 20px 40px;
+  font-size: 12px;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+}
+
+.bottom-brand .brand-shield {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.bottom-brand .brand-shield svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== ERROR TOAST ===== */
+.error-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #333;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.error-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.error-toast.success {
+  background: var(--green);
+}
+
+.error-toast.error {
+  background: var(--red);
+}
+
+/* ===== CONFETTI CANVAS ===== */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .main-container {
+    padding: 12px;
+  }
+
+  .captcha-header .captcha-instruction {
+    font-size: 18px;
+  }
+
+  .distorted-text {
+    font-size: 28px;
+    letter-spacing: 3px;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .final-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .experience-equation {
+    font-size: 16px;
+  }
+
+  .equation-part, .equation-answer {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .checkbox-challenge {
+    flex-wrap: wrap;
+  }
+
+  .checkbox-brand {
+    margin-left: 44px;
+    margin-top: -8px;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.grid-tile:focus-visible,
+.skill-tile:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Top Branding -->
+<header class="top-brand">
+  <div class="brand-logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="6" fill="#4285f4"/>
+      <path d="M8 22V14L16 8L24 14V22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13 22V17H19V22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span><span class="an">an</span><span class="captcha-text">CAPTCHA</span></span>
+  </div>
+  <div class="brand-sub">Portfolio Verification System v3.2.1</div>
+  <div class="verification-status" id="verificationStatus">
+    <span class="status-dot"></span>
+    <span id="statusText">Verification in progress... (0/5)</span>
+  </div>
+</header>
+
+<!-- Main Container -->
+<main class="main-container">
+
+  <!-- ============================================================
+       CHALLENGE 1: SELECT REACT PROJECTS
+       ============================================================ -->
+  <div class="captcha-card active" id="challenge1" role="region" aria-label="Challenge 1: Select React projects">
+    <div class="captcha-header">
+      <span class="challenge-number">1 / 5</span>
+      <h3>Select all squares with</h3>
+      <div class="captcha-instruction">React Projects</div>
+      <div class="captcha-sub">If there are none, click verify.</div>
+    </div>
+    <div class="captcha-body">
+      <div class="image-grid" id="imageGrid" role="group" aria-label="Project selection grid">
+        <!-- Row 1 -->
+        <div class="grid-tile tile-ecom" data-project="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Walmart E-Commerce Platform">
+          <span class="tile-icon">&#128722;</span>
+          <span class="tile-label">E-Commerce<br>Platform</span>
+        </div>
+        <div class="grid-tile tile-food" data-project="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Pasta Carbonara">
+          <span class="tile-icon">&#127837;</span>
+          <span class="tile-label">Pasta<br>Carbonara</span>
+        </div>
+        <div class="grid-tile tile-dashboard" data-project="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Analytics Dashboard">
+          <span class="tile-icon">&#128202;</span>
+          <span class="tile-label">Analytics<br>Dashboard</span>
+        </div>
+        <!-- Row 2 -->
+        <div class="grid-tile tile-landscape" data-project="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Mountain Landscape">
+          <span class="tile-icon">&#9968;</span>
+          <span class="tile-label">Mountain<br>Landscape</span>
+        </div>
+        <div class="grid-tile tile-react" data-project="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Component Library">
+          <span class="tile-icon">&#9883;</span>
+          <span class="tile-label">Component<br>Library</span>
+        </div>
+        <div class="grid-tile tile-pet" data-project="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Cute Puppy">
+          <span class="tile-icon">&#128054;</span>
+          <span class="tile-label">Cute<br>Puppy</span>
+        </div>
+        <!-- Row 3 -->
+        <div class="grid-tile tile-api" data-project="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="REST API Service">
+          <span class="tile-icon">&#128268;</span>
+          <span class="tile-label">REST API<br>Service</span>
+        </div>
+        <div class="grid-tile tile-car" data-project="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Sports Car">
+          <span class="tile-icon">&#128663;</span>
+          <span class="tile-label">Sports<br>Car</span>
+        </div>
+        <div class="grid-tile tile-music" data-project="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Music Streaming App">
+          <span class="tile-icon">&#127925;</span>
+          <span class="tile-label">Music<br>Streaming App</span>
+        </div>
+      </div>
+    </div>
+    <div class="captcha-footer">
+      <div class="footer-icons">
+        <button class="footer-icon" aria-label="Refresh challenge" title="Refresh">&#8635;</button>
+        <button class="footer-icon" aria-label="Audio challenge" title="Audio">&#9834;</button>
+        <button class="footer-icon" aria-label="Help" title="Help">&#63;</button>
+      </div>
+      <button class="verify-btn" id="verify1" onclick="verifyChallenge1()">Verify</button>
+    </div>
+    <div class="solved-overlay" id="solved1">
+      <div class="solved-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="solved-text">
+        Verified: These are real React projects
+        <span>Portfolio section unlocked - Projects</span>
+      </div>
+    </div>
+    <!-- Revealed Content: Projects -->
+    <div class="revealed-section" id="reveal1">
+      <div class="section-tag">Unlocked: Projects</div>
+      <h4>Selected Works by Anshull Garg</h4>
+      <p>Full-stack applications built at enterprise scale. Each project serves real users and solves real problems.</p>
+      <div class="project-cards">
+        <div class="project-card">
+          <h5>Walmart E-Commerce Platform</h5>
+          <p>Architected key frontend modules for one of the world's largest digital retail platforms, serving millions of daily users with sub-second page loads.</p>
+          <div class="project-tech">
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">Next.js</span>
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">GraphQL</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h5>Real-Time Analytics Dashboard</h5>
+          <p>Built a high-performance dashboard visualizing live metrics across microservices, enabling data-driven decisions for engineering teams.</p>
+          <div class="project-tech">
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">D3.js</span>
+            <span class="tech-tag">WebSocket</span>
+            <span class="tech-tag">Redis</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h5>Component Library &amp; Design System</h5>
+          <p>Developed a reusable component library adopted across multiple teams, reducing development time by 40% and ensuring UI consistency.</p>
+          <div class="project-tech">
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">Storybook</span>
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">Styled Components</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CHALLENGE 2: TYPE THE DISTORTED TEXT
+       ============================================================ -->
+  <div class="captcha-card locked" id="challenge2" role="region" aria-label="Challenge 2: Type the distorted text">
+    <div class="captcha-header" style="background: #5f6368;">
+      <span class="challenge-number">2 / 5</span>
+      <h3>Type the text below</h3>
+      <div class="captcha-instruction">Distorted Name Verification</div>
+      <div class="captcha-sub">Type exactly what you see.</div>
+    </div>
+    <div class="captcha-body">
+      <div class="distorted-text-container" id="distortedContainer">
+        <div class="noise-line" style="--rot: -2deg; --top: 30%;"></div>
+        <div class="noise-line" style="--rot: 1.5deg; --top: 55%;"></div>
+        <div class="noise-line" style="--rot: -1deg; --top: 75%;"></div>
+        <div class="distorted-text" id="distortedText" aria-label="Distorted text showing ANSHULL GARG"></div>
+      </div>
+      <div class="text-input-row">
+        <input type="text" id="textInput" placeholder="Type what you see..." autocomplete="off" spellcheck="false" aria-label="Enter the text shown above">
+        <button class="refresh-captcha-btn" onclick="refreshDistortion()" aria-label="Refresh distortion">&#8635;</button>
+      </div>
+    </div>
+    <div class="captcha-footer">
+      <div class="footer-icons">
+        <button class="footer-icon" aria-label="Refresh" title="Refresh">&#8635;</button>
+        <button class="footer-icon" aria-label="Audio" title="Audio">&#9834;</button>
+        <button class="footer-icon" aria-label="Help" title="Help">&#63;</button>
+      </div>
+      <button class="verify-btn" id="verify2" onclick="verifyChallenge2()">Verify</button>
+    </div>
+    <div class="solved-overlay" id="solved2">
+      <div class="solved-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="solved-text">
+        Identity confirmed: ANSHULL GARG
+        <span>Portfolio section unlocked - About</span>
+      </div>
+    </div>
+    <div class="revealed-section" id="reveal2">
+      <div class="section-tag">Unlocked: About</div>
+      <h4>About Anshull Garg</h4>
+      <p>Software Engineer at Walmart Global Tech, building the systems that power digital commerce for millions of customers. I specialize in architecting scalable, high-performance applications across the full stack.</p>
+      <p style="margin-top: 10px;">I believe great software is built at the intersection of clean architecture, deep user empathy, and relentless iteration. When I'm not shipping production code, I'm exploring new frameworks, contributing to open source, and obsessing over developer experience.</p>
+      <p style="margin-top: 10px; font-weight: 600; color: var(--text-primary);">"I write code that ships. At Fortune 1 scale."</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CHALLENGE 3: CHECKBOX - I'M READY TO HIRE
+       ============================================================ -->
+  <div class="captcha-card locked" id="challenge3" role="region" aria-label="Challenge 3: Hire confirmation checkbox">
+    <div class="captcha-header" style="background: #34a853;">
+      <span class="challenge-number">3 / 5</span>
+      <h3>Confirm your intent</h3>
+      <div class="captcha-instruction">Human Verification</div>
+      <div class="captcha-sub">Check the box to prove you're a real recruiter.</div>
+    </div>
+    <div class="captcha-body" style="padding: 20px;">
+      <div class="checkbox-challenge" id="hireCheckbox" onclick="triggerCheckbox()" tabindex="0" role="checkbox" aria-checked="false" aria-label="I'm ready to hire this developer">
+        <div class="captcha-checkbox" id="checkboxVisual">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span class="checkbox-label">I'm ready to hire this developer</span>
+        <div class="checkbox-brand">
+          <div class="brand-name">anCAPTCHA</div>
+          <div class="brand-links">Privacy - Terms</div>
+        </div>
+      </div>
+    </div>
+    <div class="solved-overlay" id="solved3">
+      <div class="solved-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="solved-text">
+        Intent verified: Ready to hire
+        <span>Portfolio section unlocked - Contact</span>
+      </div>
+    </div>
+    <div class="revealed-section" id="reveal3">
+      <div class="section-tag">Unlocked: Contact</div>
+      <h4>Let's Build Something Together</h4>
+      <p>You've proven you're not a bot. Now let's prove we'd make a great team.</p>
+      <div class="contact-grid">
+        <a href="mailto:anshullgarg@gmail.com" class="contact-item">
+          <div class="contact-icon">&#9993;</div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value">anshullgarg@gmail.com</div>
+          </div>
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="contact-item">
+          <div class="contact-icon">&#128101;</div>
+          <div>
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value">linkedin.com/in/anshullgarg</div>
+          </div>
+        </a>
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="contact-item">
+          <div class="contact-icon">&#128187;</div>
+          <div>
+            <div class="contact-label">GitHub</div>
+            <div class="contact-value">github.com/anshullgarg</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CHALLENGE 4: SELECT SOFTWARE SKILLS
+       ============================================================ -->
+  <div class="captcha-card locked" id="challenge4" role="region" aria-label="Challenge 4: Select software skills">
+    <div class="captcha-header" style="background: #ea4335;">
+      <span class="challenge-number">4 / 5</span>
+      <h3>Select all tiles containing</h3>
+      <div class="captcha-instruction">Software Engineering Skills</div>
+      <div class="captcha-sub">Click on all that apply, then verify.</div>
+    </div>
+    <div class="captcha-body">
+      <div class="skills-grid" id="skillsGrid" role="group" aria-label="Skills selection grid">
+        <!-- Row 1 -->
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="React">
+          <span class="skill-icon">&#9883;</span>
+          <span class="skill-name">React</span>
+        </div>
+        <div class="skill-tile" data-skill="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Pizza">
+          <span class="skill-icon">&#127829;</span>
+          <span class="skill-name">Pizza</span>
+        </div>
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Node.js">
+          <span class="skill-icon">&#128154;</span>
+          <span class="skill-name">Node.js</span>
+        </div>
+        <div class="skill-tile" data-skill="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Surfboard">
+          <span class="skill-icon">&#127940;</span>
+          <span class="skill-name">Surfboard</span>
+        </div>
+        <!-- Row 2 -->
+        <div class="skill-tile" data-skill="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Cactus">
+          <span class="skill-icon">&#127797;</span>
+          <span class="skill-name">Cactus</span>
+        </div>
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="TypeScript">
+          <span class="skill-icon">&#128312;</span>
+          <span class="skill-name">TypeScript</span>
+        </div>
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="GraphQL">
+          <span class="skill-icon">&#9883;</span>
+          <span class="skill-name">GraphQL</span>
+        </div>
+        <div class="skill-tile" data-skill="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Roller Coaster">
+          <span class="skill-icon">&#127906;</span>
+          <span class="skill-name">Roller Coaster</span>
+        </div>
+        <!-- Row 3 -->
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Docker">
+          <span class="skill-icon">&#128051;</span>
+          <span class="skill-name">Docker</span>
+        </div>
+        <div class="skill-tile" data-skill="false" tabindex="0" role="checkbox" aria-checked="false" aria-label="Umbrella">
+          <span class="skill-icon">&#9748;</span>
+          <span class="skill-name">Umbrella</span>
+        </div>
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="AWS">
+          <span class="skill-icon">&#9729;</span>
+          <span class="skill-name">AWS</span>
+        </div>
+        <div class="skill-tile" data-skill="true" tabindex="0" role="checkbox" aria-checked="false" aria-label="Python">
+          <span class="skill-icon">&#128013;</span>
+          <span class="skill-name">Python</span>
+        </div>
+      </div>
+    </div>
+    <div class="captcha-footer">
+      <div class="footer-icons">
+        <button class="footer-icon" aria-label="Refresh" title="Refresh">&#8635;</button>
+        <button class="footer-icon" aria-label="Audio" title="Audio">&#9834;</button>
+        <button class="footer-icon" aria-label="Help" title="Help">&#63;</button>
+      </div>
+      <button class="verify-btn" id="verify4" onclick="verifyChallenge4()">Verify</button>
+    </div>
+    <div class="solved-overlay" id="solved4">
+      <div class="solved-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="solved-text">
+        Skills verified: 7 technologies confirmed
+        <span>Portfolio section unlocked - Tech Stack</span>
+      </div>
+    </div>
+    <div class="revealed-section" id="reveal4">
+      <div class="section-tag">Unlocked: Tech Stack</div>
+      <h4>Technical Arsenal</h4>
+      <p>Battle-tested technologies used in production at Fortune 1 scale.</p>
+      <div class="skills-list">
+        <div class="skill-badge">React <div class="proficiency"><div class="proficiency-fill" style="width:95%"></div></div></div>
+        <div class="skill-badge">TypeScript <div class="proficiency"><div class="proficiency-fill" style="width:90%"></div></div></div>
+        <div class="skill-badge">Node.js <div class="proficiency"><div class="proficiency-fill" style="width:92%"></div></div></div>
+        <div class="skill-badge">Next.js <div class="proficiency"><div class="proficiency-fill" style="width:88%"></div></div></div>
+        <div class="skill-badge">GraphQL <div class="proficiency"><div class="proficiency-fill" style="width:85%"></div></div></div>
+        <div class="skill-badge">Python <div class="proficiency"><div class="proficiency-fill" style="width:80%"></div></div></div>
+        <div class="skill-badge">Docker <div class="proficiency"><div class="proficiency-fill" style="width:82%"></div></div></div>
+        <div class="skill-badge">AWS <div class="proficiency"><div class="proficiency-fill" style="width:78%"></div></div></div>
+        <div class="skill-badge">Redis <div class="proficiency"><div class="proficiency-fill" style="width:75%"></div></div></div>
+        <div class="skill-badge">PostgreSQL <div class="proficiency"><div class="proficiency-fill" style="width:80%"></div></div></div>
+        <div class="skill-badge">CI/CD <div class="proficiency"><div class="proficiency-fill" style="width:85%"></div></div></div>
+        <div class="skill-badge">Jest <div class="proficiency"><div class="proficiency-fill" style="width:88%"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CHALLENGE 5: EXPERIENCE SLIDER
+       ============================================================ -->
+  <div class="captcha-card locked" id="challenge5" role="region" aria-label="Challenge 5: Experience slider puzzle">
+    <div class="captcha-header" style="background: #fbbc04; color: #202124;">
+      <span class="challenge-number" style="background: rgba(0,0,0,0.1); color: #202124;">5 / 5</span>
+      <h3 style="color: #202124;">Solve the equation</h3>
+      <div class="captcha-instruction" style="color: #202124;">What does 4+ years of experience equal?</div>
+      <div class="captcha-sub" style="color: rgba(32,33,36,0.6);">Drag the slider to the correct answer.</div>
+    </div>
+    <div class="captcha-body">
+      <div class="slider-challenge">
+        <div class="experience-equation">
+          <span class="equation-part">4+ years</span>
+          <span>+</span>
+          <span class="equation-part">Fortune 1</span>
+          <span>=</span>
+          <span class="equation-answer" id="equationAnswer">???</span>
+        </div>
+        <div class="slider-track">
+          <input type="range" class="slider-input" id="expSlider" min="0" max="4" value="0" step="1" oninput="updateSlider()" aria-label="Experience level slider">
+        </div>
+        <div class="slider-labels">
+          <span>Junior</span>
+          <span>Mid-Level</span>
+          <span>Senior</span>
+          <span>Lead</span>
+          <span>Architect</span>
+        </div>
+        <div class="experience-items" id="expItems">
+          <div class="exp-item">
+            <div class="exp-num">4+</div>
+            <div class="exp-label">Years of Experience</div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-num">#1</div>
+            <div class="exp-label">Fortune Company</div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-num">M+</div>
+            <div class="exp-label">Users Impacted</div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-num">50+</div>
+            <div class="exp-label">Production Deployments</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="captcha-footer">
+      <div class="footer-icons">
+        <button class="footer-icon" aria-label="Refresh" title="Refresh">&#8635;</button>
+        <button class="footer-icon" aria-label="Audio" title="Audio">&#9834;</button>
+        <button class="footer-icon" aria-label="Help" title="Help">&#63;</button>
+      </div>
+      <button class="verify-btn" id="verify5" onclick="verifyChallenge5()">Verify</button>
+    </div>
+    <div class="solved-overlay" id="solved5">
+      <div class="solved-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="solved-text">
+        Experience validated: Senior-level engineer
+        <span>Portfolio section unlocked - Experience</span>
+      </div>
+    </div>
+    <div class="revealed-section" id="reveal5">
+      <div class="section-tag">Unlocked: Experience</div>
+      <h4>Professional Journey</h4>
+      <div class="timeline-items">
+        <div class="timeline-item">
+          <h5>Software Engineer</h5>
+          <div class="company">Walmart Global Tech</div>
+          <div class="dates">2021 - Present</div>
+          <p>Architecting scalable frontend systems for one of the world's largest digital retail platforms. Leading feature development across the full stack, optimizing performance for millions of daily active users, and mentoring junior engineers.</p>
+        </div>
+        <div class="timeline-item">
+          <h5>Key Achievements</h5>
+          <div class="company">Impact at Scale</div>
+          <p>Reduced page load times by 35%. Shipped a component library adopted by 8+ teams. Architected real-time analytics serving 100K+ daily requests. Led migration from legacy systems to modern React architecture.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FINAL VERIFICATION
+       ============================================================ -->
+  <div class="final-verification" id="finalVerification">
+    <div class="final-check-circle">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Verification Complete</h2>
+    <p>This developer is <strong>REAL</strong>. All 5 challenges passed. Anshull Garg is a verified, hire-ready software engineer.</p>
+    <div class="final-stats">
+      <div class="final-stat">
+        <div class="stat-value">5/5</div>
+        <div class="stat-label">Challenges</div>
+      </div>
+      <div class="final-stat">
+        <div class="stat-value" id="finalTime">0s</div>
+        <div class="stat-label">Total Time</div>
+      </div>
+      <div class="final-stat">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">Human Score</div>
+      </div>
+    </div>
+    <a href="mailto:anshullgarg@gmail.com" class="final-cta">
+      &#9993; Contact Anshull Garg
+    </a>
+  </div>
+
+</main>
+
+<!-- Bottom Brand -->
+<footer class="bottom-brand">
+  <div class="brand-shield">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    protected by anCAPTCHA
+  </div>
+  <div>Privacy - Terms - Accessibility</div>
+  <div style="margin-top: 4px; font-size: 11px;">&copy; 2025 Anshull Garg. All rights reserved.</div>
+</footer>
+
+<!-- Error Toast -->
+<div class="error-toast" id="errorToast"></div>
+
+<!-- Confetti Canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// =====================================================
+// STATE
+// =====================================================
+const state = {
+  solved: [false, false, false, false, false],
+  startTime: Date.now(),
+  totalSolved: 0
+};
+
+// =====================================================
+// UTILITY
+// =====================================================
+function showToast(msg, type) {
+  const toast = document.getElementById('errorToast');
+  toast.textContent = msg;
+  toast.className = 'error-toast ' + type + ' show';
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function updateProgress() {
+  const pct = (state.totalSolved / 5) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressBar').parentElement.setAttribute('aria-valuenow', pct);
+  document.getElementById('statusText').textContent =
+    state.totalSolved === 5
+      ? 'Verification complete'
+      : 'Verification in progress... (' + state.totalSolved + '/5)';
+  if (state.totalSolved === 5) {
+    document.getElementById('verificationStatus').classList.add('complete');
+  }
+}
+
+function solveChallenge(num) {
+  if (state.solved[num - 1]) return;
+  state.solved[num - 1] = true;
+  state.totalSolved++;
+
+  const card = document.getElementById('challenge' + num);
+  card.classList.remove('active');
+  card.classList.add('solved');
+
+  // Show solved overlay
+  document.getElementById('solved' + num).classList.add('show');
+
+  // Show revealed content
+  setTimeout(() => {
+    document.getElementById('reveal' + num).classList.add('show');
+  }, 400);
+
+  // Unlock next challenge
+  if (num < 5) {
+    setTimeout(() => {
+      const next = document.getElementById('challenge' + (num + 1));
+      next.classList.remove('locked');
+      next.classList.add('active');
+      // Scroll into view
+      setTimeout(() => {
+        next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }, 800);
+  }
+
+  updateProgress();
+  showToast('Challenge ' + num + ' solved!', 'success');
+
+  // Check for all complete
+  if (state.totalSolved === 5) {
+    setTimeout(showFinalVerification, 1200);
+  }
+}
+
+function showFinalVerification() {
+  const elapsed = Math.round((Date.now() - state.startTime) / 1000);
+  document.getElementById('finalTime').textContent = elapsed + 's';
+  document.getElementById('finalVerification').classList.add('show');
+  document.getElementById('finalVerification').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  launchConfetti();
+}
+
+// =====================================================
+// CHALLENGE 1: SELECT REACT PROJECTS
+// =====================================================
+(function initChallenge1() {
+  const tiles = document.querySelectorAll('#imageGrid .grid-tile');
+  tiles.forEach(tile => {
+    tile.addEventListener('click', () => {
+      tile.classList.toggle('selected');
+      const checked = tile.classList.contains('selected');
+      tile.setAttribute('aria-checked', checked ? 'true' : 'false');
+    });
+    tile.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        tile.click();
+      }
+    });
+  });
+})();
+
+function verifyChallenge1() {
+  const tiles = document.querySelectorAll('#imageGrid .grid-tile');
+  let correct = true;
+  tiles.forEach(tile => {
+    const isProject = tile.dataset.project === 'true';
+    const isSelected = tile.classList.contains('selected');
+    if (isProject !== isSelected) correct = false;
+  });
+
+  if (correct) {
+    document.getElementById('verify1').classList.add('verified');
+    document.getElementById('verify1').textContent = 'Passed';
+    document.getElementById('verify1').disabled = true;
+    solveChallenge(1);
+  } else {
+    showToast('Incorrect selection. Try again!', 'error');
+    // Brief red flash on wrong tiles
+    tiles.forEach(tile => {
+      const isProject = tile.dataset.project === 'true';
+      const isSelected = tile.classList.contains('selected');
+      if (isProject !== isSelected) {
+        tile.style.outline = '3px solid var(--red)';
+        setTimeout(() => tile.style.outline = '', 800);
+      }
+    });
+  }
+}
+
+// =====================================================
+// CHALLENGE 2: TYPE DISTORTED TEXT
+// =====================================================
+const targetName = 'ANSHULL GARG';
+
+function renderDistortedText() {
+  const container = document.getElementById('distortedText');
+  container.innerHTML = '';
+  const colors = ['#202124', '#3c4043', '#5f6368', '#4285f4', '#202124', '#ea4335',
+                  '#202124', '#34a853', '#5f6368', '#202124', '#fbbc04', '#202124'];
+  targetName.split('').forEach((char, i) => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = char;
+    span.style.animationDelay = (i * 0.15) + 's';
+    span.style.color = colors[i % colors.length];
+    // Random slight transforms for distortion
+    const rot = (Math.random() - 0.5) * 12;
+    const skew = (Math.random() - 0.5) * 8;
+    const scale = 0.9 + Math.random() * 0.25;
+    span.style.transform = `rotate(${rot}deg) skewX(${skew}deg) scale(${scale})`;
+    span.style.display = 'inline-block';
+    if (char === ' ') span.style.width = '16px';
+    container.appendChild(span);
+  });
+}
+
+function refreshDistortion() {
+  renderDistortedText();
+}
+
+renderDistortedText();
+
+document.getElementById('textInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') verifyChallenge2();
+});
+
+function verifyChallenge2() {
+  const input = document.getElementById('textInput');
+  const val = input.value.trim().toUpperCase();
+
+  if (val === targetName || val === 'ANSHULL GARG' || val === 'ANSHUL GARG' || val === 'ANSHULLGARG') {
+    input.classList.remove('error');
+    input.classList.add('success');
+    document.getElementById('verify2').classList.add('verified');
+    document.getElementById('verify2').textContent = 'Passed';
+    document.getElementById('verify2').disabled = true;
+    solveChallenge(2);
+  } else {
+    input.classList.add('error');
+    setTimeout(() => input.classList.remove('error'), 600);
+    showToast('That doesn\'t look right. Look closely!', 'error');
+  }
+}
+
+// =====================================================
+// CHALLENGE 3: HIRE CHECKBOX
+// =====================================================
+let checkboxBusy = false;
+
+function triggerCheckbox() {
+  if (state.solved[2] || checkboxBusy) return;
+  checkboxBusy = true;
+
+  const vis = document.getElementById('checkboxVisual');
+  const wrapper = document.getElementById('hireCheckbox');
+
+  // Phase 1: Spinner
+  vis.classList.add('checking');
+  wrapper.setAttribute('aria-checked', 'mixed');
+
+  setTimeout(() => {
+    // Phase 2: Checked
+    vis.classList.remove('checking');
+    vis.classList.add('checked');
+    wrapper.setAttribute('aria-checked', 'true');
+
+    // Solve
+    setTimeout(() => {
+      solveChallenge(3);
+      checkboxBusy = false;
+    }, 300);
+  }, 1500);
+}
+
+document.getElementById('hireCheckbox').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    triggerCheckbox();
+  }
+});
+
+// =====================================================
+// CHALLENGE 4: SELECT SOFTWARE SKILLS
+// =====================================================
+(function initChallenge4() {
+  const tiles = document.querySelectorAll('#skillsGrid .skill-tile');
+  tiles.forEach(tile => {
+    tile.addEventListener('click', () => {
+      tile.classList.toggle('selected');
+      const checked = tile.classList.contains('selected');
+      tile.setAttribute('aria-checked', checked ? 'true' : 'false');
+    });
+    tile.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        tile.click();
+      }
+    });
+  });
+})();
+
+function verifyChallenge4() {
+  const tiles = document.querySelectorAll('#skillsGrid .skill-tile');
+  let correct = true;
+  tiles.forEach(tile => {
+    const isSkill = tile.dataset.skill === 'true';
+    const isSelected = tile.classList.contains('selected');
+    if (isSkill !== isSelected) correct = false;
+  });
+
+  if (correct) {
+    // Show correct/wrong feedback
+    tiles.forEach(tile => {
+      if (tile.dataset.skill === 'true') {
+        tile.classList.add('correct');
+      }
+    });
+    document.getElementById('verify4').classList.add('verified');
+    document.getElementById('verify4').textContent = 'Passed';
+    document.getElementById('verify4').disabled = true;
+    solveChallenge(4);
+  } else {
+    // Show which are wrong
+    tiles.forEach(tile => {
+      const isSkill = tile.dataset.skill === 'true';
+      const isSelected = tile.classList.contains('selected');
+      if (isSkill !== isSelected) {
+        tile.classList.add('wrong');
+        setTimeout(() => tile.classList.remove('wrong'), 800);
+      }
+    });
+    showToast('Some tiles are incorrect. Try again!', 'error');
+  }
+}
+
+// =====================================================
+// CHALLENGE 5: EXPERIENCE SLIDER
+// =====================================================
+const sliderAnswers = [
+  'Junior Dev',
+  'Mid-Level Engineer',
+  'Senior Engineer',
+  'Tech Lead',
+  'Software Architect'
+];
+
+function updateSlider() {
+  const val = parseInt(document.getElementById('expSlider').value);
+  const answer = document.getElementById('equationAnswer');
+  answer.textContent = sliderAnswers[val];
+
+  // Show experience items when slider is at 2 (Senior) or above
+  if (val >= 2) {
+    document.getElementById('expItems').classList.add('show');
+  } else {
+    document.getElementById('expItems').classList.remove('show');
+  }
+
+  if (val === 2) {
+    answer.classList.add('solved');
+  } else {
+    answer.classList.remove('solved');
+  }
+}
+
+function verifyChallenge5() {
+  const val = parseInt(document.getElementById('expSlider').value);
+  if (val === 2) {
+    document.getElementById('verify5').classList.add('verified');
+    document.getElementById('verify5').textContent = 'Passed';
+    document.getElementById('verify5').disabled = true;
+    solveChallenge(5);
+  } else if (val < 2) {
+    showToast('Too low! Give more credit.', 'error');
+  } else {
+    showToast('Close, but let\'s be accurate here.', 'error');
+  }
+}
+
+// =====================================================
+// CONFETTI
+// =====================================================
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = [];
+  const colors = ['#4285f4', '#34a853', '#fbbc04', '#ea4335', '#5f6368', '#ff6d01', '#46bdc6'];
+  const gravity = 0.15;
+  const drag = 0.98;
+
+  for (let i = 0; i < 200; i++) {
+    pieces.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 20,
+      vy: (Math.random() - 1) * 18 - 5,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * Math.PI * 2,
+      rv: (Math.random() - 0.5) * 0.3,
+      opacity: 1
+    });
+  }
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    frame++;
+
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.opacity <= 0) return;
+      alive = true;
+
+      p.vy += gravity;
+      p.vx *= drag;
+      p.vy *= drag;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.rv;
+
+      if (frame > 80) p.opacity -= 0.015;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.opacity);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (alive && frame < 250) {
+      requestAnimationFrame(animate);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  animate();
+}
+
+// Handle resize for confetti canvas
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// =====================================================
+// KEYBOARD ACCESSIBILITY: Allow Enter on verify buttons
+// =====================================================
+document.querySelectorAll('.verify-btn').forEach(btn => {
+  btn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+});
+
+// =====================================================
+// INITIAL STATE
+// =====================================================
+updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Full Stack Software Developer (Premium Edition) | Amazon.dev</title>
+<style>
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ========== AMAZON VARIABLES ========== */
+:root {
+  --amz-dark: #232F3E;
+  --amz-darker: #131921;
+  --amz-orange: #FF9900;
+  --amz-yellow: #FEBD69;
+  --amz-btn-orange: #FF9900;
+  --amz-btn-orange-hover: #FA8900;
+  --amz-btn-yellow: #FFD814;
+  --amz-btn-yellow-hover: #F7CA00;
+  --amz-btn-yellow-border: #FCD200;
+  --amz-link: #007185;
+  --amz-link-hover: #C7511F;
+  --amz-red-price: #B12704;
+  --amz-green: #007600;
+  --amz-star: #FFA41C;
+  --amz-bg: #EAEDED;
+  --amz-white: #FFFFFF;
+  --amz-border: #DDD;
+  --amz-text: #0F1111;
+  --amz-text-secondary: #565959;
+  --amz-light-bg: #F7F7F7;
+}
+
+/* ========== BASE ========== */
+body {
+  font-family: "Amazon Ember", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--amz-text);
+  background: var(--amz-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--amz-link); text-decoration: none; cursor: pointer; }
+a:hover { color: var(--amz-link-hover); text-decoration: underline; }
+
+/* ========== TOP NAV ========== */
+.amz-nav {
+  background: var(--amz-darker);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.amz-nav-top {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 12px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.amz-logo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.amz-logo:hover { border-color: #fff; }
+
+.amz-logo-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.amz-logo-text span { color: var(--amz-orange); }
+.amz-logo-sub {
+  font-size: 10px;
+  color: var(--amz-orange);
+  margin-top: -4px;
+  letter-spacing: 1px;
+}
+
+.amz-deliver {
+  color: #ccc;
+  font-size: 12px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.amz-deliver:hover { border-color: #fff; }
+.amz-deliver strong { color: #fff; font-size: 13px; display: block; }
+
+.amz-search {
+  flex: 1;
+  display: flex;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 200px;
+}
+.amz-search-cat {
+  background: #E6E6E6;
+  border: none;
+  padding: 0 8px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  border-radius: 4px 0 0 4px;
+}
+.amz-search-input {
+  flex: 1;
+  border: none;
+  padding: 0 12px;
+  font-size: 15px;
+  outline: none;
+  min-width: 80px;
+}
+.amz-search-btn {
+  background: var(--amz-orange);
+  border: none;
+  padding: 0 14px;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+}
+.amz-search-btn svg { width: 22px; height: 22px; fill: var(--amz-darker); }
+
+.amz-nav-link {
+  color: #fff;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.amz-nav-link:hover { border-color: #fff; text-decoration: none; color: #fff; }
+.amz-nav-link small { display: block; color: #ccc; font-size: 11px; font-weight: 400; }
+.amz-nav-link strong { display: block; font-size: 13px; }
+
+.amz-cart {
+  position: relative;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.amz-cart:hover { border-color: #fff; }
+.amz-cart-count {
+  position: absolute;
+  top: 0;
+  left: 18px;
+  color: var(--amz-orange);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Sub-nav */
+.amz-subnav {
+  background: var(--amz-dark);
+  display: flex;
+  align-items: center;
+  padding: 4px 16px;
+  gap: 2px;
+  overflow-x: auto;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.amz-subnav a {
+  color: #fff;
+  font-size: 13px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.amz-subnav a:hover { border-color: #fff; text-decoration: none; }
+.amz-subnav-bg { background: var(--amz-dark); }
+
+/* ========== BREADCRUMB ========== */
+.amz-breadcrumb {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 12px 16px 4px;
+  font-size: 12px;
+  color: var(--amz-text-secondary);
+}
+.amz-breadcrumb a { color: var(--amz-link); font-size: 12px; }
+
+/* ========== MAIN PRODUCT ========== */
+.amz-product-container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 260px;
+  gap: 16px;
+  background: var(--amz-white);
+  border-radius: 4px;
+}
+
+/* Image Gallery */
+.amz-gallery {
+  padding: 16px;
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+
+.amz-gallery-thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.amz-thumb {
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--amz-border);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--amz-text-secondary);
+  background: var(--amz-light-bg);
+  transition: border-color 0.15s;
+  overflow: hidden;
+}
+.amz-thumb:hover, .amz-thumb.active { border-color: var(--amz-orange); }
+
+.amz-gallery-main {
+  display: flex;
+  gap: 12px;
+}
+
+.amz-main-image {
+  flex: 1;
+  aspect-ratio: 1;
+  background: var(--amz-light-bg);
+  border: 1px solid var(--amz-border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: crosshair;
+}
+
+.project-screenshot {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.project-screenshot .ps-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.project-screenshot .ps-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--amz-text);
+  margin-bottom: 6px;
+}
+.project-screenshot .ps-desc {
+  font-size: 12px;
+  color: var(--amz-text-secondary);
+  line-height: 1.4;
+}
+.project-screenshot .ps-tech {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+.project-screenshot .ps-tech span {
+  background: var(--amz-dark);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Gallery nav arrows */
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 60px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid #ddd;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #333;
+  z-index: 2;
+  transition: background 0.15s;
+}
+.gallery-arrow:hover { background: rgba(255,255,255,1); }
+.gallery-arrow.left { left: 0; border-radius: 0 4px 4px 0; }
+.gallery-arrow.right { right: 0; border-radius: 4px 0 0 4px; }
+
+.gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amz-border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gallery-dot.active { background: var(--amz-dark); }
+
+/* Product Info */
+.amz-product-info {
+  padding: 16px 12px;
+}
+
+.amz-product-title {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--amz-text);
+  margin-bottom: 4px;
+}
+
+.amz-byline {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.amz-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.amz-stars {
+  display: flex;
+  gap: 1px;
+  color: var(--amz-star);
+  font-size: 16px;
+}
+
+.amz-star-num {
+  color: var(--amz-link);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.amz-ratings-count { color: var(--amz-link); font-size: 14px; }
+
+.amz-best-seller {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F0C14B;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amz-text);
+  margin-bottom: 12px;
+}
+
+.amz-divider {
+  border: none;
+  border-top: 1px solid var(--amz-border);
+  margin: 12px 0;
+}
+
+.amz-price-label {
+  font-size: 13px;
+  color: var(--amz-text-secondary);
+  margin-bottom: 2px;
+}
+
+.amz-price {
+  font-size: 28px;
+  color: var(--amz-red-price);
+  font-weight: 400;
+}
+.amz-price .amz-price-symbol { font-size: 14px; vertical-align: super; }
+.amz-price .amz-price-whole { font-size: 28px; }
+.amz-price .amz-price-fraction { font-size: 14px; vertical-align: super; }
+
+.amz-availability {
+  color: var(--amz-green);
+  font-size: 18px;
+  font-weight: 400;
+  margin: 8px 0;
+}
+
+/* Feature bullets */
+.amz-about-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+}
+
+.amz-bullets {
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.amz-bullets li {
+  margin-bottom: 6px;
+}
+.amz-bullets li strong {
+  font-weight: 700;
+}
+
+/* Spec table mini */
+.amz-specs-mini {
+  margin-top: 16px;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.amz-specs-mini tr:nth-child(odd) { background: var(--amz-light-bg); }
+.amz-specs-mini td {
+  padding: 8px 12px;
+  border: 1px solid var(--amz-border);
+}
+.amz-specs-mini td:first-child {
+  font-weight: 700;
+  color: var(--amz-text-secondary);
+  width: 40%;
+  background: #F3F3F3;
+}
+
+/* ========== BUY BOX ========== */
+.amz-buybox {
+  padding: 16px;
+  border: 1px solid var(--amz-border);
+  border-radius: 8px;
+  margin: 16px 0;
+  align-self: start;
+  position: sticky;
+  top: 100px;
+}
+
+.amz-buybox-price {
+  font-size: 18px;
+  color: var(--amz-red-price);
+  margin-bottom: 4px;
+}
+
+.amz-buybox-free {
+  font-size: 14px;
+  color: var(--amz-text-secondary);
+  margin-bottom: 8px;
+}
+
+.amz-buybox-delivery {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.amz-buybox-delivery strong { color: var(--amz-text); }
+.amz-buybox-delivery a { color: var(--amz-link); }
+
+.amz-buybox-location {
+  font-size: 12px;
+  color: var(--amz-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.amz-buybox-stock {
+  font-size: 18px;
+  color: var(--amz-green);
+  font-weight: 400;
+  margin: 12px 0;
+}
+
+.amz-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 8px;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+
+.amz-btn-add {
+  background: var(--amz-btn-yellow);
+  border: 1px solid var(--amz-btn-yellow-border);
+  color: var(--amz-text);
+}
+.amz-btn-add:hover { background: var(--amz-btn-yellow-hover); }
+
+.amz-btn-buy {
+  background: var(--amz-btn-orange);
+  border: 1px solid #E88B00;
+  color: var(--amz-text);
+}
+.amz-btn-buy:hover { background: var(--amz-btn-orange-hover); }
+
+.amz-buybox-meta {
+  font-size: 12px;
+  color: var(--amz-text-secondary);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.amz-buybox-meta a { color: var(--amz-link); font-size: 12px; }
+
+.amz-secure {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--amz-link);
+  margin: 8px 0;
+}
+
+.amz-gift-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin: 8px 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--amz-border);
+}
+.amz-gift-check input { accent-color: var(--amz-orange); }
+
+/* ========== SECTIONS ========== */
+.amz-section {
+  max-width: 1500px;
+  margin: 16px auto;
+  padding: 20px 16px;
+  background: var(--amz-white);
+  border-radius: 4px;
+}
+
+.amz-section-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--amz-text);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--amz-border);
+}
+
+/* Frequently bought together */
+.amz-fbt {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.amz-fbt-item {
+  text-align: center;
+  width: 160px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.amz-fbt-item-img {
+  width: 130px;
+  height: 130px;
+  margin: 0 auto 8px;
+  background: var(--amz-light-bg);
+  border: 1px solid var(--amz-border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+}
+.amz-fbt-item-img .fbt-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amz-text);
+  margin-top: 4px;
+}
+
+.amz-fbt-item-title {
+  font-size: 13px;
+  color: var(--amz-link);
+  line-height: 1.3;
+}
+
+.amz-fbt-plus {
+  font-size: 32px;
+  color: var(--amz-text-secondary);
+  font-weight: 300;
+}
+
+.amz-fbt-total {
+  padding: 16px;
+  border-left: 1px solid var(--amz-border);
+  margin-left: 12px;
+  min-width: 200px;
+}
+.amz-fbt-total-price {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.amz-fbt-total-price strong {
+  color: var(--amz-red-price);
+}
+
+.amz-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.amz-checkbox-row input { accent-color: var(--amz-orange); }
+
+/* Specs table */
+.amz-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.amz-spec-table tr:nth-child(odd) { background: var(--amz-light-bg); }
+.amz-spec-table td {
+  padding: 10px 14px;
+  border: 1px solid var(--amz-border);
+  vertical-align: top;
+}
+.amz-spec-table td:first-child {
+  font-weight: 700;
+  color: var(--amz-text-secondary);
+  width: 30%;
+  white-space: nowrap;
+}
+
+/* Customer Q&A */
+.amz-qa-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--amz-border);
+}
+.amz-qa-item:last-child { border-bottom: none; }
+
+.amz-qa-q {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: flex;
+  gap: 8px;
+}
+.amz-qa-q::before {
+  content: "Q:";
+  color: var(--amz-text);
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.amz-qa-a {
+  font-size: 14px;
+  color: var(--amz-text-secondary);
+  padding-left: 26px;
+  display: flex;
+  gap: 8px;
+}
+.amz-qa-a::before {
+  content: "A:";
+  color: var(--amz-orange);
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.amz-qa-meta {
+  font-size: 12px;
+  color: var(--amz-text-secondary);
+  padding-left: 26px;
+  margin-top: 4px;
+}
+
+/* Reviews */
+.amz-reviews-summary {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.amz-reviews-overall {
+  text-align: center;
+  min-width: 200px;
+}
+.amz-reviews-big-stars {
+  color: var(--amz-star);
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.amz-reviews-big-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--amz-text);
+}
+.amz-reviews-big-label {
+  font-size: 14px;
+  color: var(--amz-text-secondary);
+}
+
+.amz-reviews-bars {
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+.amz-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.amz-bar-row:hover .amz-bar-label { text-decoration: underline; }
+.amz-bar-label {
+  color: var(--amz-link);
+  width: 65px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.amz-bar-track {
+  flex: 1;
+  height: 20px;
+  background: #E0E0E0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.amz-bar-fill {
+  height: 100%;
+  background: var(--amz-star);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.amz-bar-pct {
+  width: 35px;
+  text-align: right;
+  color: var(--amz-link);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* Individual review */
+.amz-review {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--amz-border);
+}
+.amz-review:last-child { border-bottom: none; }
+
+.amz-review-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.amz-review-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.amz-review-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--amz-text);
+}
+
+.amz-review-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.amz-review-stars { color: var(--amz-star); font-size: 14px; }
+.amz-review-title { font-weight: 700; font-size: 14px; }
+
+.amz-review-date {
+  font-size: 13px;
+  color: var(--amz-text-secondary);
+  margin-bottom: 4px;
+}
+
+.amz-review-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #F0F0F0;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: var(--amz-text-secondary);
+  margin-bottom: 8px;
+}
+
+.amz-review-body {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.amz-review-helpful {
+  font-size: 13px;
+  color: var(--amz-text-secondary);
+  margin-bottom: 8px;
+}
+
+.amz-review-actions {
+  display: flex;
+  gap: 12px;
+}
+.amz-review-actions button {
+  background: none;
+  border: 1px solid var(--amz-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--amz-text);
+  font-family: inherit;
+}
+.amz-review-actions button:hover {
+  background: var(--amz-light-bg);
+}
+
+/* Customers also viewed */
+.amz-carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 8px 0;
+  scroll-behavior: smooth;
+}
+.amz-carousel::-webkit-scrollbar { height: 6px; }
+.amz-carousel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.amz-carousel-item {
+  min-width: 180px;
+  max-width: 180px;
+  text-align: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: box-shadow 0.15s;
+}
+.amz-carousel-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+
+.amz-carousel-img {
+  width: 150px;
+  height: 150px;
+  background: var(--amz-light-bg);
+  border: 1px solid var(--amz-border);
+  border-radius: 4px;
+  margin: 0 auto 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+.amz-carousel-img .ci-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amz-text);
+  margin-top: 4px;
+}
+
+.amz-carousel-title {
+  font-size: 13px;
+  color: var(--amz-link);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.amz-carousel-stars {
+  color: var(--amz-star);
+  font-size: 12px;
+}
+.amz-carousel-count {
+  font-size: 12px;
+  color: var(--amz-link);
+}
+
+/* Footer */
+.amz-footer-top {
+  background: var(--amz-dark);
+  text-align: center;
+  padding: 14px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 13px;
+}
+.amz-footer-top:hover { background: #37475A; }
+
+.amz-footer {
+  background: var(--amz-darker);
+  padding: 40px 16px;
+}
+.amz-footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.amz-footer-col h4 {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.amz-footer-col a {
+  display: block;
+  color: #DDD;
+  font-size: 13px;
+  padding: 3px 0;
+}
+.amz-footer-col a:hover { color: #fff; text-decoration: underline; }
+
+.amz-footer-bottom {
+  background: var(--amz-darker);
+  border-top: 1px solid #3A4553;
+  text-align: center;
+  padding: 20px;
+  color: #999;
+  font-size: 11px;
+}
+
+/* ========== MODAL ========== */
+.amz-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.amz-modal-overlay.open { display: flex; }
+
+.amz-modal {
+  background: var(--amz-white);
+  border-radius: 8px;
+  max-width: 520px;
+  width: 90%;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.amz-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--amz-text-secondary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.amz-modal-close:hover { background: var(--amz-light-bg); }
+
+.amz-modal h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.amz-modal p {
+  font-size: 14px;
+  color: var(--amz-text-secondary);
+  margin-bottom: 16px;
+}
+
+.amz-modal-field {
+  margin-bottom: 12px;
+}
+.amz-modal-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--amz-text);
+}
+.amz-modal-field input,
+.amz-modal-field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #a6a6a6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.amz-modal-field input:focus,
+.amz-modal-field textarea:focus {
+  border-color: var(--amz-orange);
+  box-shadow: 0 0 0 3px rgba(255,153,0,0.15);
+}
+.amz-modal-field textarea { height: 80px; resize: vertical; }
+
+.amz-modal-submit {
+  background: var(--amz-btn-yellow);
+  border: 1px solid var(--amz-btn-yellow-border);
+  color: var(--amz-text);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 700;
+  transition: background 0.1s;
+}
+.amz-modal-submit:hover { background: var(--amz-btn-yellow-hover); }
+
+/* ========== TOAST ========== */
+.amz-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--amz-darker);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  z-index: 10000;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.amz-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.amz-toast-check {
+  color: var(--amz-green);
+  font-size: 20px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1100px) {
+  .amz-product-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  .amz-buybox {
+    grid-column: 1 / -1;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .amz-product-container {
+    grid-template-columns: 1fr;
+  }
+  .amz-gallery {
+    position: static;
+  }
+  .amz-nav-top { flex-wrap: wrap; }
+  .amz-deliver,
+  .amz-nav-link { display: none; }
+  .amz-logo, .amz-search, .amz-cart { display: flex; }
+  .amz-search { order: 3; width: 100%; }
+  .amz-footer-inner { grid-template-columns: 1fr 1fr; }
+  .amz-reviews-summary { flex-direction: column; }
+  .amz-fbt { flex-direction: column; align-items: flex-start; }
+  .amz-fbt-plus { transform: rotate(90deg); align-self: center; }
+  .amz-fbt-total { border-left: none; border-top: 1px solid var(--amz-border); margin-left: 0; padding-top: 16px; }
+}
+
+@media (max-width: 480px) {
+  .amz-footer-inner { grid-template-columns: 1fr; }
+  .amz-subnav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="amz-nav" role="navigation" aria-label="Main navigation">
+  <div class="amz-nav-top">
+    <div class="amz-logo" tabindex="0" role="link" aria-label="Amazon.dev homepage">
+      <div>
+        <div class="amz-logo-text">amazon<span>.dev</span></div>
+        <div class="amz-logo-sub">.dev</div>
+      </div>
+    </div>
+
+    <div class="amz-deliver" tabindex="0">
+      Delivering to<br>
+      <strong>Your Team</strong>
+    </div>
+
+    <div class="amz-search" role="search">
+      <select class="amz-search-cat" aria-label="Search category">
+        <option>All Developers</option>
+        <option>Frontend</option>
+        <option>Backend</option>
+        <option>Full Stack</option>
+        <option>DevOps</option>
+      </select>
+      <input class="amz-search-input" type="text" placeholder="Search for developers, skills, frameworks..." aria-label="Search developers" value="Full Stack Developer React Node.js">
+      <button class="amz-search-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 015.645 12.438l4.709 4.708a.75.75 0 01-1.06 1.06l-4.709-4.708A7.5 7.5 0 1110.5 3zm0 1.5a6 6 0 100 12 6 6 0 000-12z"/></svg>
+      </button>
+    </div>
+
+    <div class="amz-nav-link" tabindex="0">
+      <small>Hello, Hiring</small>
+      <strong>Manager</strong>
+    </div>
+
+    <div class="amz-nav-link" tabindex="0">
+      <small>Returns</small>
+      <strong>&amp; Orders</strong>
+    </div>
+
+    <div class="amz-cart" tabindex="0" role="link" aria-label="Team cart, 1 item">
+      <span class="amz-cart-count">1</span>
+      <svg width="30" height="26" viewBox="0 0 40 35" fill="#fff"><path d="M13.5 30a2.5 2.5 0 100 5 2.5 2.5 0 000-5zm17 0a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM0 1h6l2.6 13h24l3.4-9H12.5l-.5-2h30l-5 14H8.3L5.7 4H0V1z"/></svg>
+      <span style="color:#fff;font-size:14px">Team</span>
+    </div>
+  </div>
+
+  <div class="amz-subnav-bg">
+    <div class="amz-subnav">
+      <a href="#about">About This Developer</a>
+      <a href="#specs">Technical Specs</a>
+      <a href="#fbt">Frequently Paired With</a>
+      <a href="#qa">Customer Q&amp;A</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#also-viewed">Also Viewed</a>
+      <a href="mailto:anshullgarg@gmail.com">Contact Seller</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== BREADCRUMB ===== -->
+<div class="amz-breadcrumb" aria-label="Breadcrumb">
+  <a href="#">Software Developers</a> &rsaquo;
+  <a href="#">Full Stack</a> &rsaquo;
+  <a href="#">React &amp; Node.js</a> &rsaquo;
+  <a href="#">Premium Edition</a>
+</div>
+
+<!-- ===== MAIN PRODUCT ===== -->
+<main class="amz-product-container" role="main">
+
+  <!-- IMAGE GALLERY -->
+  <div class="amz-gallery" aria-label="Project gallery">
+    <div class="amz-gallery-main">
+      <div class="amz-gallery-thumbs">
+        <div class="amz-thumb active" onclick="showSlide(0)" aria-label="Project 1 thumbnail">1</div>
+        <div class="amz-thumb" onclick="showSlide(1)" aria-label="Project 2 thumbnail">2</div>
+        <div class="amz-thumb" onclick="showSlide(2)" aria-label="Project 3 thumbnail">3</div>
+        <div class="amz-thumb" onclick="showSlide(3)" aria-label="Project 4 thumbnail">4</div>
+        <div class="amz-thumb" onclick="showSlide(4)" aria-label="Project 5 thumbnail">5</div>
+        <div class="amz-thumb" onclick="showSlide(5)" aria-label="Project 6 thumbnail">6</div>
+      </div>
+
+      <div class="amz-main-image" id="mainImage">
+        <button class="gallery-arrow left" onclick="prevSlide()" aria-label="Previous project">&lsaquo;</button>
+        <button class="gallery-arrow right" onclick="nextSlide()" aria-label="Next project">&rsaquo;</button>
+
+        <!-- Slide 0 -->
+        <div class="project-screenshot slide active" data-index="0">
+          <div class="ps-icon">&#9879;</div>
+          <div class="ps-title">Enterprise SaaS Dashboard</div>
+          <div class="ps-desc">Real-time analytics platform processing 10M+ events/day with interactive data visualizations and role-based access control</div>
+          <div class="ps-tech"><span>React</span><span>TypeScript</span><span>D3.js</span><span>AWS</span></div>
+        </div>
+
+        <!-- Slide 1 -->
+        <div class="project-screenshot slide" data-index="1" style="display:none">
+          <div class="ps-icon">&#128722;</div>
+          <div class="ps-title">E-Commerce Microservices Platform</div>
+          <div class="ps-desc">Scalable marketplace handling 50K+ concurrent users with event-driven architecture and distributed caching</div>
+          <div class="ps-tech"><span>Node.js</span><span>React</span><span>Redis</span><span>Kafka</span></div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="project-screenshot slide" data-index="2" style="display:none">
+          <div class="ps-icon">&#128272;</div>
+          <div class="ps-title">Authentication & Identity Service</div>
+          <div class="ps-desc">OAuth 2.0 / OIDC compliant identity provider with MFA, SSO, and zero-trust architecture serving 200K+ users</div>
+          <div class="ps-tech"><span>Node.js</span><span>PostgreSQL</span><span>JWT</span><span>Docker</span></div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="project-screenshot slide" data-index="3" style="display:none">
+          <div class="ps-icon">&#128241;</div>
+          <div class="ps-title">Cross-Platform Mobile App</div>
+          <div class="ps-desc">Consumer-facing mobile application with offline-first sync, push notifications, and biometric authentication</div>
+          <div class="ps-tech"><span>React Native</span><span>TypeScript</span><span>GraphQL</span><span>Firebase</span></div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="project-screenshot slide" data-index="4" style="display:none">
+          <div class="ps-icon">&#9729;</div>
+          <div class="ps-title">Cloud Infrastructure Automation</div>
+          <div class="ps-desc">Infrastructure-as-Code pipelines reducing deployment time by 80% with automated scaling and monitoring</div>
+          <div class="ps-tech"><span>AWS CDK</span><span>Terraform</span><span>GitHub Actions</span><span>Docker</span></div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="project-screenshot slide" data-index="5" style="display:none">
+          <div class="ps-icon">&#129302;</div>
+          <div class="ps-title">AI-Powered Search Engine</div>
+          <div class="ps-desc">Semantic search with vector embeddings, RAG pipeline, and intelligent auto-complete serving sub-100ms responses</div>
+          <div class="ps-tech"><span>Python</span><span>OpenAI</span><span>Elasticsearch</span><span>React</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-dots" role="tablist" aria-label="Project slides">
+      <div class="gallery-dot active" onclick="showSlide(0)" role="tab" aria-selected="true"></div>
+      <div class="gallery-dot" onclick="showSlide(1)" role="tab" aria-selected="false"></div>
+      <div class="gallery-dot" onclick="showSlide(2)" role="tab" aria-selected="false"></div>
+      <div class="gallery-dot" onclick="showSlide(3)" role="tab" aria-selected="false"></div>
+      <div class="gallery-dot" onclick="showSlide(4)" role="tab" aria-selected="false"></div>
+      <div class="gallery-dot" onclick="showSlide(5)" role="tab" aria-selected="false"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT INFO -->
+  <div class="amz-product-info">
+    <h1 class="amz-product-title">Anshull Garg - Full Stack Software Developer (Premium Edition)</h1>
+
+    <div class="amz-byline">
+      by <a href="https://github.com/anshullgarg">Anshull Garg</a> |
+      <a href="https://linkedin.com/in/anshullgarg">Visit the Developer Store</a>
+    </div>
+
+    <div class="amz-rating-row">
+      <span class="amz-star-num">4.8</span>
+      <div class="amz-stars" aria-label="4.8 out of 5 stars">
+        <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span style="position:relative;display:inline-block;"><span style="color:#E0E0E0;">&#9733;</span><span style="position:absolute;top:0;left:0;overflow:hidden;width:80%;color:var(--amz-star);">&#9733;</span></span>
+      </div>
+      <a class="amz-ratings-count" href="#reviews">847 ratings</a>
+      <span style="color:#ccc;">|</span>
+      <a href="#qa">127 answered questions</a>
+    </div>
+
+    <div class="amz-best-seller">
+      <span>#1 Best Seller</span>
+    </div>
+    <span style="font-size:12px;color:var(--amz-link);margin-left:4px;">in Full Stack Software Developers</span>
+
+    <hr class="amz-divider">
+
+    <div class="amz-price-label">Price:</div>
+    <div class="amz-price" style="color: var(--amz-text); font-size: 20px; font-weight: 700;">
+      Currently Available - Contact for Pricing
+    </div>
+
+    <div class="amz-availability">In Stock - Available for Immediate Hire</div>
+
+    <hr class="amz-divider">
+
+    <!-- Mini Specs -->
+    <table class="amz-specs-mini">
+      <tr><td>Primary Framework</td><td>React (Hooks, Context, Server Components)</td></tr>
+      <tr><td>Runtime</td><td>Node.js (Express, NestJS, Fastify)</td></tr>
+      <tr><td>Cloud Provider</td><td>AWS (EC2, Lambda, S3, DynamoDB, CDK)</td></tr>
+      <tr><td>Experience</td><td>4+ Years Professional</td></tr>
+      <tr><td>Languages</td><td>JavaScript, TypeScript, Python, SQL</td></tr>
+      <tr><td>Architecture</td><td>Microservices, Event-Driven, Serverless</td></tr>
+    </table>
+
+    <hr class="amz-divider">
+
+    <div class="amz-about-title" id="about">About this item</div>
+    <ul class="amz-bullets">
+      <li><strong>Full Stack Expertise:</strong> End-to-end development proficiency from responsive React frontends to scalable Node.js backends, delivering complete product features independently</li>
+      <li><strong>Performance Optimization:</strong> Reduced application load times by 60% and cut infrastructure costs by 40% through strategic code splitting, caching strategies, and serverless migration</li>
+      <li><strong>Scalable Architecture:</strong> Designed and deployed microservices architecture handling 10M+ daily transactions with 99.9% uptime and automated horizontal scaling</li>
+      <li><strong>Team Leadership:</strong> Mentored 5+ junior developers, established code review standards, and introduced CI/CD pipelines that reduced deployment failures by 75%</li>
+      <li><strong>Agile Delivery:</strong> Consistent track record of delivering complex features on time across multiple sprint cycles with thorough testing and documentation</li>
+      <li><strong>API Design:</strong> Built RESTful and GraphQL APIs consumed by 15+ internal and external clients, with comprehensive OpenAPI documentation and versioning strategy</li>
+      <li><strong>Cloud Native:</strong> AWS Certified with hands-on experience in Lambda, ECS, CloudFormation, and CDK for infrastructure-as-code deployments</li>
+    </ul>
+  </div>
+
+  <!-- BUY BOX -->
+  <div class="amz-buybox" role="complementary" aria-label="Hiring options">
+    <div class="amz-buybox-price" style="color: var(--amz-text); font-size: 16px; font-weight: 700;">
+      Currently Available
+    </div>
+    <div class="amz-buybox-free">
+      Contact for Pricing
+    </div>
+
+    <div class="amz-buybox-delivery">
+      <strong>Fast Onboarding</strong> - Ready within 2 weeks
+    </div>
+    <div class="amz-buybox-delivery">
+      Or <strong>immediate</strong> start for urgent projects. <a href="mailto:anshullgarg@gmail.com">Details</a>
+    </div>
+
+    <div class="amz-buybox-location">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="#555"><path d="M8 0a5.53 5.53 0 00-5.5 5.5C2.5 10 8 16 8 16s5.5-6 5.5-10.5A5.53 5.53 0 008 0zm0 7.5a2 2 0 110-4 2 2 0 010 4z"/></svg>
+      Deliver to Your Team - Remote / On-Site / Hybrid
+    </div>
+
+    <div class="amz-buybox-stock">In Stock</div>
+
+    <button class="amz-btn amz-btn-add" onclick="addToTeam()" aria-label="Add to Team">
+      Add to Team
+    </button>
+
+    <button class="amz-btn amz-btn-buy" onclick="openContactModal()" aria-label="Buy Now - Contact Anshull">
+      Buy Now
+    </button>
+
+    <div class="amz-secure">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="#007185"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 8 3.4-1.2 6-4.5 6-8V4L8 1zm0 2l4 2.2v3.3c0 2.7-1.9 5.2-4 6.3-2.1-1.1-4-3.6-4-6.3V5.2L8 3z"/></svg>
+      Secure transaction
+    </div>
+
+    <div class="amz-buybox-meta">
+      <strong>Ships from:</strong> GitHub / LinkedIn<br>
+      <strong>Sold by:</strong> <a href="https://github.com/anshullgarg">Anshull Garg</a><br>
+      <strong>Returns:</strong> 90-day satisfaction guarantee<br>
+      <strong>Support:</strong> 24/7 on Slack
+    </div>
+
+    <div class="amz-gift-check">
+      <input type="checkbox" id="giftCheck" checked>
+      <label for="giftCheck">Add a referral bonus. <a href="#">Learn more</a></label>
+    </div>
+
+    <hr class="amz-divider">
+
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px;">Other hiring options:</div>
+    <div style="font-size:12px;color:var(--amz-text-secondary);margin-bottom:4px;">Contract / Freelance from <strong style="color:var(--amz-text);">Anshull Garg LLC</strong></div>
+    <div style="font-size:12px;color:var(--amz-text-secondary);">Full-time from <strong style="color:var(--amz-text);">Anshull Garg</strong></div>
+  </div>
+
+</main>
+
+<!-- ===== FREQUENTLY BOUGHT TOGETHER ===== -->
+<section class="amz-section" id="fbt" aria-label="Frequently bought together">
+  <div class="amz-section-title">Frequently Bought Together</div>
+  <div class="amz-fbt">
+    <div class="amz-fbt-item">
+      <div class="amz-fbt-item-img" style="border: 2px solid var(--amz-orange);">
+        <span style="font-size:28px;">&#9881;</span>
+        <div class="fbt-label">This item</div>
+      </div>
+      <div class="amz-fbt-item-title">Anshull Garg - Full Stack Developer</div>
+      <div style="color:var(--amz-star);font-size:12px;">&#9733;&#9733;&#9733;&#9733;&#9733; (847)</div>
+    </div>
+
+    <div class="amz-fbt-plus">+</div>
+
+    <div class="amz-fbt-item">
+      <div class="amz-fbt-item-img" style="background:#61DAFB15;">
+        <span style="color:#61DAFB;">&#9883;</span>
+        <div class="fbt-label">React 19</div>
+      </div>
+      <div class="amz-fbt-item-title">React.js - Component Library (v19)</div>
+      <div style="color:var(--amz-star);font-size:12px;">&#9733;&#9733;&#9733;&#9733;&#9733; (142K)</div>
+    </div>
+
+    <div class="amz-fbt-plus">+</div>
+
+    <div class="amz-fbt-item">
+      <div class="amz-fbt-item-img" style="background:#33993315;">
+        <span style="color:#339933;">&#9670;</span>
+        <div class="fbt-label">Node.js 22</div>
+      </div>
+      <div class="amz-fbt-item-title">Node.js - Server Runtime (LTS)</div>
+      <div style="color:var(--amz-star);font-size:12px;">&#9733;&#9733;&#9733;&#9733;&#9733; (98K)</div>
+    </div>
+
+    <div class="amz-fbt-plus">+</div>
+
+    <div class="amz-fbt-item">
+      <div class="amz-fbt-item-img" style="background:#3178C615;">
+        <span style="color:#3178C6;font-weight:900;font-size:24px;">TS</span>
+        <div class="fbt-label">TypeScript 5</div>
+      </div>
+      <div class="amz-fbt-item-title">TypeScript - Type Safety (v5.x)</div>
+      <div style="color:var(--amz-star);font-size:12px;">&#9733;&#9733;&#9733;&#9733;&#9733; (76K)</div>
+    </div>
+
+    <div class="amz-fbt-total">
+      <div class="amz-fbt-total-price">Total stack: <strong>Production-Ready</strong></div>
+      <div style="font-size:13px;color:var(--amz-text-secondary);margin-bottom:12px;">All four items ship together for maximum velocity</div>
+      <button class="amz-btn amz-btn-add" onclick="addToTeam()" style="max-width:220px;">
+        Add all 4 to Team
+      </button>
+      <div style="margin-top:8px;">
+        <label class="amz-checkbox-row"><input type="checkbox" checked> Anshull Garg - Full Stack Developer</label>
+        <label class="amz-checkbox-row"><input type="checkbox" checked> React.js - Component Library</label>
+        <label class="amz-checkbox-row"><input type="checkbox" checked> Node.js - Server Runtime</label>
+        <label class="amz-checkbox-row"><input type="checkbox" checked> TypeScript - Type Safety</label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TECHNICAL SPECIFICATIONS ===== -->
+<section class="amz-section" id="specs" aria-label="Technical specifications">
+  <div class="amz-section-title">Technical Specifications</div>
+  <table class="amz-spec-table">
+    <tr><td>Primary Framework</td><td>React (Hooks, Context API, Server Components, Next.js)</td></tr>
+    <tr><td>Runtime Environment</td><td>Node.js (Express.js, NestJS, Fastify)</td></tr>
+    <tr><td>Cloud Platform</td><td>AWS (EC2, Lambda, S3, DynamoDB, RDS, CloudFront, CDK)</td></tr>
+    <tr><td>Professional Experience</td><td>4+ Years</td></tr>
+    <tr><td>Languages</td><td>JavaScript (ES2024), TypeScript, Python, SQL, HTML5, CSS3</td></tr>
+    <tr><td>Frontend</td><td>React, Next.js, React Native, Tailwind CSS, Styled Components, Redux, Zustand</td></tr>
+    <tr><td>Backend</td><td>Node.js, Express, NestJS, REST APIs, GraphQL, WebSockets</td></tr>
+    <tr><td>Databases</td><td>PostgreSQL, MongoDB, DynamoDB, Redis, Elasticsearch</td></tr>
+    <tr><td>DevOps &amp; CI/CD</td><td>Docker, Kubernetes, GitHub Actions, Terraform, AWS CDK</td></tr>
+    <tr><td>Testing</td><td>Jest, React Testing Library, Cypress, Playwright</td></tr>
+    <tr><td>Architecture</td><td>Microservices, Event-Driven, Serverless, Domain-Driven Design</td></tr>
+    <tr><td>Methodology</td><td>Agile / Scrum, TDD, Code Review, Pair Programming</td></tr>
+    <tr><td>Version Control</td><td>Git, GitHub, GitLab, Bitbucket</td></tr>
+    <tr><td>Operating Systems</td><td>macOS, Linux (Ubuntu, Amazon Linux), Windows</td></tr>
+    <tr><td>Soft Skills</td><td>Technical Leadership, Mentoring, Cross-Team Collaboration, Technical Writing</td></tr>
+    <tr><td>Availability</td><td>Remote / Hybrid / On-site | Full-time / Contract</td></tr>
+  </table>
+</section>
+
+<!-- ===== CUSTOMER Q&A ===== -->
+<section class="amz-section" id="qa" aria-label="Customer questions and answers">
+  <div class="amz-section-title">Customer Questions &amp; Answers</div>
+
+  <div class="amz-qa-item">
+    <div class="amz-qa-q">Can this developer handle both frontend and backend tasks simultaneously?</div>
+    <div class="amz-qa-a">Absolutely. Anshull is a true full stack developer who regularly builds complete features end-to-end, from designing React component architectures with proper state management to implementing scalable REST/GraphQL APIs with Node.js and deploying them on AWS. He can context-switch between frontend and backend work within the same sprint without losing momentum.</div>
+    <div class="amz-qa-meta">Anshull Garg (Seller) | 34 people found this helpful</div>
+  </div>
+
+  <div class="amz-qa-item">
+    <div class="amz-qa-q">Is this developer compatible with existing team workflows and CI/CD pipelines?</div>
+    <div class="amz-qa-a">Yes, fully compatible. He has experience with GitHub Actions, GitLab CI, Jenkins, and CircleCI. Supports trunk-based development, feature branching, and GitFlow. Integrates seamlessly with JIRA, Linear, Confluence, Slack, and all major project management tools. Auto-configures to your team's coding standards and linting rules.</div>
+    <div class="amz-qa-meta">Anshull Garg (Seller) | 28 people found this helpful</div>
+  </div>
+
+  <div class="amz-qa-item">
+    <div class="amz-qa-q">What is the onboarding time for this developer?</div>
+    <div class="amz-qa-a">Typical ramp-up time is under 2 weeks for most codebases. Anshull has a track record of shipping meaningful contributions within the first week by starting with well-scoped tasks while simultaneously learning the domain. He proactively reads documentation, asks targeted questions, and sets up his development environment quickly.</div>
+    <div class="amz-qa-meta">Anshull Garg (Seller) | 21 people found this helpful</div>
+  </div>
+
+  <div class="amz-qa-item">
+    <div class="amz-qa-q">Does this developer come with testing included?</div>
+    <div class="amz-qa-a">Yes, testing is built-in and not an optional add-on. Every feature ships with unit tests (Jest), integration tests (React Testing Library), and end-to-end tests (Cypress/Playwright). Anshull practices TDD when appropriate and maintains a minimum 80% code coverage standard. Performance testing and load testing experience also included.</div>
+    <div class="amz-qa-meta">Anshull Garg (Seller) | 19 people found this helpful</div>
+  </div>
+
+  <div class="amz-qa-item">
+    <div class="amz-qa-q">Can this developer work in a startup environment with ambiguous requirements?</div>
+    <div class="amz-qa-a">Thrives in it. Anshull has experience in both fast-moving startups and structured enterprise environments. He excels at breaking down ambiguous product requirements into actionable technical tasks, prototyping rapidly, and iterating based on user feedback. Comfortable wearing multiple hats and making pragmatic technical decisions under uncertainty.</div>
+    <div class="amz-qa-meta">Anshull Garg (Seller) | 15 people found this helpful</div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button class="amz-btn amz-btn-add" onclick="openContactModal()" style="max-width:200px;">
+      Ask a question
+    </button>
+  </div>
+</section>
+
+<!-- ===== CUSTOMER REVIEWS ===== -->
+<section class="amz-section" id="reviews" aria-label="Customer reviews">
+  <div class="amz-section-title">Customer Reviews</div>
+
+  <div class="amz-reviews-summary">
+    <div class="amz-reviews-overall">
+      <div class="amz-reviews-big-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="amz-reviews-big-num">4.8 out of 5</div>
+      <div class="amz-reviews-big-label">847 global ratings</div>
+    </div>
+
+    <div class="amz-reviews-bars">
+      <div class="amz-bar-row">
+        <span class="amz-bar-label">5 star</span>
+        <div class="amz-bar-track"><div class="amz-bar-fill" style="width:78%"></div></div>
+        <span class="amz-bar-pct">78%</span>
+      </div>
+      <div class="amz-bar-row">
+        <span class="amz-bar-label">4 star</span>
+        <div class="amz-bar-track"><div class="amz-bar-fill" style="width:15%"></div></div>
+        <span class="amz-bar-pct">15%</span>
+      </div>
+      <div class="amz-bar-row">
+        <span class="amz-bar-label">3 star</span>
+        <div class="amz-bar-track"><div class="amz-bar-fill" style="width:4%"></div></div>
+        <span class="amz-bar-pct">4%</span>
+      </div>
+      <div class="amz-bar-row">
+        <span class="amz-bar-label">2 star</span>
+        <div class="amz-bar-track"><div class="amz-bar-fill" style="width:2%"></div></div>
+        <span class="amz-bar-pct">2%</span>
+      </div>
+      <div class="amz-bar-row">
+        <span class="amz-bar-label">1 star</span>
+        <div class="amz-bar-track"><div class="amz-bar-fill" style="width:1%"></div></div>
+        <span class="amz-bar-pct">1%</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="amz-divider">
+
+  <!-- Review 1 -->
+  <div class="amz-review">
+    <div class="amz-review-header">
+      <div class="amz-review-avatar" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);">SK</div>
+      <div class="amz-review-name">Sarah K. - Engineering Manager</div>
+    </div>
+    <div class="amz-review-title-row">
+      <span class="amz-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="amz-review-title">Best full stack hire we have made in years</span>
+    </div>
+    <div class="amz-review-date">Reviewed in the United States on January 15, 2026</div>
+    <div class="amz-review-badge">&#10003; Verified Hire</div>
+    <div class="amz-review-body">
+      Anshull joined our team during a critical product launch and immediately made an impact. Within his first week, he identified a performance bottleneck in our React rendering pipeline that had been plaguing us for months. He refactored the component tree with proper memoization and lazy loading, cutting our initial load time from 8 seconds to under 2. His Node.js backend work is equally impressive - he redesigned our API layer to use proper caching and reduced our AWS bill by 40%. Cannot recommend highly enough.
+    </div>
+    <div class="amz-review-helpful">247 people found this helpful</div>
+    <div class="amz-review-actions">
+      <button>Helpful</button>
+      <button>Report</button>
+    </div>
+  </div>
+
+  <!-- Review 2 -->
+  <div class="amz-review">
+    <div class="amz-review-header">
+      <div class="amz-review-avatar" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE);">MR</div>
+      <div class="amz-review-name">Mike R. - CTO, Series B Startup</div>
+    </div>
+    <div class="amz-review-title-row">
+      <span class="amz-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="amz-review-title">10x developer is not an exaggeration here</span>
+    </div>
+    <div class="amz-review-date">Reviewed in the United States on December 3, 2025</div>
+    <div class="amz-review-badge">&#10003; Verified Hire</div>
+    <div class="amz-review-body">
+      We needed someone who could own our entire platform rebuild - frontend, backend, infrastructure, the whole nine yards. Anshull delivered. He architected our new microservices setup from scratch, built a beautiful React dashboard, set up our entire CI/CD pipeline with GitHub Actions, and configured our AWS infrastructure with Terraform. The kind of developer who does not just write code - he thinks about the whole system. Also great at explaining technical decisions to non-technical stakeholders.
+    </div>
+    <div class="amz-review-helpful">183 people found this helpful</div>
+    <div class="amz-review-actions">
+      <button>Helpful</button>
+      <button>Report</button>
+    </div>
+  </div>
+
+  <!-- Review 3 -->
+  <div class="amz-review">
+    <div class="amz-review-header">
+      <div class="amz-review-avatar" style="background:linear-gradient(135deg,#00B894,#55E6C1);">LP</div>
+      <div class="amz-review-name">Lisa P. - Senior Developer</div>
+    </div>
+    <div class="amz-review-title-row">
+      <span class="amz-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="amz-review-title">The teammate every developer wishes they had</span>
+    </div>
+    <div class="amz-review-date">Reviewed in the United States on November 18, 2025</div>
+    <div class="amz-review-badge">&#10003; Verified Colleague</div>
+    <div class="amz-review-body">
+      Working alongside Anshull elevated our entire team's output. His code reviews are thorough but constructive - he does not just point out issues, he explains the "why" and suggests alternatives. He introduced our team to several best practices: proper error boundaries in React, structured logging in our Node services, and automated database migrations. He also mentored two of our junior devs who have since been promoted. His pull requests are always well-documented with clear descriptions and test coverage.
+    </div>
+    <div class="amz-review-helpful">156 people found this helpful</div>
+    <div class="amz-review-actions">
+      <button>Helpful</button>
+      <button>Report</button>
+    </div>
+  </div>
+
+  <!-- Review 4 -->
+  <div class="amz-review">
+    <div class="amz-review-header">
+      <div class="amz-review-avatar" style="background:linear-gradient(135deg,#FDCB6E,#E17055);">JT</div>
+      <div class="amz-review-name">James T. - Product Manager</div>
+    </div>
+    <div class="amz-review-title-row">
+      <span class="amz-review-stars">&#9733;&#9733;&#9733;&#9733;<span style="color:#E0E0E0;">&#9733;</span></span>
+      <span class="amz-review-title">Reliable, fast, and easy to work with</span>
+    </div>
+    <div class="amz-review-date">Reviewed in the United States on October 7, 2025</div>
+    <div class="amz-review-badge">&#10003; Verified Hire</div>
+    <div class="amz-review-body">
+      As a PM, what I value most is predictability and communication - Anshull delivers on both. He provides accurate estimates, flags risks early, and keeps stakeholders informed without being asked. He turned our vague product specs into a fully functional feature with pixel-perfect UI in record time. The only reason it is not 5 stars is that he occasionally gets deep into optimizing things that are already "good enough" - but honestly, the end result is always better for it. Would absolutely hire again.
+    </div>
+    <div class="amz-review-helpful">98 people found this helpful</div>
+    <div class="amz-review-actions">
+      <button>Helpful</button>
+      <button>Report</button>
+    </div>
+  </div>
+
+  <!-- Review 5 -->
+  <div class="amz-review">
+    <div class="amz-review-header">
+      <div class="amz-review-avatar" style="background:linear-gradient(135deg,#0984E3,#74B9FF);">DN</div>
+      <div class="amz-review-name">David N. - VP of Engineering</div>
+    </div>
+    <div class="amz-review-title-row">
+      <span class="amz-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="amz-review-title">Production-grade quality from day one</span>
+    </div>
+    <div class="amz-review-date">Reviewed in the United States on September 22, 2025</div>
+    <div class="amz-review-badge">&#10003; Verified Hire</div>
+    <div class="amz-review-body">
+      We have hired many developers over the years, and Anshull stands out for one key reason: his code is production-ready from the first PR. No hand-holding needed. He writes clean, well-tested, well-documented code that other developers can actually maintain. He set up our entire observability stack - structured logging, distributed tracing, custom CloudWatch dashboards - which has been invaluable for debugging production issues. His AWS expertise alone has saved us significant money and headaches.
+    </div>
+    <div class="amz-review-helpful">134 people found this helpful</div>
+    <div class="amz-review-actions">
+      <button>Helpful</button>
+      <button>Report</button>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;text-align:center;">
+    <a href="#reviews" style="font-size:14px;">See all 847 reviews &rsaquo;</a>
+  </div>
+</section>
+
+<!-- ===== CUSTOMERS WHO VIEWED ALSO VIEWED ===== -->
+<section class="amz-section" id="also-viewed" aria-label="Customers who viewed this item also viewed">
+  <div class="amz-section-title">Customers Who Viewed This Item Also Viewed</div>
+  <div class="amz-carousel" role="list">
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#61DAFB10;">
+        <span style="color:#61DAFB;">&#9883;</span>
+        <div class="ci-label">React</div>
+      </div>
+      <div class="amz-carousel-title">Advanced React Patterns &amp; Performance</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9733; <span class="amz-carousel-count">2,341</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#33993310;">
+        <span style="color:#339933;">&#9670;</span>
+        <div class="ci-label">Node.js</div>
+      </div>
+      <div class="amz-carousel-title">Production Node.js &amp; Express APIs</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9733; <span class="amz-carousel-count">1,892</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#3178C610;">
+        <span style="color:#3178C6;font-weight:900;font-size:22px;">TS</span>
+        <div class="ci-label">TypeScript</div>
+      </div>
+      <div class="amz-carousel-title">TypeScript for Large-Scale Applications</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9733; <span class="amz-carousel-count">3,102</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#FF990010;">
+        <span style="color:#FF9900;">&#9729;</span>
+        <div class="ci-label">AWS</div>
+      </div>
+      <div class="amz-carousel-title">AWS Cloud Architecture &amp; Serverless</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9733; <span class="amz-carousel-count">4,567</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#2496ED10;">
+        <span style="color:#2496ED;">&#9961;</span>
+        <div class="ci-label">Docker</div>
+      </div>
+      <div class="amz-carousel-title">Docker &amp; Kubernetes Orchestration</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9734; <span class="amz-carousel-count">987</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#E535AB10;">
+        <span style="color:#E535AB;font-size:22px;">&#9851;</span>
+        <div class="ci-label">GraphQL</div>
+      </div>
+      <div class="amz-carousel-title">GraphQL API Design &amp; Federation</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9733; <span class="amz-carousel-count">1,445</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#4FC08D10;">
+        <span style="color:#4FC08D;">&#9783;</span>
+        <div class="ci-label">System Design</div>
+      </div>
+      <div class="amz-carousel-title">Distributed Systems &amp; Microservices</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9733; <span class="amz-carousel-count">2,789</span></div>
+    </div>
+
+    <div class="amz-carousel-item" role="listitem">
+      <div class="amz-carousel-img" style="background:#DB444210;">
+        <span style="color:#DB4442;">&#9888;</span>
+        <div class="ci-label">CI/CD</div>
+      </div>
+      <div class="amz-carousel-title">GitHub Actions &amp; DevOps Pipelines</div>
+      <div class="amz-carousel-stars">&#9733;&#9733;&#9733;&#9733;&#9734; <span class="amz-carousel-count">856</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<div class="amz-footer-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" role="button" tabindex="0" aria-label="Back to top">
+  Back to top
+</div>
+
+<footer class="amz-footer" role="contentinfo">
+  <div class="amz-footer-inner">
+    <div class="amz-footer-col">
+      <h4>Get to Know Me</h4>
+      <a href="https://github.com/anshullgarg" target="_blank" rel="noopener">GitHub Profile</a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="#about">About This Developer</a>
+      <a href="#specs">Technical Specs</a>
+      <a href="#reviews">Customer Reviews</a>
+    </div>
+    <div class="amz-footer-col">
+      <h4>Work With Me</h4>
+      <a href="mailto:anshullgarg@gmail.com">Email Me</a>
+      <a href="#" onclick="openContactModal();return false;">Contact Form</a>
+      <a href="#">Schedule a Call</a>
+      <a href="#">Download Resume</a>
+    </div>
+    <div class="amz-footer-col">
+      <h4>Tech Stack</h4>
+      <a href="#">React &amp; Next.js</a>
+      <a href="#">Node.js &amp; Express</a>
+      <a href="#">TypeScript</a>
+      <a href="#">AWS Cloud</a>
+      <a href="#">PostgreSQL &amp; MongoDB</a>
+    </div>
+    <div class="amz-footer-col">
+      <h4>Certifications</h4>
+      <a href="#">AWS Solutions Architect</a>
+      <a href="#">Full Stack Development</a>
+      <a href="#">Agile &amp; Scrum</a>
+      <a href="#">System Design</a>
+    </div>
+  </div>
+</footer>
+
+<div class="amz-footer-bottom">
+  <div class="amz-logo-text" style="font-size:16px;display:inline-block;margin-bottom:8px;">amazon<span style="color:var(--amz-orange);">.dev</span></div><br>
+  This is a portfolio website designed as an Amazon product page. Not affiliated with Amazon.<br>
+  &copy; 2026 Anshull Garg. All rights reserved. Built with HTML, CSS, and JavaScript.
+</div>
+
+<!-- ===== CONTACT MODAL ===== -->
+<div class="amz-modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-label="Contact Anshull Garg">
+  <div class="amz-modal">
+    <button class="amz-modal-close" onclick="closeContactModal()" aria-label="Close">&times;</button>
+    <h2>Buy Now - Contact Anshull</h2>
+    <p>Complete your order by reaching out. Typical response time: under 24 hours.</p>
+    <form onsubmit="submitContact(event)">
+      <div class="amz-modal-field">
+        <label for="contactName">Your Name</label>
+        <input type="text" id="contactName" placeholder="Hiring Manager" required>
+      </div>
+      <div class="amz-modal-field">
+        <label for="contactEmail">Email Address</label>
+        <input type="email" id="contactEmail" placeholder="you@company.com" required>
+      </div>
+      <div class="amz-modal-field">
+        <label for="contactCompany">Company</label>
+        <input type="text" id="contactCompany" placeholder="Your Company">
+      </div>
+      <div class="amz-modal-field">
+        <label for="contactMsg">Message</label>
+        <textarea id="contactMsg" placeholder="Tell me about the role and your team..."></textarea>
+      </div>
+      <button type="submit" class="amz-modal-submit">Place Your Order</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="amz-toast" id="toast" role="alert" aria-live="polite">
+  <span class="amz-toast-check">&#10003;</span>
+  <span id="toastMsg">Added to Team!</span>
+</div>
+
+<script>
+// ===== IMAGE GALLERY CAROUSEL =====
+let currentSlide = 0;
+const totalSlides = 6;
+
+function showSlide(index) {
+  currentSlide = index;
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    s.style.display = i === index ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.amz-thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.gallery-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === index);
+    d.setAttribute('aria-selected', i === index ? 'true' : 'false');
+  });
+}
+
+function nextSlide() {
+  showSlide((currentSlide + 1) % totalSlides);
+}
+
+function prevSlide() {
+  showSlide((currentSlide - 1 + totalSlides) % totalSlides);
+}
+
+// Auto-advance every 5 seconds
+let autoAdvance = setInterval(nextSlide, 5000);
+document.querySelector('.amz-main-image').addEventListener('mouseenter', () => clearInterval(autoAdvance));
+document.querySelector('.amz-main-image').addEventListener('mouseleave', () => {
+  autoAdvance = setInterval(nextSlide, 5000);
+});
+
+// ===== ADD TO TEAM =====
+function addToTeam() {
+  showToast('Added to Team! Anshull Garg is in your cart.');
+  const countEl = document.querySelector('.amz-cart-count');
+  countEl.textContent = parseInt(countEl.textContent) + 1;
+}
+
+// ===== CONTACT MODAL =====
+function openContactModal() {
+  document.getElementById('contactModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('contactName').focus(), 200);
+}
+
+function closeContactModal() {
+  document.getElementById('contactModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('contactModal').addEventListener('click', function(e) {
+  if (e.target === this) closeContactModal();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeContactModal();
+});
+
+function submitContact(e) {
+  e.preventDefault();
+  const name = document.getElementById('contactName').value;
+  closeContactModal();
+  showToast('Order placed! Anshull will respond within 24 hours. Thank you, ' + name + '!');
+
+  // Build mailto link as fallback
+  const email = document.getElementById('contactEmail').value;
+  const company = document.getElementById('contactCompany').value;
+  const msg = document.getElementById('contactMsg').value;
+  const subject = encodeURIComponent('Hiring Inquiry from ' + (company || name));
+  const body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nCompany: ' + company + '\n\nMessage:\n' + msg);
+  window.open('mailto:anshullgarg@gmail.com?subject=' + subject + '&body=' + body, '_blank');
+
+  e.target.reset();
+}
+
+// ===== TOAST =====
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ===== REVIEW HELPFUL BUTTONS =====
+document.querySelectorAll('.amz-review-actions button:first-child').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const helpfulEl = this.closest('.amz-review').querySelector('.amz-review-helpful');
+    const match = helpfulEl.textContent.match(/(\d+)/);
+    if (match) {
+      helpfulEl.textContent = (parseInt(match[1]) + 1) + ' people found this helpful';
+    }
+    this.textContent = 'Thanks for your feedback!';
+    this.disabled = true;
+    this.style.background = '#E8F0FE';
+    this.style.color = 'var(--amz-link)';
+  });
+});
+
+// ===== RATING BARS ANIMATION =====
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.amz-bar-fill').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => { bar.style.width = width; }, 100);
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const barsContainer = document.querySelector('.amz-reviews-bars');
+if (barsContainer) barObserver.observe(barsContainer);
+
+// ===== KEYBOARD: GALLERY =====
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('contactModal').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoom Meeting - Anshull Garg Portfolio Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --zoom-bg: #1a1a2e;
+  --zoom-surface: #232340;
+  --zoom-surface-2: #2d2d4a;
+  --zoom-border: #3a3a5c;
+  --zoom-blue: #0b5cff;
+  --zoom-blue-hover: #2d74ff;
+  --zoom-green: #2d8c3c;
+  --zoom-red: #e53935;
+  --zoom-red-hover: #ff4f4b;
+  --zoom-text: #ffffff;
+  --zoom-text-secondary: #a0a0c0;
+  --zoom-text-muted: #6a6a8e;
+  --zoom-chat-bg: #1e1e36;
+  --zoom-panel-bg: #1e1e38;
+  --slide-bg: #0f0f23;
+  --slide-accent: #0b5cff;
+  --slide-accent-2: #7c3aed;
+  --slide-text: #e0e0f0;
+  --slide-heading: #ffffff;
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: var(--zoom-text);
+  overflow: hidden;
+  height: 100vh;
+  user-select: none;
+}
+
+/* ========== TOP BAR ========== */
+.top-bar {
+  height: 48px;
+  background: #0e0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--zoom-border);
+  z-index: 100;
+  position: relative;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zoom-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--zoom-blue);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: white;
+}
+
+.meeting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.meeting-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--zoom-text);
+}
+
+.meeting-id {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+  font-family: 'Fira Code', monospace;
+}
+
+.top-bar-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(229, 57, 53, 0.15);
+  border: 1px solid rgba(229, 57, 53, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ff6b6b;
+  animation: recording-pulse 2s ease-in-out infinite;
+}
+
+.recording-dot {
+  width: 8px;
+  height: 8px;
+  background: #e53935;
+  border-radius: 50%;
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes recording-pulse {
+  0%, 100% { border-color: rgba(229, 57, 53, 0.3); }
+  50% { border-color: rgba(229, 57, 53, 0.6); }
+}
+
+.meeting-timer {
+  font-size: 12px;
+  color: var(--zoom-text-muted);
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-btn {
+  background: none;
+  border: 1px solid var(--zoom-border);
+  color: var(--zoom-text-secondary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.top-btn:hover {
+  background: var(--zoom-surface-2);
+  color: var(--zoom-text);
+}
+
+.encryption-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--zoom-green);
+}
+
+/* ========== MAIN LAYOUT ========== */
+.main-layout {
+  display: flex;
+  height: calc(100vh - 48px - 72px);
+  background: var(--zoom-bg);
+}
+
+/* ========== PRESENTATION AREA ========== */
+.presentation-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-share-banner {
+  background: var(--zoom-green);
+  text-align: center;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.screen-share-banner:hover { background: #35a046; }
+
+.screen-share-banner .stop-btn {
+  background: rgba(0,0,0,0.3);
+  border: none;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.slide-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+}
+
+.slide {
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16/9;
+  background: var(--slide-bg);
+  border-radius: 12px;
+  border: 1px solid var(--zoom-border);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  display: none;
+}
+
+.slide.active { display: flex; }
+
+/* Slide navigation */
+.slide-nav {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0,0,0,0.7);
+  padding: 8px 16px;
+  border-radius: 30px;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.slide-nav button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.slide-nav button:hover { background: rgba(255,255,255,0.15); }
+.slide-nav button:disabled { opacity: 0.3; cursor: default; }
+.slide-nav button:disabled:hover { background: none; }
+
+.slide-counter {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Fira Code', monospace;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ========== SLIDE INNER LAYOUTS ========== */
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+/* Title Slide */
+.slide-title .slide-inner {
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1040 40%, #0d1f3c 100%);
+}
+
+.slide-title .slide-inner::before {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(11,92,255,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(124,58,237,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(11,92,255,0.05) 0%, transparent 70%);
+}
+
+.slide-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--slide-accent);
+  margin-bottom: 16px;
+}
+
+.slide h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 800;
+  color: var(--slide-heading);
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.slide h2 {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 700;
+  color: var(--slide-heading);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.slide h3 {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 600;
+  color: var(--slide-heading);
+  margin-bottom: 12px;
+}
+
+.slide p {
+  font-size: clamp(13px, 1.4vw, 17px);
+  color: var(--slide-text);
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+.slide-subtitle {
+  font-size: clamp(15px, 1.8vw, 22px);
+  color: var(--zoom-text-secondary);
+  font-weight: 400;
+  margin-bottom: 32px;
+}
+
+.slide-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--slide-accent), var(--slide-accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 24px;
+  box-shadow: 0 0 40px rgba(11,92,255,0.3);
+}
+
+.slide-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.slide-tag {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(11,92,255,0.15);
+  color: #6da3ff;
+  border: 1px solid rgba(11,92,255,0.25);
+}
+
+/* Two Column Slide */
+.slide-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.slide-two-col .slide-inner {
+  padding: 40px 48px;
+  background: linear-gradient(160deg, #0f0f23 0%, #161630 100%);
+}
+
+.slide-two-col .slide-inner::before {
+  background: radial-gradient(circle at 0% 0%, rgba(11,92,255,0.08) 0%, transparent 50%);
+}
+
+/* Content slide */
+.slide-content .slide-inner {
+  background: linear-gradient(160deg, #0f0f23 0%, #161630 100%);
+  justify-content: flex-start;
+  padding-top: 40px;
+}
+
+.slide-content .slide-inner::before {
+  background: radial-gradient(circle at 100% 0%, rgba(124,58,237,0.08) 0%, transparent 50%);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 800;
+  background: linear-gradient(135deg, #6da3ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--zoom-text-secondary);
+  margin-top: 4px;
+}
+
+/* Skills list */
+.skills-section {
+  margin-top: 16px;
+}
+
+.skill-category {
+  margin-bottom: 20px;
+}
+
+.skill-category-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slide-accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-category-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--slide-accent);
+  border-radius: 2px;
+}
+
+.skill-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-pill {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.06);
+  color: var(--slide-text);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Project cards */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.project-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(11,92,255,0.3);
+  transform: translateY(-2px);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.project-card:nth-child(1)::before { background: linear-gradient(90deg, #0b5cff, #2d74ff); }
+.project-card:nth-child(2)::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.project-card:nth-child(3)::before { background: linear-gradient(90deg, #059669, #34d399); }
+.project-card:nth-child(4)::before { background: linear-gradient(90deg, #dc2626, #f87171); }
+
+.project-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slide-heading);
+  margin-bottom: 6px;
+}
+
+.project-desc {
+  font-size: 12px;
+  color: var(--zoom-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.project-tech span {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(11,92,255,0.12);
+  color: #6da3ff;
+}
+
+/* Timeline */
+.timeline {
+  margin-top: 20px;
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--slide-accent), var(--slide-accent-2));
+  border-radius: 1px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--slide-accent);
+  border: 2px solid var(--slide-bg);
+  box-shadow: 0 0 0 2px var(--slide-accent);
+}
+
+.timeline-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slide-accent);
+  font-family: 'Fira Code', monospace;
+  margin-bottom: 2px;
+}
+
+.timeline-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slide-heading);
+  margin-bottom: 2px;
+}
+
+.timeline-company {
+  font-size: 12px;
+  color: var(--zoom-text-secondary);
+}
+
+.timeline-detail {
+  font-size: 12px;
+  color: var(--zoom-text-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* Contact slide */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.contact-item:hover {
+  background: rgba(11,92,255,0.1);
+  border-color: rgba(11,92,255,0.3);
+}
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.contact-item:nth-child(1) .contact-icon { background: rgba(11,92,255,0.2); }
+.contact-item:nth-child(2) .contact-icon { background: rgba(124,58,237,0.2); }
+.contact-item:nth-child(3) .contact-icon { background: rgba(5,150,105,0.2); }
+.contact-item:nth-child(4) .contact-icon { background: rgba(220,38,38,0.2); }
+
+.contact-label {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+}
+
+.contact-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slide-heading);
+}
+
+/* Breakout room badge on project cards */
+.breakout-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(11,92,255,0.2);
+  color: #6da3ff;
+  border: 1px solid rgba(11,92,255,0.3);
+}
+
+/* ========== SELF-VIEW (PIP) ========== */
+.self-view {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 180px;
+  height: 120px;
+  background: #1a1a30;
+  border-radius: 10px;
+  border: 2px solid var(--zoom-border);
+  overflow: hidden;
+  z-index: 20;
+  cursor: move;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  transition: border-color 0.2s;
+}
+
+.self-view:hover { border-color: var(--zoom-blue); }
+
+.self-view-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a30, #252545);
+  position: relative;
+}
+
+.self-view-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0b5cff, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: white;
+}
+
+.self-view-name {
+  font-size: 10px;
+  color: white;
+  margin-top: 6px;
+  font-weight: 500;
+  background: rgba(0,0,0,0.5);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.self-view-muted {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 22px;
+  height: 22px;
+  background: rgba(229,57,53,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+/* ========== PARTICIPANTS PANEL ========== */
+.participants-panel {
+  width: 280px;
+  background: var(--zoom-panel-bg);
+  border-left: 1px solid var(--zoom-border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s, opacity 0.3s;
+  overflow: hidden;
+}
+
+.participants-panel.hidden {
+  width: 0;
+  border-left: none;
+  opacity: 0;
+}
+
+.panel-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--zoom-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.panel-count {
+  font-size: 12px;
+  color: var(--zoom-text-muted);
+  background: var(--zoom-surface-2);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.panel-close {
+  background: none;
+  border: none;
+  color: var(--zoom-text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.panel-close:hover { color: var(--zoom-text); }
+
+/* Participants list */
+.participants-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.participant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.participant:hover { background: var(--zoom-surface-2); }
+
+.participant-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.participant-avatar.you { background: linear-gradient(135deg, #0b5cff, #7c3aed); }
+.participant-avatar.hm { background: linear-gradient(135deg, #059669, #34d399); }
+.participant-avatar.tl { background: linear-gradient(135deg, #dc2626, #f87171); }
+.participant-avatar.hr { background: linear-gradient(135deg, #d97706, #fbbf24); }
+
+.participant-info { flex: 1; min-width: 0; }
+
+.participant-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--zoom-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.participant-role {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+}
+
+.host-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(11,92,255,0.2);
+  color: #6da3ff;
+}
+
+.share-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(45,140,60,0.2);
+  color: #4ade80;
+}
+
+.participant-icons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.p-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.p-icon.muted { color: #e53935; }
+.p-icon.unmuted { color: var(--zoom-green); }
+
+/* Reactions section */
+.reactions-section {
+  padding: 12px 16px;
+  border-top: 1px solid var(--zoom-border);
+}
+
+.reactions-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--zoom-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.recent-reactions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.reaction-bubble {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 13px;
+  background: var(--zoom-surface-2);
+  border: 1px solid var(--zoom-border);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: reaction-pop 0.3s ease-out;
+}
+
+.reaction-bubble .sender {
+  font-size: 10px;
+  color: var(--zoom-text-muted);
+}
+
+@keyframes reaction-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ========== CHAT PANEL ========== */
+.chat-panel {
+  width: 300px;
+  background: var(--zoom-chat-bg);
+  border-left: 1px solid var(--zoom-border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s, opacity 0.3s;
+  overflow: hidden;
+}
+
+.chat-panel.hidden {
+  width: 0;
+  border-left: none;
+  opacity: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-msg {
+  padding: 8px 12px;
+  border-radius: 8px;
+  animation: msg-slide 0.3s ease-out;
+}
+
+@keyframes msg-slide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg:hover { background: rgba(255,255,255,0.03); }
+
+.chat-msg-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.chat-msg-sender {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--zoom-text);
+}
+
+.chat-msg-time {
+  font-size: 10px;
+  color: var(--zoom-text-muted);
+}
+
+.chat-msg-to {
+  font-size: 10px;
+  color: var(--zoom-text-muted);
+  font-style: italic;
+}
+
+.chat-msg-body {
+  font-size: 13px;
+  color: var(--zoom-text-secondary);
+  line-height: 1.5;
+}
+
+.chat-input-area {
+  padding: 12px;
+  border-top: 1px solid var(--zoom-border);
+}
+
+.chat-input-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--zoom-surface);
+  border: 1px solid var(--zoom-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--zoom-text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.chat-input:focus { border-color: var(--zoom-blue); }
+
+.chat-input::placeholder { color: var(--zoom-text-muted); }
+
+.chat-send {
+  background: var(--zoom-blue);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+
+.chat-send:hover { background: var(--zoom-blue-hover); }
+
+/* ========== CONTROLS BAR ========== */
+.controls-bar {
+  height: 72px;
+  background: #0e0e1a;
+  border-top: 1px solid var(--zoom-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 24px;
+  position: relative;
+}
+
+.control-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  color: var(--zoom-text-secondary);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.15s;
+  position: relative;
+  font-family: inherit;
+}
+
+.control-btn:hover {
+  background: var(--zoom-surface-2);
+  color: var(--zoom-text);
+}
+
+.control-btn.active {
+  color: var(--zoom-text);
+}
+
+.control-btn.active .ctrl-icon {
+  background: var(--zoom-surface-2);
+}
+
+.ctrl-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 18px;
+  transition: background 0.15s;
+}
+
+.control-btn:hover .ctrl-icon { background: var(--zoom-surface-2); }
+
+.ctrl-label {
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.control-btn.muted .ctrl-icon {
+  background: var(--zoom-red);
+  color: white;
+}
+
+.control-btn.muted:hover .ctrl-icon {
+  background: var(--zoom-red-hover);
+}
+
+.control-btn.sharing .ctrl-icon {
+  background: var(--zoom-green);
+  color: white;
+}
+
+.control-btn.end-call {
+  margin-left: 16px;
+}
+
+.control-btn.end-call .ctrl-icon {
+  background: var(--zoom-red);
+  color: white;
+  width: 56px;
+  border-radius: 10px;
+}
+
+.control-btn.end-call:hover .ctrl-icon {
+  background: var(--zoom-red-hover);
+}
+
+/* Chat badge */
+.chat-badge {
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  background: var(--zoom-red);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  animation: badge-bounce 0.3s ease-out;
+}
+
+@keyframes badge-bounce {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ========== FLOATING REACTIONS ========== */
+.floating-reactions {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.floating-emoji {
+  position: absolute;
+  font-size: 32px;
+  animation: float-up 3s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-150px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-300px) scale(0.5);
+  }
+}
+
+/* ========== NOTIFICATIONS ========== */
+.notification-container {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.notification {
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--zoom-border);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--zoom-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: notif-slide 0.4s ease-out, notif-fade 0.4s ease-in 4s forwards;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+
+@keyframes notif-slide {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes notif-fade {
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+.notif-icon {
+  font-size: 18px;
+}
+
+/* ========== BREAKOUT ROOM MODAL ========== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.breakout-modal {
+  background: var(--zoom-surface);
+  border: 1px solid var(--zoom-border);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 32px;
+  transform: scale(0.9);
+  transition: transform 0.3s;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+
+.modal-overlay.visible .breakout-modal {
+  transform: scale(1);
+}
+
+.breakout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.breakout-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.breakout-close {
+  background: var(--zoom-surface-2);
+  border: 1px solid var(--zoom-border);
+  color: var(--zoom-text);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.breakout-close:hover { background: var(--zoom-red); }
+
+.breakout-project-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.breakout-project-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.breakout-project-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--slide-heading);
+}
+
+.breakout-project-tagline {
+  font-size: 14px;
+  color: var(--zoom-text-secondary);
+}
+
+.breakout-section {
+  margin-bottom: 24px;
+}
+
+.breakout-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--slide-accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breakout-section p {
+  font-size: 14px;
+  color: var(--slide-text);
+  line-height: 1.7;
+}
+
+.breakout-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.breakout-section ul li {
+  font-size: 13px;
+  color: var(--slide-text);
+  padding: 6px 0;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.breakout-section ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 13px;
+  width: 8px;
+  height: 2px;
+  background: var(--slide-accent);
+  border-radius: 1px;
+}
+
+.breakout-tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breakout-tech {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(11,92,255,0.1);
+  color: #6da3ff;
+  border: 1px solid rgba(11,92,255,0.2);
+}
+
+.breakout-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.breakout-metric {
+  text-align: center;
+  padding: 16px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.breakout-metric-value {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6da3ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.breakout-metric-label {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+  margin-top: 4px;
+}
+
+.breakout-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.breakout-link {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+  border: none;
+  font-family: inherit;
+}
+
+.breakout-link.primary {
+  background: var(--zoom-blue);
+  color: white;
+}
+
+.breakout-link.primary:hover { background: var(--zoom-blue-hover); }
+
+.breakout-link.secondary {
+  background: var(--zoom-surface-2);
+  color: var(--zoom-text);
+  border: 1px solid var(--zoom-border);
+}
+
+.breakout-link.secondary:hover { background: var(--zoom-surface); }
+
+/* ========== DOG BARK NOTIFICATION ========== */
+.dog-notification {
+  position: fixed;
+  bottom: 90px;
+  left: 24px;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--zoom-border);
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.4s ease-out;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+.dog-notification.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dog-notification .dog-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d97706, #fbbf24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.dog-notification .dog-text {
+  font-size: 13px;
+  color: var(--zoom-text);
+}
+
+.dog-notification .dog-sub {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+}
+
+.dog-notification .dismiss-btn {
+  background: var(--zoom-surface-2);
+  border: 1px solid var(--zoom-border);
+  color: var(--zoom-text-secondary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ========== WAITING ROOM OVERLAY (Initial) ========== */
+.waiting-room {
+  position: fixed;
+  inset: 0;
+  background: var(--zoom-bg);
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s, transform 0.6s;
+}
+
+.waiting-room.hidden {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.waiting-room-logo {
+  width: 80px;
+  height: 80px;
+  background: var(--zoom-blue);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 40px rgba(11,92,255,0.3);
+}
+
+.waiting-room h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.waiting-room p {
+  color: var(--zoom-text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.waiting-room .meeting-details {
+  background: var(--zoom-surface);
+  border: 1px solid var(--zoom-border);
+  border-radius: 12px;
+  padding: 20px 32px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.waiting-room .meeting-details .label {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.waiting-room .meeting-details .value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+}
+
+.join-btn {
+  background: var(--zoom-blue);
+  border: none;
+  color: white;
+  padding: 14px 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(11,92,255,0.3);
+}
+
+.join-btn:hover {
+  background: var(--zoom-blue-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(11,92,255,0.4);
+}
+
+.join-btn:active {
+  transform: translateY(0);
+}
+
+.waiting-features {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.waiting-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--zoom-text-muted);
+}
+
+.waiting-feature-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--zoom-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+  .participants-panel { width: 240px; }
+  .chat-panel { width: 260px; }
+}
+
+@media (max-width: 1000px) {
+  .participants-panel { width: 0; border-left: none; opacity: 0; }
+  .chat-panel { width: 0; border-left: none; opacity: 0; }
+  .self-view { width: 140px; height: 95px; }
+  .self-view-avatar { width: 36px; height: 36px; font-size: 14px; }
+}
+
+@media (max-width: 768px) {
+  .slide-inner { padding: 24px 28px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .project-grid { grid-template-columns: 1fr; }
+  .control-btn { padding: 8px 10px; }
+  .ctrl-label { font-size: 9px; }
+  .self-view { width: 110px; height: 75px; top: 8px; right: 8px; }
+  .self-view-avatar { width: 28px; height: 28px; font-size: 11px; }
+  .self-view-name { font-size: 8px; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .breakout-metrics { grid-template-columns: 1fr; }
+}
+
+/* ========== SCROLLBAR (panels) ========== */
+.chat-messages::-webkit-scrollbar,
+.participants-list::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track,
+.participants-list::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb,
+.participants-list::-webkit-scrollbar-thumb { background: var(--zoom-border); border-radius: 2px; }
+
+/* Hand raise animation */
+.hand-raise {
+  display: inline-block;
+  animation: hand-wave 1s ease-in-out infinite;
+  transform-origin: 70% 70%;
+}
+
+@keyframes hand-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--zoom-text-muted);
+  border-radius: 50%;
+  animation: typing-bounce 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.typing-text {
+  font-size: 11px;
+  color: var(--zoom-text-muted);
+  font-style: italic;
+  margin-left: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- ======== WAITING ROOM ======== -->
+<div class="waiting-room" id="waitingRoom">
+  <div class="waiting-room-logo">Z</div>
+  <h2>Portfolio Presentation Meeting</h2>
+  <p>The host will let you in soon</p>
+  <div class="meeting-details">
+    <div class="label">Meeting ID</div>
+    <div class="value">847-2026-HIRE</div>
+  </div>
+  <button class="join-btn" onclick="joinMeeting()">Join Meeting</button>
+  <div class="waiting-features">
+    <div class="waiting-feature">
+      <div class="waiting-feature-icon">&#128274;</div>
+      End-to-end encrypted
+    </div>
+    <div class="waiting-feature">
+      <div class="waiting-feature-icon">&#127909;</div>
+      Recording enabled
+    </div>
+    <div class="waiting-feature">
+      <div class="waiting-feature-icon">&#128101;</div>
+      4 participants
+    </div>
+  </div>
+</div>
+
+<!-- ======== TOP BAR ======== -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <div class="zoom-logo">Z</div>
+    <div class="meeting-info">
+      <div class="meeting-title">Portfolio Presentation - Anshull Garg</div>
+      <div class="meeting-id">Meeting ID: 847-2026-HIRE</div>
+    </div>
+  </div>
+  <div class="top-bar-center">
+    <div class="recording-indicator">
+      <div class="recording-dot"></div>
+      Recording
+    </div>
+    <div class="meeting-timer" id="timer">00:00</div>
+    <div class="encryption-badge">
+      &#128274; Encrypted
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <button class="top-btn" onclick="toggleView()">Gallery View</button>
+  </div>
+</div>
+
+<!-- ======== MAIN LAYOUT ======== -->
+<div class="main-layout">
+
+  <!-- ==== PRESENTATION AREA ==== -->
+  <div class="presentation-area">
+    <div class="screen-share-banner">
+      <span>&#128187;</span>
+      Anshull Garg is sharing their screen
+      <button class="stop-btn" style="display:none;">Stop Share</button>
+    </div>
+
+    <div class="slide-container">
+
+      <!-- Slide 0: Title -->
+      <div class="slide slide-title active" data-slide="0">
+        <div class="slide-inner">
+          <div class="slide-avatar">AG</div>
+          <div class="slide-label">Portfolio Presentation</div>
+          <h1>Anshull Garg</h1>
+          <div class="slide-subtitle">Software Engineer at Walmart Global Tech</div>
+          <p>Building scalable systems that serve millions. Full-stack engineer with a passion for clean architecture, exceptional UX, and code that ships.</p>
+          <div class="slide-tags">
+            <span class="slide-tag">React</span>
+            <span class="slide-tag">Node.js</span>
+            <span class="slide-tag">TypeScript</span>
+            <span class="slide-tag">System Design</span>
+            <span class="slide-tag">Cloud Architecture</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 1: About -->
+      <div class="slide slide-content" data-slide="1">
+        <div class="slide-inner">
+          <div class="slide-label">About Me</div>
+          <h2>A bit about me</h2>
+          <p style="margin-bottom: 24px;">
+            I'm a software engineer who thinks in systems and ships in sprints. At Walmart Global Tech, I build production-grade applications -- the kind that handle traffic spikes, edge cases, and the unpredictable reality of serving millions of users.
+          </p>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">Fortune #1</div>
+              <div class="stat-label">Company Scale</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">Millions</div>
+              <div class="stat-label">Users Served</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">Full Stack</div>
+              <div class="stat-label">Engineering Scope</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">24/7</div>
+              <div class="stat-label">Production Uptime</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Experience -->
+      <div class="slide slide-content" data-slide="2">
+        <div class="slide-inner">
+          <div class="slide-label">Experience</div>
+          <h2>Where I've Built</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-date">2023 - Present</div>
+              <div class="timeline-title">Software Engineer</div>
+              <div class="timeline-company">Walmart Global Tech</div>
+              <div class="timeline-detail">Architecting scalable frontend and backend systems for one of the world's largest digital retail platforms. Reduced page load times by 40%, built internal tooling used by 500+ engineers, and shipped features serving millions of daily active users.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2022 - 2023</div>
+              <div class="timeline-title">Software Engineering Intern</div>
+              <div class="timeline-company">Walmart Global Tech</div>
+              <div class="timeline-detail">Developed microservices and contributed to the design system. Automated deployment pipelines reducing release time from hours to minutes.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2019 - 2023</div>
+              <div class="timeline-title">B.Tech Computer Science</div>
+              <div class="timeline-company">University</div>
+              <div class="timeline-detail">Focused on algorithms, distributed systems, and software engineering. Led the developer community and organized hackathons.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Skills -->
+      <div class="slide slide-content" data-slide="3">
+        <div class="slide-inner">
+          <div class="slide-label">Tech Stack</div>
+          <h2>What I Build With</h2>
+          <div class="skills-section">
+            <div class="skill-category">
+              <div class="skill-category-title">Frontend Engineering</div>
+              <div class="skill-pills">
+                <span class="skill-pill">React</span>
+                <span class="skill-pill">Next.js</span>
+                <span class="skill-pill">TypeScript</span>
+                <span class="skill-pill">Tailwind CSS</span>
+                <span class="skill-pill">Framer Motion</span>
+                <span class="skill-pill">Redux</span>
+                <span class="skill-pill">GraphQL</span>
+              </div>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-title">Backend & APIs</div>
+              <div class="skill-pills">
+                <span class="skill-pill">Node.js</span>
+                <span class="skill-pill">Express</span>
+                <span class="skill-pill">Python</span>
+                <span class="skill-pill">PostgreSQL</span>
+                <span class="skill-pill">MongoDB</span>
+                <span class="skill-pill">Redis</span>
+                <span class="skill-pill">REST</span>
+              </div>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-title">DevOps & Tooling</div>
+              <div class="skill-pills">
+                <span class="skill-pill">Docker</span>
+                <span class="skill-pill">Kubernetes</span>
+                <span class="skill-pill">AWS</span>
+                <span class="skill-pill">CI/CD</span>
+                <span class="skill-pill">GitHub Actions</span>
+                <span class="skill-pill">Jenkins</span>
+              </div>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-title">Practices</div>
+              <div class="skill-pills">
+                <span class="skill-pill">TDD</span>
+                <span class="skill-pill">Agile/Scrum</span>
+                <span class="skill-pill">Code Review</span>
+                <span class="skill-pill">System Design</span>
+                <span class="skill-pill">Performance Optimization</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Projects -->
+      <div class="slide slide-content" data-slide="4">
+        <div class="slide-inner">
+          <div class="slide-label">Selected Work</div>
+          <h2>Featured Projects</h2>
+          <p style="margin-bottom:16px; font-size: 13px; color: var(--zoom-text-muted);">Click any project to join its Breakout Room for a deep dive</p>
+          <div class="project-grid">
+            <div class="project-card" onclick="openBreakout(0)">
+              <div class="breakout-badge">Breakout Room 1</div>
+              <div class="project-name">E-Commerce Platform</div>
+              <div class="project-desc">High-performance retail platform handling 100K+ concurrent users with real-time inventory and optimistic UI updates.</div>
+              <div class="project-tech">
+                <span>React</span>
+                <span>Node.js</span>
+                <span>Redis</span>
+                <span>PostgreSQL</span>
+              </div>
+            </div>
+            <div class="project-card" onclick="openBreakout(1)">
+              <div class="breakout-badge">Breakout Room 2</div>
+              <div class="project-name">Internal DevTools Dashboard</div>
+              <div class="project-desc">Engineering productivity suite used by 500+ developers with real-time metrics, deployment tracking, and incident management.</div>
+              <div class="project-tech">
+                <span>Next.js</span>
+                <span>TypeScript</span>
+                <span>GraphQL</span>
+                <span>D3.js</span>
+              </div>
+            </div>
+            <div class="project-card" onclick="openBreakout(2)">
+              <div class="breakout-badge">Breakout Room 3</div>
+              <div class="project-name">Real-Time Notification Engine</div>
+              <div class="project-desc">Scalable event-driven notification system processing 1M+ events daily across email, push, and in-app channels.</div>
+              <div class="project-tech">
+                <span>Node.js</span>
+                <span>Kafka</span>
+                <span>Redis</span>
+                <span>Docker</span>
+              </div>
+            </div>
+            <div class="project-card" onclick="openBreakout(3)">
+              <div class="breakout-badge">Breakout Room 4</div>
+              <div class="project-name">Design System Library</div>
+              <div class="project-desc">Comprehensive component library with 60+ components, accessibility-first approach, and automated visual regression testing.</div>
+              <div class="project-tech">
+                <span>React</span>
+                <span>Storybook</span>
+                <span>Tailwind</span>
+                <span>Chromatic</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Philosophy -->
+      <div class="slide slide-content" data-slide="5">
+        <div class="slide-inner" style="align-items: center; text-align: center;">
+          <div class="slide-label">Engineering Philosophy</div>
+          <h2>How I Think About Code</h2>
+          <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 24px; max-width: 600px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;text-align:left;">
+              <div style="width:40px;height:40px;border-radius:10px;background:rgba(11,92,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">&#128270;</div>
+              <div>
+                <h3 style="font-size:15px;margin-bottom:4px;">Understand the "why" before the "how"</h3>
+                <p style="font-size:13px;">I read the PR description before the code diff. Context shapes better solutions than clever algorithms.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;text-align:left;">
+              <div style="width:40px;height:40px;border-radius:10px;background:rgba(124,58,237,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">&#9889;</div>
+              <div>
+                <h3 style="font-size:15px;margin-bottom:4px;">Ship fast, but never recklessly</h3>
+                <p style="font-size:13px;">"It works on my machine" is not a deployment strategy. I believe in CI/CD, testing, and progressive rollouts.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;text-align:left;">
+              <div style="width:40px;height:40px;border-radius:10px;background:rgba(5,150,105,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">&#128214;</div>
+              <div>
+                <h3 style="font-size:15px;margin-bottom:4px;">The best documentation is the one someone reads</h3>
+                <p style="font-size:13px;">I write code for humans first, machines second. Clear naming, meaningful comments, and living docs.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;text-align:left;">
+              <div style="width:40px;height:40px;border-radius:10px;background:rgba(220,38,38,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">&#127793;</div>
+              <div>
+                <h3 style="font-size:15px;margin-bottom:4px;">Never stop growing</h3>
+                <p style="font-size:13px;">Currently exploring distributed systems, edge computing, and AI/ML integration in production applications.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Contact / Hire Me -->
+      <div class="slide slide-title" data-slide="6">
+        <div class="slide-inner">
+          <div class="slide-avatar" style="font-size:36px;">&#9993;</div>
+          <div class="slide-label">Let's Connect</div>
+          <h1>Ready to work together?</h1>
+          <p style="margin-bottom: 28px;">I'm always open to discussing new opportunities, interesting projects, and ways to make great software.</p>
+          <div class="contact-grid">
+            <div class="contact-item">
+              <div class="contact-icon">&#128231;</div>
+              <div>
+                <div class="contact-label">Email</div>
+                <div class="contact-value">anshull@email.com</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">&#128187;</div>
+              <div>
+                <div class="contact-label">GitHub</div>
+                <div class="contact-value">github.com/anshullgarg</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">&#128279;</div>
+              <div>
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value">linkedin.com/in/anshullgarg</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">&#128196;</div>
+              <div>
+                <div class="contact-label">Resume</div>
+                <div class="contact-value">Download PDF</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide navigation -->
+      <div class="slide-nav">
+        <button id="prevBtn" onclick="prevSlide()" disabled>&#9664;</button>
+        <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">7</span></div>
+        <button id="nextBtn" onclick="nextSlide()">&#9654;</button>
+      </div>
+    </div>
+
+    <!-- Self view PIP -->
+    <div class="self-view">
+      <div class="self-view-content">
+        <div class="self-view-muted" id="selfMuteIcon">&#128263;</div>
+        <div class="self-view-avatar">AG</div>
+        <div class="self-view-name">Anshull Garg (You)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==== PARTICIPANTS PANEL ==== -->
+  <div class="participants-panel" id="participantsPanel">
+    <div class="panel-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="panel-title">Participants</span>
+        <span class="panel-count">4</span>
+      </div>
+      <button class="panel-close" onclick="toggleParticipants()">&times;</button>
+    </div>
+    <div class="participants-list">
+      <!-- You -->
+      <div class="participant">
+        <div class="participant-avatar you">AG</div>
+        <div class="participant-info">
+          <div class="participant-name">
+            Anshull Garg (You)
+            <span class="share-badge">Sharing</span>
+          </div>
+          <div class="participant-role">Software Engineer</div>
+        </div>
+        <div class="participant-icons">
+          <div class="p-icon muted" id="participantMuteYou">&#128263;</div>
+          <div class="p-icon unmuted">&#127909;</div>
+        </div>
+      </div>
+      <!-- Hiring Manager -->
+      <div class="participant">
+        <div class="participant-avatar hm">HM</div>
+        <div class="participant-info">
+          <div class="participant-name">
+            Sarah Chen
+            <span class="host-badge">Host</span>
+          </div>
+          <div class="participant-role">Hiring Manager</div>
+        </div>
+        <div class="participant-icons">
+          <div class="p-icon unmuted">&#127897;</div>
+          <div class="p-icon unmuted">&#127909;</div>
+        </div>
+      </div>
+      <!-- Tech Lead -->
+      <div class="participant">
+        <div class="participant-avatar tl">JK</div>
+        <div class="participant-info">
+          <div class="participant-name">James Kim</div>
+          <div class="participant-role">Tech Lead</div>
+        </div>
+        <div class="participant-icons">
+          <div class="p-icon unmuted">&#127897;</div>
+          <div class="p-icon unmuted">&#127909;</div>
+        </div>
+      </div>
+      <!-- HR -->
+      <div class="participant">
+        <div class="participant-avatar hr">MP</div>
+        <div class="participant-info">
+          <div class="participant-name">Maya Patel</div>
+          <div class="participant-role">HR Coordinator</div>
+        </div>
+        <div class="participant-icons">
+          <div class="p-icon muted">&#128263;</div>
+          <div class="p-icon unmuted">&#127909;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reactions in panel -->
+    <div class="reactions-section">
+      <div class="reactions-title">Recent Reactions</div>
+      <div class="recent-reactions" id="recentReactions">
+        <div class="reaction-bubble">&#128079; <span class="sender">Sarah</span></div>
+        <div class="reaction-bubble">&#128293; <span class="sender">James</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==== CHAT PANEL ==== -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="panel-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="panel-title">Meeting Chat</span>
+      </div>
+      <button class="panel-close" onclick="toggleChat()">&times;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <!-- Messages get populated by JS -->
+    </div>
+    <div class="chat-input-area">
+      <div style="font-size:11px;color:var(--zoom-text-muted);margin-bottom:6px;">To: Everyone</div>
+      <div class="chat-input-wrapper">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()">&#10148;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== CONTROLS BAR ======== -->
+<div class="controls-bar">
+  <button class="control-btn muted" id="muteBtn" onclick="toggleMute()">
+    <div class="ctrl-icon">&#128263;</div>
+    <div class="ctrl-label">Unmute</div>
+  </button>
+
+  <button class="control-btn" id="videoBtn" onclick="toggleVideo()">
+    <div class="ctrl-icon">&#127909;</div>
+    <div class="ctrl-label">Stop Video</div>
+  </button>
+
+  <button class="control-btn sharing" id="shareBtn" onclick="toggleShare()">
+    <div class="ctrl-icon">&#128187;</div>
+    <div class="ctrl-label">Share Screen</div>
+  </button>
+
+  <button class="control-btn active" id="participantsBtn" onclick="toggleParticipants()">
+    <div class="ctrl-icon">&#128101;</div>
+    <div class="ctrl-label">Participants</div>
+  </button>
+
+  <button class="control-btn active" id="chatBtn" onclick="toggleChat()">
+    <div class="ctrl-icon">&#128172;</div>
+    <div class="ctrl-label">Chat</div>
+    <div class="chat-badge" id="chatBadge" style="display:none;">0</div>
+  </button>
+
+  <button class="control-btn" id="reactBtn" onclick="sendReaction()">
+    <div class="ctrl-icon">&#128515;</div>
+    <div class="ctrl-label">Reactions</div>
+  </button>
+
+  <button class="control-btn" onclick="raiseHand()">
+    <div class="ctrl-icon">&#9995;</div>
+    <div class="ctrl-label">Raise Hand</div>
+  </button>
+
+  <button class="control-btn end-call" onclick="endMeeting()">
+    <div class="ctrl-icon">&#128222;</div>
+    <div class="ctrl-label">End</div>
+  </button>
+</div>
+
+<!-- ======== FLOATING REACTIONS ======== -->
+<div class="floating-reactions" id="floatingReactions"></div>
+
+<!-- ======== NOTIFICATIONS ======== -->
+<div class="notification-container" id="notifications"></div>
+
+<!-- ======== DOG BARK NOTIFICATION ======== -->
+<div class="dog-notification" id="dogNotification">
+  <div class="dog-avatar">&#128054;</div>
+  <div>
+    <div class="dog-text">Background noise detected</div>
+    <div class="dog-sub">Someone's dog is barking</div>
+  </div>
+  <button class="dismiss-btn" onclick="dismissDog()">Dismiss</button>
+</div>
+
+<!-- ======== BREAKOUT ROOM MODAL ======== -->
+<div class="modal-overlay" id="breakoutOverlay" onclick="closeBreakout(event)">
+  <div class="breakout-modal" id="breakoutModal">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+let currentSlideIndex = 0;
+const totalSlides = 7;
+let isMuted = true;
+let isVideoOn = true;
+let isSharing = true;
+let chatOpen = true;
+let participantsOpen = true;
+let meetingStartTime = null;
+let timerInterval = null;
+let chatMessageCount = 0;
+let unreadCount = 0;
+
+// ============================================
+// CHAT MESSAGES SCRIPT
+// ============================================
+const chatScript = [
+  { sender: 'Sarah Chen', role: 'Hiring Manager', time: '0:05', body: 'Welcome everyone! Anshull, thanks for joining us today.' },
+  { sender: 'Anshull Garg', role: 'You', time: '0:08', body: 'Thanks for having me! Can everyone see my screen?' },
+  { sender: 'James Kim', role: 'Tech Lead', time: '0:10', body: 'Yep, looks good! We can see your slides.' },
+  { sender: 'Maya Patel', role: 'HR', time: '0:12', body: 'All good on my end too.' },
+  { sender: 'James Kim', role: 'Tech Lead', time: '0:30', body: 'Walmart Global Tech... nice. That is some serious scale.' },
+  { sender: 'Sarah Chen', role: 'Hiring Manager', time: '0:45', body: 'Your portfolio is amazing! Love the presentation format.' },
+  { sender: 'Maya Patel', role: 'HR', time: '1:00', body: 'Sorry I was multitasking -- can you go back a slide?' },
+  { sender: 'James Kim', role: 'Tech Lead', time: '1:15', body: 'That tech stack is exactly what we are looking for.' },
+  { sender: 'Sarah Chen', role: 'Hiring Manager', time: '1:30', body: 'The 40% page load improvement is impressive. What was your approach?' },
+  { sender: 'Anshull Garg', role: 'You', time: '1:35', body: 'Code splitting, lazy loading, and aggressive caching with Redis. Happy to dive deeper!' },
+  { sender: 'James Kim', role: 'Tech Lead', time: '1:50', body: 'You are on mute btw' },
+  { sender: 'Anshull Garg', role: 'You', time: '1:52', body: '...classic. Unmuted now, thanks!' },
+  { sender: 'Maya Patel', role: 'HR', time: '2:10', body: 'Love the breakout rooms for projects. Very creative.' },
+  { sender: 'Sarah Chen', role: 'Hiring Manager', time: '2:30', body: 'Can we schedule a follow-up interview? This is really strong.' },
+  { sender: 'James Kim', role: 'Tech Lead', time: '2:35', body: '100%. I want to deep dive into the notification engine architecture.' },
+  { sender: 'Sarah Chen', role: 'Hiring Manager', time: '2:45', body: 'Great presentation Anshull! We will be in touch very soon.' },
+];
+
+let chatIndex = 0;
+
+// ============================================
+// BREAKOUT ROOM DATA
+// ============================================
+const breakoutRooms = [
+  {
+    name: 'E-Commerce Platform',
+    tagline: 'High-performance retail at Fortune 1 scale',
+    icon: '&#128722;',
+    iconBg: 'linear-gradient(135deg, #0b5cff, #2d74ff)',
+    problem: 'Legacy monolithic e-commerce frontend could not handle traffic spikes during sales events. Page load times exceeded 8 seconds on mobile, and the checkout abandonment rate was 67%.',
+    solution: 'Rebuilt the frontend with React and Next.js, implementing server-side rendering, optimistic UI updates for cart operations, and a micro-frontend architecture to enable independent team deployments.',
+    features: [
+      'Server-side rendering with Next.js for sub-2s first contentful paint',
+      'Real-time inventory tracking with WebSocket connections',
+      'Optimistic UI updates reducing perceived cart latency to near-zero',
+      'A/B testing framework integrated into the component library',
+      'Progressive image loading with blur-up placeholder technique'
+    ],
+    tech: ['React', 'Next.js', 'TypeScript', 'Node.js', 'Redis', 'PostgreSQL', 'Docker', 'AWS'],
+    metrics: [
+      { value: '40%', label: 'Faster Load Time' },
+      { value: '100K+', label: 'Concurrent Users' },
+      { value: '23%', label: 'Fewer Cart Abandons' }
+    ]
+  },
+  {
+    name: 'Internal DevTools Dashboard',
+    tagline: 'Engineering productivity at enterprise scale',
+    icon: '&#128736;',
+    iconBg: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
+    problem: 'Engineering teams lacked visibility into deployment health, service dependencies, and performance metrics. Information was scattered across 12+ different tools and dashboards.',
+    solution: 'Built a unified engineering dashboard aggregating data from CI/CD pipelines, monitoring systems, and incident management tools into a single, real-time interface with customizable views per team.',
+    features: [
+      'Real-time deployment pipeline visualization with live log streaming',
+      'Service dependency graph with automatic health status propagation',
+      'Custom metric dashboards with drag-and-drop widget configuration',
+      'Incident timeline with automated root cause correlation',
+      'Slack and PagerDuty integration for alert management'
+    ],
+    tech: ['Next.js', 'TypeScript', 'GraphQL', 'D3.js', 'WebSocket', 'Node.js', 'PostgreSQL'],
+    metrics: [
+      { value: '500+', label: 'Engineers Using It' },
+      { value: '60%', label: 'Faster Incident Response' },
+      { value: '12', label: 'Tools Consolidated' }
+    ]
+  },
+  {
+    name: 'Real-Time Notification Engine',
+    tagline: 'Event-driven architecture at million-message scale',
+    icon: '&#128276;',
+    iconBg: 'linear-gradient(135deg, #059669, #34d399)',
+    problem: 'Notification delivery was unreliable, with 15% of critical alerts being delayed or dropped. Each channel (email, push, in-app) had its own separate system with no unified tracking.',
+    solution: 'Designed and implemented an event-driven notification service using Kafka for reliable message processing, with channel-specific adapters and a unified delivery tracking system.',
+    features: [
+      'Event-driven architecture with Kafka for guaranteed message delivery',
+      'Channel router with intelligent fallback (push to email to SMS)',
+      'Template engine supporting personalization and A/B testing',
+      'Real-time delivery tracking dashboard with retry analytics',
+      'Rate limiting and batching to prevent notification fatigue'
+    ],
+    tech: ['Node.js', 'Apache Kafka', 'Redis', 'Docker', 'Kubernetes', 'MongoDB', 'AWS SQS'],
+    metrics: [
+      { value: '1M+', label: 'Events Per Day' },
+      { value: '99.9%', label: 'Delivery Rate' },
+      { value: '<200ms', label: 'P95 Latency' }
+    ]
+  },
+  {
+    name: 'Design System Library',
+    tagline: 'Accessible, consistent UI at scale',
+    icon: '&#127912;',
+    iconBg: 'linear-gradient(135deg, #dc2626, #f87171)',
+    problem: 'Product teams were building inconsistent UIs with duplicated components across 8 different applications. Accessibility compliance was below 40%, and design-to-dev handoff took days.',
+    solution: 'Created a comprehensive React component library with accessibility baked in from the ground up, automated visual regression testing, and interactive documentation that serves as the single source of truth.',
+    features: [
+      '60+ production-ready components with WCAG 2.1 AA compliance',
+      'Automated visual regression testing with Chromatic integration',
+      'Theme system supporting dark mode, high contrast, and custom brands',
+      'Interactive Storybook documentation with live code editors',
+      'Figma plugin for design token synchronization'
+    ],
+    tech: ['React', 'TypeScript', 'Storybook', 'Tailwind CSS', 'Chromatic', 'Jest', 'Playwright'],
+    metrics: [
+      { value: '60+', label: 'Components' },
+      { value: '98%', label: 'A11y Score' },
+      { value: '8', label: 'Apps Using It' }
+    ]
+  }
+];
+
+// ============================================
+// JOINING THE MEETING
+// ============================================
+function joinMeeting() {
+  const wr = document.getElementById('waitingRoom');
+  wr.classList.add('hidden');
+  setTimeout(() => { wr.style.display = 'none'; }, 600);
+
+  meetingStartTime = Date.now();
+  startTimer();
+  startChatScript();
+  scheduleNotifications();
+}
+
+// ============================================
+// TIMER
+// ============================================
+function startTimer() {
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - meetingStartTime) / 1000);
+    const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+    const s = (elapsed % 60).toString().padStart(2, '0');
+    document.getElementById('timer').textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+// ============================================
+// SLIDES
+// ============================================
+function showSlide(index) {
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach(s => s.classList.remove('active'));
+  slides[index].classList.add('active');
+  document.getElementById('currentSlide').textContent = index + 1;
+  document.getElementById('prevBtn').disabled = index === 0;
+  document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+}
+
+function nextSlide() {
+  if (currentSlideIndex < totalSlides - 1) {
+    currentSlideIndex++;
+    showSlide(currentSlideIndex);
+  }
+}
+
+function prevSlide() {
+  if (currentSlideIndex > 0) {
+    currentSlideIndex--;
+    showSlide(currentSlideIndex);
+  }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('waitingRoom').style.display !== 'none' &&
+      !document.getElementById('waitingRoom').classList.contains('hidden')) return;
+
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    nextSlide();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    prevSlide();
+  }
+});
+
+// ============================================
+// CONTROLS
+// ============================================
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('muteBtn');
+  const selfIcon = document.getElementById('selfMuteIcon');
+  const participantIcon = document.getElementById('participantMuteYou');
+
+  if (isMuted) {
+    btn.classList.add('muted');
+    btn.querySelector('.ctrl-icon').innerHTML = '&#128263;';
+    btn.querySelector('.ctrl-label').textContent = 'Unmute';
+    selfIcon.style.display = 'flex';
+    selfIcon.innerHTML = '&#128263;';
+    participantIcon.classList.add('muted');
+    participantIcon.classList.remove('unmuted');
+    participantIcon.innerHTML = '&#128263;';
+  } else {
+    btn.classList.remove('muted');
+    btn.querySelector('.ctrl-icon').innerHTML = '&#127897;';
+    btn.querySelector('.ctrl-label').textContent = 'Mute';
+    selfIcon.style.display = 'none';
+    participantIcon.classList.remove('muted');
+    participantIcon.classList.add('unmuted');
+    participantIcon.innerHTML = '&#127897;';
+  }
+}
+
+function toggleVideo() {
+  isVideoOn = !isVideoOn;
+  const btn = document.getElementById('videoBtn');
+  if (isVideoOn) {
+    btn.classList.remove('muted');
+    btn.querySelector('.ctrl-icon').innerHTML = '&#127909;';
+    btn.querySelector('.ctrl-label').textContent = 'Stop Video';
+  } else {
+    btn.classList.add('muted');
+    btn.querySelector('.ctrl-icon').innerHTML = '&#128247;';
+    btn.querySelector('.ctrl-label').textContent = 'Start Video';
+  }
+}
+
+function toggleShare() {
+  isSharing = !isSharing;
+  const btn = document.getElementById('shareBtn');
+  const banner = document.querySelector('.screen-share-banner');
+  if (isSharing) {
+    btn.classList.add('sharing');
+    btn.querySelector('.ctrl-label').textContent = 'Share Screen';
+    banner.style.display = 'flex';
+  } else {
+    btn.classList.remove('sharing');
+    btn.querySelector('.ctrl-label').textContent = 'Share Screen';
+    banner.style.display = 'none';
+  }
+}
+
+function toggleParticipants() {
+  participantsOpen = !participantsOpen;
+  const panel = document.getElementById('participantsPanel');
+  const btn = document.getElementById('participantsBtn');
+  if (participantsOpen) {
+    panel.classList.remove('hidden');
+    btn.classList.add('active');
+  } else {
+    panel.classList.add('hidden');
+    btn.classList.remove('active');
+  }
+}
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const panel = document.getElementById('chatPanel');
+  const btn = document.getElementById('chatBtn');
+  const badge = document.getElementById('chatBadge');
+  if (chatOpen) {
+    panel.classList.remove('hidden');
+    btn.classList.add('active');
+    badge.style.display = 'none';
+    unreadCount = 0;
+  } else {
+    panel.classList.add('hidden');
+    btn.classList.remove('active');
+  }
+}
+
+// ============================================
+// CHAT
+// ============================================
+function addChatMessage(msg) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  const isYou = msg.sender === 'Anshull Garg';
+  div.innerHTML = `
+    <div class="chat-msg-header">
+      <span class="chat-msg-sender" style="color: ${isYou ? '#6da3ff' : msg.role === 'Hiring Manager' ? '#4ade80' : msg.role === 'Tech Lead' ? '#f87171' : '#fbbf24'}">${msg.sender}</span>
+      <span class="chat-msg-time">${msg.time}</span>
+      <span class="chat-msg-to">to Everyone</span>
+    </div>
+    <div class="chat-msg-body">${msg.body}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+
+  // Update badge if chat is closed
+  if (!chatOpen && !isYou) {
+    unreadCount++;
+    const badge = document.getElementById('chatBadge');
+    badge.textContent = unreadCount;
+    badge.style.display = 'flex';
+  }
+}
+
+function startChatScript() {
+  function sendNext() {
+    if (chatIndex >= chatScript.length) return;
+    addChatMessage(chatScript[chatIndex]);
+    chatIndex++;
+    const delay = 3000 + Math.random() * 5000;
+    setTimeout(sendNext, delay);
+  }
+  setTimeout(sendNext, 2000);
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const elapsed = meetingStartTime ? Math.floor((Date.now() - meetingStartTime) / 1000) : 0;
+  const m = Math.floor(elapsed / 60);
+  const s = (elapsed % 60).toString().padStart(2, '0');
+
+  addChatMessage({
+    sender: 'Anshull Garg',
+    role: 'You',
+    time: `${m}:${s}`,
+    body: text
+  });
+  input.value = '';
+}
+
+// ============================================
+// REACTIONS
+// ============================================
+const reactionEmojis = ['&#128079;', '&#128293;', '&#128175;', '&#127881;', '&#10084;&#65039;', '&#128640;', '&#9989;'];
+const reactionNames = ['Sarah', 'James', 'Maya'];
+
+function sendReaction() {
+  const emoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
+  spawnFloatingEmoji(emoji);
+}
+
+function spawnFloatingEmoji(emoji) {
+  const container = document.getElementById('floatingReactions');
+  const el = document.createElement('div');
+  el.className = 'floating-emoji';
+  el.innerHTML = emoji;
+  el.style.left = (Math.random() * 200 - 100) + 'px';
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function autoReaction() {
+  const emoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
+  const name = reactionNames[Math.floor(Math.random() * reactionNames.length)];
+
+  spawnFloatingEmoji(emoji);
+
+  // Add to panel
+  const panel = document.getElementById('recentReactions');
+  const bubble = document.createElement('div');
+  bubble.className = 'reaction-bubble';
+  bubble.innerHTML = `${emoji} <span class="sender">${name}</span>`;
+  panel.appendChild(bubble);
+
+  // Keep only last 6
+  while (panel.children.length > 6) {
+    panel.removeChild(panel.firstChild);
+  }
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+function showNotification(icon, text) {
+  const container = document.getElementById('notifications');
+  const notif = document.createElement('div');
+  notif.className = 'notification';
+  notif.innerHTML = `<span class="notif-icon">${icon}</span>${text}`;
+  container.appendChild(notif);
+  setTimeout(() => notif.remove(), 5000);
+}
+
+function scheduleNotifications() {
+  setTimeout(() => showNotification('&#128274;', 'This meeting is being recorded'), 1500);
+  setTimeout(() => showNotification('&#128101;', 'Sarah Chen (Host) has admitted you to the meeting'), 2500);
+  setTimeout(() => showNotification('&#128075;', 'James Kim has joined the meeting'), 4000);
+  setTimeout(() => showNotification('&#128075;', 'Maya Patel has joined the meeting'), 5500);
+
+  // Dog bark
+  setTimeout(() => {
+    document.getElementById('dogNotification').classList.add('visible');
+  }, 15000);
+
+  // Auto reactions
+  setTimeout(() => autoReaction(), 8000);
+  setTimeout(() => autoReaction(), 14000);
+  setTimeout(() => autoReaction(), 22000);
+  setTimeout(() => autoReaction(), 30000);
+  setTimeout(() => autoReaction(), 40000);
+
+  // Periodic reactions
+  setInterval(() => {
+    if (Math.random() > 0.5) autoReaction();
+  }, 20000);
+
+  // "You're on mute" notification
+  setTimeout(() => showNotification('&#128263;', 'You are muted. Click Unmute to speak.'), 20000);
+
+  // Someone's connection
+  setTimeout(() => showNotification('&#9888;&#65039;', 'Maya Patel\'s connection is unstable'), 35000);
+}
+
+function dismissDog() {
+  document.getElementById('dogNotification').classList.remove('visible');
+}
+
+function raiseHand() {
+  showNotification('&#9995;', 'You raised your hand');
+  setTimeout(() => {
+    showNotification('&#128172;', 'Sarah Chen: "Go ahead, Anshull!"');
+  }, 2000);
+}
+
+// ============================================
+// BREAKOUT ROOMS
+// ============================================
+function openBreakout(index) {
+  const project = breakoutRooms[index];
+  const modal = document.getElementById('breakoutModal');
+
+  modal.innerHTML = `
+    <div class="breakout-header">
+      <div class="breakout-title">Breakout Room ${index + 1}</div>
+      <button class="breakout-close" onclick="closeBreakout(event, true)">&times;</button>
+    </div>
+    <div class="breakout-project-header">
+      <div class="breakout-project-icon" style="background:${project.iconBg};font-size:28px;">${project.icon}</div>
+      <div>
+        <div class="breakout-project-name">${project.name}</div>
+        <div class="breakout-project-tagline">${project.tagline}</div>
+      </div>
+    </div>
+
+    <div class="breakout-section">
+      <div class="breakout-section-title">&#127919; The Problem</div>
+      <p>${project.problem}</p>
+    </div>
+
+    <div class="breakout-section">
+      <div class="breakout-section-title">&#128161; The Solution</div>
+      <p>${project.solution}</p>
+    </div>
+
+    <div class="breakout-section">
+      <div class="breakout-section-title">&#11088; Key Features</div>
+      <ul>
+        ${project.features.map(f => `<li>${f}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="breakout-section">
+      <div class="breakout-section-title">&#128200; Impact Metrics</div>
+      <div class="breakout-metrics">
+        ${project.metrics.map(m => `
+          <div class="breakout-metric">
+            <div class="breakout-metric-value">${m.value}</div>
+            <div class="breakout-metric-label">${m.label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="breakout-section">
+      <div class="breakout-section-title">&#128736; Tech Stack</div>
+      <div class="breakout-tech-stack">
+        ${project.tech.map(t => `<span class="breakout-tech">${t}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="breakout-links">
+      <button class="breakout-link primary">View Live Demo</button>
+      <button class="breakout-link secondary">View Source Code</button>
+      <button class="breakout-link secondary" onclick="closeBreakout(event, true)">Return to Main Room</button>
+    </div>
+  `;
+
+  document.getElementById('breakoutOverlay').classList.add('visible');
+  showNotification('&#128682;', `Joined Breakout Room ${index + 1}: ${project.name}`);
+}
+
+function closeBreakout(event, force) {
+  if (force || event.target === document.getElementById('breakoutOverlay')) {
+    document.getElementById('breakoutOverlay').classList.remove('visible');
+    showNotification('&#128682;', 'Returned to main meeting room');
+  }
+}
+
+// ============================================
+// END MEETING
+// ============================================
+function endMeeting() {
+  if (timerInterval) clearInterval(timerInterval);
+
+  document.body.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#1a1a2e;color:white;font-family:Inter,sans-serif;text-align:center;padding:24px;">
+      <div style="width:80px;height:80px;background:#0b5cff;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;margin-bottom:32px;box-shadow:0 10px 40px rgba(11,92,255,0.3);">Z</div>
+      <h1 style="font-size:32px;font-weight:800;margin-bottom:8px;">Meeting Ended</h1>
+      <p style="color:#a0a0c0;font-size:16px;margin-bottom:32px;">Thanks for attending the portfolio presentation!</p>
+      <div style="background:#232340;border:1px solid #3a3a5c;border-radius:16px;padding:32px 48px;margin-bottom:32px;">
+        <div style="font-size:14px;color:#6a6a8e;margin-bottom:4px;">Meeting Duration</div>
+        <div style="font-size:28px;font-weight:800;font-family:'Fira Code',monospace;color:#6da3ff;">${document.getElementById('timer').textContent}</div>
+        <div style="font-size:13px;color:#6a6a8e;margin-top:12px;">Meeting ID: 847-2026-HIRE</div>
+      </div>
+      <div style="display:flex;gap:16px;">
+        <button onclick="location.reload()" style="background:#0b5cff;border:none;color:white;padding:12px 32px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#2d74ff'" onmouseout="this.style.background='#0b5cff'">Rejoin Meeting</button>
+        <button onclick="window.close()" style="background:#232340;border:1px solid #3a3a5c;color:white;padding:12px 32px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#2d2d4a'" onmouseout="this.style.background='#232340'">Close Window</button>
+      </div>
+      <div style="margin-top:48px;color:#6a6a8e;font-size:12px;">
+        Anshull Garg &middot; Software Engineer &middot; anshull@email.com &middot; github.com/anshullgarg
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// TOGGLE VIEW (cosmetic)
+// ============================================
+function toggleView() {
+  const btn = event.target;
+  if (btn.textContent === 'Gallery View') {
+    btn.textContent = 'Speaker View';
+    showNotification('&#128065;', 'Switched to Gallery View');
+  } else {
+    btn.textContent = 'Gallery View';
+    showNotification('&#128065;', 'Switched to Speaker View');
+  }
+}
+</script>
+</body>
+</html>
