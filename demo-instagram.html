@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Anshull Garg (@anshullgarg) - Instagram</title>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ig-black: #000000;
+  --ig-dark: #121212;
+  --ig-card: #1a1a1a;
+  --ig-border: #262626;
+  --ig-white: #fafafa;
+  --ig-gray: #8e8e8e;
+  --ig-blue: #0095f6;
+  --ig-blue-hover: #1877f2;
+  --ig-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  --ig-story-gradient: linear-gradient(135deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+  --ig-reel-gradient: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  --max-w: 470px;
+}
+
+html { font-size: 14px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--ig-black);
+  color: var(--ig-white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Scrollbar hide */
+::-webkit-scrollbar { display: none; }
+body { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ========== APP SHELL ========== */
+.app {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--ig-black);
+}
+
+/* ========== TOP NAV ========== */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--ig-black);
+  border-bottom: 1px solid var(--ig-border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(20px);
+}
+
+.top-nav__lock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.top-nav__lock svg { width: 12px; height: 12px; fill: var(--ig-white); }
+
+.top-nav__username {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.top-nav__actions { display: flex; gap: 20px; align-items: center; }
+.top-nav__actions svg { width: 24px; height: 24px; fill: var(--ig-white); cursor: pointer; transition: opacity 0.2s; }
+.top-nav__actions svg:hover { opacity: 0.7; }
+
+/* ========== PROFILE HEADER ========== */
+.profile-header { padding: 16px 16px 0; }
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 16px;
+}
+
+/* Avatar with gradient ring */
+.avatar-ring {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ig-story-gradient);
+  padding: 3px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.avatar-ring:hover { transform: scale(1.05); }
+
+.avatar-ring::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--ig-black);
+}
+
+.avatar-ring__img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--ig-black);
+  object-fit: cover;
+  /* Placeholder: gradient avatar */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Stats row */
+.stats-row {
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.stat__number {
+  font-size: 16.5px;
+  font-weight: 700;
+  display: block;
+  line-height: 1.2;
+}
+
+.stat__label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ig-white);
+  line-height: 1.4;
+}
+
+/* Bio */
+.bio { padding: 0 0 12px; }
+
+.bio__name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.bio__category {
+  font-size: 13px;
+  color: var(--ig-gray);
+  margin-bottom: 4px;
+}
+
+.bio__text {
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.bio__link {
+  color: #e0f1ff;
+  font-weight: 600;
+  font-size: 14px;
+}
+.bio__link:hover { text-decoration: underline; }
+
+/* ========== ACTION BUTTONS ========== */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  padding: 0 0 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn--follow {
+  background: var(--ig-blue);
+  color: #fff;
+}
+.btn--follow:hover { background: var(--ig-blue-hover); }
+.btn--follow.following {
+  background: var(--ig-card);
+  color: var(--ig-white);
+  border: 1px solid var(--ig-border);
+}
+
+.btn--message {
+  background: var(--ig-card);
+  color: var(--ig-white);
+  border: 1px solid var(--ig-border);
+}
+.btn--message:hover { background: #262626; }
+
+.btn--suggest {
+  width: 34px;
+  flex: 0 0 34px;
+  background: var(--ig-card);
+  color: var(--ig-white);
+  border: 1px solid var(--ig-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn--suggest svg { width: 16px; height: 16px; fill: var(--ig-white); }
+
+/* ========== STORY HIGHLIGHTS ========== */
+.highlights {
+  display: flex;
+  gap: 15px;
+  padding: 12px 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.highlight__ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid var(--ig-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ig-black);
+  transition: transform 0.25s, border-color 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.highlight:hover .highlight__ring {
+  transform: scale(1.08);
+  border-color: var(--ig-gray);
+}
+
+.highlight__icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.highlight__label {
+  font-size: 12px;
+  font-weight: 400;
+  max-width: 64px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========== TAB BAR ========== */
+.tab-bar {
+  display: flex;
+  border-top: 1px solid var(--ig-border);
+  position: relative;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  position: relative;
+}
+
+.tab.active { opacity: 1; }
+.tab.active::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ig-white);
+}
+
+.tab svg { width: 24px; height: 24px; fill: var(--ig-white); }
+.tab:hover { opacity: 0.8; }
+
+/* ========== PHOTO GRID ========== */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding-bottom: 60px;
+}
+
+.grid-item {
+  position: relative;
+  aspect-ratio: 1;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.grid-item__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s, filter 0.3s;
+}
+.grid-item:hover .grid-item__img {
+  transform: scale(1.04);
+  filter: brightness(0.75);
+}
+
+.grid-item__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  opacity: 0;
+  transition: opacity 0.25s;
+  background: rgba(0,0,0,0.3);
+  z-index: 2;
+}
+.grid-item:hover .grid-item__overlay { opacity: 1; }
+
+.grid-item__stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+.grid-item__stat svg { width: 18px; height: 18px; fill: #fff; }
+
+.grid-item__multi {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+}
+.grid-item__multi svg { width: 18px; height: 18px; fill: #fff; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5)); }
+
+/* ========== POST MODAL ========== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  width: 90%;
+  max-width: 440px;
+  max-height: 90vh;
+  background: var(--ig-dark);
+  border-radius: 12px;
+  overflow: hidden;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+.modal-backdrop.open .modal { transform: scale(1) translateY(0); }
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ig-border);
+  gap: 10px;
+}
+
+.modal__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.modal__user {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.modal__close {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.modal__close:hover { opacity: 1; }
+.modal__close svg { width: 18px; height: 18px; fill: var(--ig-white); }
+
+.modal__image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.modal__actions {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px 4px;
+  gap: 14px;
+}
+.modal__actions svg { width: 24px; height: 24px; fill: var(--ig-white); cursor: pointer; transition: transform 0.2s; }
+.modal__actions svg:hover { transform: scale(1.15); }
+.modal__actions svg.liked { fill: #ed4956; }
+.modal__bookmark { margin-left: auto; }
+
+.modal__likes {
+  padding: 0 14px 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.modal__caption {
+  padding: 0 14px 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.modal__caption strong { font-weight: 600; }
+
+.modal__comments-count {
+  padding: 0 14px 6px;
+  font-size: 13px;
+  color: var(--ig-gray);
+  cursor: pointer;
+}
+
+.modal__time {
+  padding: 0 14px 12px;
+  font-size: 10px;
+  color: var(--ig-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ========== STORY VIEWER ========== */
+.story-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: var(--ig-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.story-viewer.open { opacity: 1; pointer-events: all; }
+
+.story-viewer__container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  max-height: 740px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--ig-dark);
+}
+
+.story-viewer__bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 60px 24px 40px;
+  text-align: center;
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+.story-viewer__bg-icon {
+  font-size: 64px;
+  margin-bottom: 8px;
+  animation: storyPulse 2s ease-in-out infinite;
+}
+
+@keyframes storyPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.story-viewer__bg-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.story-viewer__bg-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+  max-width: 300px;
+}
+
+.story-viewer__progress {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+}
+
+.story-viewer__bar {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.story-viewer__bar-fill {
+  height: 100%;
+  background: #fff;
+  width: 0;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+.story-viewer__bar.complete .story-viewer__bar-fill { width: 100%; }
+.story-viewer__bar.active .story-viewer__bar-fill { width: 0; }
+
+.story-viewer__header {
+  position: absolute;
+  top: 18px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.story-viewer__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid var(--ig-black);
+}
+
+.story-viewer__name {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.story-viewer__time {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+.story-viewer__close-btn {
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+.story-viewer__close-btn:hover { opacity: 1; }
+.story-viewer__close-btn svg { width: 24px; height: 24px; fill: #fff; }
+
+.story-viewer__nav {
+  position: absolute;
+  inset: 60px 0 0;
+  display: flex;
+  z-index: 5;
+}
+.story-viewer__nav-left, .story-viewer__nav-right {
+  flex: 1;
+  cursor: pointer;
+}
+
+.story-viewer__reply {
+  position: absolute;
+  bottom: 16px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.story-viewer__input {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.story-viewer__input::placeholder { color: rgba(255,255,255,0.5); }
+.story-viewer__input:focus { border-color: rgba(255,255,255,0.6); }
+
+/* ========== BOTTOM NAV ========== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--max-w);
+  background: var(--ig-black);
+  border-top: 1px solid var(--ig-border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 200;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.bottom-nav__item:hover { opacity: 0.9; }
+.bottom-nav__item.active { opacity: 1; }
+.bottom-nav__item svg { width: 24px; height: 24px; fill: var(--ig-white); }
+
+.bottom-nav__profile-pic {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--ig-white);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* ========== NOTIFICATIONS TOAST ========== */
+.toast {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ig-card);
+  color: var(--ig-white);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 300;
+  white-space: nowrap;
+  border: 1px solid var(--ig-border);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ========== GRADIENT BACKGROUNDS FOR GRID ========== */
+.grad-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.grad-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.grad-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.grad-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.grad-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.grad-6 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+.grad-7 { background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%); }
+.grad-8 { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); }
+.grad-9 { background: linear-gradient(135deg, #f5576c 0%, #ff6a00 100%); }
+.grad-10 { background: linear-gradient(135deg, #0c3483 0%, #a2b6df 100%); }
+.grad-11 { background: linear-gradient(135deg, #c471f5 0%, #fa71cd 100%); }
+.grad-12 { background: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%); }
+
+.grad-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.grad-placeholder__icon {
+  font-size: 28px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* ========== STORY HIGHLIGHT GRADIENTS ========== */
+.story-bg-skills {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+.story-bg-projects {
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+}
+.story-bg-life {
+  background: linear-gradient(135deg, #2d1b69, #11998e);
+}
+.story-bg-walmart {
+  background: linear-gradient(135deg, #0071dc, #ffc220);
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.1s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.2s; }
+
+/* ========== LOADING SHIMMER ========== */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Double-tap heart animation */
+.double-tap-heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 20;
+  pointer-events: none;
+  font-size: 80px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+}
+
+.double-tap-heart.pop {
+  animation: heartPop 0.8s ease forwards;
+}
+
+@keyframes heartPop {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  15% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+  30% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (min-width: 768px) {
+  .app {
+    border-left: 1px solid var(--ig-border);
+    border-right: 1px solid var(--ig-border);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- TOP NAV -->
+  <header class="top-nav">
+    <div class="top-nav__lock">
+      <svg viewBox="0 0 24 24"><path d="M6 10V8a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2-2a4 4 0 1 1 8 0v2H8V8zm4 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+      <span class="top-nav__username">anshullgarg</span>
+      <svg viewBox="0 0 24 24" width="16" height="16" style="margin-left:-2px"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="top-nav__actions">
+      <!-- threads -->
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 7.5a4.5 4.5 0 0 1-2.25 3.897V16.5a.75.75 0 0 1-1.5 0v-3.75a.75.75 0 0 1 .75-.75A3 3 0 1 0 10.5 9a.75.75 0 0 1-1.5 0 4.5 4.5 0 0 1 7.5-1.5z"/></svg>
+      <!-- add post -->
+      <svg viewBox="0 0 24 24"><path d="M21 11h-8V3a1 1 0 0 0-2 0v8H3a1 1 0 0 0 0 2h8v8a1 1 0 0 0 2 0v-8h8a1 1 0 0 0 0-2z"/></svg>
+      <!-- hamburger -->
+      <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+    </div>
+  </header>
+
+  <!-- PROFILE HEADER -->
+  <section class="profile-header">
+    <div class="profile-top">
+      <div class="avatar-ring" onclick="openStory(0)" aria-label="View story">
+        <div class="avatar-ring__img">AG</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat" aria-label="45 posts">
+          <span class="stat__number">45</span>
+          <span class="stat__label">posts</span>
+        </div>
+        <div class="stat" aria-label="12.8K followers">
+          <span class="stat__number">12.8K</span>
+          <span class="stat__label">followers</span>
+        </div>
+        <div class="stat" aria-label="487 following">
+          <span class="stat__number">487</span>
+          <span class="stat__label">following</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIO -->
+    <div class="bio">
+      <div class="bio__name">Anshull Garg</div>
+      <div class="bio__category">Software Developer</div>
+      <div class="bio__text">Software Developer at Walmart <span aria-hidden="true">&#x1F4BB;</span>
+Building products that scale <span aria-hidden="true">&#x1F680;</span>
+Code. Coffee. Create. Repeat. <span aria-hidden="true">&#x2615;</span>
+From bugs to features, one commit at a time <span aria-hidden="true">&#x1F41B;&#x27A1;&#xFE0F;&#x2728;</span>
+Bengaluru, India <span aria-hidden="true">&#x1F4CD;</span></div>
+      <a class="bio__link" href="#" onclick="showToast('Link copied to clipboard!')">github.com/anshullgarg</a>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button class="btn btn--follow" id="followBtn" onclick="toggleFollow()">Follow</button>
+      <button class="btn btn--message" onclick="showToast('Messages coming soon!')">Message</button>
+      <button class="btn btn--suggest" onclick="showToast('Suggested profiles coming soon!')">
+        <svg viewBox="0 0 24 24"><path d="M19 14v-2h-2V8h-2v4h-2v2h2v4h2v-4h2zM18 6a3 3 0 1 0-6 0 3 3 0 0 0 6 0zM9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm4.17 2H4.83C3.27 13 2 14.37 2 16.08V18h14v-1.92C16 14.37 14.73 13 13.17 13z"/></svg>
+      </button>
+    </div>
+
+    <!-- STORY HIGHLIGHTS -->
+    <div class="highlights">
+      <div class="highlight" onclick="openStory(0)">
+        <div class="highlight__ring">
+          <span class="highlight__icon" aria-hidden="true">&#x1F4BB;</span>
+        </div>
+        <span class="highlight__label">Skills</span>
+      </div>
+      <div class="highlight" onclick="openStory(1)">
+        <div class="highlight__ring">
+          <span class="highlight__icon" aria-hidden="true">&#x1F680;</span>
+        </div>
+        <span class="highlight__label">Projects</span>
+      </div>
+      <div class="highlight" onclick="openStory(2)">
+        <div class="highlight__ring">
+          <span class="highlight__icon" aria-hidden="true">&#x1F30D;</span>
+        </div>
+        <span class="highlight__label">Life</span>
+      </div>
+      <div class="highlight" onclick="openStory(3)">
+        <div class="highlight__ring">
+          <span class="highlight__icon" aria-hidden="true">&#x1F6D2;</span>
+        </div>
+        <span class="highlight__label">Walmart</span>
+      </div>
+      <div class="highlight" onclick="openStory(4)">
+        <div class="highlight__ring">
+          <span class="highlight__icon" aria-hidden="true">&#x1F3A8;</span>
+        </div>
+        <span class="highlight__label">Design</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" data-tab="posts" onclick="switchTab('posts')">
+      <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>
+    </div>
+    <div class="tab" data-tab="reels" onclick="switchTab('reels')">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+    </div>
+    <div class="tab" data-tab="tagged" onclick="switchTab('tagged')">
+      <svg viewBox="0 0 24 24"><path d="M12 12c-2.76 0-5 2.24-5 5h10c0-2.76-2.24-5-5-5zm0-2c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/></svg>
+    </div>
+  </div>
+
+  <!-- PHOTO GRID -->
+  <div class="photo-grid" id="photoGrid"></div>
+
+</div>
+
+<!-- POST MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal__header">
+      <div class="modal__avatar">AG</div>
+      <div class="modal__user">anshullgarg</div>
+      <div class="modal__close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div style="position:relative;">
+      <div class="modal__image" id="modalImage"></div>
+      <div class="double-tap-heart" id="doubleTapHeart">&#x2764;&#xFE0F;</div>
+    </div>
+    <div class="modal__actions">
+      <svg id="modalLikeBtn" onclick="toggleModalLike()" viewBox="0 0 24 24"><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-1.834-1.535-4.303-3.752C5.152 14.08 2.5 12.194 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938z"/></svg>
+      <svg viewBox="0 0 24 24" onclick="showToast('Comments feature coming soon!')"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24" onclick="showToast('Shared!')"><path d="M22 3L9.218 10.083M11.698 20.334L22 3.001H2l7.218 7.083 2.48 10.25z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <svg class="modal__bookmark" id="modalBookmark" onclick="toggleBookmark()" viewBox="0 0 24 24"><path d="M20 21l-8-5.333L4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16z" fill="none" stroke="#fff" stroke-width="2"/></svg>
+    </div>
+    <div class="modal__likes" id="modalLikes">1,247 likes</div>
+    <div class="modal__caption" id="modalCaption"><strong>anshullgarg</strong> Building the future, one line of code at a time.</div>
+    <div class="modal__comments-count" id="modalComments" onclick="showToast('Comments feature coming soon!')">View all 42 comments</div>
+    <div class="modal__time" id="modalTime">2 days ago</div>
+  </div>
+</div>
+
+<!-- STORY VIEWER -->
+<div class="story-viewer" id="storyViewer">
+  <div class="story-viewer__container">
+    <div class="story-viewer__progress" id="storyProgress"></div>
+    <div class="story-viewer__header">
+      <div class="story-viewer__avatar">AG</div>
+      <div class="story-viewer__name">anshullgarg</div>
+      <div class="story-viewer__time" id="storyTime">12h</div>
+      <button class="story-viewer__close-btn" onclick="closeStory()" aria-label="Close story">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="story-viewer__content" id="storyContent"></div>
+    <div class="story-viewer__nav">
+      <div class="story-viewer__nav-left" onclick="prevStorySlide()"></div>
+      <div class="story-viewer__nav-right" onclick="nextStorySlide()"></div>
+    </div>
+    <div class="story-viewer__reply">
+      <input class="story-viewer__input" type="text" placeholder="Send message" onkeydown="if(event.key==='Enter'){showToast('Message sent!');this.value=''}">
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" aria-label="Main navigation">
+  <div class="bottom-nav__item" onclick="showToast('Home')">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/></svg>
+  </div>
+  <div class="bottom-nav__item" onclick="showToast('Search')">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+  </div>
+  <div class="bottom-nav__item" onclick="showToast('Create')">
+    <svg viewBox="0 0 24 24"><path d="M21 11h-8V3a1 1 0 0 0-2 0v8H3a1 1 0 0 0 0 2h8v8a1 1 0 0 0 2 0v-8h8a1 1 0 0 0 0-2z"/></svg>
+  </div>
+  <div class="bottom-nav__item" onclick="showToast('Reels')">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+  </div>
+  <div class="bottom-nav__item active">
+    <div class="bottom-nav__profile-pic"></div>
+  </div>
+</nav>
+
+<script>
+// ==================== DATA ====================
+const posts = [
+  {
+    id: 1,
+    gradient: 'grad-1',
+    icon: '&#x1F4BB;',
+    label: 'React App',
+    likes: '1,247',
+    caption: 'Just shipped a new React dashboard with real-time analytics. Clean code, smooth UX. This is what happens when you love what you do.',
+    comments: 42,
+    time: '2 days ago',
+    hashtags: '#react #webdev #frontend #javascript'
+  },
+  {
+    id: 2,
+    gradient: 'grad-2',
+    icon: '&#x1F680;',
+    label: 'Launch Day',
+    likes: '2,891',
+    caption: 'Launch day vibes! Our new microservice architecture is handling 10x the traffic with half the latency. Proud of this team.',
+    comments: 87,
+    time: '5 days ago',
+    hashtags: '#engineering #scale #walmart'
+  },
+  {
+    id: 3,
+    gradient: 'grad-3',
+    icon: '&#x2601;&#xFE0F;',
+    label: 'Cloud Infra',
+    likes: '983',
+    caption: 'Moved our entire pipeline to serverless. Cost dropped 60%. Sometimes the best code is the infrastructure you don\'t have to manage.',
+    comments: 31,
+    time: '1 week ago',
+    hashtags: '#cloud #aws #serverless #devops'
+  },
+  {
+    id: 4,
+    gradient: 'grad-4',
+    icon: '&#x1F40D;',
+    label: 'Python ML',
+    likes: '1,562',
+    caption: 'Built a recommendation engine that actually recommends things people want. ML is magic when the data is clean.',
+    comments: 55,
+    time: '1 week ago',
+    hashtags: '#machinelearning #python #ai #data'
+  },
+  {
+    id: 5,
+    gradient: 'grad-5',
+    icon: '&#x1F3A8;',
+    label: 'UI/UX',
+    likes: '3,104',
+    caption: 'Redesigned the checkout flow. Conversion up 23%. Design is not just how it looks, it\'s how it works.',
+    comments: 94,
+    time: '2 weeks ago',
+    hashtags: '#design #ux #ui #product'
+  },
+  {
+    id: 6,
+    gradient: 'grad-6',
+    icon: '&#x1F4F1;',
+    label: 'Mobile App',
+    likes: '1,789',
+    caption: 'React Native + TypeScript = beautifully typed mobile apps. Cross-platform development that doesn\'t compromise.',
+    comments: 63,
+    time: '2 weeks ago',
+    hashtags: '#reactnative #mobile #typescript'
+  },
+  {
+    id: 7,
+    gradient: 'grad-7',
+    icon: '&#x26A1;',
+    label: 'Performance',
+    likes: '2,341',
+    caption: 'Reduced page load from 4.2s to 0.8s. Lighthouse score: 100. Performance isn\'t a feature, it\'s a requirement.',
+    comments: 78,
+    time: '3 weeks ago',
+    hashtags: '#webperf #lighthouse #optimization'
+  },
+  {
+    id: 8,
+    gradient: 'grad-8',
+    icon: '&#x1F9EA;',
+    label: 'Testing',
+    likes: '876',
+    caption: '98% test coverage and zero flaky tests. CI pipeline runs in under 3 minutes. This is the way.',
+    comments: 29,
+    time: '3 weeks ago',
+    hashtags: '#testing #ci #automation #quality'
+  },
+  {
+    id: 9,
+    gradient: 'grad-9',
+    icon: '&#x1F525;',
+    label: 'API Design',
+    likes: '1,987',
+    caption: 'Designed a GraphQL API that serves 50M requests/day. Type safety from database to browser. No more over-fetching.',
+    comments: 71,
+    time: '1 month ago',
+    hashtags: '#graphql #api #backend #typescript'
+  },
+  {
+    id: 10,
+    gradient: 'grad-10',
+    icon: '&#x1F512;',
+    label: 'Security',
+    likes: '1,123',
+    caption: 'Implemented zero-trust architecture across our services. Security is everyone\'s job, not just the security team.',
+    comments: 38,
+    time: '1 month ago',
+    hashtags: '#security #zerotrust #infosec'
+  },
+  {
+    id: 11,
+    gradient: 'grad-11',
+    icon: '&#x1F4CA;',
+    label: 'Analytics',
+    likes: '2,567',
+    caption: 'Built a real-time analytics dashboard processing 1TB of data daily. Data-driven decisions at scale.',
+    comments: 82,
+    time: '1 month ago',
+    hashtags: '#analytics #data #dashboard #bigdata'
+  },
+  {
+    id: 12,
+    gradient: 'grad-12',
+    icon: '&#x1F916;',
+    label: 'AI Bot',
+    likes: '4,201',
+    caption: 'Our conversational AI just passed the internal Turing test. Natural language understanding that actually understands.',
+    comments: 156,
+    time: '2 months ago',
+    hashtags: '#ai #nlp #chatbot #deeplearning',
+    multi: true
+  }
+];
+
+const storyHighlights = [
+  {
+    title: 'Skills',
+    bgClass: 'story-bg-skills',
+    slides: [
+      { icon: '&#x269B;&#xFE0F;', title: 'React & Next.js', text: 'Building performant UIs with React ecosystem.\nHooks, Context, Server Components.\n3+ years of production experience.' },
+      { icon: '&#x1F4A0;', title: 'TypeScript', text: 'Type-safe code from frontend to backend.\nGenerics, utility types, strict mode.\nBecause any is not a type strategy.' },
+      { icon: '&#x2601;&#xFE0F;', title: 'Cloud & DevOps', text: 'AWS, GCP, Docker, Kubernetes.\nCI/CD pipelines, IaC with Terraform.\nInfrastructure that scales itself.' },
+      { icon: '&#x1F40D;', title: 'Python & ML', text: 'Data pipelines, ML models, automation.\nPandas, TensorFlow, scikit-learn.\nTurning data into decisions.' }
+    ]
+  },
+  {
+    title: 'Projects',
+    bgClass: 'story-bg-projects',
+    slides: [
+      { icon: '&#x1F6D2;', title: 'E-Commerce Platform', text: 'Full-stack e-commerce solution.\nHandles 100K+ concurrent users.\nReact + Node.js + PostgreSQL.' },
+      { icon: '&#x1F4CA;', title: 'Analytics Dashboard', text: 'Real-time data visualization.\n1TB daily data processing.\nD3.js + WebSocket streams.' },
+      { icon: '&#x1F916;', title: 'AI Assistant', text: 'Conversational AI for customer support.\nNLP-powered intent classification.\n40% reduction in ticket volume.' }
+    ]
+  },
+  {
+    title: 'Life',
+    bgClass: 'story-bg-life',
+    slides: [
+      { icon: '&#x2615;', title: 'Coffee & Code', text: 'Best debugging happens with\na fresh cup of filter coffee.\nBengaluru cafe hopping since 2020.' },
+      { icon: '&#x1F3D4;&#xFE0F;', title: 'Mountains', text: 'Weekend treks in the Western Ghats.\nCoding inspiration from nature.\nBest ideas come at 5000ft.' },
+      { icon: '&#x1F4DA;', title: 'Always Learning', text: 'Reading technical blogs daily.\nOpen source contributions.\nMentoring junior developers.' }
+    ]
+  },
+  {
+    title: 'Walmart',
+    bgClass: 'story-bg-walmart',
+    slides: [
+      { icon: '&#x1F6D2;', title: 'Walmart Global Tech', text: 'Building technology that serves\nmillions of customers worldwide.\nScale that matters.' },
+      { icon: '&#x1F4BB;', title: 'My Role', text: 'Software Developer working on\ncustomer-facing applications.\nReact, Node.js, microservices.' },
+      { icon: '&#x1F91D;', title: 'Team Culture', text: 'Collaborative engineering culture.\nHackathons, tech talks, code reviews.\nGrowing together every sprint.' }
+    ]
+  },
+  {
+    title: 'Design',
+    bgClass: 'story-bg-skills',
+    slides: [
+      { icon: '&#x1F3A8;', title: 'Design Systems', text: 'Building component libraries\nthat scale across products.\nConsistency meets creativity.' },
+      { icon: '&#x2728;', title: 'Micro-interactions', text: 'The details that make UIs delightful.\nFramer Motion, CSS animations.\nEvery pixel tells a story.' }
+    ]
+  }
+];
+
+// ==================== RENDER GRID ====================
+function renderGrid() {
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML = posts.map((post, i) => `
+    <div class="grid-item animate-in" style="animation-delay:${i * 0.04}s" onclick="openPost(${i})" role="button" tabindex="0" aria-label="Open post: ${post.label}">
+      <div class="grad-placeholder grid-item__img ${post.gradient}">
+        <span class="grad-placeholder__icon">${post.icon}</span>
+        ${post.label}
+      </div>
+      <div class="grid-item__overlay">
+        <div class="grid-item__stat">
+          <svg viewBox="0 0 24 24"><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-1.834-1.535-4.303-3.752C5.152 14.08 2.5 12.194 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938z"/></svg>
+          ${post.likes}
+        </div>
+        <div class="grid-item__stat">
+          <svg viewBox="0 0 24 24"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+          ${post.comments}
+        </div>
+      </div>
+      ${post.multi ? '<div class="grid-item__multi"><svg viewBox="0 0 24 24"><path d="M4 6h12v12H4V6zm4-4h12v12" fill="none" stroke="#fff" stroke-width="2"/></svg></div>' : ''}
+    </div>
+  `).join('');
+}
+
+// ==================== POST MODAL ====================
+let currentPostLiked = false;
+let currentPostBookmarked = false;
+let lastTap = 0;
+
+function openPost(index) {
+  const post = posts[index];
+  const backdrop = document.getElementById('modalBackdrop');
+  const image = document.getElementById('modalImage');
+
+  currentPostLiked = false;
+  currentPostBookmarked = false;
+  updateLikeUI();
+  updateBookmarkUI();
+
+  image.className = `modal__image grad-placeholder ${post.gradient}`;
+  image.innerHTML = `<span class="grad-placeholder__icon" style="font-size:64px">${post.icon}</span>${post.label}`;
+  image.style.aspectRatio = '1';
+  image.style.display = 'flex';
+  image.style.alignItems = 'center';
+  image.style.justifyContent = 'center';
+  image.style.flexDirection = 'column';
+  image.style.gap = '8px';
+  image.style.fontSize = '14px';
+  image.style.fontWeight = '600';
+  image.style.textTransform = 'uppercase';
+  image.style.letterSpacing = '1.5px';
+  image.style.color = 'rgba(255,255,255,0.9)';
+  image.style.textShadow = '0 2px 8px rgba(0,0,0,0.3)';
+
+  document.getElementById('modalLikes').textContent = post.likes + ' likes';
+  document.getElementById('modalCaption').innerHTML = `<strong>anshullgarg</strong> ${post.caption} <span style="color:var(--ig-blue)">${post.hashtags}</span>`;
+  document.getElementById('modalComments').textContent = `View all ${post.comments} comments`;
+  document.getElementById('modalTime').textContent = post.time;
+
+  backdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Double-tap to like
+  image.onclick = function() {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      doubleTapLike();
+    }
+    lastTap = now;
+  };
+}
+
+function doubleTapLike() {
+  const heart = document.getElementById('doubleTapHeart');
+  heart.classList.remove('pop');
+  void heart.offsetWidth;
+  heart.classList.add('pop');
+  if (!currentPostLiked) {
+    currentPostLiked = true;
+    updateLikeUI();
+  }
+}
+
+function closeModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modalBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function toggleModalLike() {
+  currentPostLiked = !currentPostLiked;
+  updateLikeUI();
+}
+
+function updateLikeUI() {
+  const btn = document.getElementById('modalLikeBtn');
+  if (currentPostLiked) {
+    btn.classList.add('liked');
+    btn.style.fill = '#ed4956';
+  } else {
+    btn.classList.remove('liked');
+    btn.style.fill = 'var(--ig-white)';
+  }
+}
+
+function toggleBookmark() {
+  currentPostBookmarked = !currentPostBookmarked;
+  updateBookmarkUI();
+  showToast(currentPostBookmarked ? 'Post saved' : 'Post unsaved');
+}
+
+function updateBookmarkUI() {
+  const btn = document.getElementById('modalBookmark');
+  if (currentPostBookmarked) {
+    btn.innerHTML = '<path d="M20 21l-8-5.333L4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16z" fill="#fff" stroke="#fff" stroke-width="2"/>';
+  } else {
+    btn.innerHTML = '<path d="M20 21l-8-5.333L4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16z" fill="none" stroke="#fff" stroke-width="2"/>';
+  }
+}
+
+// ==================== STORIES ====================
+let storyGroupIndex = 0;
+let storySlideIndex = 0;
+let storyTimer = null;
+const STORY_DURATION = 5000;
+
+function openStory(groupIdx) {
+  storyGroupIndex = groupIdx;
+  storySlideIndex = 0;
+  const viewer = document.getElementById('storyViewer');
+  viewer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderStory();
+}
+
+function closeStory() {
+  const viewer = document.getElementById('storyViewer');
+  viewer.classList.remove('open');
+  document.body.style.overflow = '';
+  clearInterval(storyTimer);
+}
+
+function renderStory() {
+  const group = storyHighlights[storyGroupIndex];
+  const slide = group.slides[storySlideIndex];
+
+  // Progress bars
+  const progressContainer = document.getElementById('storyProgress');
+  progressContainer.innerHTML = group.slides.map((_, i) => {
+    let cls = '';
+    if (i < storySlideIndex) cls = 'complete';
+    else if (i === storySlideIndex) cls = 'active';
+    return `<div class="story-viewer__bar ${cls}"><div class="story-viewer__bar-fill"></div></div>`;
+  }).join('');
+
+  // Content
+  const content = document.getElementById('storyContent');
+  content.innerHTML = `
+    <div class="story-viewer__bg ${group.bgClass}" style="opacity:0;transform:scale(1.05)">
+      <div class="story-viewer__bg-icon">${slide.icon}</div>
+      <div class="story-viewer__bg-title">${slide.title}</div>
+      <div class="story-viewer__bg-text">${slide.text}</div>
+    </div>
+  `;
+
+  // Time label
+  document.getElementById('storyTime').textContent = ['12h', '1d', '3d', '5d', '1w'][storyGroupIndex] || '12h';
+
+  // Animate in
+  requestAnimationFrame(() => {
+    const bg = content.querySelector('.story-viewer__bg');
+    bg.style.transition = 'opacity 0.4s, transform 0.4s';
+    bg.style.opacity = '1';
+    bg.style.transform = 'scale(1)';
+  });
+
+  // Animate progress bar
+  startStoryTimer();
+}
+
+function startStoryTimer() {
+  clearInterval(storyTimer);
+  const bars = document.querySelectorAll('.story-viewer__bar');
+  const activeBar = bars[storySlideIndex];
+  if (!activeBar) return;
+
+  const fill = activeBar.querySelector('.story-viewer__bar-fill');
+  let progress = 0;
+  const interval = 50;
+
+  storyTimer = setInterval(() => {
+    progress += (interval / STORY_DURATION) * 100;
+    fill.style.width = Math.min(progress, 100) + '%';
+    if (progress >= 100) {
+      nextStorySlide();
+    }
+  }, interval);
+}
+
+function nextStorySlide() {
+  clearInterval(storyTimer);
+  const group = storyHighlights[storyGroupIndex];
+  if (storySlideIndex < group.slides.length - 1) {
+    storySlideIndex++;
+    renderStory();
+  } else if (storyGroupIndex < storyHighlights.length - 1) {
+    storyGroupIndex++;
+    storySlideIndex = 0;
+    renderStory();
+  } else {
+    closeStory();
+  }
+}
+
+function prevStorySlide() {
+  clearInterval(storyTimer);
+  if (storySlideIndex > 0) {
+    storySlideIndex--;
+    renderStory();
+  } else if (storyGroupIndex > 0) {
+    storyGroupIndex--;
+    storySlideIndex = storyHighlights[storyGroupIndex].slides.length - 1;
+    renderStory();
+  } else {
+    storySlideIndex = 0;
+    renderStory();
+  }
+}
+
+// ==================== TABS ====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+  const grid = document.getElementById('photoGrid');
+  if (tab === 'posts') {
+    renderGrid();
+  } else if (tab === 'reels') {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--ig-gray);">
+        <svg viewBox="0 0 24 24" width="48" height="48" style="fill: var(--ig-gray); margin-bottom: 12px; opacity: 0.5;">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
+        <div style="font-size: 22px; font-weight: 700; color: var(--ig-white); margin-bottom: 8px;">Reels Coming Soon</div>
+        <div style="font-size: 14px; line-height: 1.5;">Short-form videos showcasing<br>coding sessions and tech talks.</div>
+      </div>
+    `;
+  } else {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--ig-gray);">
+        <svg viewBox="0 0 24 24" width="48" height="48" style="fill: var(--ig-gray); margin-bottom: 12px; opacity: 0.5;">
+          <path d="M12 12c-2.76 0-5 2.24-5 5h10c0-2.76-2.24-5-5-5zm0-2c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/>
+        </svg>
+        <div style="font-size: 22px; font-weight: 700; color: var(--ig-white); margin-bottom: 8px;">No Tagged Posts</div>
+        <div style="font-size: 14px; line-height: 1.5;">When people tag anshullgarg in<br>photos, they'll appear here.</div>
+      </div>
+    `;
+  }
+}
+
+// ==================== FOLLOW BUTTON ====================
+let isFollowing = false;
+function toggleFollow() {
+  isFollowing = !isFollowing;
+  const btn = document.getElementById('followBtn');
+  const followerCount = document.querySelector('.stat__number');
+
+  if (isFollowing) {
+    btn.textContent = 'Following';
+    btn.classList.add('following');
+    followerCount.textContent = '12.9K';
+    showToast('You are now following anshullgarg');
+  } else {
+    btn.textContent = 'Follow';
+    btn.classList.remove('following');
+    followerCount.textContent = '12.8K';
+    showToast('You unfollowed anshullgarg');
+  }
+}
+
+// ==================== TOAST ====================
+let toastTimeout = null;
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2200);
+}
+
+// ==================== KEYBOARD ====================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('storyViewer').classList.contains('open')) {
+      closeStory();
+    } else if (document.getElementById('modalBackdrop').classList.contains('open')) {
+      closeModal();
+    }
+  }
+  if (document.getElementById('storyViewer').classList.contains('open')) {
+    if (e.key === 'ArrowRight') nextStorySlide();
+    if (e.key === 'ArrowLeft') prevStorySlide();
+  }
+});
+
+// ==================== INIT ====================
+renderGrid();
+</script>
+
+</body>
+</html>

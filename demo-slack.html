@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg's Portfolio | Slack</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sidebar-bg:#4A154B;
+  --sidebar-hover:rgba(255,255,255,.08);
+  --sidebar-active:rgba(255,255,255,.15);
+  --sidebar-text:rgba(255,255,255,.7);
+  --sidebar-text-bright:#fff;
+  --main-bg:#1A1D21;
+  --main-bg-alt:#222529;
+  --main-text:#D1D2D3;
+  --main-text-bright:#E8E8E9;
+  --main-text-muted:#9B9C9E;
+  --border-color:#35373B;
+  --hover-bg:rgba(255,255,255,.04);
+  --accent:#1264A3;
+  --accent-hover:#0B4C8C;
+  --link-color:#1D9BD1;
+  --green:#2BAC76;
+  --yellow:#E8A820;
+  --red:#E01E5A;
+  --badge-red:#F2224E;
+  --code-bg:#2C2D30;
+  --code-border:#404348;
+  --thread-bg:#222529;
+  --input-bg:#222529;
+  --input-border:#565856;
+  --topbar-bg:#1A1D21;
+  --font-family:'Lato',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'SF Mono','Monaco','Inconsolata','Fira Mono','Droid Sans Mono','Source Code Pro',monospace;
+}
+html{font-size:15px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--font-family);background:var(--main-bg);color:var(--main-text);overflow:hidden;height:100vh;width:100vw}
+a{color:var(--link-color);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.25)}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;height:100vh;width:100vw}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:260px;min-width:260px;
+  background:var(--sidebar-bg);
+  display:flex;flex-direction:column;
+  border-right:1px solid rgba(255,255,255,.1);
+  user-select:none;
+}
+.sidebar-header{
+  padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:49px;
+}
+.workspace-info{display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;min-width:0}
+.workspace-info:hover{opacity:.85}
+.workspace-name{
+  font-size:16px;font-weight:900;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.workspace-dropdown{color:rgba(255,255,255,.6);font-size:10px;margin-left:2px;transition:transform .2s}
+.workspace-info:hover .workspace-dropdown{color:#fff}
+.sidebar-header .compose-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;flex-shrink:0;
+  transition:background .15s;
+}
+.sidebar-header .compose-btn:hover{background:rgba(255,255,255,.25)}
+
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0}
+
+/* Status bar */
+.status-bar{
+  padding:8px 16px;
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;border-radius:6px;margin:0 8px 4px;
+}
+.status-bar:hover{background:var(--sidebar-hover)}
+.status-avatar{
+  width:24px;height:24px;border-radius:6px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+  position:relative;flex-shrink:0;
+}
+.status-avatar .online-dot{
+  position:absolute;bottom:-2px;right:-2px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--green);border:2px solid var(--sidebar-bg);
+}
+.status-text{font-size:13px;color:var(--sidebar-text-bright);font-weight:600}
+.status-emoji{font-size:12px}
+
+/* Sidebar sections */
+.sidebar-section{margin-bottom:4px}
+.sidebar-section-header{
+  display:flex;align-items:center;padding:4px 16px;
+  cursor:pointer;color:var(--sidebar-text);
+  font-size:13px;gap:4px;
+}
+.sidebar-section-header:hover{color:var(--sidebar-text-bright)}
+.sidebar-section-header .caret{
+  font-size:8px;transition:transform .2s;width:16px;text-align:center;
+}
+.sidebar-section-header.collapsed .caret{transform:rotate(-90deg)}
+.sidebar-section-header span{font-weight:600;font-size:13px}
+.sidebar-section-items{overflow:hidden;transition:max-height .25s ease}
+.sidebar-section-header.collapsed+.sidebar-section-items{max-height:0!important;overflow:hidden}
+
+/* Channel items */
+.channel-item{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 16px 4px 24px;
+  cursor:pointer;color:var(--sidebar-text);
+  font-size:14px;position:relative;
+  transition:background .1s;
+}
+.channel-item:hover{background:var(--sidebar-hover)}
+.channel-item.active{background:var(--sidebar-active);color:var(--sidebar-text-bright);font-weight:700}
+.channel-item.unread{color:var(--sidebar-text-bright);font-weight:700}
+.channel-item .hash{font-size:15px;opacity:.7;font-weight:400;width:16px;text-align:center;flex-shrink:0}
+.channel-item .channel-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.channel-item .badge{
+  background:var(--badge-red);color:#fff;
+  font-size:11px;font-weight:700;
+  padding:1px 6px;border-radius:10px;
+  min-width:18px;text-align:center;
+}
+
+/* DM items */
+.dm-item{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 16px 4px 24px;
+  cursor:pointer;color:var(--sidebar-text);
+  font-size:14px;transition:background .1s;
+}
+.dm-item:hover{background:var(--sidebar-hover)}
+.dm-item.active{background:var(--sidebar-active);color:var(--sidebar-text-bright)}
+.dm-avatar{
+  width:20px;height:20px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#fff;flex-shrink:0;
+  position:relative;
+}
+.dm-avatar .dm-status{
+  position:absolute;bottom:-1px;right:-1px;
+  width:8px;height:8px;border-radius:50%;
+  border:1.5px solid var(--sidebar-bg);
+}
+.dm-avatar .dm-status.online{background:var(--green)}
+.dm-avatar .dm-status.away{background:var(--yellow)}
+.dm-avatar .dm-status.offline{background:transparent;border-color:rgba(255,255,255,.4)}
+.dm-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ===== MAIN AREA ===== */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* Top bar */
+.topbar{
+  height:49px;min-height:49px;
+  background:var(--topbar-bg);
+  border-bottom:1px solid var(--border-color);
+  display:flex;align-items:center;
+  padding:0 20px;gap:12px;
+}
+.topbar-channel{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.topbar-hash{font-size:16px;color:var(--main-text-muted);font-weight:400}
+.topbar-name{font-size:16px;font-weight:900;color:var(--main-text-bright);cursor:pointer}
+.topbar-name:hover{text-decoration:underline}
+.topbar-star{color:var(--main-text-muted);cursor:pointer;font-size:14px}
+.topbar-star:hover{color:var(--yellow)}
+.topbar-divider{width:1px;height:20px;background:var(--border-color)}
+.topbar-topic{
+  font-size:13px;color:var(--main-text-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;
+}
+.topbar-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.topbar-actions button{
+  width:32px;height:32px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--main-text-muted);font-size:16px;
+  transition:all .1s;
+}
+.topbar-actions button:hover{background:var(--hover-bg);color:var(--main-text-bright)}
+.topbar-members{
+  font-size:12px;color:var(--main-text-muted);
+  display:flex;align-items:center;gap:4px;
+  padding:4px 8px;border-radius:6px;cursor:pointer;
+}
+.topbar-members:hover{background:var(--hover-bg)}
+
+/* ===== PINNED BAR ===== */
+.pinned-bar{
+  background:var(--main-bg-alt);
+  border-bottom:1px solid var(--border-color);
+  padding:8px 20px;
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--main-text-muted);
+  cursor:pointer;transition:background .1s;
+}
+.pinned-bar:hover{background:rgba(255,255,255,.04)}
+.pinned-bar .pin-icon{font-size:14px}
+.pinned-bar .pin-count{font-weight:700;color:var(--main-text)}
+
+/* ===== MESSAGES ===== */
+.messages-container{
+  flex:1;overflow-y:auto;
+  padding:8px 0;
+}
+.date-divider{
+  display:flex;align-items:center;
+  padding:16px 20px 8px;gap:12px;
+}
+.date-divider::before,.date-divider::after{
+  content:'';flex:1;height:1px;background:var(--border-color);
+}
+.date-divider span{
+  font-size:12px;font-weight:700;color:var(--main-text);
+  background:var(--main-bg);padding:4px 12px;
+  border:1px solid var(--border-color);border-radius:24px;
+  white-space:nowrap;cursor:pointer;
+}
+.date-divider span:hover{background:var(--main-bg-alt)}
+
+/* New messages banner */
+.new-messages-banner{
+  display:flex;align-items:center;justify-content:center;
+  padding:6px 20px;
+  background:var(--accent);
+  color:#fff;font-size:13px;font-weight:700;
+  cursor:pointer;position:relative;
+}
+.new-messages-banner::before{
+  content:'';position:absolute;left:0;right:0;top:0;
+  height:1px;background:var(--accent);
+}
+
+.message{
+  padding:8px 20px;
+  display:flex;gap:8px;
+  transition:background .1s;
+  position:relative;
+}
+.message:hover{background:var(--hover-bg)}
+.message:hover .message-actions{opacity:1;pointer-events:all}
+.message.pinned{
+  border-left:3px solid var(--yellow);
+  padding-left:17px;
+  background:rgba(232,168,32,.03);
+}
+.message.pinned:hover{background:rgba(232,168,32,.06)}
+.msg-avatar{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:#fff;flex-shrink:0;
+  margin-top:2px;
+}
+.msg-body{flex:1;min-width:0}
+.msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+.msg-author{font-size:14px;font-weight:900;color:var(--main-text-bright);cursor:pointer}
+.msg-author:hover{text-decoration:underline}
+.msg-app-badge{
+  font-size:10px;background:var(--code-bg);
+  color:var(--main-text-muted);padding:1px 5px;
+  border-radius:3px;font-weight:600;
+}
+.msg-time{font-size:11px;color:var(--main-text-muted);cursor:pointer}
+.msg-time:hover{text-decoration:underline}
+.msg-pinned-label{
+  font-size:11px;color:var(--yellow);
+  display:flex;align-items:center;gap:4px;
+  margin-bottom:4px;
+}
+.msg-content{font-size:14.5px;line-height:1.5;color:var(--main-text)}
+.msg-content p{margin-bottom:4px}
+.msg-content p:last-child{margin-bottom:0}
+.msg-content strong{font-weight:900;color:var(--main-text-bright)}
+.msg-content em{font-style:italic}
+.msg-content code{
+  background:var(--code-bg);border:1px solid var(--code-border);
+  padding:1px 4px;border-radius:3px;font-family:var(--font-mono);
+  font-size:12px;color:#E06C75;
+}
+.msg-content pre{
+  background:var(--code-bg);border:1px solid var(--code-border);
+  border-radius:6px;padding:10px 14px;margin:6px 0;
+  overflow-x:auto;font-family:var(--font-mono);font-size:12px;
+  line-height:1.5;color:var(--main-text-bright);
+}
+.msg-content a{color:var(--link-color)}
+.msg-content a:hover{text-decoration:underline}
+.msg-content .mention{
+  background:rgba(29,155,209,.15);color:var(--link-color);
+  padding:1px 4px;border-radius:3px;cursor:pointer;font-weight:600;
+}
+.msg-content .mention:hover{background:rgba(29,155,209,.25)}
+.msg-content ul,.msg-content ol{margin:4px 0 4px 20px}
+.msg-content li{margin-bottom:2px}
+.msg-content blockquote{
+  border-left:3px solid var(--border-color);
+  padding:2px 0 2px 12px;margin:4px 0;
+  color:var(--main-text-muted);
+}
+
+/* File attachment */
+.msg-attachment{
+  border:1px solid var(--border-color);
+  border-radius:8px;margin-top:6px;
+  overflow:hidden;max-width:400px;
+  cursor:pointer;transition:border-color .1s;
+}
+.msg-attachment:hover{border-color:var(--main-text-muted)}
+.msg-attachment-body{padding:10px 14px}
+.msg-attachment-bar{width:4px;min-height:100%;display:inline-block}
+.msg-attachment-title{font-size:14px;font-weight:700;color:var(--link-color);margin-bottom:4px}
+.msg-attachment-text{font-size:13px;color:var(--main-text-muted);line-height:1.4}
+.msg-attachment-footer{font-size:11px;color:var(--main-text-muted);margin-top:6px}
+
+/* Link preview */
+.link-preview{
+  display:flex;border:1px solid var(--border-color);
+  border-radius:8px;margin-top:6px;overflow:hidden;
+  max-width:500px;cursor:pointer;
+  border-left:4px solid var(--link-color);
+}
+.link-preview-body{padding:10px 14px;flex:1;min-width:0}
+.link-preview-source{font-size:11px;color:var(--main-text-muted);margin-bottom:2px;font-weight:600}
+.link-preview-title{font-size:14px;font-weight:700;color:var(--link-color);margin-bottom:4px}
+.link-preview-desc{font-size:13px;color:var(--main-text-muted);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.link-preview-img{width:80px;height:80px;object-fit:cover;flex-shrink:0}
+
+/* Reactions */
+.msg-reactions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.reaction{
+  display:flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:12px;
+  border:1px solid var(--border-color);
+  background:var(--code-bg);cursor:pointer;
+  font-size:12px;transition:all .1s;
+}
+.reaction:hover{border-color:var(--link-color);background:rgba(29,155,209,.08)}
+.reaction.active{border-color:var(--link-color);background:rgba(29,155,209,.12)}
+.reaction .emoji{font-size:14px}
+.reaction .count{font-weight:700;color:var(--main-text)}
+.reaction.active .count{color:var(--link-color)}
+
+/* Thread reply preview */
+.thread-preview{
+  display:flex;align-items:center;gap:8px;
+  margin-top:6px;padding:4px 0;cursor:pointer;
+  font-size:13px;color:var(--link-color);
+  transition:all .1s;
+}
+.thread-preview:hover{text-decoration:underline}
+.thread-preview .thread-avatars{display:flex;margin-right:2px}
+.thread-preview .thread-avatars .mini-avatar{
+  width:22px;height:22px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;color:#fff;
+  margin-left:-4px;border:2px solid var(--main-bg);
+}
+.thread-preview .thread-avatars .mini-avatar:first-child{margin-left:0}
+.thread-preview .reply-count{font-weight:700}
+.thread-preview .reply-time{color:var(--main-text-muted);font-weight:400}
+
+/* Thread expanded */
+.thread-expanded{
+  margin:6px 0 2px 0;
+  border:1px solid var(--border-color);
+  border-radius:8px;overflow:hidden;
+  background:var(--thread-bg);
+}
+.thread-expanded .thread-header{
+  padding:8px 12px;font-size:12px;font-weight:700;
+  color:var(--main-text-muted);border-bottom:1px solid var(--border-color);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.thread-expanded .thread-header .collapse-btn{
+  font-size:11px;color:var(--link-color);cursor:pointer;
+}
+.thread-expanded .thread-header .collapse-btn:hover{text-decoration:underline}
+.thread-expanded .thread-message{
+  padding:8px 12px;display:flex;gap:8px;
+  border-bottom:1px solid rgba(53,55,59,.5);
+}
+.thread-expanded .thread-message:last-child{border-bottom:none}
+.thread-expanded .mini-avatar{
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.thread-expanded .thread-msg-body{flex:1;min-width:0}
+.thread-expanded .thread-msg-header{display:flex;align-items:baseline;gap:6px;margin-bottom:2px}
+.thread-expanded .thread-msg-author{font-size:13px;font-weight:700;color:var(--main-text-bright)}
+.thread-expanded .thread-msg-time{font-size:11px;color:var(--main-text-muted)}
+.thread-expanded .thread-msg-content{font-size:13px;line-height:1.5;color:var(--main-text)}
+.thread-expanded .thread-msg-content code{font-size:11px}
+.thread-expanded .thread-msg-content strong{font-weight:900;color:var(--main-text-bright)}
+
+/* Message hover actions */
+.message-actions{
+  position:absolute;top:-16px;right:20px;
+  display:flex;background:var(--main-bg-alt);
+  border:1px solid var(--border-color);border-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+  opacity:0;pointer-events:none;transition:opacity .1s;
+  overflow:hidden;
+}
+.message-actions button{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--main-text-muted);
+  transition:all .1s;
+}
+.message-actions button:hover{background:var(--hover-bg);color:var(--main-text-bright)}
+
+/* ===== TYPING INDICATOR ===== */
+.typing-indicator{
+  padding:4px 20px;font-size:12px;color:var(--main-text-muted);
+  display:flex;align-items:center;gap:6px;
+  min-height:24px;
+}
+.typing-dots{display:flex;gap:3px;align-items:center}
+.typing-dots span{
+  width:5px;height:5px;border-radius:50%;background:var(--main-text-muted);
+  animation:typing 1.4s infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes typing{
+  0%,60%,100%{opacity:.3;transform:scale(1)}
+  30%{opacity:1;transform:scale(1.2)}
+}
+
+/* ===== INPUT BAR ===== */
+.input-bar{
+  padding:0 20px 20px;
+}
+.input-wrapper{
+  border:1px solid var(--input-border);
+  border-radius:8px;background:var(--input-bg);
+  overflow:hidden;
+}
+.input-field{
+  display:flex;align-items:center;padding:8px 12px;
+  color:var(--main-text-muted);font-size:14px;
+  min-height:44px;
+}
+.input-field .placeholder{opacity:.5}
+.input-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 8px;border-top:1px solid var(--border-color);
+}
+.input-toolbar-left,.input-toolbar-right{display:flex;align-items:center;gap:2px}
+.input-toolbar button{
+  width:30px;height:30px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:var(--main-text-muted);
+  transition:all .1s;
+}
+.input-toolbar button:hover{background:var(--hover-bg);color:var(--main-text-bright)}
+.input-toolbar .send-btn{
+  width:30px;height:30px;border-radius:6px;
+  background:var(--green);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+.input-toolbar .send-btn:hover{filter:brightness(1.1)}
+
+/* ===== WORKSPACE DROPDOWN ===== */
+.ws-dropdown{
+  position:absolute;top:48px;left:0;
+  width:300px;background:#1A1D21;
+  border:1px solid var(--border-color);
+  border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);
+  z-index:100;display:none;overflow:hidden;
+}
+.ws-dropdown.show{display:block}
+.ws-dropdown-header{
+  padding:16px;border-bottom:1px solid var(--border-color);
+}
+.ws-dropdown-name{font-size:16px;font-weight:900;color:var(--main-text-bright)}
+.ws-dropdown-url{font-size:12px;color:var(--main-text-muted);margin-top:2px}
+.ws-dropdown-status{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 16px;font-size:13px;color:var(--main-text);
+  border-bottom:1px solid var(--border-color);
+}
+.ws-dropdown-items{padding:6px 0}
+.ws-dropdown-item{
+  padding:6px 16px;font-size:13px;color:var(--main-text);
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+}
+.ws-dropdown-item:hover{background:var(--accent);color:#fff}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.message{animation:fadeInUp .2s ease}
+
+/* Channel transition */
+.messages-container.switching{opacity:0;transform:translateY(4px)}
+.messages-container.entering{animation:fadeInUp .2s ease forwards}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-260px;top:0;bottom:0;z-index:50;transition:left .25s ease}
+  .sidebar.open{left:0}
+  .mobile-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:49;display:none;
+  }
+  .mobile-overlay.show{display:block}
+  .mobile-menu-btn{display:flex!important}
+}
+.mobile-menu-btn{
+  display:none;width:32px;height:32px;border-radius:6px;
+  align-items:center;justify-content:center;
+  font-size:18px;color:var(--main-text-muted);margin-right:8px;
+}
+.mobile-menu-btn:hover{background:var(--hover-bg)}
+
+/* ===== AVATAR COLORS ===== */
+.av-purple{background:linear-gradient(135deg,#667eea,#764ba2)}
+.av-green{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.av-blue{background:linear-gradient(135deg,#2193b0,#6dd5ed)}
+.av-orange{background:linear-gradient(135deg,#f7971e,#ffd200)}
+.av-red{background:linear-gradient(135deg,#e53935,#e35d5b)}
+.av-teal{background:linear-gradient(135deg,#00b4db,#0083b0)}
+.av-pink{background:linear-gradient(135deg,#ee5a6f,#f09819)}
+.av-indigo{background:linear-gradient(135deg,#4a00e0,#8e2de2)}
+.av-bot{background:linear-gradient(135deg,#1264A3,#2BAC76)}
+
+/* Unread line */
+.unread-line{
+  display:flex;align-items:center;padding:8px 20px;gap:12px;
+}
+.unread-line::after{content:'';flex:1;height:1px;background:var(--red)}
+.unread-line span{font-size:11px;font-weight:700;color:var(--red);white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header" style="position:relative">
+      <div class="workspace-info" onclick="toggleDropdown()">
+        <span class="workspace-name">Anshull Garg's Portfolio</span>
+        <span class="workspace-dropdown">&#9660;</span>
+      </div>
+      <button class="compose-btn" title="New message">&#9998;</button>
+
+      <!-- Workspace Dropdown -->
+      <div class="ws-dropdown" id="wsDropdown">
+        <div class="ws-dropdown-header">
+          <div class="ws-dropdown-name">Anshull Garg's Portfolio</div>
+          <div class="ws-dropdown-url">anshullgarg.slack.com</div>
+        </div>
+        <div class="ws-dropdown-status">
+          <span style="color:var(--green)">&#9679;</span> Available for opportunities
+        </div>
+        <div class="ws-dropdown-items">
+          <div class="ws-dropdown-item">&#128100; Profile & account</div>
+          <div class="ws-dropdown-item">&#9881;&#65039; Preferences</div>
+          <div class="ws-dropdown-item" onclick="window.open('https://github.com/anshullgarg','_blank')">&#128279; github.com/anshullgarg</div>
+          <div class="ws-dropdown-item" onclick="window.open('https://linkedin.com/in/anshullgarg','_blank')">&#128279; linkedin.com/in/anshullgarg</div>
+          <div class="ws-dropdown-item" style="color:var(--red)">&#128682; Sign out</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Status -->
+      <div class="status-bar">
+        <div class="status-avatar av-purple">
+          AG
+          <div class="online-dot"></div>
+        </div>
+        <span class="status-text">Anshull Garg</span>
+        <span class="status-emoji" title="Available for opportunities">&#127793;</span>
+      </div>
+
+      <!-- Channels Section -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-header" onclick="toggleSection(this)">
+          <span class="caret">&#9660;</span>
+          <span>Channels</span>
+        </div>
+        <div class="sidebar-section-items" style="max-height:300px">
+          <div class="channel-item active" data-channel="general" onclick="switchChannel('general')">
+            <span class="hash">#</span>
+            <span class="channel-name">general</span>
+          </div>
+          <div class="channel-item unread" data-channel="projects" onclick="switchChannel('projects')">
+            <span class="hash">#</span>
+            <span class="channel-name">projects</span>
+            <span class="badge">4</span>
+          </div>
+          <div class="channel-item unread" data-channel="skills" onclick="switchChannel('skills')">
+            <span class="hash">#</span>
+            <span class="channel-name">skills</span>
+            <span class="badge">2</span>
+          </div>
+          <div class="channel-item unread" data-channel="experience" onclick="switchChannel('experience')">
+            <span class="hash">#</span>
+            <span class="channel-name">experience</span>
+            <span class="badge">3</span>
+          </div>
+          <div class="channel-item" data-channel="random" onclick="switchChannel('random')">
+            <span class="hash">#</span>
+            <span class="channel-name">random</span>
+          </div>
+          <div class="channel-item unread" data-channel="contact" onclick="switchChannel('contact')">
+            <span class="hash">#</span>
+            <span class="channel-name">contact</span>
+            <span class="badge">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direct Messages Section -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-header" onclick="toggleSection(this)">
+          <span class="caret">&#9660;</span>
+          <span>Direct Messages</span>
+        </div>
+        <div class="sidebar-section-items" style="max-height:300px">
+          <div class="dm-item">
+            <div class="dm-avatar av-green"><span class="dm-status online"></span>HR</div>
+            <span class="dm-name">Hiring Manager</span>
+          </div>
+          <div class="dm-item">
+            <div class="dm-avatar av-blue"><span class="dm-status online"></span>TC</div>
+            <span class="dm-name">Tech Community</span>
+          </div>
+          <div class="dm-item">
+            <div class="dm-avatar av-orange"><span class="dm-status away"></span>OS</div>
+            <span class="dm-name">Open Source</span>
+          </div>
+          <div class="dm-item">
+            <div class="dm-avatar av-red"><span class="dm-status offline"></span>RC</div>
+            <span class="dm-name">Recruiter</span>
+          </div>
+          <div class="dm-item">
+            <div class="dm-avatar av-indigo"><span class="dm-status online"></span>AI</div>
+            <span class="dm-name">Slackbot</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+      <div class="topbar-channel">
+        <span class="topbar-hash">#</span>
+        <span class="topbar-name" id="topbarName">general</span>
+        <span class="topbar-star" id="topbarStar">&#9734;</span>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-topic" id="topbarTopic">Welcome to Anshull Garg's portfolio workspace</div>
+      <div class="topbar-actions">
+        <div class="topbar-members" id="topbarMembers">&#128101; 42</div>
+        <button title="Search">&#128269;</button>
+      </div>
+    </div>
+
+    <!-- Pinned Bar -->
+    <div class="pinned-bar" id="pinnedBar">
+      <span class="pin-icon">&#128204;</span>
+      <span class="pin-count" id="pinnedCount">2 pinned</span>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages-container" id="messagesContainer"></div>
+
+    <!-- Typing Indicator -->
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+      <span><strong>Anshull</strong> is typing...</span>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="input-bar">
+      <div class="input-wrapper">
+        <div class="input-field">
+          <span class="placeholder" id="inputPlaceholder">Message #general</span>
+        </div>
+        <div class="input-toolbar">
+          <div class="input-toolbar-left">
+            <button title="Formatting">&#120275;</button>
+            <button title="Attach">&#128206;</button>
+            <button title="Emoji">&#128578;</button>
+            <button title="Mention">@</button>
+          </div>
+          <div class="input-toolbar-right">
+            <button title="Audio">&#127908;</button>
+            <button class="send-btn" title="Send">&#10148;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ===== CHANNEL DATA =====
+const channelData = {
+  general: {
+    topic: "Welcome to Anshull Garg's portfolio workspace",
+    pinned: 2,
+    members: 42,
+    messages: [
+      {
+        type: 'date', text: 'Monday, February 3'
+      },
+      {
+        id: 'g1',
+        author: 'Slackbot',
+        avatar: 'av-bot',
+        initials: '&#9889;',
+        time: '9:00 AM',
+        pinned: true,
+        content: `<p><strong>Welcome to #general!</strong></p>
+<p>This is <strong>Anshull Garg's Portfolio</strong> &mdash; a workspace showcasing my work, skills, and experience as a software engineer.</p>
+<p>Navigate the channels on the left to explore:</p>
+<ul>
+  <li><span class="mention">#projects</span> &mdash; Featured work & case studies</li>
+  <li><span class="mention">#skills</span> &mdash; Technical stack & proficiencies</li>
+  <li><span class="mention">#experience</span> &mdash; Career timeline & roles</li>
+  <li><span class="mention">#random</span> &mdash; Fun facts & personal interests</li>
+  <li><span class="mention">#contact</span> &mdash; Get in touch</li>
+</ul>`,
+        reactions: [{emoji:'&#128293;', count:12, active:true},{emoji:'&#128588;', count:8},{emoji:'&#128175;', count:6}],
+      },
+      {
+        id: 'g2',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:05 AM',
+        pinned: true,
+        content: `<p>Hey there! &#128075; I'm <strong>Anshull Garg</strong>, a full-stack software engineer passionate about building products that make a difference.</p>
+<p>I specialize in <strong>React</strong>, <strong>TypeScript</strong>, <strong>Node.js</strong>, and <strong>cloud-native architectures</strong>. I love turning complex problems into elegant, scalable solutions.</p>
+<blockquote>"The best code is the code that doesn't need to exist."</blockquote>
+<p>Currently: <code>&#127793; Available for new opportunities</code></p>`,
+        reactions: [{emoji:'&#128588;', count:18, active:true},{emoji:'&#128293;', count:14},{emoji:'&#129505;', count:9}],
+        thread: {
+          count: 3,
+          avatars: [{initials:'HR', class:'av-green'},{initials:'TC', class:'av-blue'},{initials:'RC', class:'av-red'}],
+          lastReply: '11:42 AM',
+          messages: [
+            {author:'Hiring Manager', initials:'HR', avatar:'av-green', time:'9:30 AM', content:'<p>Impressive background! Would love to chat about our open positions.</p>'},
+            {author:'Tech Community', initials:'TC', avatar:'av-blue', time:'10:15 AM', content:'<p>Your open source contributions are outstanding. Welcome aboard! &#128640;</p>'},
+            {author:'Recruiter', initials:'RC', avatar:'av-red', time:'11:42 AM', content:'<p>Multiple teams at top tech companies are looking for someone with your exact skill set. Let\'s connect!</p>'},
+          ]
+        }
+      },
+      {
+        id: 'g3',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:15 AM',
+        content: `<p>A quick overview of my approach to engineering:</p>
+<pre>const anshull = {
+  code:       "clean, tested, documented",
+  design:     "user-first, accessible",
+  deploy:     "CI/CD, containerized",
+  iterate:    "fast feedback loops",
+  philosophy: "ship early, ship often"
+};</pre>
+<p>Feel free to explore any channel &mdash; each one tells a different part of my story. &#128221;</p>`,
+        reactions: [{emoji:'&#128175;', count:7},{emoji:'&#128640;', count:5}],
+      }
+    ]
+  },
+
+  projects: {
+    topic: "Featured projects and case studies",
+    pinned: 1,
+    members: 38,
+    messages: [
+      { type: 'date', text: 'Tuesday, February 4' },
+      {
+        id: 'p0',
+        author: 'Slackbot',
+        avatar: 'av-bot',
+        initials: '&#9889;',
+        time: '8:00 AM',
+        pinned: true,
+        content: `<p>&#128204; <strong>Pinned:</strong> This channel showcases Anshull's featured projects. Each project includes a tech stack, key achievements, and links.</p>`,
+        reactions: [{emoji:'&#128077;', count:5}],
+      },
+      {
+        id: 'p1',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:00 AM',
+        content: `<p><strong>&#128640; Project: Cloud-Native E-Commerce Platform</strong></p>
+<p>Built a high-performance microservices-based e-commerce platform handling <strong>50K+ concurrent users</strong> with 99.9% uptime.</p>
+<pre>Tech Stack:
+- Frontend:  React, Next.js, TypeScript, Tailwind CSS
+- Backend:   Node.js, Express, GraphQL
+- Database:  PostgreSQL, Redis, Elasticsearch
+- Infra:     AWS (ECS, Lambda, S3), Docker, Terraform
+- CI/CD:     GitHub Actions, ArgoCD</pre>
+<p><strong>Key Achievements:</strong></p>
+<ul>
+  <li>Reduced page load time by <strong>60%</strong> through SSR and edge caching</li>
+  <li>Implemented real-time inventory with WebSocket pub/sub</li>
+  <li>Built A/B testing framework increasing conversion by <strong>23%</strong></li>
+</ul>
+<p><a href="#">View on GitHub</a> | <a href="#">Live Demo</a></p>`,
+        reactions: [{emoji:'&#128293;', count:22, active:true},{emoji:'&#128640;', count:15},{emoji:'&#128175;', count:11}],
+        thread: {
+          count: 2,
+          avatars: [{initials:'TC', class:'av-blue'},{initials:'AG', class:'av-purple'}],
+          lastReply: '10:30 AM',
+          messages: [
+            {author:'Tech Community', initials:'TC', avatar:'av-blue', time:'9:45 AM', content:'<p>How did you handle the microservice communication? gRPC or REST?</p>'},
+            {author:'Anshull Garg', initials:'AG', avatar:'av-purple', time:'10:30 AM', content:'<p>We used <strong>gRPC</strong> for internal service-to-service communication for performance, and exposed a <strong>GraphQL gateway</strong> for the client. The GraphQL layer acts as a BFF (Backend for Frontend), aggregating responses from multiple services.</p><pre>// GraphQL resolver example\nconst resolvers = {\n  Query: {\n    product: (_, { id }) =>\n      productService.getProduct(id),\n    recommendations: (_, { userId }) =>\n      mlService.getRecommendations(userId)\n  }\n};</pre>'},
+          ]
+        }
+      },
+      {
+        id: 'p2',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:30 AM',
+        content: `<p><strong>&#129302; Project: AI-Powered Code Review Tool</strong></p>
+<p>Developed an intelligent code review assistant that analyzes PRs and provides contextual feedback using LLMs.</p>
+<pre>Tech Stack:
+- Python, FastAPI, LangChain
+- OpenAI GPT-4 API, Custom fine-tuned models
+- React dashboard with Monaco Editor
+- PostgreSQL, Pinecone (vector DB)
+- Deployed on GCP with Cloud Run</pre>
+<p><strong>Impact:</strong></p>
+<ul>
+  <li>Reduced code review turnaround time by <strong>40%</strong></li>
+  <li>Caught <strong>85%</strong> of common security vulnerabilities</li>
+  <li>Adopted by <strong>3 engineering teams</strong> internally</li>
+</ul>
+<p><a href="#">GitHub Repository</a></p>`,
+        reactions: [{emoji:'&#129504;', count:18},{emoji:'&#128293;', count:12},{emoji:'&#128588;', count:9}],
+      },
+      {
+        id: 'p3',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:00 AM',
+        content: `<p><strong>&#127760; Project: Real-Time Collaboration Dashboard</strong></p>
+<p>A Figma-inspired collaborative workspace where teams can brainstorm, annotate, and build wireframes in real-time.</p>
+<pre>Tech Stack:
+- React, TypeScript, Zustand
+- Socket.io, CRDT (Yjs)
+- Canvas API, WebGL
+- Node.js, MongoDB
+- Vercel Edge Functions</pre>
+<p><strong>Highlights:</strong></p>
+<ul>
+  <li><strong>Zero-conflict</strong> real-time editing using CRDTs</li>
+  <li>Custom cursor presence and live selection indicators</li>
+  <li>Export to PNG/SVG/PDF with pixel-perfect rendering</li>
+  <li><strong>Sub-50ms</strong> latency for collaborative actions</li>
+</ul>
+<p><a href="#">Live Demo</a> | <a href="#">Technical Blog Post</a></p>`,
+        reactions: [{emoji:'&#128175;', count:14},{emoji:'&#128640;', count:10},{emoji:'&#128588;', count:7}],
+      },
+      {
+        id: 'p4',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:30 AM',
+        content: `<p><strong>&#128241; Project: Cross-Platform Mobile Fitness App</strong></p>
+<p>A health and fitness tracking application with personalized workout plans and social features.</p>
+<pre>Tech Stack:
+- React Native, Expo
+- Firebase (Auth, Firestore, Functions)
+- TensorFlow Lite (pose estimation)
+- Stripe for subscriptions
+- App Store + Google Play</pre>
+<p><strong>Metrics:</strong></p>
+<ul>
+  <li><strong>15K+</strong> downloads in first month</li>
+  <li><strong>4.7 star</strong> rating on both app stores</li>
+  <li>Daily active retention rate of <strong>42%</strong></li>
+</ul>`,
+        reactions: [{emoji:'&#128170;', count:11},{emoji:'&#128293;', count:8}],
+      }
+    ]
+  },
+
+  skills: {
+    topic: "Technical skills and proficiency levels",
+    pinned: 1,
+    members: 36,
+    messages: [
+      { type: 'date', text: 'Wednesday, February 5' },
+      {
+        id: 's0',
+        author: 'Slackbot',
+        avatar: 'av-bot',
+        initials: '&#9889;',
+        time: '8:00 AM',
+        pinned: true,
+        content: `<p>&#128204; <strong>Pinned:</strong> Anshull's complete technical toolkit. Proficiency is rated from the team &mdash; reactions show endorsement counts!</p>`,
+        reactions: [{emoji:'&#128077;', count:3}],
+      },
+      {
+        id: 's1',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:00 AM',
+        content: `<p><strong>&#127912; Frontend Development</strong></p>
+<pre>&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; React / Next.js       [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; TypeScript             [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601; JavaScript (ES6+)      [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601; HTML5 / CSS3           [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Tailwind CSS           [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Vue.js / Nuxt          [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601; React Native           [Proficient]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601;&#9601; WebGL / Three.js       [Intermediate]</pre>`,
+        reactions: [{emoji:'&#128293;', count:16, active:true},{emoji:'&#128175;', count:10}],
+      },
+      {
+        id: 's2',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:15 AM',
+        content: `<p><strong>&#9881;&#65039; Backend & Infrastructure</strong></p>
+<pre>&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601; Node.js / Express      [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Python / FastAPI        [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; GraphQL / REST APIs    [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601; PostgreSQL / MongoDB   [Proficient]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601; Redis / Elasticsearch  [Proficient]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Docker / Kubernetes    [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601; AWS / GCP              [Proficient]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601;&#9601; Terraform / IaC        [Intermediate]</pre>`,
+        reactions: [{emoji:'&#128588;', count:12},{emoji:'&#128640;', count:8}],
+      },
+      {
+        id: 's3',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:30 AM',
+        content: `<p><strong>&#128736;&#65039; Tools, Practices & Soft Skills</strong></p>
+<pre>&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; Git / GitHub           [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601; CI/CD Pipelines        [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Testing (Jest/Cypress) [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Agile / Scrum          [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601;&#9601; System Design          [Proficient]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Technical Writing      [Advanced]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601; Team Leadership        [Expert]
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9601;&#9601; Mentoring              [Advanced]</pre>`,
+        reactions: [{emoji:'&#128175;', count:9},{emoji:'&#129505;', count:7}],
+        thread: {
+          count: 2,
+          avatars: [{initials:'HR', class:'av-green'},{initials:'AG', class:'av-purple'}],
+          lastReply: '10:15 AM',
+          messages: [
+            {author:'Hiring Manager', initials:'HR', avatar:'av-green', time:'9:45 AM', content:'<p>Your full-stack breadth with deep frontend expertise is exactly what we look for. The system design and leadership skills are a bonus!</p>'},
+            {author:'Anshull Garg', initials:'AG', avatar:'av-purple', time:'10:15 AM', content:'<p>Thanks! I believe the best engineers are <strong>T-shaped</strong> &mdash; deep expertise in one area (frontend for me) with broad knowledge across the stack. It helps me make better architectural decisions and communicate effectively with all team members.</p>'},
+          ]
+        }
+      }
+    ]
+  },
+
+  experience: {
+    topic: "Career timeline and professional experience",
+    pinned: 1,
+    members: 35,
+    messages: [
+      { type: 'date', text: 'Thursday, February 6' },
+      {
+        id: 'e0',
+        author: 'Slackbot',
+        avatar: 'av-bot',
+        initials: '&#9889;',
+        time: '8:00 AM',
+        pinned: true,
+        content: `<p>&#128204; <strong>Pinned:</strong> Anshull's professional journey. Each role is a chapter &mdash; scroll through the timeline!</p>`,
+        reactions: [{emoji:'&#128077;', count:4}],
+      },
+      {
+        id: 'e1',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:00 AM',
+        content: `<p><strong>&#127969; Senior Software Engineer</strong> &mdash; <em>TechCorp Inc.</em></p>
+<p><code>Jan 2023 - Present</code> &nbsp; &#128205; San Francisco, CA</p>
+<ul>
+  <li>Led a team of <strong>6 engineers</strong> building the next-gen customer platform</li>
+  <li>Architected micro-frontend infrastructure reducing deploy time by <strong>70%</strong></li>
+  <li>Implemented design system adopted across <strong>4 product teams</strong></li>
+  <li>Drove migration from REST to GraphQL, improving data fetching efficiency by <strong>45%</strong></li>
+  <li>Mentored 3 junior engineers through promotion cycles</li>
+</ul>
+<p><strong>Stack:</strong> <code>React</code> <code>TypeScript</code> <code>GraphQL</code> <code>AWS</code> <code>Kubernetes</code></p>`,
+        reactions: [{emoji:'&#128293;', count:15, active:true},{emoji:'&#128588;', count:11},{emoji:'&#128175;', count:8}],
+        thread: {
+          count: 2,
+          avatars: [{initials:'HR', class:'av-green'},{initials:'AG', class:'av-purple'}],
+          lastReply: '10:00 AM',
+          messages: [
+            {author:'Hiring Manager', initials:'HR', avatar:'av-green', time:'9:30 AM', content:'<p>The micro-frontend architecture sounds fascinating. How did you handle shared state across independently deployed frontends?</p>'},
+            {author:'Anshull Garg', initials:'AG', avatar:'av-purple', time:'10:00 AM', content:'<p>We used a <strong>custom event bus</strong> for cross-MFE communication and a shared <strong>Redux store</strong> for global state (auth, user prefs). Each MFE owns its domain state locally. Module Federation handles the runtime integration.</p><pre>// Module Federation config\nexposes: {\n  "./Dashboard": "./src/Dashboard",\n  "./shared/store": "./src/store"\n}</pre>'},
+          ]
+        }
+      },
+      {
+        id: 'e2',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:30 AM',
+        content: `<p><strong>&#128187; Software Engineer II</strong> &mdash; <em>StartupXYZ</em></p>
+<p><code>Jun 2021 - Dec 2022</code> &nbsp; &#128205; Remote</p>
+<ul>
+  <li>Built the core product from <strong>0 to 1</strong>, shipping MVP in 3 months</li>
+  <li>Scaled the platform from <strong>100 to 50K users</strong></li>
+  <li>Implemented real-time collaboration features using CRDTs</li>
+  <li>Established engineering best practices: code reviews, testing culture, documentation</li>
+  <li>Reduced infrastructure costs by <strong>35%</strong> through optimization and right-sizing</li>
+</ul>
+<p><strong>Stack:</strong> <code>Next.js</code> <code>Node.js</code> <code>PostgreSQL</code> <code>Redis</code> <code>GCP</code></p>`,
+        reactions: [{emoji:'&#128640;', count:13},{emoji:'&#128293;', count:9}],
+      },
+      {
+        id: 'e3',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:00 AM',
+        content: `<p><strong>&#128421;&#65039; Software Engineer</strong> &mdash; <em>Digital Agency Co.</em></p>
+<p><code>Aug 2019 - May 2021</code> &nbsp; &#128205; New York, NY</p>
+<ul>
+  <li>Delivered <strong>12+ client projects</strong> across fintech, healthcare, and e-commerce</li>
+  <li>Built accessible, WCAG 2.1 AA compliant interfaces</li>
+  <li>Introduced component library reducing development time by <strong>40%</strong></li>
+  <li>Led frontend for a $2M fintech project with <strong>zero post-launch critical bugs</strong></li>
+</ul>
+<p><strong>Stack:</strong> <code>React</code> <code>Vue.js</code> <code>Python</code> <code>Django</code> <code>AWS</code></p>`,
+        reactions: [{emoji:'&#128588;', count:8},{emoji:'&#128175;', count:6}],
+      },
+      {
+        id: 'e4',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:30 AM',
+        content: `<p><strong>&#127891; Education</strong></p>
+<p><strong>B.S. Computer Science</strong> &mdash; <em>University of Technology</em></p>
+<p><code>2015 - 2019</code> &nbsp; GPA: <strong>3.8/4.0</strong></p>
+<ul>
+  <li>Dean's List, all semesters</li>
+  <li>Teaching Assistant for Data Structures & Algorithms</li>
+  <li>Led university hackathon team &mdash; <strong>2x winners</strong></li>
+  <li>Published research paper on distributed systems optimization</li>
+</ul>`,
+        reactions: [{emoji:'&#127891;', count:10},{emoji:'&#128293;', count:6}],
+      }
+    ]
+  },
+
+  random: {
+    topic: "Fun facts, hobbies, and random stuff about Anshull",
+    pinned: 0,
+    members: 42,
+    messages: [
+      { type: 'date', text: 'Friday, February 7' },
+      {
+        id: 'r1',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:00 AM',
+        content: `<p><strong>&#127922; Fun Facts About Me</strong></p>
+<p>Since this is #random, here are some things that make me... me:</p>
+<ul>
+  <li>&#9749; I've consumed enough coffee to fill a swimming pool (rough estimate)</li>
+  <li>&#127911; My coding playlist has 2,000+ songs &mdash; mainly lo-fi and synthwave</li>
+  <li>&#127918; I speedrun retro games on weekends. Current PB: Super Mario 64 in 22 minutes</li>
+  <li>&#128640; I once deployed to production on a Friday at 4:59 PM. It went fine. (I don't recommend it.)</li>
+  <li>&#128218; Currently reading: "Designing Data-Intensive Applications" for the 3rd time</li>
+</ul>`,
+        reactions: [{emoji:'&#128514;', count:14},{emoji:'&#128293;', count:8},{emoji:'&#9749;', count:11}],
+      },
+      {
+        id: 'r2',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:30 AM',
+        content: `<p><strong>&#127749; When I'm Not Coding</strong></p>
+<ul>
+  <li>&#127956;&#65039; Hiking and landscape photography</li>
+  <li>&#127859; Perfecting my sourdough bread recipe (200+ loaves and counting)</li>
+  <li>&#9824;&#65039; Competitive poker player &mdash; probability is just math, right?</li>
+  <li>&#128218; Writing technical blog posts (50K+ monthly readers)</li>
+  <li>&#127925; Learning piano &mdash; can play exactly 3 songs confidently</li>
+</ul>`,
+        reactions: [{emoji:'&#127859;', count:9},{emoji:'&#127925;', count:6},{emoji:'&#128175;', count:5}],
+      },
+      {
+        id: 'r3',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '11:00 AM',
+        content: `<p><strong>&#128172; Hot Takes (Friendly Debates Welcome)</strong></p>
+<pre>1. Tabs > Spaces (fight me)
+2. Dark mode is the only mode
+3. TypeScript should be the default
+4. README-driven development works
+5. The best debugging tool is console.log
+6. Vim keybindings make you 2x faster*
+
+*after the initial 6 months of suffering</pre>`,
+        reactions: [{emoji:'&#128293;', count:22, active:true},{emoji:'&#128514;', count:18},{emoji:'&#128175;', count:12}],
+        thread: {
+          count: 2,
+          avatars: [{initials:'TC', class:'av-blue'},{initials:'AI', class:'av-indigo'}],
+          lastReply: '11:30 AM',
+          messages: [
+            {author:'Tech Community', initials:'TC', avatar:'av-blue', time:'11:15 AM', content:'<p>Tabs vs Spaces? Bold choice. I respect the courage. &#128064;</p>'},
+            {author:'Slackbot', initials:'&#9889;', avatar:'av-bot', time:'11:30 AM', content:'<p>I ran the numbers: <code>console.log</code> accounts for 47% of all debugging globally. Anshull\'s take is statistically valid. &#128200;</p>'},
+          ]
+        }
+      },
+      {
+        id: 'r4',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '11:45 AM',
+        content: `<p><strong>&#127793; Open Source & Community</strong></p>
+<ul>
+  <li>&#11088; <strong>500+</strong> GitHub contributions this year</li>
+  <li>&#128227; Speaker at <strong>3 tech conferences</strong></li>
+  <li>&#128218; Technical blog with <strong>50K+ monthly readers</strong></li>
+  <li>&#129309; Mentor at 2 coding bootcamps</li>
+  <li>&#128230; Maintainer of 2 open-source libraries</li>
+</ul>
+<p>I believe in giving back to the community that taught me so much. &#128153;</p>`,
+        reactions: [{emoji:'&#129505;', count:15},{emoji:'&#128588;', count:10}],
+      }
+    ]
+  },
+
+  contact: {
+    topic: "Get in touch with Anshull",
+    pinned: 1,
+    members: 42,
+    messages: [
+      { type: 'date', text: 'Saturday, February 8' },
+      {
+        id: 'c0',
+        author: 'Slackbot',
+        avatar: 'av-bot',
+        initials: '&#9889;',
+        time: '8:00 AM',
+        pinned: true,
+        content: `<p>&#128204; <strong>Pinned:</strong> All the ways to reach Anshull. He typically responds within <strong>24 hours</strong>.</p>`,
+        reactions: [{emoji:'&#128077;', count:6}],
+      },
+      {
+        id: 'c1',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:00 AM',
+        content: `<p><strong>&#128236; Let's Connect!</strong></p>
+<p>I'm always open to interesting conversations, collaboration opportunities, or just a friendly chat about tech.</p>
+<pre>&#128231; Email:       anshull.garg@email.com
+&#128279; LinkedIn:    linkedin.com/in/anshullgarg
+&#128025; GitHub:      github.com/anshullgarg
+&#128038; Twitter/X:   @anshullgarg
+&#127760; Website:     anshullgarg.dev
+&#128221; Blog:        blog.anshullgarg.dev</pre>
+<p>Current status: <strong style="color:#2BAC76">&#128994; Available for opportunities</strong></p>`,
+        reactions: [{emoji:'&#128293;', count:8},{emoji:'&#128588;', count:12, active:true},{emoji:'&#128175;', count:6}],
+      },
+      {
+        id: 'c2',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '9:30 AM',
+        content: `<p><strong>&#128269; What I'm Looking For</strong></p>
+<ul>
+  <li><strong>Senior / Staff Engineer</strong> roles at product-driven companies</li>
+  <li>Focus on <strong>frontend architecture</strong> or <strong>full-stack</strong> positions</li>
+  <li>Companies that value <strong>engineering excellence</strong> and <strong>user experience</strong></li>
+  <li>Open to <strong>remote</strong>, <strong>hybrid</strong>, or <strong>on-site</strong> (SF Bay Area preferred)</li>
+  <li>Interested in <strong>AI/ML</strong>, <strong>developer tools</strong>, or <strong>SaaS platforms</strong></li>
+</ul>
+<blockquote>"I want to build things that matter, with people who care."</blockquote>`,
+        reactions: [{emoji:'&#129505;', count:11},{emoji:'&#128293;', count:7}],
+        thread: {
+          count: 3,
+          avatars: [{initials:'HR', class:'av-green'},{initials:'RC', class:'av-red'},{initials:'AG', class:'av-purple'}],
+          lastReply: '11:00 AM',
+          messages: [
+            {author:'Hiring Manager', initials:'HR', avatar:'av-green', time:'9:45 AM', content:'<p>This aligns perfectly with our open Staff Frontend Engineer role. Sending you a DM with details!</p>'},
+            {author:'Recruiter', initials:'RC', avatar:'av-red', time:'10:15 AM', content:'<p>I have 3 opportunities that match your criteria. Two are AI startups and one is a Series C dev tools company. Let me know if you\'d like intros!</p>'},
+            {author:'Anshull Garg', initials:'AG', avatar:'av-purple', time:'11:00 AM', content:'<p>Thanks both! I appreciate the interest. Feel free to reach out via email or LinkedIn &mdash; looking forward to connecting. &#128640;</p>'},
+          ]
+        }
+      },
+      {
+        id: 'c3',
+        author: 'Anshull Garg',
+        avatar: 'av-purple',
+        initials: 'AG',
+        time: '10:00 AM',
+        content: `<p><strong>&#128196; Resume / CV</strong></p>
+<p>Download my resume in your preferred format:</p>
+<ul>
+  <li>&#128196; <a href="#">Download PDF Resume</a></li>
+  <li>&#128196; <a href="#">View Interactive Resume</a></li>
+  <li>&#128279; <a href="#">LinkedIn Full Profile</a></li>
+</ul>
+<p>References available upon request.</p>
+<p>Thanks for visiting my portfolio workspace! &#128075;</p>`,
+        reactions: [{emoji:'&#128588;', count:9},{emoji:'&#128175;', count:5}],
+      }
+    ]
+  }
+};
+
+// ===== STATE =====
+let currentChannel = 'general';
+let expandedThreads = new Set();
+
+// ===== FUNCTIONS =====
+function toggleDropdown() {
+  document.getElementById('wsDropdown').classList.toggle('show');
+}
+
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('wsDropdown');
+  if (!e.target.closest('.sidebar-header')) {
+    dd.classList.remove('show');
+  }
+});
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mobileOverlay').classList.toggle('show');
+}
+
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const items = header.nextElementSibling;
+  if (header.classList.contains('collapsed')) {
+    items.style.maxHeight = '0';
+  } else {
+    items.style.maxHeight = '300px';
+  }
+}
+
+function switchChannel(channel) {
+  if (channel === currentChannel) return;
+  currentChannel = channel;
+  expandedThreads = new Set();
+
+  // Update sidebar
+  document.querySelectorAll('.channel-item').forEach(el => {
+    el.classList.remove('active');
+    if (el.dataset.channel === channel) {
+      el.classList.add('active');
+      el.classList.remove('unread');
+      const badge = el.querySelector('.badge');
+      if (badge) badge.remove();
+    }
+  });
+
+  // Update topbar
+  const data = channelData[channel];
+  document.getElementById('topbarName').textContent = channel;
+  document.getElementById('topbarTopic').textContent = data.topic;
+  document.getElementById('topbarMembers').innerHTML = '&#128101; ' + data.members;
+  document.getElementById('pinnedCount').textContent = data.pinned + ' pinned';
+  document.getElementById('pinnedBar').style.display = data.pinned > 0 ? 'flex' : 'none';
+  document.getElementById('inputPlaceholder').textContent = 'Message #' + channel;
+
+  // Animate transition
+  const container = document.getElementById('messagesContainer');
+  container.classList.add('switching');
+  setTimeout(() => {
+    renderMessages(channel);
+    container.classList.remove('switching');
+    container.classList.add('entering');
+    setTimeout(() => container.classList.remove('entering'), 250);
+  }, 100);
+
+  // Show typing indicator briefly
+  showTypingIndicator();
+
+  // Mobile: close sidebar
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mobileOverlay').classList.remove('show');
+}
+
+function renderMessages(channel) {
+  const data = channelData[channel];
+  const container = document.getElementById('messagesContainer');
+  let html = '';
+
+  data.messages.forEach(msg => {
+    if (msg.type === 'date') {
+      html += `<div class="date-divider"><span>${msg.text}</span></div>`;
+      return;
+    }
+
+    const pinnedClass = msg.pinned ? ' pinned' : '';
+    const pinnedLabel = msg.pinned ? '<div class="msg-pinned-label">&#128204; Pinned by Slackbot</div>' : '';
+    const threadHTML = msg.thread ? renderThread(msg) : '';
+    const reactionsHTML = msg.reactions ? renderReactions(msg.reactions) : '';
+
+    html += `
+      <div class="message${pinnedClass}" id="msg-${msg.id}">
+        <div class="msg-avatar ${msg.avatar}">${msg.initials}</div>
+        <div class="msg-body">
+          ${pinnedLabel}
+          <div class="msg-header">
+            <span class="msg-author">${msg.author}</span>
+            ${msg.author === 'Slackbot' ? '<span class="msg-app-badge">APP</span>' : ''}
+            <span class="msg-time">${msg.time}</span>
+          </div>
+          <div class="msg-content">${msg.content}</div>
+          ${reactionsHTML}
+          ${threadHTML}
+        </div>
+        <div class="message-actions">
+          <button title="React">&#128578;</button>
+          <button title="Reply">&#128172;</button>
+          <button title="Share">&#8618;</button>
+          <button title="More">&#8943;</button>
+        </div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+  container.scrollTop = container.scrollHeight;
+}
+
+function renderReactions(reactions) {
+  let html = '<div class="msg-reactions">';
+  reactions.forEach(r => {
+    const activeClass = r.active ? ' active' : '';
+    html += `<button class="reaction${activeClass}" onclick="toggleReaction(this)">
+      <span class="emoji">${r.emoji}</span>
+      <span class="count">${r.count}</span>
+    </button>`;
+  });
+  html += '<button class="reaction" onclick="this.querySelector(\'.count\').textContent = 1; this.classList.add(\'active\')" style="opacity:.5"><span class="emoji">+</span></button>';
+  html += '</div>';
+  return html;
+}
+
+function renderThread(msg) {
+  const t = msg.thread;
+  const isExpanded = expandedThreads.has(msg.id);
+
+  if (isExpanded) {
+    let threadMsgs = '';
+    t.messages.forEach(tm => {
+      threadMsgs += `
+        <div class="thread-message">
+          <div class="mini-avatar ${tm.avatar}">${tm.initials}</div>
+          <div class="thread-msg-body">
+            <div class="thread-msg-header">
+              <span class="thread-msg-author">${tm.author}</span>
+              <span class="thread-msg-time">${tm.time}</span>
+            </div>
+            <div class="thread-msg-content">${tm.content}</div>
+          </div>
+        </div>`;
+    });
+
+    return `
+      <div class="thread-expanded">
+        <div class="thread-header">
+          <span>${t.count} replies</span>
+          <span class="collapse-btn" onclick="collapseThread('${msg.id}')">Collapse thread</span>
+        </div>
+        ${threadMsgs}
+      </div>`;
+  }
+
+  let avatarsHTML = '<div class="thread-avatars">';
+  t.avatars.forEach(a => {
+    avatarsHTML += `<div class="mini-avatar ${a.class}">${a.initials}</div>`;
+  });
+  avatarsHTML += '</div>';
+
+  return `
+    <div class="thread-preview" onclick="expandThread('${msg.id}')">
+      ${avatarsHTML}
+      <span class="reply-count">${t.count} replies</span>
+      <span class="reply-time">Last reply ${t.lastReply}</span>
+    </div>`;
+}
+
+function expandThread(msgId) {
+  expandedThreads.add(msgId);
+  renderMessages(currentChannel);
+}
+
+function collapseThread(msgId) {
+  expandedThreads.delete(msgId);
+  renderMessages(currentChannel);
+}
+
+function toggleReaction(btn) {
+  btn.classList.toggle('active');
+  const countEl = btn.querySelector('.count');
+  let count = parseInt(countEl.textContent);
+  if (btn.classList.contains('active')) {
+    countEl.textContent = count + 1;
+  } else {
+    countEl.textContent = Math.max(0, count - 1);
+  }
+}
+
+function showTypingIndicator() {
+  const indicator = document.getElementById('typingIndicator');
+  indicator.style.display = 'flex';
+  setTimeout(() => {
+    indicator.style.display = 'none';
+  }, 2500);
+}
+
+// Periodically show typing indicator on active channel
+function randomTypingIndicator() {
+  const delay = 8000 + Math.random() * 15000;
+  setTimeout(() => {
+    showTypingIndicator();
+    randomTypingIndicator();
+  }, delay);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  renderMessages('general');
+  document.getElementById('typingIndicator').style.display = 'none';
+
+  // Show typing indicator after initial load
+  setTimeout(() => showTypingIndicator(), 3000);
+  randomTypingIndicator();
+});
+</script>
+</body>
+</html>

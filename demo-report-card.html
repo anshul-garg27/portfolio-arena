@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Card - Anshull Garg | School of Software Engineering</title>
+<style>
+  /* ============================================================
+     RESET & FOUNDATIONS
+     ============================================================ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --paper:         #F5F0E8;
+    --paper-dark:    #EDE7D9;
+    --paper-line:    #C8D8E8;
+    --ink-blue:      #1A3A6B;
+    --ink-blue-light:#3A6AAB;
+    --ink-black:     #2C2C2C;
+    --ink-red:       #C41E3A;
+    --ink-green:     #2D6A2E;
+    --pencil:        #6B6B6B;
+    --stamp-red:     #B22234;
+    --stamp-green:   #1B7A3D;
+    --gold:          #C5960C;
+    --seal-blue:     #1A3A6B;
+    --border-dark:   #8B7B6B;
+    --font-serif:    'Georgia', 'Times New Roman', 'Palatino', serif;
+    --font-hand:     'Segoe Script', 'Comic Sans MS', 'Bradley Hand', cursive;
+    --font-mono:     'Courier New', 'Courier', monospace;
+    --font-sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: #7B8B6F;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, #8B9B7F 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, #6B7B5F 0%, transparent 50%);
+    color: var(--ink-black);
+    font-family: var(--font-serif);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+  }
+
+  /* ============================================================
+     PAPER TEXTURE
+     ============================================================ */
+  .report-card {
+    width: 100%;
+    max-width: 800px;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 31px,
+        var(--paper-line) 31px,
+        var(--paper-line) 32px
+      );
+    border: 2px solid var(--border-dark);
+    box-shadow:
+      4px 4px 0 rgba(0,0,0,0.15),
+      8px 8px 20px rgba(0,0,0,0.3),
+      inset 0 0 80px rgba(0,0,0,0.03);
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* Paper aging effect */
+  .report-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(139,107,60,0.12) 0%, transparent 40%),
+      radial-gradient(ellipse at 100% 100%, rgba(139,107,60,0.10) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(139,107,60,0.04) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Paper grain texture */
+  .report-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .report-card > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ============================================================
+     HEADER / SCHOOL BANNER
+     ============================================================ */
+  .school-header {
+    background: var(--ink-blue);
+    color: #F5F0E8;
+    text-align: center;
+    padding: 28px 30px 24px;
+    border-bottom: 4px double var(--gold);
+    position: relative;
+  }
+
+  .school-header::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gold);
+  }
+
+  .school-crest {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: rgba(197,150,12,0.1);
+    position: relative;
+  }
+
+  .school-crest::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 1px solid rgba(197,150,12,0.3);
+    border-radius: 50%;
+  }
+
+  .school-name {
+    font-size: 1.6rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .school-est {
+    font-size: 0.8rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  .school-motto {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  /* ============================================================
+     DOCUMENT TITLE
+     ============================================================ */
+  .doc-title {
+    text-align: center;
+    padding: 24px 30px 20px;
+    border-bottom: 1px solid var(--border-dark);
+  }
+
+  .doc-title h2 {
+    font-size: 1.5rem;
+    color: var(--ink-blue);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    font-weight: normal;
+    position: relative;
+    display: inline-block;
+  }
+
+  .doc-title h2::before,
+  .doc-title h2::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: var(--ink-blue);
+  }
+
+  .doc-title h2::before { right: calc(100% + 12px); }
+  .doc-title h2::after  { left:  calc(100% + 12px); }
+
+  .doc-title .semester {
+    font-size: 0.85rem;
+    color: var(--pencil);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ============================================================
+     STUDENT INFO
+     ============================================================ */
+  .student-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 20px 30px;
+    border-bottom: 2px solid var(--border-dark);
+  }
+
+  .info-field {
+    padding: 8px 0;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .info-field .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--pencil);
+    white-space: nowrap;
+    min-width: 80px;
+  }
+
+  .info-field .value {
+    color: var(--ink-blue);
+    font-family: var(--font-hand);
+    font-size: 1rem;
+    border-bottom: 1px solid var(--ink-blue);
+    padding-bottom: 2px;
+    flex: 1;
+  }
+
+  /* ============================================================
+     GRADES TABLE
+     ============================================================ */
+  .grades-section {
+    padding: 0 30px;
+  }
+
+  .section-header {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--ink-blue);
+    padding: 18px 0 10px;
+    border-bottom: 2px solid var(--ink-blue);
+    font-weight: bold;
+  }
+
+  .grades-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .grades-table thead th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pencil);
+    padding: 10px 8px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-dark);
+    font-weight: normal;
+  }
+
+  .grades-table thead th:nth-child(2) {
+    text-align: center;
+    width: 70px;
+  }
+
+  .grades-table thead th:nth-child(3) {
+    width: 40%;
+  }
+
+  .grades-table tbody tr {
+    border-bottom: 1px solid rgba(200,216,232,0.5);
+    transition: background 0.2s;
+  }
+
+  .grades-table tbody tr:hover {
+    background: rgba(26,58,107,0.03);
+  }
+
+  .grades-table td {
+    padding: 12px 8px;
+    vertical-align: top;
+  }
+
+  .subject-name {
+    font-weight: bold;
+    color: var(--ink-blue);
+    font-size: 0.95rem;
+  }
+
+  .subject-code {
+    font-size: 0.7rem;
+    color: var(--pencil);
+    font-family: var(--font-mono);
+    margin-top: 2px;
+  }
+
+  .grade-cell {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    font-family: var(--font-hand);
+    vertical-align: middle;
+  }
+
+  .grade-aplus {
+    color: var(--ink-red);
+    text-shadow: 0 0 1px rgba(196,30,58,0.2);
+    position: relative;
+  }
+
+  .grade-aplus::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 2px;
+    background: var(--ink-red);
+    opacity: 0.3;
+  }
+
+  .grade-a {
+    color: var(--ink-blue);
+  }
+
+  .grade-aminus {
+    color: var(--ink-blue-light);
+  }
+
+  .grade-bplus {
+    color: var(--ink-green);
+  }
+
+  .teacher-comment {
+    font-family: var(--font-hand);
+    font-size: 0.82rem;
+    color: var(--ink-blue);
+    font-style: italic;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  /* ============================================================
+     GPA / SUMMARY
+     ============================================================ */
+  .summary-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin: 0 30px;
+    border-top: 2px solid var(--ink-blue);
+    border-bottom: 2px solid var(--ink-blue);
+  }
+
+  .summary-box {
+    padding: 16px 12px;
+    text-align: center;
+    border-right: 1px solid rgba(200,216,232,0.5);
+  }
+
+  .summary-box:last-child {
+    border-right: none;
+  }
+
+  .summary-box .summary-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pencil);
+    margin-bottom: 6px;
+  }
+
+  .summary-box .summary-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--ink-blue);
+    font-family: var(--font-hand);
+  }
+
+  .summary-box .summary-value.gpa-highlight {
+    color: var(--ink-red);
+    font-size: 1.8rem;
+  }
+
+  /* ============================================================
+     ATTENDANCE & EXTRACURRICULARS
+     ============================================================ */
+  .details-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0 30px;
+  }
+
+  .detail-block {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(200,216,232,0.5);
+  }
+
+  .detail-block:first-child {
+    padding-right: 20px;
+    border-right: 1px solid rgba(200,216,232,0.5);
+  }
+
+  .detail-block:last-child {
+    padding-left: 20px;
+  }
+
+  .detail-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pencil);
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  .detail-value {
+    font-family: var(--font-hand);
+    color: var(--ink-blue);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .detail-value .club-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  .detail-value .club-bullet {
+    width: 4px;
+    height: 4px;
+    background: var(--ink-blue);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .deployment-count {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--ink-red);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ============================================================
+     PRINCIPAL'S NOTE
+     ============================================================ */
+  .principal-section {
+    margin: 20px 30px;
+    padding: 20px;
+    border: 1px solid var(--border-dark);
+    background: rgba(245,240,232,0.5);
+    position: relative;
+  }
+
+  .principal-section::before {
+    content: 'PRINCIPAL\'S REMARKS';
+    position: absolute;
+    top: -9px;
+    left: 16px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--pencil);
+    background: var(--paper);
+    padding: 0 8px;
+  }
+
+  .principal-note {
+    font-family: var(--font-hand);
+    color: var(--ink-blue);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  .principal-signature {
+    margin-top: 16px;
+    text-align: right;
+  }
+
+  .principal-sig-line {
+    border-top: 1px solid var(--ink-blue);
+    display: inline-block;
+    padding-top: 4px;
+    font-size: 0.7rem;
+    color: var(--pencil);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .principal-sig-name {
+    font-family: var(--font-hand);
+    color: var(--ink-blue);
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ============================================================
+     STAMPS
+     ============================================================ */
+  .stamp-area {
+    padding: 20px 30px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stamp {
+    border: 4px solid;
+    border-radius: 8px;
+    padding: 10px 24px;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 3px;
+    font-size: 0.9rem;
+    transform: rotate(-4deg);
+    opacity: 0.75;
+    position: relative;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .stamp::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid;
+    border-radius: 4px;
+    opacity: 0.4;
+  }
+
+  .stamp-promoted {
+    border-color: var(--stamp-green);
+    color: var(--stamp-green);
+    transform: rotate(-5deg);
+    font-size: 1rem;
+    padding: 14px 28px;
+  }
+
+  .stamp-promoted::before {
+    border-color: var(--stamp-green);
+  }
+
+  .stamp-honors {
+    border-color: var(--gold);
+    color: var(--gold);
+    transform: rotate(3deg);
+  }
+
+  .stamp-honors::before {
+    border-color: var(--gold);
+  }
+
+  .stamp-excellence {
+    border-color: var(--stamp-red);
+    color: var(--stamp-red);
+    transform: rotate(-2deg);
+    font-size: 0.75rem;
+  }
+
+  .stamp-excellence::before {
+    border-color: var(--stamp-red);
+  }
+
+  /* ============================================================
+     GRADING SCALE LEGEND
+     ============================================================ */
+  .grading-scale {
+    margin: 0 30px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border-dark);
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .scale-item {
+    font-size: 0.65rem;
+    color: var(--pencil);
+    letter-spacing: 1px;
+  }
+
+  .scale-item strong {
+    color: var(--ink-blue);
+    margin-right: 2px;
+  }
+
+  /* ============================================================
+     SIGNATURE / CONTACT FOOTER
+     ============================================================ */
+  .signature-section {
+    padding: 20px 30px 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .sig-block {
+    text-align: center;
+  }
+
+  .sig-written {
+    font-family: var(--font-hand);
+    color: var(--ink-blue);
+    font-size: 1rem;
+    padding-bottom: 6px;
+    min-height: 30px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .sig-written a {
+    color: var(--ink-blue);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--ink-blue);
+    transition: color 0.2s;
+  }
+
+  .sig-written a:hover {
+    color: var(--ink-red);
+  }
+
+  .sig-line {
+    border-top: 1px solid var(--ink-black);
+    padding-top: 6px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pencil);
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  .card-footer {
+    text-align: center;
+    padding: 16px 30px 20px;
+    border-top: 1px solid rgba(200,216,232,0.5);
+  }
+
+  .card-footer p {
+    font-size: 0.6rem;
+    color: var(--pencil);
+    letter-spacing: 1px;
+    line-height: 1.8;
+  }
+
+  .card-footer .doc-number {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: rgba(107,107,107,0.5);
+    margin-top: 4px;
+  }
+
+  /* ============================================================
+     SEAL WATERMARK
+     ============================================================ */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 350px;
+    border: 2px solid rgba(26,58,107,0.04);
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .watermark::before {
+    content: 'SSE';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    font-weight: bold;
+    color: rgba(26,58,107,0.03);
+    letter-spacing: 20px;
+  }
+
+  .watermark::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(26,58,107,0.03);
+    border-radius: 50%;
+  }
+
+  /* ============================================================
+     FOLD LINE
+     ============================================================ */
+  .fold-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 8px,
+      rgba(139,123,107,0.15) 8px,
+      rgba(139,123,107,0.15) 16px
+    );
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .fold-line-1 { top: 33.33%; }
+  .fold-line-2 { top: 66.66%; }
+
+  /* ============================================================
+     STAPLE
+     ============================================================ */
+  .staple {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(180deg, #A8A8A8, #888, #A8A8A8);
+    border-radius: 1px;
+    z-index: 10;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    transform: rotate(-5deg);
+  }
+
+  .staple::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: -1px;
+    width: 6px;
+    height: 3px;
+    background: #999;
+    border-radius: 0 0 2px 2px;
+  }
+
+  /* ============================================================
+     COFFEE STAIN (easter egg)
+     ============================================================ */
+  .coffee-stain {
+    position: absolute;
+    bottom: 120px;
+    right: 40px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(139,90,43,0.06);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .coffee-stain::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    border: 1px solid rgba(139,90,43,0.04);
+  }
+
+  /* ============================================================
+     ANIMATIONS
+     ============================================================ */
+  @keyframes stampSlam {
+    0% { transform: scale(3) rotate(-5deg); opacity: 0; }
+    60% { transform: scale(0.95) rotate(-5deg); opacity: 0.8; }
+    100% { transform: scale(1) rotate(-5deg); opacity: 0.75; }
+  }
+
+  @keyframes stampSlam2 {
+    0% { transform: scale(3) rotate(3deg); opacity: 0; }
+    60% { transform: scale(0.95) rotate(3deg); opacity: 0.8; }
+    100% { transform: scale(1) rotate(3deg); opacity: 0.75; }
+  }
+
+  @keyframes stampSlam3 {
+    0% { transform: scale(3) rotate(-2deg); opacity: 0; }
+    60% { transform: scale(0.95) rotate(-2deg); opacity: 0.8; }
+    100% { transform: scale(1) rotate(-2deg); opacity: 0.75; }
+  }
+
+  @keyframes writeIn {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0% 0 0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes gradeWrite {
+    0%   { opacity: 0; transform: scale(0.5); }
+    50%  { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .stamp-promoted {
+    animation: stampSlam 0.5s ease-out 1.5s both;
+  }
+
+  .stamp-honors {
+    animation: stampSlam2 0.5s ease-out 1.8s both;
+  }
+
+  .stamp-excellence {
+    animation: stampSlam3 0.5s ease-out 2.1s both;
+  }
+
+  .grades-table tbody tr {
+    animation: fadeUp 0.4s ease-out both;
+  }
+
+  .grades-table tbody tr:nth-child(1) { animation-delay: 0.2s; }
+  .grades-table tbody tr:nth-child(2) { animation-delay: 0.3s; }
+  .grades-table tbody tr:nth-child(3) { animation-delay: 0.4s; }
+  .grades-table tbody tr:nth-child(4) { animation-delay: 0.5s; }
+  .grades-table tbody tr:nth-child(5) { animation-delay: 0.6s; }
+  .grades-table tbody tr:nth-child(6) { animation-delay: 0.7s; }
+  .grades-table tbody tr:nth-child(7) { animation-delay: 0.8s; }
+  .grades-table tbody tr:nth-child(8) { animation-delay: 0.9s; }
+
+  .grade-cell {
+    animation: gradeWrite 0.3s ease-out both;
+  }
+
+  tr:nth-child(1) .grade-cell { animation-delay: 0.5s; }
+  tr:nth-child(2) .grade-cell { animation-delay: 0.6s; }
+  tr:nth-child(3) .grade-cell { animation-delay: 0.7s; }
+  tr:nth-child(4) .grade-cell { animation-delay: 0.8s; }
+  tr:nth-child(5) .grade-cell { animation-delay: 0.9s; }
+  tr:nth-child(6) .grade-cell { animation-delay: 1.0s; }
+  tr:nth-child(7) .grade-cell { animation-delay: 1.1s; }
+  tr:nth-child(8) .grade-cell { animation-delay: 1.2s; }
+
+  .principal-section {
+    animation: fadeUp 0.5s ease-out 1.3s both;
+  }
+
+  /* ============================================================
+     RED MARGIN LINE
+     ============================================================ */
+  .margin-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 60px;
+    width: 1px;
+    background: rgba(196,30,58,0.15);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .margin-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3px;
+    width: 1px;
+    background: rgba(196,30,58,0.10);
+  }
+
+  /* ============================================================
+     HOLE PUNCHES
+     ============================================================ */
+  .hole-punch {
+    position: absolute;
+    left: 22px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #7B8B6F;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+
+  .hole-punch-1 { top: 15%; }
+  .hole-punch-2 { top: 50%; }
+  .hole-punch-3 { top: 85%; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 700px) {
+    body {
+      padding: 20px 10px;
+    }
+
+    .report-card {
+      max-width: 100%;
+    }
+
+    .school-name {
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+
+    .student-info {
+      grid-template-columns: 1fr;
+      padding: 16px 20px;
+    }
+
+    .grades-section {
+      padding: 0 16px;
+      overflow-x: auto;
+    }
+
+    .grades-table {
+      min-width: 500px;
+    }
+
+    .details-row {
+      grid-template-columns: 1fr;
+      padding: 0 20px;
+    }
+
+    .detail-block:first-child {
+      border-right: none;
+      padding-right: 0;
+    }
+
+    .detail-block:last-child {
+      padding-left: 0;
+    }
+
+    .summary-section {
+      margin: 0 20px;
+    }
+
+    .principal-section {
+      margin: 20px 16px;
+    }
+
+    .signature-section {
+      padding: 20px 20px 10px;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .stamp-area {
+      gap: 20px;
+      padding: 20px 16px;
+    }
+
+    .stamp {
+      font-size: 0.75rem;
+      padding: 8px 16px;
+    }
+
+    .stamp-promoted {
+      font-size: 0.85rem;
+    }
+
+    .hole-punch,
+    .margin-line,
+    .coffee-stain {
+      display: none;
+    }
+
+    .doc-title h2 {
+      font-size: 1.2rem;
+      letter-spacing: 4px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .school-header {
+      padding: 20px 16px 18px;
+    }
+
+    .school-crest {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+    }
+
+    .school-name {
+      font-size: 0.95rem;
+    }
+
+    .stamp-area {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  /* ============================================================
+     PRINT STYLES
+     ============================================================ */
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+    }
+
+    .report-card {
+      box-shadow: none;
+      border: 1px solid #ccc;
+      max-width: 100%;
+    }
+
+    .stamp {
+      animation: none !important;
+      opacity: 0.75 !important;
+    }
+
+    .grades-table tbody tr,
+    .grade-cell,
+    .principal-section {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  /* ============================================================
+     ACCESSIBLE FOCUS STYLES
+     ============================================================ */
+  a:focus-visible {
+    outline: 2px solid var(--ink-blue);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ============================================================
+     SKIP LINK
+     ============================================================ */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--ink-blue);
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+</style>
+</head>
+<body>
+
+<a href="#grades" class="skip-link">Skip to grades</a>
+
+<main class="report-card" role="document" aria-label="School Report Card for Anshull Garg">
+
+  <!-- Physical paper details -->
+  <div class="watermark" aria-hidden="true"></div>
+  <div class="fold-line fold-line-1" aria-hidden="true"></div>
+  <div class="fold-line fold-line-2" aria-hidden="true"></div>
+  <div class="staple" aria-hidden="true"></div>
+  <div class="margin-line" aria-hidden="true"></div>
+  <div class="hole-punch hole-punch-1" aria-hidden="true"></div>
+  <div class="hole-punch hole-punch-2" aria-hidden="true"></div>
+  <div class="hole-punch hole-punch-3" aria-hidden="true"></div>
+  <div class="coffee-stain" aria-hidden="true"></div>
+
+  <!-- ======== SCHOOL HEADER ======== -->
+  <header class="school-header">
+    <div class="school-crest" aria-hidden="true">&lt;/&gt;</div>
+    <h1 class="school-name">School of Software Engineering</h1>
+    <p class="school-est">Est. 2020</p>
+    <p class="school-motto">"In Code We Trust"</p>
+  </header>
+
+  <!-- ======== DOCUMENT TITLE ======== -->
+  <div class="doc-title">
+    <h2>Official Report Card</h2>
+    <p class="semester">Academic Year 2024 &ndash; 2025 &bull; Spring Semester</p>
+  </div>
+
+  <!-- ======== STUDENT INFO ======== -->
+  <section class="student-info" aria-label="Student Information">
+    <div class="info-field">
+      <span class="label">Student:</span>
+      <span class="value">Anshull Garg</span>
+    </div>
+    <div class="info-field">
+      <span class="label">Grade:</span>
+      <span class="value">Senior</span>
+    </div>
+    <div class="info-field">
+      <span class="label">Student ID:</span>
+      <span class="value">SSE-2020-0042</span>
+    </div>
+    <div class="info-field">
+      <span class="label">Advisor:</span>
+      <span class="value">Prof. Stack Overflow</span>
+    </div>
+  </section>
+
+  <!-- ======== GRADES TABLE ======== -->
+  <section class="grades-section" id="grades" aria-label="Academic Grades">
+    <h3 class="section-header">Academic Performance</h3>
+    <table class="grades-table" role="table">
+      <thead>
+        <tr>
+          <th scope="col">Subject</th>
+          <th scope="col">Grade</th>
+          <th scope="col">Instructor Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="subject-name">React</div>
+            <div class="subject-code">SSE-401</div>
+          </td>
+          <td class="grade-cell grade-aplus" aria-label="Grade: A plus">A+</td>
+          <td class="teacher-comment">"Exceptional understanding of component architecture. Hooks usage is exemplary."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">Node.js</div>
+            <div class="subject-code">SSE-302</div>
+          </td>
+          <td class="grade-cell grade-a" aria-label="Grade: A">A</td>
+          <td class="teacher-comment">"Solid command of async patterns and REST API design. A reliable backend engineer."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">TypeScript</div>
+            <div class="subject-code">SSE-405</div>
+          </td>
+          <td class="grade-cell grade-aplus" aria-label="Grade: A plus">A+</td>
+          <td class="teacher-comment">"Type-safe to the core. Generics and utility types wielded with rare precision."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">AWS</div>
+            <div class="subject-code">SSE-410</div>
+          </td>
+          <td class="grade-cell grade-a" aria-label="Grade: A">A</td>
+          <td class="teacher-comment">"Demonstrates strong cloud fluency. Deploys infrastructure like a seasoned architect."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">Python</div>
+            <div class="subject-code">SSE-201</div>
+          </td>
+          <td class="grade-cell grade-aminus" aria-label="Grade: A minus">A-</td>
+          <td class="teacher-comment">"Clean, Pythonic code. Could push further into data science territory."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">Docker</div>
+            <div class="subject-code">SSE-350</div>
+          </td>
+          <td class="grade-cell grade-bplus" aria-label="Grade: B plus">B+</td>
+          <td class="teacher-comment">"Containerizes with confidence. Compose files are well-organized and production-ready."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">System Design</div>
+            <div class="subject-code">SSE-450</div>
+          </td>
+          <td class="grade-cell grade-a" aria-label="Grade: A">A</td>
+          <td class="teacher-comment">"Thinks in distributed systems. Whiteboard sessions are clear and well-reasoned."</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="subject-name">Problem Solving</div>
+            <div class="subject-code">SSE-499</div>
+          </td>
+          <td class="grade-cell grade-aplus" aria-label="Grade: A plus">A+</td>
+          <td class="teacher-comment">"Consistently finds elegant solutions. Top performer in algorithmic challenges."</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== GRADING SCALE ======== -->
+  <div class="grading-scale" aria-label="Grading Scale">
+    <span class="scale-item"><strong>A+</strong> 97-100</span>
+    <span class="scale-item"><strong>A</strong> 93-96</span>
+    <span class="scale-item"><strong>A-</strong> 90-92</span>
+    <span class="scale-item"><strong>B+</strong> 87-89</span>
+    <span class="scale-item"><strong>B</strong> 83-86</span>
+    <span class="scale-item"><strong>B-</strong> 80-82</span>
+    <span class="scale-item"><strong>C+</strong> 77-79</span>
+  </div>
+
+  <!-- ======== SUMMARY / GPA ======== -->
+  <section class="summary-section" aria-label="Academic Summary">
+    <div class="summary-box">
+      <div class="summary-label">Cumulative GPA</div>
+      <div class="summary-value gpa-highlight">3.9 / 4.0</div>
+    </div>
+    <div class="summary-box">
+      <div class="summary-label">Class Rank</div>
+      <div class="summary-value">Top 5%</div>
+    </div>
+  </section>
+
+  <!-- ======== ATTENDANCE & EXTRACURRICULARS ======== -->
+  <div class="details-row">
+    <div class="detail-block" aria-label="Attendance">
+      <div class="detail-label">Attendance</div>
+      <div class="detail-value">
+        <span class="deployment-count">127</span>
+        deployments this semester
+      </div>
+    </div>
+    <div class="detail-block" aria-label="Extracurricular Activities">
+      <div class="detail-label">Extracurriculars</div>
+      <div class="detail-value">
+        <div class="club-item">
+          <span class="club-bullet" aria-hidden="true"></span>
+          Open Source Club
+        </div>
+        <div class="club-item">
+          <span class="club-bullet" aria-hidden="true"></span>
+          Code Review Society
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== PRINCIPAL'S NOTE ======== -->
+  <section class="principal-section" aria-label="Principal's Remarks">
+    <p class="principal-note">
+      "Anshull consistently demonstrates outstanding performance across all subjects. His ability to
+      architect clean, maintainable solutions while mentoring fellow students is truly commendable.
+      Recommended for advanced placement at any organization."
+    </p>
+    <div class="principal-signature">
+      <span class="principal-sig-name">Dr. Git Committer</span>
+      <div class="principal-sig-line">Principal, School of Software Engineering</div>
+    </div>
+  </section>
+
+  <!-- ======== STAMPS ======== -->
+  <div class="stamp-area" aria-label="Official Stamps">
+    <div class="stamp stamp-promoted" role="img" aria-label="Promoted to next grade stamp">
+      Promoted to<br>Next Grade
+    </div>
+    <div class="stamp stamp-honors" role="img" aria-label="Dean's List stamp">
+      Dean's<br>List
+    </div>
+    <div class="stamp stamp-excellence" role="img" aria-label="Academic Excellence stamp">
+      Academic<br>Excellence<br>Award
+    </div>
+  </div>
+
+  <!-- ======== SIGNATURES / CONTACT ======== -->
+  <section class="signature-section" aria-label="Signatures and Contact">
+    <div class="sig-block">
+      <div class="sig-written">
+        <a href="mailto:anshullgarg@gmail.com" aria-label="Email Anshull Garg">anshullgarg@gmail.com</a>
+      </div>
+      <div class="sig-line">Parent / Guardian Signature (Email)</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-written">
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" aria-label="Anshull Garg LinkedIn profile">linkedin.com/in/anshullgarg</a>
+      </div>
+      <div class="sig-line">Parent / Guardian Signature (LinkedIn)</div>
+    </div>
+  </section>
+
+  <section class="signature-section" aria-label="Additional Contact" style="padding-top: 0;">
+    <div class="sig-block">
+      <div class="sig-written">
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" aria-label="Anshull Garg GitHub profile">github.com/anshullgarg</a>
+      </div>
+      <div class="sig-line">Student Signature (GitHub)</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-written">
+        <a href="https://anshullgarg.dev" target="_blank" rel="noopener noreferrer" aria-label="Anshull Garg portfolio website">anshullgarg.dev</a>
+      </div>
+      <div class="sig-line">Student Signature (Portfolio)</div>
+    </div>
+  </section>
+
+  <!-- ======== FOOTER ======== -->
+  <footer class="card-footer">
+    <p>
+      This report card is an official document of the School of Software Engineering.
+      <br>
+      Any alteration or unauthorized reproduction of this document is subject to a merge conflict.
+    </p>
+    <div class="doc-number">DOC-SSE-2025-RC-0042 &bull; Printed on recycled README.md</div>
+  </footer>
+
+</main>
+
+</body>
+</html>
