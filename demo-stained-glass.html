@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stained Glass Window | Anshull Garg - Software Developer Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A cathedral stained glass window portfolio experience.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   CUSTOM PROPERTIES
+   ================================================================ */
+:root {
+  --stone: #1A1A2E;
+  --stone-light: #2A2A3E;
+  --stone-dark: #0E0E1A;
+  --lead: #222222;
+  --lead-width: 4px;
+
+  --ruby: #CC2936;
+  --ruby-glow: rgba(204, 41, 54, 0.5);
+  --sapphire: #1E4D8C;
+  --sapphire-glow: rgba(30, 77, 140, 0.5);
+  --emerald: #2D8B46;
+  --emerald-glow: rgba(45, 139, 70, 0.5);
+  --amber: #D4A853;
+  --amber-glow: rgba(212, 168, 83, 0.5);
+  --violet: #6B2FA0;
+  --violet-glow: rgba(107, 47, 160, 0.5);
+  --clear: #E8E0D0;
+  --clear-glow: rgba(232, 224, 208, 0.4);
+
+  --gold: #D4A853;
+  --gold-light: #F0D68A;
+
+  --text-main: #C8C0D8;
+  --text-heading: #EDE8F5;
+  --text-muted: #7A7494;
+  --parchment: #F5E6C8;
+  --parchment-dark: #D4C4A0;
+
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Inter', sans-serif;
+
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--stone-dark);
+  color: var(--text-main);
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.7;
+  cursor: default;
+}
+
+::selection {
+  background: rgba(212, 168, 83, 0.3);
+  color: var(--text-heading);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================================
+   STONE WALL BACKGROUND
+   ================================================================ */
+.cathedral-interior {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    /* Stone texture simulation */
+    repeating-conic-gradient(
+      var(--stone) 0% 25%, var(--stone-light) 0% 50%
+    ) 0 0 / 80px 80px,
+    radial-gradient(ellipse at 50% 20%, rgba(212, 168, 83, 0.03) 0%, transparent 60%),
+    linear-gradient(180deg, #0E0E1A 0%, #1A1A2E 30%, #12121F 100%);
+}
+
+/* Stone block pattern overlay */
+.stone-texture {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.15;
+  background:
+    linear-gradient(0deg, transparent 49.5%, rgba(0,0,0,0.5) 49.5%, rgba(0,0,0,0.5) 50.5%, transparent 50.5%) 0 0 / 100% 60px,
+    linear-gradient(90deg, transparent 49.5%, rgba(0,0,0,0.3) 49.5%, rgba(0,0,0,0.3) 50.5%, transparent 50.5%) 0 0 / 120px 100%;
+}
+
+/* Second row offset for brick pattern */
+.stone-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgba(0,0,0,0.3) 49.5%, rgba(0,0,0,0.3) 50.5%, transparent 50.5%) 60px 30px / 120px 60px;
+}
+
+/* ================================================================
+   DUST MOTES IN LIGHT
+   ================================================================ */
+.dust-container {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dust-mote {
+  position: absolute;
+  width: var(--size, 2px);
+  height: var(--size, 2px);
+  background: radial-gradient(circle, rgba(255, 240, 200, 0.8), rgba(255, 240, 200, 0));
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatMote var(--dur, 12s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes floatMote {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--peak-o, 0.6);
+    transform: scale(1);
+  }
+  50% {
+    opacity: var(--mid-o, 0.3);
+  }
+  85% {
+    opacity: var(--peak-o, 0.5);
+  }
+  100% {
+    transform: translate(var(--dx, 30px), var(--dy, -100px)) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* ================================================================
+   CANDLE LIGHT FLICKER
+   ================================================================ */
+.candle {
+  position: fixed;
+  z-index: 5;
+  width: 6px;
+  pointer-events: none;
+}
+
+.candle-body {
+  width: 6px;
+  height: 30px;
+  background: linear-gradient(180deg, #F5E6C8 0%, #C4A070 100%);
+  border-radius: 1px 1px 2px 2px;
+}
+
+.candle-flame {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 16px;
+  background: radial-gradient(ellipse at center bottom, #FFF4C4 0%, #FFB74D 40%, #FF6F00 70%, transparent 100%);
+  border-radius: 50% 50% 40% 40%;
+  animation: flicker 0.15s ease-in-out infinite alternate;
+  filter: blur(0.5px);
+}
+
+.candle-glow {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255, 183, 77, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: candleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes flicker {
+  0% { transform: translateX(-50%) scaleY(1) scaleX(1) rotate(-1deg); opacity: 1; }
+  25% { transform: translateX(-50%) scaleY(1.1) scaleX(0.9) rotate(1deg); opacity: 0.95; }
+  50% { transform: translateX(-50%) scaleY(0.95) scaleX(1.05) rotate(-0.5deg); opacity: 1; }
+  75% { transform: translateX(-50%) scaleY(1.05) scaleX(0.95) rotate(0.5deg); opacity: 0.9; }
+  100% { transform: translateX(-50%) scaleY(1) scaleX(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes candleGlow {
+  0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+}
+
+/* ================================================================
+   MAIN SCENE CONTAINER
+   ================================================================ */
+.scene {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ================================================================
+   SUNLIGHT BEHIND WINDOW
+   ================================================================ */
+.sunlight {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 900px;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(255, 240, 200, 0.06) 0%,
+    rgba(255, 220, 150, 0.03) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: sunMove 20s ease-in-out infinite alternate;
+}
+
+@keyframes sunMove {
+  0% { transform: translateX(-55%) rotate(-2deg); }
+  50% { transform: translateX(-45%) rotate(1deg); }
+  100% { transform: translateX(-50%) rotate(-1deg); }
+}
+
+/* ================================================================
+   GOD RAYS
+   ================================================================ */
+.god-rays {
+  position: absolute;
+  top: -5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 1000px;
+  pointer-events: none;
+  z-index: 14;
+  opacity: 0.4;
+  mix-blend-mode: screen;
+}
+
+.god-ray {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 240, 200, 0.15) 20%,
+    rgba(255, 240, 200, 0.05) 60%,
+    transparent 100%
+  );
+  transform-origin: top center;
+  animation: rayShimmer var(--dur, 8s) ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes rayShimmer {
+  0% { opacity: 0.3; transform: rotate(var(--r1, -2deg)) scaleX(1); }
+  50% { opacity: 0.7; transform: rotate(var(--r2, 0deg)) scaleX(1.5); }
+  100% { opacity: 0.4; transform: rotate(var(--r3, 2deg)) scaleX(1); }
+}
+
+/* ================================================================
+   WINDOW TITLE
+   ================================================================ */
+.window-title {
+  font-family: var(--font-display);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: rgba(212, 168, 83, 0.5);
+  margin-bottom: 15px;
+  text-align: center;
+  position: relative;
+  z-index: 11;
+}
+
+/* ================================================================
+   THE STAINED GLASS WINDOW (SVG-based)
+   ================================================================ */
+.window-wrapper {
+  position: relative;
+  width: min(600px, 80vw);
+  height: min(800px, 85vh);
+  z-index: 12;
+}
+
+.window-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 60px rgba(0,0,0,0.5));
+}
+
+/* Glass panel base styles */
+.glass-panel {
+  cursor: pointer;
+  transition: filter 0.6s ease, opacity 0.6s ease;
+  filter: brightness(0.35) saturate(0.5);
+  opacity: 0.85;
+}
+
+.glass-panel:hover {
+  filter: brightness(0.85) saturate(1.1);
+  opacity: 1;
+}
+
+.glass-panel.illuminated {
+  filter: brightness(1.2) saturate(1.3);
+  opacity: 1;
+  animation: glassGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glassGlow {
+  0% { filter: brightness(1.1) saturate(1.2); }
+  100% { filter: brightness(1.3) saturate(1.4); }
+}
+
+/* Lead lines (strokes) */
+.lead-line {
+  fill: none;
+  stroke: var(--lead);
+  stroke-width: 4;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* Panel label text in SVG */
+.panel-label {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  fill: rgba(255, 255, 255, 0.15);
+  text-anchor: middle;
+  pointer-events: none;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: fill 0.6s ease;
+}
+
+.glass-panel:hover + .panel-label,
+.glass-panel:hover ~ .panel-label-group .panel-label {
+  fill: rgba(255, 255, 255, 0.5);
+}
+
+/* ================================================================
+   COLORED LIGHT REFLECTIONS ON FLOOR
+   ================================================================ */
+.floor-reflections {
+  position: relative;
+  z-index: 11;
+  width: min(700px, 85vw);
+  height: 80px;
+  margin-top: -10px;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  pointer-events: none;
+}
+
+.floor-light {
+  width: 100px;
+  height: 80px;
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(20px);
+  transition: opacity 1s ease;
+}
+
+.floor-light.active {
+  opacity: 0.6;
+  animation: floorPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes floorPulse {
+  0% { opacity: 0.4; transform: scaleX(1); }
+  100% { opacity: 0.7; transform: scaleX(1.1); }
+}
+
+/* ================================================================
+   INSTRUCTION TEXT
+   ================================================================ */
+.instruction {
+  font-family: var(--font-display);
+  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(212, 168, 83, 0.35);
+  margin-top: 20px;
+  text-align: center;
+  animation: instructPulse 3s ease-in-out infinite;
+  position: relative;
+  z-index: 11;
+}
+
+@keyframes instructPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* ================================================================
+   CONTENT OVERLAY (PARCHMENT SCROLL)
+   ================================================================ */
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 10, 20, 0);
+  backdrop-filter: blur(0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: background 0.6s ease, backdrop-filter 0.6s ease;
+}
+
+.overlay-backdrop.active {
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(8px);
+  pointer-events: all;
+}
+
+.overlay-scroll {
+  position: relative;
+  width: min(580px, 90vw);
+  max-height: 80vh;
+  background:
+    linear-gradient(135deg, #F5E6C8 0%, #ECD9B0 30%, #F0DFC0 60%, #E8D4A8 100%);
+  border-radius: 4px;
+  padding: 50px 45px;
+  overflow-y: auto;
+  transform: scale(0.85) translateY(30px);
+  opacity: 0;
+  transition: transform 0.7s var(--ease-smooth), opacity 0.7s ease;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(160, 130, 80, 0.3),
+    inset 0 0 80px rgba(160, 130, 80, 0.1);
+}
+
+/* Aged paper texture */
+.overlay-scroll::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* Burned edges */
+.overlay-scroll::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  box-shadow: inset 0 0 50px rgba(120, 80, 30, 0.15);
+  pointer-events: none;
+}
+
+.overlay-backdrop.active .overlay-scroll {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Colored top bar matching the panel */
+.overlay-color-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 4px 4px 0 0;
+}
+
+.overlay-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1.5px solid rgba(100, 70, 30, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #7A6840;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.overlay-close:hover {
+  background: rgba(100, 70, 30, 0.1);
+  border-color: rgba(100, 70, 30, 0.5);
+  transform: rotate(90deg);
+}
+
+/* Overlay content typography */
+.overlay-section-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+  opacity: 0.6;
+}
+
+.overlay-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 700;
+  color: #3A2E1A;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.overlay-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(0.65rem, 1vw, 0.75rem);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8A7A5A;
+  margin-bottom: 25px;
+}
+
+.overlay-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #B09060, transparent);
+  margin: 0 0 25px 0;
+}
+
+.overlay-text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #4A3E28;
+  margin-bottom: 15px;
+}
+
+.overlay-text strong {
+  color: #2A1E0A;
+  font-weight: 600;
+}
+
+.overlay-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.overlay-list li {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: #4A3E28;
+  padding: 4px 0 4px 20px;
+  position: relative;
+}
+
+.overlay-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--list-color, #8A7A5A);
+  transform: rotate(45deg);
+}
+
+.overlay-heading {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3A2E1A;
+  margin: 20px 0 10px;
+  letter-spacing: 0.05em;
+}
+
+.overlay-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.overlay-tag {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #5A4E38;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.overlay-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5A4020;
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(90, 64, 32, 0.3);
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.overlay-link:hover {
+  color: #3A2010;
+  border-bottom-color: #3A2010;
+}
+
+/* Scrollbar for overlay */
+.overlay-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.overlay-scroll::-webkit-scrollbar-track {
+  background: rgba(160, 130, 80, 0.1);
+}
+.overlay-scroll::-webkit-scrollbar-thumb {
+  background: rgba(160, 130, 80, 0.3);
+  border-radius: 3px;
+}
+
+/* ================================================================
+   WINDOW SHIMMER
+   ================================================================ */
+.window-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 13;
+  pointer-events: none;
+  opacity: 0.12;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.15) 45%,
+    transparent 55%
+  );
+  background-size: 300% 300%;
+  animation: shimmerMove 8s ease-in-out infinite;
+}
+
+@keyframes shimmerMove {
+  0% { background-position: 100% 100%; }
+  50% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 600px) {
+  .window-wrapper {
+    width: 95vw;
+    height: 70vh;
+  }
+  .overlay-scroll {
+    padding: 40px 25px;
+  }
+  .floor-reflections {
+    height: 40px;
+  }
+}
+
+/* ================================================================
+   ACCESSIBILITY
+   ================================================================ */
+.glass-panel:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ================================================================
+   GLASS TEXTURE PATTERN (SVG defs)
+   ================================================================ */
+
+</style>
+</head>
+<body>
+
+<!-- Skip to content -->
+<a href="#window-main" class="sr-only" tabindex="0">Skip to main content</a>
+
+<!-- Stone wall background -->
+<div class="cathedral-interior" aria-hidden="true"></div>
+<div class="stone-texture" aria-hidden="true"></div>
+
+<!-- Dust motes container (populated by JS) -->
+<div class="dust-container" id="dustContainer" aria-hidden="true"></div>
+
+<!-- Candle lights -->
+<div class="candle" style="bottom: 30px; left: 5%;" aria-hidden="true">
+  <div class="candle-flame"></div>
+  <div class="candle-body"></div>
+  <div class="candle-glow"></div>
+</div>
+<div class="candle" style="bottom: 30px; right: 5%;" aria-hidden="true">
+  <div class="candle-flame" style="animation-delay: -0.07s;"></div>
+  <div class="candle-body"></div>
+  <div class="candle-glow" style="animation-delay: -1s;"></div>
+</div>
+<div class="candle" style="bottom: 30px; left: 15%;" aria-hidden="true">
+  <div class="candle-flame" style="animation-delay: -0.12s;"></div>
+  <div class="candle-body"></div>
+  <div class="candle-glow" style="animation-delay: -0.5s;"></div>
+</div>
+<div class="candle" style="bottom: 30px; right: 15%;" aria-hidden="true">
+  <div class="candle-flame" style="animation-delay: -0.05s;"></div>
+  <div class="candle-body"></div>
+  <div class="candle-glow" style="animation-delay: -1.5s;"></div>
+</div>
+
+<!-- Main scene -->
+<main class="scene" id="window-main" role="main">
+
+  <!-- Sunlight glow behind window -->
+  <div class="sunlight" aria-hidden="true"></div>
+
+  <!-- God rays -->
+  <div class="god-rays" id="godRays" aria-hidden="true"></div>
+
+  <!-- Title -->
+  <div class="window-title" aria-hidden="true">A Cathedral of Code</div>
+
+  <!-- THE STAINED GLASS WINDOW -->
+  <div class="window-wrapper" role="region" aria-label="Stained glass window portfolio navigation">
+    <!-- Shimmer overlay -->
+    <div class="window-shimmer" aria-hidden="true"></div>
+
+    <svg class="window-svg" viewBox="0 0 500 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stained glass window with portfolio sections">
+      <defs>
+        <!-- Glass texture filters -->
+        <filter id="glassTexture" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="1" result="noise"/>
+          <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+          <feBlend in="SourceGraphic" in2="grayNoise" mode="overlay" result="textured"/>
+          <feComponentTransfer in="textured">
+            <feFuncA type="linear" slope="1"/>
+          </feComponentTransfer>
+        </filter>
+
+        <filter id="innerGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+          <feComposite in="blur" in2="SourceGraphic" operator="out" result="glow"/>
+          <feMerge>
+            <feMergeNode in="glow"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <!-- Radial gradient for rose window -->
+        <radialGradient id="roseGrad" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#F0D68A" stop-opacity="0.8"/>
+          <stop offset="40%" stop-color="#D4A853" stop-opacity="0.6"/>
+          <stop offset="70%" stop-color="#B08830" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#8A6820" stop-opacity="0.4"/>
+        </radialGradient>
+
+        <!-- Glass gradients with light-through effect -->
+        <linearGradient id="sapphireGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#2A6AB8"/>
+          <stop offset="30%" stop-color="#1E4D8C"/>
+          <stop offset="70%" stop-color="#163A6A"/>
+          <stop offset="100%" stop-color="#1E4D8C"/>
+        </linearGradient>
+
+        <linearGradient id="rubyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#E03040"/>
+          <stop offset="30%" stop-color="#CC2936"/>
+          <stop offset="70%" stop-color="#A02030"/>
+          <stop offset="100%" stop-color="#CC2936"/>
+        </linearGradient>
+
+        <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#38A858"/>
+          <stop offset="30%" stop-color="#2D8B46"/>
+          <stop offset="70%" stop-color="#207038"/>
+          <stop offset="100%" stop-color="#2D8B46"/>
+        </linearGradient>
+
+        <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#E8BE68"/>
+          <stop offset="30%" stop-color="#D4A853"/>
+          <stop offset="70%" stop-color="#B89040"/>
+          <stop offset="100%" stop-color="#D4A853"/>
+        </linearGradient>
+
+        <linearGradient id="violetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8040C0"/>
+          <stop offset="30%" stop-color="#6B2FA0"/>
+          <stop offset="70%" stop-color="#552080"/>
+          <stop offset="100%" stop-color="#6B2FA0"/>
+        </linearGradient>
+
+        <linearGradient id="clearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F0E8D8"/>
+          <stop offset="30%" stop-color="#E8E0D0"/>
+          <stop offset="70%" stop-color="#D8D0C0"/>
+          <stop offset="100%" stop-color="#E8E0D0"/>
+        </linearGradient>
+
+        <!-- Pointed arch clip path for the whole window -->
+        <clipPath id="windowArch">
+          <path d="M 50 680 L 50 280 Q 50 50, 250 30 Q 450 50, 450 280 L 450 680 Z"/>
+        </clipPath>
+
+        <!-- Window outer frame shape -->
+        <path id="windowFrame" d="M 50 680 L 50 280 Q 50 50, 250 30 Q 450 50, 450 280 L 450 680 Z"/>
+      </defs>
+
+      <!-- Window background (dark when no light) -->
+      <use href="#windowFrame" fill="#0A0A12" clip-path="url(#windowArch)"/>
+
+      <!-- Animated light gradient behind the glass -->
+      <rect x="50" y="30" width="400" height="650" clip-path="url(#windowArch)" opacity="0.3">
+        <animate attributeName="opacity" values="0.15;0.35;0.2;0.3;0.15" dur="12s" repeatCount="indefinite"/>
+        <animate attributeName="fill" values="#FFF8E0;#FFF0C0;#FFFAE8;#FFF8E0" dur="12s" repeatCount="indefinite"/>
+      </rect>
+
+      <!-- ==================== GLASS PANELS ==================== -->
+
+      <!-- ROSE WINDOW (Top Circle) - Name/Monogram -->
+      <g id="panel-rose" data-panel="rose">
+        <circle class="glass-panel" cx="250" cy="130" r="75"
+                fill="url(#roseGrad)" filter="url(#glassTexture)"
+                tabindex="0" role="button" aria-label="Rose window - Anshull Garg monogram. Click to learn more."/>
+        <!-- Inner decorative circles -->
+        <circle cx="250" cy="130" r="55" fill="none" stroke="var(--lead)" stroke-width="3" pointer-events="none"/>
+        <circle cx="250" cy="130" r="35" fill="none" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <!-- AG Monogram -->
+        <text x="250" y="125" font-family="Cinzel, serif" font-size="28" font-weight="700"
+              fill="rgba(60, 40, 10, 0.5)" text-anchor="middle" pointer-events="none">A</text>
+        <text x="250" y="152" font-family="Cinzel, serif" font-size="18" font-weight="600"
+              fill="rgba(60, 40, 10, 0.4)" text-anchor="middle" pointer-events="none">G</text>
+        <!-- Decorative petals -->
+        <circle cx="250" cy="70" r="10" fill="rgba(240, 214, 138, 0.3)" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <circle cx="250" cy="190" r="10" fill="rgba(240, 214, 138, 0.3)" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <circle cx="185" cy="100" r="10" fill="rgba(240, 214, 138, 0.3)" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <circle cx="315" cy="100" r="10" fill="rgba(240, 214, 138, 0.3)" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <circle cx="185" cy="160" r="10" fill="rgba(240, 214, 138, 0.3)" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <circle cx="315" cy="160" r="10" fill="rgba(240, 214, 138, 0.3)" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+      </g>
+
+      <!-- LEFT TALL PANEL - About (Sapphire Blue) -->
+      <g id="panel-about" data-panel="about">
+        <path class="glass-panel" d="M 55 220 L 55 500 L 240 500 L 240 220 Q 240 160, 170 140 Q 120 155, 80 190 Z"
+              fill="url(#sapphireGrad)" filter="url(#glassTexture)"
+              tabindex="0" role="button" aria-label="About section - Sapphire blue panel. Click to read about Anshull Garg."/>
+        <!-- Decorative sub-panels -->
+        <line x1="148" y1="220" x2="148" y2="500" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <line x1="55" y1="360" x2="240" y2="360" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <!-- Small decorative diamond -->
+        <rect x="139" y="351" width="18" height="18" rx="2" transform="rotate(45 148 360)"
+              fill="rgba(255,255,255,0.08)" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <text x="148" y="315" class="panel-label" font-size="10" pointer-events="none">About</text>
+      </g>
+
+      <!-- RIGHT TALL PANEL - Experience (Ruby Red) -->
+      <g id="panel-experience" data-panel="experience">
+        <path class="glass-panel" d="M 260 220 L 260 500 L 445 500 L 445 220 Q 420 190, 380 155 Q 330 140, 260 160 Z"
+              fill="url(#rubyGrad)" filter="url(#glassTexture)"
+              tabindex="0" role="button" aria-label="Experience section - Ruby red panel. Click to see work experience."/>
+        <!-- Decorative sub-panels -->
+        <line x1="352" y1="220" x2="352" y2="500" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <line x1="260" y1="360" x2="445" y2="360" stroke="var(--lead)" stroke-width="2" pointer-events="none"/>
+        <!-- Small decorative diamond -->
+        <rect x="343" y="351" width="18" height="18" rx="2" transform="rotate(45 352 360)"
+              fill="rgba(255,255,255,0.08)" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <text x="352" y="315" class="panel-label" font-size="10" pointer-events="none">Experience</text>
+      </g>
+
+      <!-- BOTTOM LEFT - Project 1 (Emerald Green) -->
+      <g id="panel-project1" data-panel="project1">
+        <rect class="glass-panel" x="55" y="508" width="125" height="115" rx="2"
+              fill="url(#emeraldGrad)" filter="url(#glassTexture)"
+              tabindex="0" role="button" aria-label="Project one - Emerald green panel. Click to see project details."/>
+        <!-- Cross decoration -->
+        <line x1="117" y1="518" x2="117" y2="613" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <line x1="65" y1="565" x2="170" y2="565" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <text x="117" y="555" class="panel-label" font-size="8" pointer-events="none">Project</text>
+      </g>
+
+      <!-- BOTTOM CENTER - Skills (Amber Gold) -->
+      <g id="panel-skills" data-panel="skills">
+        <rect class="glass-panel" x="188" y="508" width="125" height="115" rx="2"
+              fill="url(#amberGrad)" filter="url(#glassTexture)"
+              tabindex="0" role="button" aria-label="Skills section - Amber gold panel. Click to see technical skills."/>
+        <!-- Arch decoration inside -->
+        <path d="M 210 623 L 210 550 Q 250 525, 290 550 L 290 623" fill="none" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <circle cx="250" cy="548" r="8" fill="none" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <text x="250" y="585" class="panel-label" font-size="8" pointer-events="none">Skills</text>
+      </g>
+
+      <!-- BOTTOM RIGHT - Project 2 (Violet Purple) -->
+      <g id="panel-project2" data-panel="project2">
+        <rect class="glass-panel" x="321" y="508" width="124" height="115" rx="2"
+              fill="url(#violetGrad)" filter="url(#glassTexture)"
+              tabindex="0" role="button" aria-label="Project two - Violet purple panel. Click to see project details."/>
+        <!-- Star decoration -->
+        <polygon points="383,530 388,545 403,545 391,555 395,570 383,560 371,570 375,555 363,545 378,545"
+                 fill="none" stroke="var(--lead)" stroke-width="1.5" pointer-events="none"/>
+        <text x="383" y="600" class="panel-label" font-size="8" pointer-events="none">Project</text>
+      </g>
+
+      <!-- BASE PANEL - Contact (Clear Glass) -->
+      <g id="panel-contact" data-panel="contact">
+        <rect class="glass-panel" x="55" y="631" width="390" height="45" rx="2"
+              fill="url(#clearGrad)" filter="url(#glassTexture)"
+              tabindex="0" role="button" aria-label="Contact section - Clear glass panel. Click to see contact information."/>
+        <text x="250" y="658" class="panel-label" font-size="9" fill="rgba(40,30,10,0.2)" pointer-events="none">Contact</text>
+      </g>
+
+      <!-- ==================== LEAD FRAMEWORK (drawn on top) ==================== -->
+      <!-- Main window arch outline -->
+      <use href="#windowFrame" fill="none" stroke="var(--lead)" stroke-width="8" stroke-linejoin="round"/>
+
+      <!-- Horizontal dividers -->
+      <line x1="50" y1="505" x2="450" y2="505" stroke="var(--lead)" stroke-width="5"/>
+      <line x1="50" y1="628" x2="450" y2="628" stroke="var(--lead)" stroke-width="5"/>
+
+      <!-- Vertical center divider (between left and right tall panels) -->
+      <line x1="250" y1="210" x2="250" y2="505" stroke="var(--lead)" stroke-width="5"/>
+
+      <!-- Bottom panel vertical dividers -->
+      <line x1="183" y1="505" x2="183" y2="628" stroke="var(--lead)" stroke-width="5"/>
+      <line x1="318" y1="505" x2="318" y2="628" stroke="var(--lead)" stroke-width="5"/>
+
+      <!-- Rose window outer ring -->
+      <circle cx="250" cy="130" r="75" fill="none" stroke="var(--lead)" stroke-width="5"/>
+
+      <!-- Connecting leads from rose to arch -->
+      <line x1="175" y1="130" x2="80" y2="210" stroke="var(--lead)" stroke-width="4"/>
+      <line x1="325" y1="130" x2="420" y2="210" stroke="var(--lead)" stroke-width="4"/>
+      <line x1="250" y1="205" x2="250" y2="210" stroke="var(--lead)" stroke-width="4"/>
+
+      <!-- Small triangular fills in spandrels -->
+      <path d="M 55 220 Q 80 180, 175 140 L 175 130 Q 120 155, 55 220 Z"
+            fill="#0A0A12" opacity="0.5" pointer-events="none"/>
+      <path d="M 445 220 Q 420 180, 325 140 L 325 130 Q 380 155, 445 220 Z"
+            fill="#0A0A12" opacity="0.5" pointer-events="none"/>
+    </svg>
+  </div>
+
+  <!-- Floor Reflections -->
+  <div class="floor-reflections" aria-hidden="true">
+    <div class="floor-light" id="floor-sapphire" style="background: radial-gradient(ellipse, rgba(30,77,140,0.5) 0%, transparent 70%);"></div>
+    <div class="floor-light" id="floor-ruby" style="background: radial-gradient(ellipse, rgba(204,41,54,0.5) 0%, transparent 70%);"></div>
+    <div class="floor-light" id="floor-emerald" style="background: radial-gradient(ellipse, rgba(45,139,70,0.5) 0%, transparent 70%);"></div>
+    <div class="floor-light" id="floor-amber" style="background: radial-gradient(ellipse, rgba(212,168,83,0.5) 0%, transparent 70%);"></div>
+    <div class="floor-light" id="floor-violet" style="background: radial-gradient(ellipse, rgba(107,47,160,0.5) 0%, transparent 70%);"></div>
+    <div class="floor-light" id="floor-gold" style="background: radial-gradient(ellipse, rgba(212,168,83,0.5) 0%, transparent 70%);"></div>
+    <div class="floor-light" id="floor-clear" style="background: radial-gradient(ellipse, rgba(232,224,208,0.3) 0%, transparent 70%);"></div>
+  </div>
+
+  <!-- Instruction -->
+  <p class="instruction">Click a panel to illuminate</p>
+</main>
+
+<!-- Content Overlay -->
+<div class="overlay-backdrop" id="overlayBackdrop" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Panel content">
+  <div class="overlay-scroll" id="overlayScroll">
+    <div class="overlay-color-bar" id="overlayColorBar"></div>
+    <button class="overlay-close" id="overlayClose" aria-label="Close panel">&times;</button>
+    <div id="overlayContent"></div>
+  </div>
+</div>
+
+
+<script>
+/* ================================================================
+   PORTFOLIO CONTENT DATA
+   ================================================================ */
+const panelContent = {
+  rose: {
+    color: '#D4A853',
+    floorId: 'floor-gold',
+    icon: '',
+    title: 'Anshull Garg',
+    subtitle: 'Software Developer at Walmart',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-text">
+        <strong>I build systems that serve millions.</strong>
+      </p>
+      <p class="overlay-text">
+        Software Engineer at Walmart Global Tech. I architect scalable, high-performance
+        applications that power enterprise e-commerce at Fortune 1 scale.
+      </p>
+      <p class="overlay-text">
+        I think in systems, ship in sprints, and care deeply about clean architecture,
+        seamless user experiences, and code that lasts.
+      </p>
+      <div style="margin-top:25px; display:flex; gap:20px; flex-wrap:wrap;">
+        <a href="mailto:anshullgarg@gmail.com" class="overlay-link">Say Hello &rarr;</a>
+        <a href="#" class="overlay-link" onclick="event.preventDefault(); closeOverlay(); setTimeout(()=>openPanel('experience'),400);">See My Work &rarr;</a>
+      </div>
+    `
+  },
+
+  about: {
+    color: '#1E4D8C',
+    floorId: 'floor-sapphire',
+    icon: '',
+    title: 'About',
+    subtitle: 'The Story Behind the Code',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-text">
+        I did not start in tech -- I started with curiosity. The moment I wrote my first
+        program and watched logic come alive on screen, I knew I had found my craft.
+      </p>
+      <p class="overlay-text">
+        Today, I am a <strong>Software Engineer at Walmart Global Tech</strong>, where I work on
+        the systems that power digital commerce for millions of customers. My day-to-day
+        involves designing scalable APIs, optimizing frontend performance, and collaborating
+        with cross-functional teams to ship features that matter.
+      </p>
+      <p class="overlay-heading">What I Care About</p>
+      <ul class="overlay-list" style="--list-color: #1E4D8C;">
+        <li>Writing code that is readable, testable, and built to last</li>
+        <li>Understanding the "why" before jumping to the "how"</li>
+        <li>Continuous learning and pushing the boundaries of what is possible</li>
+        <li>Building software at the intersection of clean architecture and deep user empathy</li>
+      </ul>
+      <p class="overlay-text">
+        I believe great engineering is not just about solving problems -- it is about solving
+        them in a way that others can understand, maintain, and build upon.
+      </p>
+    `
+  },
+
+  experience: {
+    color: '#CC2936',
+    floorId: 'floor-ruby',
+    icon: '',
+    title: 'Experience',
+    subtitle: 'Walmart Global Tech',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-text" style="font-size:0.8rem; letter-spacing:0.05em; color:#6A5E48;">
+        SOFTWARE ENGINEER &middot; Present
+      </p>
+      <p class="overlay-text">
+        Building production-grade applications for one of the world's largest digital
+        retail platforms at <strong>Fortune #1</strong> scale.
+      </p>
+      <p class="overlay-heading">Key Contributions</p>
+      <ul class="overlay-list" style="--list-color: #CC2936;">
+        <li><strong>Architected scalable frontend systems</strong> using React and TypeScript,
+            serving millions of users across Walmart's digital properties</li>
+        <li><strong>Optimized critical performance paths</strong>, reducing page load times
+            and improving Core Web Vitals scores across key user journeys</li>
+        <li><strong>Designed and deployed RESTful APIs</strong> handling high-throughput
+            traffic with robust error handling and monitoring</li>
+        <li><strong>Led cross-functional collaboration</strong> with design, product, and
+            backend teams to ship high-impact features on tight timelines</li>
+        <li><strong>Championed engineering best practices</strong> including code review
+            standards, testing strategies, and documentation workflows</li>
+      </ul>
+      <p class="overlay-heading">The Scale</p>
+      <p class="overlay-text">
+        Walmart serves over <strong>240 million customers weekly</strong>. Every line of code
+        I write operates at a scale most engineers never experience. This environment has
+        sharpened my instincts for reliability, performance, and thoughtful system design.
+      </p>
+    `
+  },
+
+  project1: {
+    color: '#2D8B46',
+    floorId: 'floor-emerald',
+    icon: '',
+    title: 'ScaleForge',
+    subtitle: 'High-Performance Architecture Framework',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-text">
+        <strong>The Problem:</strong> Modern web applications struggle to maintain
+        performance as they scale. Bundle sizes balloon, render times spike, and
+        user experience degrades under load.
+      </p>
+      <p class="overlay-text">
+        <strong>The Solution:</strong> A full-stack performance optimization framework
+        that implements intelligent code splitting, predictive prefetching, and
+        adaptive rendering based on device capabilities and network conditions.
+      </p>
+      <p class="overlay-heading">Key Features</p>
+      <ul class="overlay-list" style="--list-color: #2D8B46;">
+        <li>Intelligent code splitting with route-based and component-based strategies</li>
+        <li>Predictive prefetching engine that pre-loads resources based on user behavior</li>
+        <li>Adaptive rendering pipeline that adjusts fidelity to device capabilities</li>
+        <li>Built-in performance monitoring dashboard with real-time metrics</li>
+      </ul>
+      <div class="overlay-tags">
+        <span class="overlay-tag">React</span>
+        <span class="overlay-tag">TypeScript</span>
+        <span class="overlay-tag">Node.js</span>
+        <span class="overlay-tag">Webpack</span>
+        <span class="overlay-tag">Performance API</span>
+      </div>
+      <a href="#" class="overlay-link" onclick="event.preventDefault();">View Project &rarr;</a>
+    `
+  },
+
+  skills: {
+    color: '#D4A853',
+    floorId: 'floor-amber',
+    icon: '',
+    title: 'Skills',
+    subtitle: 'Technologies and Expertise',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-heading">Frontend Engineering</p>
+      <div class="overlay-tags">
+        <span class="overlay-tag">React</span>
+        <span class="overlay-tag">Next.js</span>
+        <span class="overlay-tag">TypeScript</span>
+        <span class="overlay-tag">JavaScript (ES6+)</span>
+        <span class="overlay-tag">Tailwind CSS</span>
+        <span class="overlay-tag">Framer Motion</span>
+        <span class="overlay-tag">HTML5 / CSS3</span>
+        <span class="overlay-tag">Redux</span>
+      </div>
+      <p class="overlay-heading">Backend &amp; APIs</p>
+      <div class="overlay-tags">
+        <span class="overlay-tag">Node.js</span>
+        <span class="overlay-tag">Express</span>
+        <span class="overlay-tag">Python</span>
+        <span class="overlay-tag">REST APIs</span>
+        <span class="overlay-tag">GraphQL</span>
+        <span class="overlay-tag">PostgreSQL</span>
+        <span class="overlay-tag">MongoDB</span>
+      </div>
+      <p class="overlay-heading">DevOps &amp; Tooling</p>
+      <div class="overlay-tags">
+        <span class="overlay-tag">Docker</span>
+        <span class="overlay-tag">Kubernetes</span>
+        <span class="overlay-tag">CI/CD Pipelines</span>
+        <span class="overlay-tag">GitHub Actions</span>
+        <span class="overlay-tag">AWS</span>
+        <span class="overlay-tag">GCP</span>
+        <span class="overlay-tag">Git</span>
+      </div>
+      <p class="overlay-heading">Practices &amp; Principles</p>
+      <div class="overlay-tags">
+        <span class="overlay-tag">Performance Optimization</span>
+        <span class="overlay-tag">System Design</span>
+        <span class="overlay-tag">Agile / Scrum</span>
+        <span class="overlay-tag">Code Review</span>
+        <span class="overlay-tag">Testing (Jest, RTL)</span>
+        <span class="overlay-tag">Accessibility</span>
+      </div>
+    `
+  },
+
+  project2: {
+    color: '#6B2FA0',
+    floorId: 'floor-violet',
+    icon: '',
+    title: 'DataWeave',
+    subtitle: 'Real-Time Analytics Dashboard',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-text">
+        <strong>The Problem:</strong> Teams making data-driven decisions need real-time
+        visibility into complex, multi-source data streams without the overhead of
+        traditional BI tools.
+      </p>
+      <p class="overlay-text">
+        <strong>The Solution:</strong> A lightweight, real-time analytics dashboard
+        that aggregates data from multiple APIs, implements intelligent caching,
+        and delivers sub-200ms time-to-interactive through progressive loading.
+      </p>
+      <p class="overlay-heading">Key Features</p>
+      <ul class="overlay-list" style="--list-color: #6B2FA0;">
+        <li>Real-time data streaming with WebSocket integration</li>
+        <li>Custom visualization engine with SVG-based charts</li>
+        <li>Intelligent caching layer reducing API calls by 60%</li>
+        <li>Responsive design with offline-first architecture</li>
+      </ul>
+      <div class="overlay-tags">
+        <span class="overlay-tag">React</span>
+        <span class="overlay-tag">D3.js</span>
+        <span class="overlay-tag">WebSockets</span>
+        <span class="overlay-tag">Node.js</span>
+        <span class="overlay-tag">Redis</span>
+      </div>
+      <a href="#" class="overlay-link" onclick="event.preventDefault();">View Project &rarr;</a>
+    `
+  },
+
+  contact: {
+    color: '#B0A890',
+    floorId: 'floor-clear',
+    icon: '',
+    title: 'Contact',
+    subtitle: 'Let Us Build Something Together',
+    html: `
+      <div class="overlay-divider"></div>
+      <p class="overlay-text">
+        I am always interested in hearing about new opportunities, collaborations,
+        and conversations about software engineering at scale.
+      </p>
+      <p class="overlay-text">
+        Whether you are looking for a dedicated engineer for your team, want to discuss
+        a project idea, or simply want to connect -- I would love to hear from you.
+      </p>
+      <div style="margin-top:20px;">
+        <a href="mailto:anshullgarg@gmail.com" class="overlay-link">
+          Email &mdash; anshullgarg@gmail.com &rarr;
+        </a>
+      </div>
+      <div>
+        <a href="https://linkedin.com/in/anshullgarg" class="overlay-link" target="_blank" rel="noopener noreferrer">
+          LinkedIn &rarr;
+        </a>
+      </div>
+      <div>
+        <a href="https://github.com/anshullgarg" class="overlay-link" target="_blank" rel="noopener noreferrer">
+          GitHub &rarr;
+        </a>
+      </div>
+      <p class="overlay-text" style="margin-top:25px; font-style:italic; color:#8A7A5A; font-size:0.8rem;">
+        "The best code is written with both precision and purpose."
+      </p>
+    `
+  }
+};
+
+
+/* ================================================================
+   DUST MOTES GENERATION
+   ================================================================ */
+function createDustMotes() {
+  const container = document.getElementById('dustContainer');
+  const count = 40;
+
+  for (let i = 0; i < count; i++) {
+    const mote = document.createElement('div');
+    mote.className = 'dust-mote';
+    mote.style.setProperty('--size', (1 + Math.random() * 3) + 'px');
+    mote.style.setProperty('--dur', (8 + Math.random() * 16) + 's');
+    mote.style.setProperty('--delay', (Math.random() * 12) + 's');
+    mote.style.setProperty('--dx', (-50 + Math.random() * 100) + 'px');
+    mote.style.setProperty('--dy', (-80 + Math.random() * -120) + 'px');
+    mote.style.setProperty('--peak-o', (0.3 + Math.random() * 0.5).toFixed(2));
+    mote.style.setProperty('--mid-o', (0.1 + Math.random() * 0.3).toFixed(2));
+    mote.style.left = (20 + Math.random() * 60) + '%';
+    mote.style.top = (20 + Math.random() * 60) + '%';
+    container.appendChild(mote);
+  }
+}
+
+/* ================================================================
+   GOD RAYS GENERATION
+   ================================================================ */
+function createGodRays() {
+  const container = document.getElementById('godRays');
+  const count = 12;
+
+  for (let i = 0; i < count; i++) {
+    const ray = document.createElement('div');
+    ray.className = 'god-ray';
+    const leftPos = 30 + (i / count) * 40;
+    ray.style.left = leftPos + '%';
+    ray.style.setProperty('--dur', (6 + Math.random() * 6) + 's');
+    ray.style.setProperty('--delay', (Math.random() * 4) + 's');
+    ray.style.setProperty('--r1', (-3 + Math.random() * 2) + 'deg');
+    ray.style.setProperty('--r2', (-1 + Math.random() * 2) + 'deg');
+    ray.style.setProperty('--r3', (Math.random() * 3) + 'deg');
+    ray.style.width = (1 + Math.random() * 3) + 'px';
+    ray.style.opacity = (0.1 + Math.random() * 0.3).toFixed(2);
+    container.appendChild(ray);
+  }
+}
+
+
+/* ================================================================
+   PANEL INTERACTION
+   ================================================================ */
+const illuminatedPanels = new Set();
+let currentOverlayPanel = null;
+
+function openPanel(panelId) {
+  const data = panelContent[panelId];
+  if (!data) return;
+
+  currentOverlayPanel = panelId;
+
+  // Illuminate the panel
+  const panelGroup = document.querySelector(`[data-panel="${panelId}"]`);
+  const glassEl = panelGroup ? panelGroup.querySelector('.glass-panel') : null;
+  if (glassEl) {
+    glassEl.classList.add('illuminated');
+    illuminatedPanels.add(panelId);
+  }
+
+  // Activate floor reflection
+  const floorEl = document.getElementById(data.floorId);
+  if (floorEl) floorEl.classList.add('active');
+
+  // Populate overlay
+  const colorBar = document.getElementById('overlayColorBar');
+  colorBar.style.background = data.color;
+
+  const content = document.getElementById('overlayContent');
+  content.innerHTML = `
+    <span class="overlay-section-icon">${data.icon}</span>
+    <h2 class="overlay-title">${data.title}</h2>
+    <p class="overlay-subtitle">${data.subtitle}</p>
+    ${data.html}
+  `;
+
+  // Show overlay
+  const backdrop = document.getElementById('overlayBackdrop');
+  backdrop.classList.add('active');
+  backdrop.setAttribute('aria-hidden', 'false');
+
+  // Scroll overlay to top
+  document.getElementById('overlayScroll').scrollTop = 0;
+
+  // Focus management
+  setTimeout(() => {
+    document.getElementById('overlayClose').focus();
+  }, 100);
+}
+
+function closeOverlay() {
+  const backdrop = document.getElementById('overlayBackdrop');
+  backdrop.classList.remove('active');
+  backdrop.setAttribute('aria-hidden', 'true');
+
+  // Return focus to the panel that was opened
+  if (currentOverlayPanel) {
+    const panelGroup = document.querySelector(`[data-panel="${currentOverlayPanel}"]`);
+    const glassEl = panelGroup ? panelGroup.querySelector('.glass-panel') : null;
+    if (glassEl) glassEl.focus();
+  }
+  currentOverlayPanel = null;
+}
+
+// Bind click/keyboard events to glass panels
+document.querySelectorAll('[data-panel]').forEach(group => {
+  const panelId = group.dataset.panel;
+  const glassEl = group.querySelector('.glass-panel');
+
+  if (glassEl) {
+    glassEl.addEventListener('click', () => openPanel(panelId));
+    glassEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openPanel(panelId);
+      }
+    });
+  }
+});
+
+// Close overlay events
+document.getElementById('overlayClose').addEventListener('click', closeOverlay);
+document.getElementById('overlayBackdrop').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeOverlay();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeOverlay();
+});
+
+
+/* ================================================================
+   INITIALIZE
+   ================================================================ */
+createDustMotes();
+createGodRays();
+
+/* ================================================================
+   ENTRANCE ANIMATION - panels fade in staggered
+   ================================================================ */
+(function entranceAnimation() {
+  const panels = document.querySelectorAll('.glass-panel');
+  panels.forEach((p, i) => {
+    p.style.opacity = '0';
+    p.style.transition = 'none';
+    setTimeout(() => {
+      p.style.transition = 'filter 0.6s ease, opacity 1.2s ease';
+      p.style.opacity = '0.85';
+    }, 300 + i * 200);
+  });
+})();
+
+</script>
+</body>
+</html>

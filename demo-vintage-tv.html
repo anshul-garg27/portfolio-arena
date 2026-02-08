@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Vintage TV Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --room-bg: #1A1510;
+  --wood-dark: #2A1A0E;
+  --wood-mid: #3A2A1A;
+  --wood-light: #5A4530;
+  --wood-highlight: #6E5940;
+  --screen-bg: #0A0A0A;
+  --crt-green: #33FF33;
+  --crt-amber: #FFAA00;
+  --static-color: #888;
+  --channel-yellow: #FFD700;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: var(--room-bg);
+  color: #ccc;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 80%, #2A200E 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 20%, #1E180F 0%, transparent 40%),
+    var(--room-bg);
+}
+
+/* ===== CARPET TEXTURE ===== */
+body::before {
+  content: '';
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 20vh;
+  background: linear-gradient(to top, #1A140C, transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== TV ASSEMBLY ===== */
+.tv-assembly {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== ANTENNA ===== */
+.antenna-container {
+  position: relative;
+  width: 200px;
+  height: 80px;
+  z-index: 2;
+}
+.antenna-container svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+/* ===== TV CABINET ===== */
+.tv-cabinet {
+  position: relative;
+  width: 720px;
+  background: linear-gradient(145deg, var(--wood-light), var(--wood-mid), var(--wood-dark));
+  border-radius: 18px 18px 8px 8px;
+  padding: 30px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.8),
+    0 0 100px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  display: flex;
+  gap: 20px;
+}
+
+/* Wood grain */
+.tv-cabinet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 8px,
+    rgba(0,0,0,0.03) 8px,
+    rgba(0,0,0,0.03) 9px
+  );
+  pointer-events: none;
+}
+
+/* Brand label */
+.tv-brand {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--wood-highlight);
+  opacity: 0.6;
+}
+
+/* ===== CRT SCREEN HOUSING ===== */
+.screen-housing {
+  position: relative;
+  flex: 1;
+  background: #111;
+  border-radius: 20px;
+  padding: 6px;
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.9),
+    0 0 0 3px #222;
+}
+
+.screen-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--screen-bg);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Glass reflection */
+.screen-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.06) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255,255,255,0.02) 100%
+  );
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* Scanlines */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  z-index: 40;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.7);
+  z-index: 41;
+  pointer-events: none;
+}
+
+/* Flicker */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.96; }
+  94% { opacity: 1; }
+  96% { opacity: 0.98; }
+  97% { opacity: 1; }
+}
+
+.screen-content {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  animation: flicker 4s infinite;
+  overflow: hidden;
+}
+
+/* Static canvas */
+#staticCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 30;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.05s;
+}
+#staticCanvas.active {
+  opacity: 1;
+}
+
+/* Channel content area */
+.channel-display {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.channel-display::-webkit-scrollbar { display: none; }
+
+.channel-screen {
+  display: none;
+  width: 100%;
+  min-height: 100%;
+}
+.channel-screen.active {
+  display: block;
+}
+
+/* OSD Channel Number */
+.osd {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 45;
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255,255,255,0.5);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.osd.visible {
+  opacity: 1;
+}
+
+/* Mute indicator */
+.mute-indicator {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  z-index: 45;
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: #ff4444;
+  text-shadow: 0 0 6px rgba(255,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+}
+.mute-indicator.visible {
+  opacity: 1;
+}
+
+/* Power on/off animation */
+@keyframes powerOn {
+  0% { clip-path: inset(50% 0); filter: brightness(3); }
+  40% { clip-path: inset(0% 0); filter: brightness(2); }
+  100% { clip-path: inset(0% 0); filter: brightness(1); }
+}
+@keyframes powerOff {
+  0% { clip-path: inset(0% 0); filter: brightness(1); }
+  40% { clip-path: inset(48% 0); filter: brightness(3); }
+  70% { clip-path: inset(49% 40%); filter: brightness(5); }
+  100% { clip-path: inset(50% 50%); filter: brightness(0); }
+}
+
+.screen-content.power-on {
+  animation: powerOn 0.6s ease-out forwards, flicker 4s 0.6s infinite;
+}
+.screen-content.power-off {
+  animation: powerOff 0.5s ease-in forwards;
+}
+
+/* Power LED */
+.power-led {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #333;
+  box-shadow: none;
+  transition: all 0.3s;
+}
+.power-led.on {
+  background: #33ff33;
+  box-shadow: 0 0 6px #33ff33, 0 0 12px rgba(51,255,51,0.3);
+}
+
+/* ===== CONTROL PANEL ===== */
+.control-panel {
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 10px 0;
+}
+
+/* Channel dial */
+.channel-dial {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #888, #444, #222);
+  border: 3px solid #555;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.channel-dial::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 14px;
+  background: #ccc;
+  border-radius: 2px;
+  transition: transform 0.3s;
+}
+
+.dial-label {
+  font-family: 'VT323', monospace;
+  font-size: 11px;
+  color: var(--wood-highlight);
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Volume/Fine tune knobs */
+.small-knob {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #777, #333);
+  border: 2px solid #444;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* Power switch */
+.power-switch {
+  width: 30px;
+  height: 20px;
+  background: #333;
+  border: 2px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.power-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: calc(100% - 4px);
+  background: #888;
+  border-radius: 2px;
+  transition: transform 0.2s;
+}
+.power-switch.on::after {
+  transform: translateX(12px);
+  background: #aaa;
+}
+
+/* ===== TV LEGS ===== */
+.tv-legs {
+  display: flex;
+  justify-content: space-between;
+  width: 600px;
+}
+.tv-leg {
+  width: 20px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--wood-mid), var(--wood-dark));
+  border-radius: 0 0 4px 4px;
+}
+.tv-leg:first-child { margin-left: 60px; }
+.tv-leg:last-child { margin-right: 60px; }
+
+/* ===== REMOTE CONTROL ===== */
+.remote {
+  position: fixed;
+  bottom: 30px;
+  right: 40px;
+  width: 80px;
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  border-radius: 14px 14px 20px 20px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  z-index: 100;
+  border: 1px solid #333;
+}
+.remote::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 4px;
+  background: #500;
+  border-radius: 2px;
+}
+
+.remote-btn {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font-family: 'VT323', monospace;
+  transition: all 0.1s;
+  outline: none;
+}
+.remote-btn:active {
+  transform: scale(0.94);
+}
+
+.remote-power {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #cc0000, #880000);
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #660000;
+  margin-bottom: 4px;
+}
+.remote-power:active { background: radial-gradient(circle, #ff2222, #aa0000); }
+
+.remote-ch-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+.remote-ch-label {
+  font-family: 'VT323', monospace;
+  font-size: 10px;
+  color: #666;
+  letter-spacing: 1px;
+}
+
+.remote-ch {
+  width: 50px;
+  height: 28px;
+  border-radius: 4px;
+  background: #333;
+  color: #ddd;
+  font-size: 16px;
+  border: 1px solid #444;
+}
+.remote-ch:active { background: #555; }
+
+.remote-mute {
+  width: 42px;
+  height: 22px;
+  border-radius: 4px;
+  background: #333;
+  color: #f88;
+  font-size: 11px;
+  border: 1px solid #444;
+}
+.remote-mute:active { background: #555; }
+
+.remote-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  width: 100%;
+}
+.remote-num {
+  height: 22px;
+  border-radius: 3px;
+  background: #2a2a2a;
+  color: #aaa;
+  font-size: 13px;
+  border: 1px solid #383838;
+}
+.remote-num:active { background: #444; color: #fff; }
+
+/* ===== CHANNEL CONTENT STYLES ===== */
+
+/* -- CH 01: TEST PATTERN -- */
+.ch-test-pattern {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+}
+.color-bars {
+  display: flex;
+  height: 60%;
+}
+.color-bar {
+  flex: 1;
+}
+.test-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  padding: 16px;
+}
+.test-info h1 {
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  color: #fff;
+  text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+  margin-bottom: 4px;
+}
+.test-info h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  color: var(--crt-amber);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.test-info p {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: #aaa;
+  text-align: center;
+  line-height: 1.4;
+}
+.test-circle {
+  width: 60px;
+  height: 60px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.test-circle span {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: #fff;
+}
+
+/* -- CH 02: NEWS -- */
+.ch-news {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(180deg, #0a1628 0%, #0d1f3c 100%);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+.news-header {
+  background: linear-gradient(90deg, #8B0000, #CC0000);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.news-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.news-live {
+  background: #fff;
+  color: #cc0000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+  animation: blink-live 1s infinite;
+}
+@keyframes blink-live { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.news-body {
+  padding: 16px;
+}
+.news-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.news-anchor-area {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.news-anchor-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a4a7f, #1a3050);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  border: 2px solid #4a7abf;
+}
+.news-text {
+  font-size: 13px;
+  color: #bcc8dc;
+  line-height: 1.6;
+}
+
+.news-ticker-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+.news-ticker-label {
+  background: #cc0000;
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 4px 10px;
+  display: inline-block;
+}
+.news-ticker {
+  background: #111;
+  padding: 4px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.news-ticker span {
+  display: inline-block;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: var(--channel-yellow);
+  animation: ticker-scroll 25s linear infinite;
+  padding-left: 100%;
+}
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* -- CH 03: TECH REVIEW -- */
+.ch-tech-review {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(180deg, #0f0f1a, #1a1a2e);
+  padding: 16px;
+}
+.tech-header {
+  text-align: center;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+}
+.tech-show-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #00ccff;
+  text-shadow: 0 0 10px rgba(0,204,255,0.3);
+}
+.tech-host {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #888;
+  margin-top: 2px;
+}
+.tech-product {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.tech-product-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.tech-rating {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: var(--channel-yellow);
+  margin-bottom: 6px;
+}
+.tech-desc {
+  font-size: 12px;
+  color: #99a;
+  line-height: 1.5;
+}
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.tech-tag {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  background: rgba(0,204,255,0.1);
+  color: #00ccff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,204,255,0.2);
+}
+
+/* -- CH 04: GAME SHOW -- */
+.ch-game-show {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(180deg, #1a0a2e, #2d1050);
+  padding: 16px;
+  text-align: center;
+}
+.game-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--channel-yellow);
+  text-shadow: 2px 2px 0 #aa8800, 0 0 20px rgba(255,215,0,0.3);
+  margin-bottom: 4px;
+}
+.game-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #ff88cc;
+  margin-bottom: 16px;
+}
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.game-card {
+  background: linear-gradient(145deg, #2a1050, #3d1870);
+  border: 2px solid #5a28a0;
+  border-radius: 8px;
+  padding: 10px 6px;
+  transition: all 0.3s;
+  cursor: default;
+}
+.game-card:hover {
+  border-color: var(--channel-yellow);
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(255,215,0,0.2);
+}
+.game-skill-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.game-points {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: var(--channel-yellow);
+}
+.game-level {
+  font-family: 'VT323', monospace;
+  font-size: 11px;
+  color: #aa88cc;
+}
+
+/* -- CH 05: DOCUMENTARY -- */
+.ch-documentary {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(180deg, #0a0a05, #1a1808);
+  padding: 16px;
+}
+.doc-title-card {
+  text-align: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #333;
+}
+.doc-series {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  color: #888;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.doc-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: #e8d5a3;
+  margin: 4px 0;
+}
+.doc-narrator {
+  font-style: italic;
+  font-size: 12px;
+  color: #777;
+}
+.doc-chapter {
+  margin-bottom: 16px;
+  position: relative;
+  padding-left: 20px;
+}
+.doc-chapter::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #e8d5a3, transparent);
+}
+.doc-chapter-dot {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e8d5a3;
+  border: 2px solid #0a0a05;
+}
+.doc-year {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--crt-amber);
+}
+.doc-role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  margin: 2px 0;
+}
+.doc-company {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+.doc-narration {
+  font-style: italic;
+  font-size: 12px;
+  color: #8a8060;
+  line-height: 1.5;
+}
+
+/* -- CH 06: INFOMERCIAL -- */
+.ch-infomercial {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(180deg, #000050, #000080);
+  padding: 16px;
+  text-align: center;
+}
+.infomercial-flash {
+  animation: flash-bg 2s infinite;
+}
+@keyframes flash-bg {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(255,255,0,0.05); }
+}
+.info-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--channel-yellow);
+  text-shadow: 2px 2px 0 #aa6600;
+  margin-bottom: 4px;
+}
+.info-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.info-price-burst {
+  display: inline-block;
+  background: #ff0000;
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  padding: 8px 20px;
+  border-radius: 50%;
+  transform: rotate(-5deg);
+  margin-bottom: 14px;
+  animation: burst-pulse 1.5s infinite;
+}
+@keyframes burst-pulse {
+  0%, 100% { transform: rotate(-5deg) scale(1); }
+  50% { transform: rotate(-5deg) scale(1.05); }
+}
+.info-contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.info-contact-item {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: left;
+  transition: all 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+.info-contact-item:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: var(--channel-yellow);
+}
+.info-contact-label {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: var(--channel-yellow);
+}
+.info-contact-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  margin-top: 2px;
+}
+.info-operators {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: #ff8;
+  margin-top: 14px;
+  animation: blink-live 1.2s infinite;
+}
+.info-fine-print {
+  font-size: 9px;
+  color: #446;
+  margin-top: 10px;
+  line-height: 1.3;
+}
+
+/* ===== KEYBOARD HINT ===== */
+.keyboard-hint {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+  z-index: 100;
+}
+.keyboard-hint kbd {
+  display: inline-block;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-family: inherit;
+  color: #888;
+  margin: 0 2px;
+}
+
+/* ===== OFF SCREEN ===== */
+.off-screen {
+  position: absolute;
+  inset: 0;
+  background: #050505;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+.off-screen.hidden {
+  display: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 800px) {
+  .tv-cabinet {
+    width: 95vw;
+    padding: 16px;
+    flex-direction: column;
+  }
+  .control-panel {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    padding: 8px 0 0 0;
+  }
+  .remote { display: none; }
+  .keyboard-hint { display: none; }
+  .antenna-container { width: 140px; height: 60px; }
+  .tv-legs { width: 80vw; }
+}
+
+/* CRT color bleed on headings */
+.crt-text {
+  text-shadow:
+    1px 0 0 rgba(255,0,0,0.3),
+    -1px 0 0 rgba(0,255,255,0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="tv-assembly">
+  <!-- ANTENNA -->
+  <div class="antenna-container" id="antennaContainer">
+    <svg viewBox="0 0 200 80" id="antennaSvg">
+      <line id="antennaLeft" x1="100" y1="78" x2="55" y2="5" stroke="#888" stroke-width="3" stroke-linecap="round"/>
+      <line id="antennaRight" x1="100" y1="78" x2="145" y2="5" stroke="#888" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="55" cy="5" r="4" fill="#999" id="antennaLeftTip"/>
+      <circle cx="145" cy="5" r="4" fill="#999" id="antennaRightTip"/>
+      <rect x="90" y="72" width="20" height="8" rx="2" fill="#666"/>
+    </svg>
+  </div>
+
+  <!-- TV CABINET -->
+  <div class="tv-cabinet">
+    <!-- SCREEN -->
+    <div class="screen-housing">
+      <div class="screen-container">
+        <canvas id="staticCanvas"></canvas>
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+        <div class="osd" id="osd">CH 01</div>
+        <div class="mute-indicator" id="muteIndicator">MUTE</div>
+
+        <div class="off-screen" id="offScreen"></div>
+
+        <div class="screen-content" id="screenContent">
+          <div class="channel-display" id="channelDisplay">
+
+            <!-- CH 01: TEST PATTERN -->
+            <div class="channel-screen active" data-channel="1" id="ch1">
+              <div class="ch-test-pattern">
+                <div class="color-bars">
+                  <div class="color-bar" style="background:#C0C0C0"></div>
+                  <div class="color-bar" style="background:#C0C000"></div>
+                  <div class="color-bar" style="background:#00C0C0"></div>
+                  <div class="color-bar" style="background:#00C000"></div>
+                  <div class="color-bar" style="background:#C000C0"></div>
+                  <div class="color-bar" style="background:#C00000"></div>
+                  <div class="color-bar" style="background:#0000C0"></div>
+                </div>
+                <div class="test-info">
+                  <div class="test-circle"><span>AG</span></div>
+                  <h1 class="crt-text">ANSHULL GARG</h1>
+                  <h2>Software Developer @ Walmart</h2>
+                  <p>Building scalable systems that serve millions.<br>
+                  Full-stack engineer. Problem solver. Builder.<br>
+                  Tune in to other channels for more.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- CH 02: NEWS -->
+            <div class="channel-screen" data-channel="2" id="ch2">
+              <div class="ch-news">
+                <div class="news-header">
+                  <div class="news-logo">AGN NEWS</div>
+                  <div class="news-live">LIVE</div>
+                </div>
+                <div class="news-body">
+                  <div class="news-headline crt-text">BREAKING: Local Developer Found Building Systems at Unprecedented Scale</div>
+                  <div class="news-anchor-area">
+                    <div class="news-anchor-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ab4f8" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                    </div>
+                    <div class="news-text">
+                      Anshull Garg, a software developer at Walmart, has been reportedly building high-impact systems that power one of the world's largest retailers. Sources confirm expertise in full-stack development, distributed systems, and a relentless drive for clean, performant code.
+                      <br><br>
+                      Colleagues describe a professional who bridges the gap between complex technical challenges and elegant solutions. "He doesn't just write code," said one anonymous source. "He architects experiences."
+                      <br><br>
+                      When not shipping features, Garg has been spotted exploring new technologies, contributing to team culture, and mentoring fellow engineers. The investigation continues.
+                    </div>
+                  </div>
+                </div>
+                <div class="news-ticker-container">
+                  <span class="news-ticker-label">BREAKING</span>
+                  <div class="news-ticker">
+                    <span>DEVELOPER EXPERTISE CONFIRMED IN: React, Node.js, TypeScript, Java, Python, Distributed Systems, Cloud Architecture &bull; WALMART TECH TEAM REPORTS RECORD PRODUCTIVITY &bull; FULL STORY AT 11 &bull; SOURCES SAY: "EXCEPTIONAL PROBLEM-SOLVING SKILLS" &bull;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CH 03: TECH REVIEW -->
+            <div class="channel-screen" data-channel="3" id="ch3">
+              <div class="ch-tech-review">
+                <div class="tech-header">
+                  <div class="tech-show-name crt-text">THE GARG TECH REVIEW</div>
+                  <div class="tech-host">with your host, Anshull Garg</div>
+                </div>
+
+                <div class="tech-product">
+                  <div class="tech-product-name">Walmart E-Commerce Platform</div>
+                  <div class="tech-rating">&#9733;&#9733;&#9733;&#9733;&#9733; EDITORS CHOICE</div>
+                  <div class="tech-desc">A high-scale commerce platform serving millions of customers daily. Built with modern microservices architecture, optimized for performance and reliability at Walmart-scale traffic.</div>
+                  <div class="tech-tags">
+                    <span class="tech-tag">React</span>
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">Java</span>
+                    <span class="tech-tag">Microservices</span>
+                  </div>
+                </div>
+
+                <div class="tech-product">
+                  <div class="tech-product-name">Real-Time Inventory System</div>
+                  <div class="tech-rating">&#9733;&#9733;&#9733;&#9733;&#9734; HIGHLY RECOMMENDED</div>
+                  <div class="tech-desc">Distributed system handling real-time inventory tracking across thousands of stores. Event-driven architecture ensuring data consistency at massive scale.</div>
+                  <div class="tech-tags">
+                    <span class="tech-tag">Kafka</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Cloud</span>
+                    <span class="tech-tag">Redis</span>
+                  </div>
+                </div>
+
+                <div class="tech-product">
+                  <div class="tech-product-name">CI/CD Pipeline Automation</div>
+                  <div class="tech-rating">&#9733;&#9733;&#9733;&#9733;&#9733; TOP PICK</div>
+                  <div class="tech-desc">Automated deployment pipeline reducing release cycles from days to hours. Comprehensive testing framework with 95%+ coverage targets.</div>
+                  <div class="tech-tags">
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">K8s</span>
+                    <span class="tech-tag">GitHub Actions</span>
+                    <span class="tech-tag">Terraform</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CH 04: GAME SHOW -->
+            <div class="channel-screen" data-channel="4" id="ch4">
+              <div class="ch-game-show">
+                <div class="game-title crt-text">THE SKILL IS RIGHT!</div>
+                <div class="game-subtitle">Contestant: ANSHULL GARG</div>
+
+                <div class="game-board">
+                  <div class="game-card">
+                    <div class="game-skill-name">React</div>
+                    <div class="game-points">$1000</div>
+                    <div class="game-level">EXPERT</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">TypeScript</div>
+                    <div class="game-points">$900</div>
+                    <div class="game-level">EXPERT</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">Node.js</div>
+                    <div class="game-points">$950</div>
+                    <div class="game-level">EXPERT</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">Java</div>
+                    <div class="game-points">$850</div>
+                    <div class="game-level">ADVANCED</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">Python</div>
+                    <div class="game-points">$900</div>
+                    <div class="game-level">EXPERT</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">SQL</div>
+                    <div class="game-points">$800</div>
+                    <div class="game-level">ADVANCED</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">AWS/Cloud</div>
+                    <div class="game-points">$850</div>
+                    <div class="game-level">ADVANCED</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">Docker/K8s</div>
+                    <div class="game-points">$800</div>
+                    <div class="game-level">ADVANCED</div>
+                  </div>
+                  <div class="game-card">
+                    <div class="game-skill-name">System Design</div>
+                    <div class="game-points">$1000</div>
+                    <div class="game-level">EXPERT</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CH 05: DOCUMENTARY -->
+            <div class="channel-screen" data-channel="5" id="ch5">
+              <div class="ch-documentary">
+                <div class="doc-title-card">
+                  <div class="doc-series">A CAREER DOCUMENTARY</div>
+                  <div class="doc-title crt-text">The Making of a Developer</div>
+                  <div class="doc-narrator">Narrated by the commit history</div>
+                </div>
+
+                <div class="doc-chapter">
+                  <div class="doc-chapter-dot"></div>
+                  <div class="doc-year">PRESENT</div>
+                  <div class="doc-role">Software Developer</div>
+                  <div class="doc-company">Walmart Global Tech</div>
+                  <div class="doc-narration">"At the world's largest retailer, he found his calling -- building systems that touched the lives of millions of customers every single day. The scale was unlike anything before."</div>
+                </div>
+
+                <div class="doc-chapter">
+                  <div class="doc-chapter-dot"></div>
+                  <div class="doc-year">THE JOURNEY</div>
+                  <div class="doc-role">Full-Stack Engineering</div>
+                  <div class="doc-company">The Path Forward</div>
+                  <div class="doc-narration">"From writing his first lines of code to architecting distributed systems, the transformation was driven by an insatiable curiosity and a belief that software could solve real problems."</div>
+                </div>
+
+                <div class="doc-chapter">
+                  <div class="doc-chapter-dot"></div>
+                  <div class="doc-year">ORIGINS</div>
+                  <div class="doc-role">Computer Science Foundation</div>
+                  <div class="doc-company">Academic Years</div>
+                  <div class="doc-narration">"It all began with a fascination for how things work. Algorithms, data structures, the elegance of a well-crafted solution -- these became the building blocks of everything that followed."</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CH 06: INFOMERCIAL -->
+            <div class="channel-screen" data-channel="6" id="ch6">
+              <div class="ch-infomercial infomercial-flash">
+                <div class="info-headline crt-text">ARE YOU TIRED OF BAD SOFTWARE?</div>
+                <div class="info-subtitle">Call Anshull Garg NOW!</div>
+
+                <div class="info-price-burst">FREE<br><span style="font-size:11px">consultation</span></div>
+
+                <div style="font-family:'VT323',monospace;font-size:15px;color:#ff8;margin-bottom:10px;">
+                  "But WAIT -- there's MORE!"
+                </div>
+
+                <div class="info-contact-row">
+                  <a class="info-contact-item" href="mailto:anshullgarg@gmail.com">
+                    <div class="info-contact-label">EMAIL NOW!</div>
+                    <div class="info-contact-value">anshullgarg@gmail.com</div>
+                  </a>
+                  <a class="info-contact-item" href="https://linkedin.com/in/anshullgarg" target="_blank">
+                    <div class="info-contact-label">CONNECT ON LINKEDIN!</div>
+                    <div class="info-contact-value">linkedin.com/in/anshullgarg</div>
+                  </a>
+                  <a class="info-contact-item" href="https://github.com/anshullgarg" target="_blank">
+                    <div class="info-contact-label">CHECK THE CODE!</div>
+                    <div class="info-contact-value">github.com/anshullgarg</div>
+                  </a>
+                </div>
+
+                <div class="info-operators">OPERATORS ARE STANDING BY!</div>
+                <div class="info-fine-print">Results may vary. Side effects include: cleaner code, faster deployments, and reduced technical debt. Not responsible for sudden improvements in team morale. Available for full-time, contract, and collaboration opportunities.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="power-led" id="powerLed"></div>
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+      <div class="dial-label">CHANNEL</div>
+      <div class="channel-dial" id="channelDial" title="Click to change channel"></div>
+      <div class="dial-label" style="margin-top:6px">VOL</div>
+      <div class="small-knob" id="volKnob"></div>
+      <div class="dial-label" style="margin-top:6px">FINE</div>
+      <div class="small-knob"></div>
+      <div class="dial-label" style="margin-top:10px">POWER</div>
+      <div class="power-switch" id="powerSwitch" title="Power on/off"></div>
+    </div>
+
+    <div class="tv-brand">GARGAVISION</div>
+  </div>
+
+  <!-- TV LEGS -->
+  <div class="tv-legs">
+    <div class="tv-leg"></div>
+    <div class="tv-leg"></div>
+  </div>
+</div>
+
+<!-- REMOTE CONTROL -->
+<div class="remote">
+  <button class="remote-btn remote-power" id="remotePower" title="Power">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v8"/><path d="M18.4 6.6a9 9 0 1 1-12.7 0"/></svg>
+  </button>
+  <div class="remote-ch-group">
+    <span class="remote-ch-label">CH</span>
+    <button class="remote-btn remote-ch" id="remoteChUp" title="Channel Up">+</button>
+    <button class="remote-btn remote-ch" id="remoteChDown" title="Channel Down">-</button>
+  </div>
+  <button class="remote-btn remote-mute" id="remoteMute" title="Mute">MUTE</button>
+  <div class="remote-numpad">
+    <button class="remote-btn remote-num" data-num="1">1</button>
+    <button class="remote-btn remote-num" data-num="2">2</button>
+    <button class="remote-btn remote-num" data-num="3">3</button>
+    <button class="remote-btn remote-num" data-num="4">4</button>
+    <button class="remote-btn remote-num" data-num="5">5</button>
+    <button class="remote-btn remote-num" data-num="6">6</button>
+  </div>
+</div>
+
+<!-- KEYBOARD HINT -->
+<div class="keyboard-hint">
+  <kbd>1</kbd>-<kbd>6</kbd> channels &nbsp;&middot;&nbsp;
+  <kbd>&uarr;</kbd><kbd>&darr;</kbd> surf &nbsp;&middot;&nbsp;
+  <kbd>P</kbd> power &nbsp;&middot;&nbsp;
+  <kbd>M</kbd> mute
+</div>
+
+<script>
+(function() {
+  // ====== STATE ======
+  const TOTAL_CHANNELS = 6;
+  let currentChannel = 1;
+  let isPoweredOn = false;
+  let isMuted = false;
+  let isSwitching = false;
+  let osdTimeout = null;
+  let staticAnimFrame = null;
+
+  // ====== ELEMENTS ======
+  const staticCanvas = document.getElementById('staticCanvas');
+  const ctx = staticCanvas.getContext('2d');
+  const screenContent = document.getElementById('screenContent');
+  const channelDisplay = document.getElementById('channelDisplay');
+  const osd = document.getElementById('osd');
+  const muteIndicator = document.getElementById('muteIndicator');
+  const offScreen = document.getElementById('offScreen');
+  const powerLed = document.getElementById('powerLed');
+  const powerSwitch = document.getElementById('powerSwitch');
+  const channelDial = document.getElementById('channelDial');
+
+  // ====== STATIC NOISE ======
+  function resizeCanvas() {
+    const rect = staticCanvas.parentElement.getBoundingClientRect();
+    staticCanvas.width = rect.width;
+    staticCanvas.height = rect.height;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  let staticImageData = null;
+  function drawStatic() {
+    const w = staticCanvas.width;
+    const h = staticCanvas.height;
+    if (!w || !h) return;
+
+    if (!staticImageData || staticImageData.width !== w || staticImageData.height !== h) {
+      staticImageData = ctx.createImageData(w, h);
+    }
+    const data = staticImageData.data;
+    // Process in 32-bit chunks for speed
+    const buf32 = new Uint32Array(data.buffer);
+    const len = buf32.length;
+    for (let i = 0; i < len; i++) {
+      const v = (Math.random() * 255) | 0;
+      buf32[i] = (255 << 24) | (v << 16) | (v << 8) | v; // ABGR
+    }
+    ctx.putImageData(staticImageData, 0, 0);
+  }
+
+  let staticRunning = false;
+  function startStaticLoop() {
+    if (staticRunning) return;
+    staticRunning = true;
+    function loop() {
+      if (!staticRunning) return;
+      drawStatic();
+      staticAnimFrame = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+  function stopStaticLoop() {
+    staticRunning = false;
+    if (staticAnimFrame) cancelAnimationFrame(staticAnimFrame);
+  }
+
+  // ====== SHOW / HIDE CHANNEL ======
+  function showChannel(ch) {
+    document.querySelectorAll('.channel-screen').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('ch' + ch);
+    if (target) target.classList.add('active');
+  }
+
+  // ====== OSD ======
+  function showOSD() {
+    osd.textContent = 'CH ' + String(currentChannel).padStart(2, '0');
+    osd.classList.add('visible');
+    clearTimeout(osdTimeout);
+    osdTimeout = setTimeout(() => osd.classList.remove('visible'), 2500);
+  }
+
+  // ====== CHANNEL DIAL ROTATION ======
+  function updateDialRotation() {
+    const angle = ((currentChannel - 1) / (TOTAL_CHANNELS - 1)) * 300 - 150;
+    channelDial.style.transform = 'rotate(' + angle + 'deg)';
+  }
+
+  // ====== CHANNEL SWITCH (with static) ======
+  function switchChannel(newCh) {
+    if (!isPoweredOn || isSwitching) return;
+    if (newCh < 1) newCh = TOTAL_CHANNELS;
+    if (newCh > TOTAL_CHANNELS) newCh = 1;
+    if (newCh === currentChannel) { showOSD(); return; }
+
+    isSwitching = true;
+    currentChannel = newCh;
+    updateDialRotation();
+
+    // Show static
+    staticCanvas.classList.add('active');
+    startStaticLoop();
+
+    // Play a brief click sound
+    playStaticSound();
+
+    setTimeout(() => {
+      showChannel(currentChannel);
+      stopStaticLoop();
+      staticCanvas.classList.remove('active');
+      isSwitching = false;
+      showOSD();
+    }, 300);
+  }
+
+  // ====== STATIC SOUND (Web Audio) ======
+  let audioCtx = null;
+  function playStaticSound() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (isMuted) return;
+      const bufferSize = audioCtx.sampleRate * 0.15;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * 0.15;
+      }
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      source.connect(gain).connect(audioCtx.destination);
+      source.start();
+    } catch(e) { /* Audio may be blocked */ }
+  }
+
+  // ====== POWER ON/OFF ======
+  function powerOn() {
+    if (isPoweredOn) return;
+    isPoweredOn = true;
+    powerLed.classList.add('on');
+    powerSwitch.classList.add('on');
+    offScreen.classList.add('hidden');
+
+    screenContent.classList.remove('power-off');
+    screenContent.classList.add('power-on');
+
+    // Brief static then show channel
+    staticCanvas.classList.add('active');
+    startStaticLoop();
+
+    setTimeout(() => {
+      showChannel(currentChannel);
+      stopStaticLoop();
+      staticCanvas.classList.remove('active');
+      showOSD();
+    }, 600);
+  }
+
+  function powerOff() {
+    if (!isPoweredOn) return;
+    isPoweredOn = false;
+    powerLed.classList.remove('on');
+    powerSwitch.classList.remove('on');
+
+    screenContent.classList.remove('power-on');
+    screenContent.classList.add('power-off');
+
+    stopStaticLoop();
+    staticCanvas.classList.remove('active');
+    osd.classList.remove('visible');
+
+    setTimeout(() => {
+      offScreen.classList.remove('hidden');
+      document.querySelectorAll('.channel-screen').forEach(el => el.classList.remove('active'));
+    }, 500);
+  }
+
+  function togglePower() {
+    isPoweredOn ? powerOff() : powerOn();
+  }
+
+  // ====== MUTE ======
+  function toggleMute() {
+    isMuted = !isMuted;
+    muteIndicator.classList.toggle('visible', isMuted);
+  }
+
+  // ====== ANTENNA TILT ======
+  const antennaLeft = document.getElementById('antennaLeft');
+  const antennaRight = document.getElementById('antennaRight');
+  const antennaLeftTip = document.getElementById('antennaLeftTip');
+  const antennaRightTip = document.getElementById('antennaRightTip');
+
+  document.addEventListener('mousemove', (e) => {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const dx = (e.clientX - cx) / cx; // -1 to 1
+    const dy = (e.clientY - cy) / cy;
+    const tiltX = dx * 15;
+    const tiltY = dy * 8;
+
+    const lx = 55 + tiltX - tiltY * 0.5;
+    const ly = 5 + tiltY;
+    const rx = 145 + tiltX + tiltY * 0.5;
+    const ry = 5 + tiltY;
+
+    antennaLeft.setAttribute('x2', lx);
+    antennaLeft.setAttribute('y2', ly);
+    antennaLeftTip.setAttribute('cx', lx);
+    antennaLeftTip.setAttribute('cy', ly);
+
+    antennaRight.setAttribute('x2', rx);
+    antennaRight.setAttribute('y2', ry);
+    antennaRightTip.setAttribute('cx', rx);
+    antennaRightTip.setAttribute('cy', ry);
+  });
+
+  // ====== EVENT LISTENERS ======
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    const key = e.key;
+    if (key >= '1' && key <= '6') {
+      switchChannel(parseInt(key));
+    } else if (key === 'ArrowUp') {
+      e.preventDefault();
+      switchChannel(currentChannel + 1);
+    } else if (key === 'ArrowDown') {
+      e.preventDefault();
+      switchChannel(currentChannel - 1);
+    } else if (key.toLowerCase() === 'p') {
+      togglePower();
+    } else if (key.toLowerCase() === 'm') {
+      toggleMute();
+    }
+  });
+
+  // Remote buttons
+  document.getElementById('remotePower').addEventListener('click', togglePower);
+  document.getElementById('remoteChUp').addEventListener('click', () => switchChannel(currentChannel + 1));
+  document.getElementById('remoteChDown').addEventListener('click', () => switchChannel(currentChannel - 1));
+  document.getElementById('remoteMute').addEventListener('click', toggleMute);
+  document.querySelectorAll('.remote-num').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const num = parseInt(btn.dataset.num);
+      switchChannel(num);
+    });
+  });
+
+  // Cabinet controls
+  channelDial.addEventListener('click', () => switchChannel(currentChannel + 1));
+  document.getElementById('powerSwitch').addEventListener('click', togglePower);
+
+  // ====== AUTO POWER ON ======
+  setTimeout(powerOn, 500);
+  updateDialRotation();
+
+})();
+</script>
+</body>
+</html>

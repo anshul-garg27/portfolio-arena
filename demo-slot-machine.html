@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Slot Machine Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1A0A2E;--gold:#D4A853;--red:#CC2936;--neon-gold:#FFD700;
+  --neon-pink:#FF1493;--black:#0A0A0A;--chrome:#B8860B;
+  --dark-red:#8B1A1A;--led-green:#00FF41;--led-red:#FF073A;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;background:var(--bg);color:#fff;
+  min-height:100vh;overflow-x:hidden;position:relative;
+}
+
+/* === SPARKLE BACKGROUND === */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse at 20% 50%,rgba(212,168,83,.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 20%,rgba(204,41,54,.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 80%,rgba(255,20,147,.04) 0%,transparent 50%);
+  pointer-events:none;
+}
+#sparkle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* === HEADER === */
+.header{
+  text-align:center;padding:2rem 1rem 1rem;position:relative;z-index:10;
+}
+.header h1{
+  font-family:'Russo One',sans-serif;font-size:clamp(1.4rem,4vw,2.2rem);
+  background:linear-gradient(135deg,var(--neon-gold),var(--gold),#fff,var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;text-transform:uppercase;letter-spacing:.15em;
+}
+.header .sub{
+  font-size:.85rem;color:rgba(255,255,255,.5);margin-top:.3rem;letter-spacing:.3em;
+  text-transform:uppercase;
+}
+
+/* === CREDITS DISPLAY === */
+.credits-bar{
+  display:flex;justify-content:center;gap:2rem;margin:1rem auto;
+  position:relative;z-index:10;
+}
+.credit-box{
+  background:linear-gradient(180deg,#1a1a2e,#0d0d1a);border:1px solid var(--gold);
+  border-radius:6px;padding:.4rem 1.2rem;font-family:'Russo One',sans-serif;
+  font-size:.75rem;color:var(--neon-gold);text-transform:uppercase;
+  letter-spacing:.1em;display:flex;align-items:center;gap:.5rem;
+  box-shadow:0 0 10px rgba(212,168,83,.2);
+}
+.credit-box span{font-size:1rem;color:var(--led-green);font-family:'Russo One',sans-serif}
+
+/* === SLOT MACHINE === */
+.machine-wrapper{
+  display:flex;justify-content:center;align-items:center;
+  padding:1rem;position:relative;z-index:10;
+}
+.machine{
+  position:relative;width:min(600px,95vw);
+  background:linear-gradient(145deg,#2a1810,#1a0f08,#2a1810);
+  border-radius:20px;padding:0;
+  box-shadow:
+    0 0 0 4px var(--gold),
+    0 0 0 8px var(--dark-red),
+    0 0 0 12px var(--gold),
+    0 0 40px rgba(212,168,83,.3),
+    0 20px 60px rgba(0,0,0,.6);
+  overflow:visible;
+}
+
+/* Machine top banner */
+.machine-banner{
+  background:linear-gradient(180deg,var(--red),var(--dark-red));
+  padding:1rem;text-align:center;border-radius:16px 16px 0 0;
+  position:relative;overflow:hidden;
+  border-bottom:3px solid var(--gold);
+}
+.machine-banner::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+  animation:sheen 3s ease-in-out infinite;
+}
+@keyframes sheen{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.machine-banner h2{
+  font-family:'Russo One',sans-serif;font-size:clamp(1.2rem,3.5vw,1.8rem);
+  color:var(--neon-gold);text-shadow:0 0 20px rgba(255,215,0,.5),0 2px 4px rgba(0,0,0,.5);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+
+/* Marquee lights around machine */
+.marquee-lights{
+  position:absolute;inset:-6px;border-radius:24px;pointer-events:none;z-index:5;
+}
+.marquee-light{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--neon-gold);
+  box-shadow:0 0 6px var(--neon-gold),0 0 12px var(--neon-gold);
+  animation:blink-light 1s ease-in-out infinite alternate;
+}
+@keyframes blink-light{0%{opacity:1;transform:scale(1)}100%{opacity:.3;transform:scale(.7)}}
+
+/* Reel area */
+.reel-area{
+  background:linear-gradient(180deg,#0d0d0d,#1a1a1a,#0d0d0d);
+  margin:0 1.5rem;border-radius:12px;padding:1rem;
+  border:3px solid var(--gold);position:relative;
+  box-shadow:inset 0 0 30px rgba(0,0,0,.8),0 0 15px rgba(212,168,83,.2);
+}
+.reel-container{
+  display:flex;justify-content:center;gap:.5rem;
+  height:180px;position:relative;
+}
+.reel-window{
+  width:120px;height:180px;overflow:hidden;position:relative;
+  background:#000;border-radius:8px;
+  border:2px solid #333;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.9),0 0 8px rgba(212,168,83,.15);
+}
+.reel-window::before,.reel-window::after{
+  content:'';position:absolute;left:0;right:0;height:40%;z-index:3;pointer-events:none;
+}
+.reel-window::before{
+  top:0;background:linear-gradient(180deg,rgba(0,0,0,.7),transparent);
+}
+.reel-window::after{
+  bottom:0;background:linear-gradient(0deg,rgba(0,0,0,.7),transparent);
+}
+/* Center line indicator */
+.reel-window .center-line{
+  position:absolute;top:50%;left:0;right:0;height:2px;z-index:4;
+  background:var(--neon-pink);box-shadow:0 0 8px var(--neon-pink);
+  transform:translateY(-1px);opacity:.6;
+}
+.reel-strip{
+  display:flex;flex-direction:column;align-items:center;
+  transition:none;will-change:transform;
+}
+.reel-item{
+  width:120px;height:60px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:2.2rem;position:relative;
+}
+.reel-item .reel-label{
+  position:absolute;bottom:2px;font-size:.5rem;color:rgba(255,255,255,.5);
+  font-family:'Russo One',sans-serif;text-transform:uppercase;letter-spacing:.05em;
+}
+
+/* Payline arrow */
+.payline-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:0;height:0;z-index:5;
+}
+.payline-arrow.left{
+  left:-8px;border-top:8px solid transparent;border-bottom:8px solid transparent;
+  border-left:10px solid var(--neon-pink);
+  filter:drop-shadow(0 0 4px var(--neon-pink));
+}
+.payline-arrow.right{
+  right:-8px;border-top:8px solid transparent;border-bottom:8px solid transparent;
+  border-right:10px solid var(--neon-pink);
+  filter:drop-shadow(0 0 4px var(--neon-pink));
+}
+
+/* Controls */
+.controls{
+  padding:1.2rem 1.5rem;display:flex;align-items:center;
+  justify-content:center;gap:1rem;flex-wrap:wrap;
+}
+.spin-btn{
+  position:relative;cursor:pointer;border:none;
+  background:linear-gradient(180deg,#ff3344,var(--red),var(--dark-red));
+  color:#fff;font-family:'Russo One',sans-serif;font-size:clamp(1rem,2.5vw,1.3rem);
+  padding:.8rem 2.5rem;border-radius:50px;text-transform:uppercase;
+  letter-spacing:.15em;
+  box-shadow:
+    0 4px 0 #6b0f0f,
+    0 6px 20px rgba(204,41,54,.4),
+    inset 0 1px 0 rgba(255,255,255,.2);
+  transition:all .15s ease;
+}
+.spin-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 6px 0 #6b0f0f,
+    0 8px 30px rgba(204,41,54,.6),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
+.spin-btn:active{
+  transform:translateY(2px);
+  box-shadow:
+    0 2px 0 #6b0f0f,
+    0 3px 10px rgba(204,41,54,.3),
+    inset 0 1px 0 rgba(255,255,255,.1);
+}
+.spin-btn.spinning{
+  pointer-events:none;opacity:.6;
+}
+
+/* Lever */
+.lever-container{
+  position:absolute;right:-40px;top:50%;transform:translateY(-50%);
+  cursor:pointer;z-index:20;display:none;
+}
+@media(min-width:700px){
+  .lever-container{display:block}
+}
+.lever-track{
+  width:16px;height:120px;background:linear-gradient(90deg,#666,#999,#666);
+  border-radius:8px;position:relative;
+  box-shadow:inset 0 0 4px rgba(0,0,0,.5);
+}
+.lever-handle{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:36px;height:36px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ff4444,var(--red),var(--dark-red));
+  border:3px solid var(--gold);
+  box-shadow:0 0 10px rgba(204,41,54,.5),0 4px 8px rgba(0,0,0,.4);
+  transition:top .3s cubic-bezier(.68,-.55,.27,1.55);
+}
+.lever-container.pulled .lever-handle{top:84px}
+
+/* Insert coin blink */
+.insert-coin{
+  text-align:center;padding:.5rem;font-family:'Russo One',sans-serif;
+  font-size:.85rem;color:var(--neon-gold);letter-spacing:.2em;
+  text-transform:uppercase;animation:blink-text 1s step-end infinite;
+}
+@keyframes blink-text{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Machine bottom decorative panel */
+.machine-bottom{
+  background:linear-gradient(180deg,#1a0f08,#2a1810);
+  padding:.8rem 1.5rem;border-radius:0 0 16px 16px;
+  border-top:3px solid var(--gold);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.payout-label{
+  font-family:'Russo One',sans-serif;font-size:.6rem;color:var(--gold);
+  text-transform:uppercase;letter-spacing:.1em;opacity:.7;
+}
+.rivets{display:flex;gap:.8rem}
+.rivet{
+  width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ddd,#888,#555);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.3),0 1px 2px rgba(0,0,0,.5);
+}
+
+/* === WIN DISPLAY === */
+.win-display{
+  position:relative;z-index:10;max-width:700px;margin:2rem auto;padding:0 1rem;
+  min-height:100px;
+}
+.win-display.hidden{display:none}
+.win-banner{
+  text-align:center;padding:1rem;font-family:'Russo One',sans-serif;
+  font-size:clamp(1.2rem,3vw,1.8rem);text-transform:uppercase;
+  letter-spacing:.1em;animation:win-pulse .5s ease-in-out 3;
+}
+@keyframes win-pulse{
+  0%,100%{text-shadow:0 0 10px var(--neon-gold)}
+  50%{text-shadow:0 0 30px var(--neon-gold),0 0 60px var(--neon-gold)}
+}
+.win-banner.jackpot{color:var(--neon-gold)}
+.win-banner.section{color:var(--neon-pink)}
+
+/* Content cards */
+.content-reveal{
+  background:linear-gradient(145deg,rgba(30,20,50,.9),rgba(20,10,40,.95));
+  border:1px solid rgba(212,168,83,.3);border-radius:16px;
+  padding:2rem;margin-top:1rem;
+  animation:reveal-up .6s cubic-bezier(.16,1,.3,1) forwards;
+  opacity:0;transform:translateY(30px);
+  backdrop-filter:blur(10px);
+  box-shadow:0 10px 40px rgba(0,0,0,.4),0 0 20px rgba(212,168,83,.1);
+}
+@keyframes reveal-up{to{opacity:1;transform:translateY(0)}}
+
+.content-reveal h3{
+  font-family:'Russo One',sans-serif;font-size:1.3rem;
+  color:var(--neon-gold);margin-bottom:1rem;text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.content-reveal p{
+  color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:.8rem;font-size:.95rem;
+}
+.content-reveal .tag{
+  display:inline-block;padding:.2rem .6rem;margin:.2rem;border-radius:20px;
+  font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+  background:rgba(212,168,83,.15);color:var(--gold);border:1px solid rgba(212,168,83,.3);
+}
+.content-reveal .project-card{
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:1.2rem;margin-bottom:1rem;
+  transition:border-color .3s;
+}
+.content-reveal .project-card:hover{border-color:var(--gold)}
+.content-reveal .project-card h4{
+  font-family:'Russo One',sans-serif;font-size:1rem;color:#fff;margin-bottom:.4rem;
+}
+.content-reveal .project-card .tech{font-size:.75rem;color:var(--neon-pink);margin-bottom:.5rem}
+.content-reveal .exp-item{
+  padding-left:1.2rem;border-left:2px solid var(--gold);margin-bottom:1.2rem;
+}
+.content-reveal .exp-item h4{
+  font-family:'Russo One',sans-serif;font-size:1rem;color:#fff;
+}
+.content-reveal .exp-item .role{color:var(--neon-pink);font-size:.85rem;margin-bottom:.3rem}
+.content-reveal .exp-item .period{color:rgba(255,255,255,.4);font-size:.75rem}
+.content-reveal .contact-link{
+  display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem;
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;margin-bottom:.6rem;color:#fff;text-decoration:none;
+  transition:all .3s;font-size:.9rem;
+}
+.content-reveal .contact-link:hover{
+  border-color:var(--gold);background:rgba(212,168,83,.1);
+}
+.content-reveal .contact-link .icon{font-size:1.3rem}
+
+/* === FULL PORTFOLIO (MEGA JACKPOT) === */
+.full-portfolio{
+  position:relative;z-index:10;max-width:800px;margin:0 auto;padding:0 1rem 4rem;
+}
+.full-portfolio .section{
+  margin-bottom:2rem;
+  animation:reveal-up .6s cubic-bezier(.16,1,.3,1) forwards;
+  opacity:0;transform:translateY(30px);
+}
+.full-portfolio .section:nth-child(2){animation-delay:.1s}
+.full-portfolio .section:nth-child(3){animation-delay:.2s}
+.full-portfolio .section:nth-child(4){animation-delay:.3s}
+.full-portfolio .section:nth-child(5){animation-delay:.4s}
+
+/* === CONFETTI === */
+.confetti-piece{
+  position:fixed;top:-10px;z-index:100;pointer-events:none;
+  animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall{
+  to{top:110vh;transform:rotate(var(--rot))}
+}
+
+/* === COIN CASCADE === */
+.coin{
+  position:fixed;top:-30px;z-index:100;pointer-events:none;
+  width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#FFD700,#D4A853,#B8860B);
+  border:2px solid #FFD700;
+  box-shadow:0 0 8px rgba(255,215,0,.5);
+  animation:coin-drop linear forwards;
+}
+@keyframes coin-drop{
+  0%{top:-30px;opacity:1}
+  80%{opacity:1}
+  100%{top:110vh;opacity:0}
+}
+
+/* === SCREEN FLASH === */
+.screen-flash{
+  position:fixed;inset:0;z-index:200;pointer-events:none;
+  background:rgba(255,215,0,.3);animation:flash-out .4s ease-out forwards;
+}
+@keyframes flash-out{to{opacity:0}}
+
+/* === WIN LINES (decorative flashing around reels) === */
+.win-line-effect .reel-window{
+  animation:win-glow .3s ease-in-out 5 alternate;
+}
+@keyframes win-glow{
+  0%{box-shadow:inset 0 0 20px rgba(0,0,0,.9),0 0 8px rgba(212,168,83,.15)}
+  100%{box-shadow:inset 0 0 10px rgba(255,215,0,.2),0 0 20px rgba(255,215,0,.5),0 0 40px rgba(255,215,0,.2)}
+}
+
+/* === SPIN COUNT === */
+.spin-counter{
+  text-align:center;padding:.5rem;font-size:.7rem;
+  color:rgba(255,255,255,.3);letter-spacing:.1em;
+  position:relative;z-index:10;
+}
+
+/* === FOOTER === */
+.footer{
+  text-align:center;padding:2rem 1rem;position:relative;z-index:10;
+  font-size:.7rem;color:rgba(255,255,255,.25);letter-spacing:.1em;
+}
+
+/* === RESPONSIVE === */
+@media(max-width:500px){
+  .reel-window{width:90px;height:150px}
+  .reel-item{width:90px;height:50px;font-size:1.8rem}
+  .reel-container{height:150px;gap:.3rem}
+  .reel-area{margin:0 .8rem;padding:.8rem}
+  .controls{padding:1rem .8rem}
+  .machine-bottom{padding:.6rem .8rem}
+  .content-reveal{padding:1.2rem}
+}
+</style>
+</head>
+<body>
+
+<canvas id="sparkle-canvas"></canvas>
+
+<header class="header">
+  <h1>Anshull Garg</h1>
+  <div class="sub">Software Developer &middot; Walmart</div>
+</header>
+
+<div class="credits-bar">
+  <div class="credit-box">Credits <span id="credit-count">99</span></div>
+  <div class="credit-box">Wins <span id="win-count">0</span></div>
+  <div class="credit-box">Spins <span id="spin-count">0</span></div>
+</div>
+
+<div class="machine-wrapper">
+  <div class="machine" id="machine">
+    <!-- Marquee lights injected via JS -->
+    <div class="marquee-lights" id="marquee-lights"></div>
+
+    <div class="machine-banner">
+      <h2>Lucky Portfolio 777</h2>
+    </div>
+
+    <div class="reel-area" id="reel-area">
+      <div class="payline-arrow left"></div>
+      <div class="payline-arrow right"></div>
+      <div class="reel-container" id="reel-container">
+        <div class="reel-window" id="reel-0">
+          <div class="center-line"></div>
+          <div class="reel-strip" id="strip-0"></div>
+        </div>
+        <div class="reel-window" id="reel-1">
+          <div class="center-line"></div>
+          <div class="reel-strip" id="strip-1"></div>
+        </div>
+        <div class="reel-window" id="reel-2">
+          <div class="center-line"></div>
+          <div class="reel-strip" id="strip-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="insert-coin" id="insert-coin">Insert Coin to Play</div>
+      <button class="spin-btn" id="spin-btn" style="display:none">Pull Lever</button>
+    </div>
+
+    <div class="machine-bottom">
+      <div class="rivets"><div class="rivet"></div><div class="rivet"></div><div class="rivet"></div></div>
+      <div class="payout-label">Max Payout: Full Portfolio</div>
+      <div class="rivets"><div class="rivet"></div><div class="rivet"></div><div class="rivet"></div></div>
+    </div>
+
+    <!-- Lever (visible on larger screens) -->
+    <div class="lever-container" id="lever" title="Pull the lever!">
+      <div class="lever-track">
+        <div class="lever-handle"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="win-display hidden" id="win-display"></div>
+
+<div class="full-portfolio" id="full-portfolio" style="display:none"></div>
+
+<div class="spin-counter" id="spin-tip"></div>
+
+<footer class="footer">
+  &copy; 2026 Anshull Garg &middot; This is not real gambling &middot; No actual money involved
+</footer>
+
+<script>
+(() => {
+  // === SYMBOLS ===
+  const SYMBOLS = [
+    { id: 'about',      icon: '\u{1F464}', label: 'About' },
+    { id: 'projects',   icon: '\u{1F4BB}', label: 'Projects' },
+    { id: 'skills',     icon: '\u{1F527}', label: 'Skills' },
+    { id: 'experience', icon: '\u{1F4CB}', label: 'Experience' },
+    { id: 'contact',    icon: '\u{1F4E7}', label: 'Contact' },
+    { id: 'jackpot',    icon: '\u2B50',    label: 'Jackpot' },
+  ];
+
+  // === PORTFOLIO DATA ===
+  const DATA = {
+    about: {
+      title: 'About Anshull Garg',
+      html: `
+        <p>Software Developer at <strong style="color:var(--neon-gold)">Walmart</strong>, building scalable systems that serve millions of customers daily. Passionate about clean architecture, performance optimization, and developer experience.</p>
+        <p>With a strong foundation in full-stack development, I bridge the gap between elegant user interfaces and robust backend systems. I thrive in fast-paced environments where engineering excellence meets real-world impact.</p>
+        <p>When not coding, you will find me exploring new technologies, contributing to open source, and mentoring aspiring developers.</p>
+        <div style="margin-top:1rem">
+          <span class="tag">Problem Solver</span>
+          <span class="tag">Team Player</span>
+          <span class="tag">Continuous Learner</span>
+          <span class="tag">Detail Oriented</span>
+        </div>
+      `
+    },
+    projects: {
+      title: 'Featured Projects',
+      html: `
+        <div class="project-card">
+          <h4>E-Commerce Platform Engine</h4>
+          <div class="tech">React, Node.js, GraphQL, Redis, Kubernetes</div>
+          <p>High-throughput product catalog and checkout system handling 50K+ concurrent users with sub-200ms response times and 99.9% uptime.</p>
+        </div>
+        <div class="project-card">
+          <h4>Real-Time Inventory Sync</h4>
+          <div class="tech">Kafka, Java, Spring Boot, PostgreSQL</div>
+          <p>Event-driven microservice architecture synchronizing inventory across 4,700+ stores in near real-time, reducing stock discrepancies by 40%.</p>
+        </div>
+        <div class="project-card">
+          <h4>Developer Productivity Toolkit</h4>
+          <div class="tech">TypeScript, VS Code API, GitHub Actions, Docker</div>
+          <p>Internal tooling suite that automated CI/CD pipelines, code quality checks, and deployment workflows, saving 15+ engineering hours per sprint.</p>
+        </div>
+        <div class="project-card">
+          <h4>Customer Analytics Dashboard</h4>
+          <div class="tech">React, D3.js, Python, BigQuery</div>
+          <p>Interactive data visualization platform processing 10M+ daily events, providing actionable insights to business stakeholders.</p>
+        </div>
+      `
+    },
+    skills: {
+      title: 'Technical Skills',
+      html: `
+        <p style="margin-bottom:1rem;color:rgba(255,255,255,.6);font-size:.85rem">Core technologies and areas of expertise</p>
+        <div>
+          <span class="tag">JavaScript</span><span class="tag">TypeScript</span>
+          <span class="tag">React</span><span class="tag">Next.js</span>
+          <span class="tag">Node.js</span><span class="tag">Java</span>
+          <span class="tag">Spring Boot</span><span class="tag">Python</span>
+          <span class="tag">GraphQL</span><span class="tag">REST APIs</span>
+          <span class="tag">PostgreSQL</span><span class="tag">MongoDB</span>
+          <span class="tag">Redis</span><span class="tag">Kafka</span>
+          <span class="tag">Docker</span><span class="tag">Kubernetes</span>
+          <span class="tag">AWS</span><span class="tag">GCP</span>
+          <span class="tag">CI/CD</span><span class="tag">Git</span>
+          <span class="tag">System Design</span><span class="tag">Microservices</span>
+          <span class="tag">Agile/Scrum</span><span class="tag">TDD</span>
+        </div>
+      `
+    },
+    experience: {
+      title: 'Professional Experience',
+      html: `
+        <div class="exp-item">
+          <h4>Walmart</h4>
+          <div class="role">Software Developer</div>
+          <div class="period">Present</div>
+          <p style="margin-top:.4rem">Building and scaling enterprise-grade e-commerce platforms serving millions of customers. Leading feature development for critical checkout and inventory management systems with focus on reliability and performance.</p>
+        </div>
+        <div class="exp-item">
+          <h4>Previous Experience</h4>
+          <div class="role">Full Stack Developer</div>
+          <div class="period">Prior Roles</div>
+          <p style="margin-top:.4rem">Developed responsive web applications, RESTful APIs, and data pipelines. Collaborated with cross-functional teams to ship user-facing features and internal tooling that improved operational efficiency.</p>
+        </div>
+      `
+    },
+    contact: {
+      title: 'Get In Touch',
+      html: `
+        <p style="margin-bottom:1rem;color:rgba(255,255,255,.6)">Interested in collaborating or just want to chat? Reach out through any of these channels.</p>
+        <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+          <span class="icon">\u{1F4E7}</span> anshullgarg@gmail.com
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" class="contact-link">
+          <span class="icon">\u{1F517}</span> linkedin.com/in/anshullgarg
+        </a>
+        <a href="https://github.com/anshullgarg" target="_blank" class="contact-link">
+          <span class="icon">\u{1F4BB}</span> github.com/anshullgarg
+        </a>
+      `
+    }
+  };
+
+  // === DOM REFS ===
+  const spinBtn       = document.getElementById('spin-btn');
+  const insertCoin    = document.getElementById('insert-coin');
+  const lever         = document.getElementById('lever');
+  const winDisplay    = document.getElementById('win-display');
+  const fullPortfolio = document.getElementById('full-portfolio');
+  const reelArea      = document.getElementById('reel-area');
+  const spinTip       = document.getElementById('spin-tip');
+  const creditEl      = document.getElementById('credit-count');
+  const winEl         = document.getElementById('win-count');
+  const spinCountEl   = document.getElementById('spin-count');
+
+  let credits   = 99;
+  let wins      = 0;
+  let spins     = 0;
+  let isSpinning = false;
+  let firstSpin  = true;
+  const reelResults = [0, 0, 0];
+
+  // === BUILD MARQUEE LIGHTS ===
+  function buildMarqueeLights() {
+    const container = document.getElementById('marquee-lights');
+    const machine = document.getElementById('machine');
+    const w = machine.offsetWidth + 12;
+    const h = machine.offsetHeight + 12;
+    const spacing = 28;
+    let i = 0;
+
+    // Top
+    for (let x = 0; x < w; x += spacing) {
+      const el = document.createElement('div');
+      el.className = 'marquee-light';
+      el.style.left = x + 'px';
+      el.style.top = '-3px';
+      el.style.animationDelay = (i * 0.1) + 's';
+      if (i % 2 === 0) el.style.background = 'var(--neon-pink)';
+      container.appendChild(el);
+      i++;
+    }
+    // Bottom
+    for (let x = 0; x < w; x += spacing) {
+      const el = document.createElement('div');
+      el.className = 'marquee-light';
+      el.style.left = x + 'px';
+      el.style.bottom = '-3px';
+      el.style.top = 'auto';
+      el.style.animationDelay = (i * 0.1) + 's';
+      if (i % 2 === 0) el.style.background = 'var(--neon-pink)';
+      container.appendChild(el);
+      i++;
+    }
+    // Left
+    for (let y = spacing; y < h - spacing; y += spacing) {
+      const el = document.createElement('div');
+      el.className = 'marquee-light';
+      el.style.left = '-3px';
+      el.style.top = y + 'px';
+      el.style.animationDelay = (i * 0.1) + 's';
+      if (i % 2 === 0) el.style.background = 'var(--neon-pink)';
+      container.appendChild(el);
+      i++;
+    }
+    // Right
+    for (let y = spacing; y < h - spacing; y += spacing) {
+      const el = document.createElement('div');
+      el.className = 'marquee-light';
+      el.style.right = '-3px';
+      el.style.left = 'auto';
+      el.style.top = y + 'px';
+      el.style.animationDelay = (i * 0.1) + 's';
+      if (i % 2 === 0) el.style.background = 'var(--neon-pink)';
+      container.appendChild(el);
+      i++;
+    }
+  }
+
+  // === BUILD REEL STRIPS ===
+  // Each strip: 3 copies of symbols (for seamless loop) + landing extras
+  const REEL_COPIES = 8; // enough copies for spin distance
+
+  function buildReels() {
+    for (let r = 0; r < 3; r++) {
+      const strip = document.getElementById('strip-' + r);
+      strip.innerHTML = '';
+      for (let c = 0; c < REEL_COPIES; c++) {
+        // Shuffle for variety each copy
+        const shuffled = [...SYMBOLS].sort(() => Math.random() - 0.5);
+        shuffled.forEach(sym => {
+          const item = document.createElement('div');
+          item.className = 'reel-item';
+          item.textContent = sym.icon;
+          item.dataset.id = sym.id;
+          const label = document.createElement('span');
+          label.className = 'reel-label';
+          label.textContent = sym.label;
+          item.appendChild(label);
+          strip.appendChild(item);
+        });
+      }
+    }
+    // Set initial position: show middle of first set
+    for (let r = 0; r < 3; r++) {
+      const strip = document.getElementById('strip-' + r);
+      const itemH = r === 0 ? getItemHeight() : getItemHeight();
+      // Center on symbol index 1 (second symbol)
+      strip.style.transform = `translateY(${-1 * itemH + itemH}px)`;
+    }
+  }
+
+  function getItemHeight() {
+    const win = document.querySelector('.reel-window');
+    return win.offsetHeight / 3; // 3 visible items, center is the payline
+  }
+
+  // === SPIN LOGIC ===
+  function spin() {
+    if (isSpinning) return;
+    if (credits <= 0) {
+      credits = 99;
+      creditEl.textContent = credits;
+    }
+
+    isSpinning = true;
+    spinBtn.classList.add('spinning');
+    spinBtn.textContent = 'Spinning...';
+
+    // Deduct credit
+    credits--;
+    spins++;
+    creditEl.textContent = credits;
+    spinCountEl.textContent = spins;
+
+    // Hide previous content
+    winDisplay.classList.add('hidden');
+    winDisplay.innerHTML = '';
+    fullPortfolio.style.display = 'none';
+    fullPortfolio.innerHTML = '';
+
+    // Decide results (weighted: jackpot star is rarer)
+    const results = [];
+    for (let i = 0; i < 3; i++) {
+      const rand = Math.random();
+      if (rand < 0.08) {
+        results.push(5); // jackpot star ~8%
+      } else {
+        results.push(Math.floor(Math.random() * 5)); // about, projects, skills, exp, contact
+      }
+    }
+
+    // Force a triple jackpot on spin 7 or every 15 spins for fun
+    if (spins === 7 || spins % 15 === 0) {
+      results[0] = results[1] = results[2] = 5;
+    }
+
+    // Animate each reel
+    const itemH = getItemHeight();
+    const baseSpinItems = SYMBOLS.length * 4; // spin through 4 full sets
+
+    for (let r = 0; r < 3; r++) {
+      const strip = document.getElementById('strip-' + r);
+      const targetSymIdx = results[r];
+      reelResults[r] = targetSymIdx;
+
+      // We need to land so that the target symbol is centered in the window.
+      // The center visible position is at offset = 1 item from top of window.
+      // Find a target item in a late copy
+      const allItems = strip.querySelectorAll('.reel-item');
+      let landingIdx = -1;
+      const startSearch = SYMBOLS.length * 5; // search in copy 5+
+      for (let j = startSearch; j < allItems.length; j++) {
+        if (allItems[j].dataset.id === SYMBOLS[targetSymIdx].id) {
+          landingIdx = j;
+          break;
+        }
+      }
+      if (landingIdx === -1) landingIdx = startSearch; // fallback
+
+      // offset so this item is in center (window shows 3 items, center = index 1)
+      const targetY = -(landingIdx - 1) * itemH;
+
+      // Spin animation
+      const delay = r * 500;
+      const duration = 1500 + r * 500;
+
+      strip.style.transition = 'none';
+      strip.style.transform = `translateY(${itemH}px)`;
+      strip.style.filter = 'blur(0px)';
+
+      setTimeout(() => {
+        // Start blur
+        strip.style.filter = 'blur(2px)';
+        strip.style.transition = `transform ${duration}ms cubic-bezier(.15,.85,.35,1), filter 0.2s`;
+        strip.style.transform = `translateY(${targetY}px)`;
+
+        // Remove blur near end
+        setTimeout(() => {
+          strip.style.filter = 'blur(0px)';
+        }, duration - 300);
+      }, delay + 50);
+    }
+
+    // After all reels stop
+    const totalTime = 1500 + 2 * 500 + 600;
+    setTimeout(() => {
+      evaluateResult(results);
+      isSpinning = false;
+      spinBtn.classList.remove('spinning');
+      spinBtn.textContent = 'Pull Lever';
+      lever.classList.remove('pulled');
+    }, totalTime);
+  }
+
+  // === EVALUATE RESULT ===
+  function evaluateResult(results) {
+    const [a, b, c] = results;
+    const allMatch = (a === b && b === c);
+
+    if (allMatch) {
+      wins++;
+      winEl.textContent = wins;
+
+      if (a === 5) {
+        // MEGA JACKPOT
+        showMegaJackpot();
+      } else {
+        // Section jackpot
+        const sym = SYMBOLS[a];
+        showSectionJackpot(sym);
+      }
+      // Win effects
+      reelArea.classList.add('win-line-effect');
+      screenFlash();
+      spawnCoins(allMatch && a === 5 ? 40 : 15);
+      if (a === 5) spawnConfetti(80);
+      setTimeout(() => reelArea.classList.remove('win-line-effect'), 3000);
+    } else {
+      // Show center reel content
+      const centerSym = SYMBOLS[b];
+      showSection(centerSym);
+    }
+
+    // Tip
+    if (spins < 7 && !allMatch) {
+      spinTip.textContent = `Tip: Match all 3 symbols for a JACKPOT! (Spin ${spins}/7 to guaranteed mega jackpot)`;
+    } else {
+      spinTip.textContent = '';
+    }
+  }
+
+  function showSection(sym) {
+    if (sym.id === 'jackpot') {
+      // Single star = random section
+      const keys = Object.keys(DATA);
+      const key = keys[Math.floor(Math.random() * keys.length)];
+      const data = DATA[key];
+      winDisplay.innerHTML = `
+        <div class="win-banner section">Lucky Star! Here is: ${data.title}</div>
+        <div class="content-reveal"><h3>${data.title}</h3>${data.html}</div>
+      `;
+    } else {
+      const data = DATA[sym.id];
+      winDisplay.innerHTML = `
+        <div class="win-banner section">${sym.icon} ${sym.label} Revealed</div>
+        <div class="content-reveal"><h3>${data.title}</h3>${data.html}</div>
+      `;
+    }
+    winDisplay.classList.remove('hidden');
+    winDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showSectionJackpot(sym) {
+    if (sym.id === 'jackpot') {
+      showMegaJackpot();
+      return;
+    }
+    const data = DATA[sym.id];
+    winDisplay.innerHTML = `
+      <div class="win-banner jackpot">${sym.icon}${sym.icon}${sym.icon} ${sym.label} JACKPOT! ${sym.icon}${sym.icon}${sym.icon}</div>
+      <div class="content-reveal"><h3>${data.title}</h3>${data.html}</div>
+    `;
+    winDisplay.classList.remove('hidden');
+    winDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showMegaJackpot() {
+    winDisplay.innerHTML = `
+      <div class="win-banner jackpot" style="font-size:clamp(1.5rem,4vw,2.5rem)">
+        \u2B50\u2B50\u2B50 MEGA JACKPOT \u2B50\u2B50\u2B50
+      </div>
+    `;
+    winDisplay.classList.remove('hidden');
+
+    // Build full portfolio
+    let html = '';
+    const sections = ['about', 'projects', 'skills', 'experience', 'contact'];
+    sections.forEach((key, i) => {
+      const data = DATA[key];
+      html += `
+        <div class="section">
+          <div class="content-reveal" style="animation-delay:${i * 0.15}s">
+            <h3>${data.title}</h3>
+            ${data.html}
+          </div>
+        </div>
+      `;
+    });
+    fullPortfolio.innerHTML = html;
+    fullPortfolio.style.display = 'block';
+
+    setTimeout(() => {
+      fullPortfolio.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 500);
+  }
+
+  // === EFFECTS ===
+  function screenFlash() {
+    const flash = document.createElement('div');
+    flash.className = 'screen-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 500);
+  }
+
+  function spawnCoins(count) {
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const coin = document.createElement('div');
+        coin.className = 'coin';
+        coin.style.left = (Math.random() * 100) + 'vw';
+        coin.style.animationDuration = (2 + Math.random() * 2) + 's';
+        coin.style.width = (12 + Math.random() * 16) + 'px';
+        coin.style.height = coin.style.width;
+        document.body.appendChild(coin);
+        setTimeout(() => coin.remove(), 4500);
+      }, i * 50);
+    }
+  }
+
+  function spawnConfetti(count) {
+    const colors = ['#FFD700', '#FF1493', '#CC2936', '#00FF41', '#fff', '#D4A853', '#FF6B6B', '#4ECDC4'];
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = (Math.random() * 100) + 'vw';
+        piece.style.width = (6 + Math.random() * 8) + 'px';
+        piece.style.height = (4 + Math.random() * 10) + 'px';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+        piece.style.opacity = 0.9;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 5500);
+      }, i * 30);
+    }
+  }
+
+  // === SPARKLE CANVAS ===
+  function initSparkles() {
+    const canvas = document.getElementById('sparkle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const COUNT = 50;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (let i = 0; i < COUNT; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random(),
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.02 + Math.random() * 0.03,
+        color: Math.random() > 0.5 ? '255,215,0' : '255,20,147',
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.pulse += p.pulseSpeed;
+        const alpha = (Math.sin(p.pulse) + 1) / 2 * 0.6 + 0.1;
+
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color},${alpha})`;
+        ctx.fill();
+
+        // Glow
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color},${alpha * 0.15})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // === EVENT LISTENERS ===
+
+  // Insert coin (first interaction)
+  insertCoin.addEventListener('click', () => {
+    if (!firstSpin) return;
+    firstSpin = false;
+    insertCoin.style.display = 'none';
+    spinBtn.style.display = 'inline-block';
+    spinBtn.style.animation = 'reveal-up .4s ease forwards';
+    // Play first spin automatically
+    setTimeout(spin, 300);
+  });
+
+  spinBtn.addEventListener('click', spin);
+
+  lever.addEventListener('click', () => {
+    if (firstSpin) {
+      firstSpin = false;
+      insertCoin.style.display = 'none';
+      spinBtn.style.display = 'inline-block';
+    }
+    if (isSpinning) return;
+    lever.classList.add('pulled');
+    setTimeout(spin, 300);
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'Enter') {
+      e.preventDefault();
+      if (firstSpin) {
+        insertCoin.click();
+      } else {
+        spin();
+      }
+    }
+  });
+
+  // === INIT ===
+  buildReels();
+  setTimeout(buildMarqueeLights, 100);
+  initSparkles();
+
+  // Rebuild on resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      document.getElementById('marquee-lights').innerHTML = '';
+      buildMarqueeLights();
+    }, 300);
+  });
+})();
+</script>
+</body>
+</html>
