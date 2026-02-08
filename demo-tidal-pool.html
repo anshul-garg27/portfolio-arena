@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tidal Pool | Anshull Garg</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --deep-water: #1A1A2E;
+  --sea-urchin: #6B3FA0;
+  --starfish: #E87040;
+  --kelp: #2E8B57;
+  --sandy-rock: #D4C5B0;
+  --pool-surface: #1e3a5f;
+  --pool-shallow: #2a5a7a;
+  --pool-deep: #0f2840;
+  --foam: rgba(255, 255, 255, 0.15);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--deep-water);
+  font-family: 'Inter', sans-serif;
+  color: #e0e8f0;
+  cursor: none;
+}
+
+/* Custom cursor */
+#cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px rgba(135,206,250,0.6), 0 0 24px rgba(135,206,250,0.3);
+  transition: width 0.2s, height 0.2s;
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border: 1.5px solid rgba(135,206,250,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s;
+}
+
+/* Main scene container */
+#scene {
+  width: 100vw; height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Rock bed / floor */
+#rockbed {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 70%, #3a3228 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, #4a3f35 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, #2a2520 0%, transparent 60%),
+    linear-gradient(135deg, #1a1612 0%, #2a2420 50%, #1a1815 100%);
+}
+
+/* Tidal Pool */
+#pool-container {
+  position: relative;
+  width: min(85vmin, 750px);
+  height: min(85vmin, 750px);
+}
+
+#pool {
+  position: absolute;
+  inset: 0;
+  border-radius: 48% 52% 45% 55% / 50% 46% 54% 50%;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 60px rgba(0,0,0,0.5),
+    inset 0 0 120px rgba(0,0,0,0.3),
+    0 0 40px rgba(0,0,0,0.6),
+    0 0 80px rgba(0,0,0,0.3);
+}
+
+/* Rock edge */
+#pool::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 20% 20%, var(--sandy-rock) 0%, transparent 30%),
+    radial-gradient(ellipse at 80% 30%, #c4b5a0 0%, transparent 25%),
+    radial-gradient(ellipse at 30% 80%, #b8a890 0%, transparent 28%),
+    radial-gradient(ellipse at 75% 75%, var(--sandy-rock) 0%, transparent 22%),
+    radial-gradient(ellipse at 50% 10%, #d4c0a0 0%, transparent 20%),
+    radial-gradient(ellipse at 10% 50%, #c8b8a0 0%, transparent 18%);
+  z-index: 5;
+  pointer-events: none;
+  mask: radial-gradient(ellipse at center, transparent 44%, black 48%, black 100%);
+  -webkit-mask: radial-gradient(ellipse at center, transparent 44%, black 48%, black 100%);
+}
+
+/* Pool water base */
+#pool-water {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 40% 35%, var(--pool-shallow) 0%, var(--pool-surface) 40%, var(--pool-deep) 100%);
+  z-index: 1;
+}
+
+/* Caustic light patterns */
+#caustics {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.12;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(135,206,250,0.6) 0%, transparent 20%),
+    radial-gradient(ellipse at 60% 25%, rgba(100,200,220,0.5) 0%, transparent 18%),
+    radial-gradient(ellipse at 45% 65%, rgba(135,206,250,0.4) 0%, transparent 22%),
+    radial-gradient(ellipse at 70% 60%, rgba(100,180,220,0.5) 0%, transparent 15%);
+  animation: causticShift 8s ease-in-out infinite alternate;
+}
+
+@keyframes causticShift {
+  0% { transform: scale(1) rotate(0deg); opacity: 0.10; }
+  33% { transform: scale(1.05) rotate(2deg); opacity: 0.15; }
+  66% { transform: scale(0.97) rotate(-1deg); opacity: 0.12; }
+  100% { transform: scale(1.03) rotate(1deg); opacity: 0.14; }
+}
+
+/* Second caustic layer */
+#caustics2 {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.08;
+  pointer-events: none;
+  background:
+    conic-gradient(from 45deg at 35% 45%, transparent 0deg, rgba(135,206,250,0.3) 30deg, transparent 60deg, rgba(100,220,200,0.2) 120deg, transparent 180deg, rgba(135,206,250,0.25) 240deg, transparent 300deg);
+  animation: causticShift2 12s ease-in-out infinite alternate;
+}
+
+@keyframes causticShift2 {
+  0% { transform: scale(1.1) rotate(0deg); }
+  100% { transform: scale(0.9) rotate(-8deg); }
+}
+
+/* Canvas for ripple effect */
+#ripple-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: soft-light;
+  opacity: 0.6;
+}
+
+/* Organisms container */
+#organisms {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+/* Base organism style */
+.organism {
+  position: absolute;
+  cursor: none;
+  transition: filter 0.4s ease;
+  z-index: 4;
+}
+
+.organism:hover {
+  z-index: 6;
+}
+
+.organism-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.organism:hover .organism-inner {
+  transform: scale(1.1) translateY(-5px);
+}
+
+.organism .label {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+
+.organism:hover .label {
+  opacity: 1;
+}
+
+/* === STARFISH === */
+.starfish {
+  width: 100px; height: 100px;
+  animation: starfishFloat 10s ease-in-out infinite;
+}
+
+.starfish-body {
+  width: 100%; height: 100%;
+  position: relative;
+}
+
+.starfish-arm {
+  position: absolute;
+  width: 16px;
+  height: 42px;
+  background: linear-gradient(to top, var(--starfish), #f09060);
+  border-radius: 8px 8px 4px 4px;
+  left: 50%;
+  top: 50%;
+  transform-origin: center bottom;
+  box-shadow: inset -2px 0 4px rgba(0,0,0,0.15);
+}
+
+.starfish-arm::after {
+  content: '';
+  position: absolute;
+  width: 4px; height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  top: 8px; left: 4px;
+}
+
+.starfish-arm:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); }
+.starfish-arm:nth-child(2) { transform: translate(-50%, -100%) rotate(72deg); }
+.starfish-arm:nth-child(3) { transform: translate(-50%, -100%) rotate(144deg); }
+.starfish-arm:nth-child(4) { transform: translate(-50%, -100%) rotate(216deg); }
+.starfish-arm:nth-child(5) { transform: translate(-50%, -100%) rotate(288deg); }
+
+.starfish-center {
+  position: absolute;
+  width: 22px; height: 22px;
+  background: radial-gradient(circle, #f0a070 0%, var(--starfish) 100%);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(232,112,64,0.4);
+}
+
+.starfish-dots {
+  position: absolute;
+  inset: 0;
+}
+
+.starfish-dot {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: rgba(255,200,150,0.5);
+  border-radius: 50%;
+}
+
+@keyframes starfishFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5px, -3px) rotate(3deg); }
+  50% { transform: translate(-3px, 5px) rotate(-2deg); }
+  75% { transform: translate(4px, 2px) rotate(4deg); }
+}
+
+/* === SEA ANEMONE === */
+.anemone {
+  width: 80px; height: 90px;
+  animation: anemoneFloat 12s ease-in-out infinite;
+}
+
+.anemone-base {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px; height: 20px;
+  background: radial-gradient(ellipse, #8b5cc0 0%, var(--sea-urchin) 100%);
+  border-radius: 50%;
+}
+
+.anemone-tentacle {
+  position: absolute;
+  bottom: 14px;
+  width: 3px;
+  background: linear-gradient(to top, var(--sea-urchin), #9b6fd0);
+  border-radius: 2px;
+  transform-origin: bottom center;
+  transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s;
+}
+
+.anemone:hover .anemone-tentacle {
+  height: 12px !important;
+  opacity: 0.6;
+}
+
+.anemone-tip {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px; height: 6px;
+  background: radial-gradient(circle, #c090e0, #9b6fd0);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(155,111,208,0.5);
+}
+
+@keyframes anemoneFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-2px, 3px); }
+}
+
+/* === HERMIT CRAB === */
+.hermit-crab {
+  width: 70px; height: 55px;
+  animation: crabWalk 15s ease-in-out infinite;
+}
+
+.crab-shell {
+  position: absolute;
+  width: 34px; height: 28px;
+  background: radial-gradient(ellipse at 40% 30%, #c4a882, #8b7355, #6b5540);
+  border-radius: 50% 50% 40% 40%;
+  top: 5px; left: 18px;
+  box-shadow: inset -3px -2px 6px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.crab-shell::before {
+  content: '';
+  position: absolute;
+  width: 8px; height: 6px;
+  background: rgba(180,160,130,0.4);
+  border-radius: 50%;
+  top: 6px; left: 8px;
+  transform: rotate(-15deg);
+}
+
+.crab-body {
+  position: absolute;
+  width: 22px; height: 14px;
+  background: radial-gradient(ellipse, #d4956a, #b87850);
+  border-radius: 50%;
+  bottom: 8px; left: 10px;
+}
+
+.crab-leg {
+  position: absolute;
+  width: 14px; height: 2px;
+  background: #c48060;
+  border-radius: 1px;
+  bottom: 10px;
+  animation: crabLegMove 1.2s ease-in-out infinite alternate;
+}
+
+.crab-leg:nth-child(3) { left: -6px; transform: rotate(-30deg); animation-delay: 0s; }
+.crab-leg:nth-child(4) { left: -4px; bottom: 14px; transform: rotate(-15deg); animation-delay: 0.2s; }
+.crab-leg:nth-child(5) { right: 28px; transform: rotate(30deg); animation-delay: 0.1s; }
+.crab-leg:nth-child(6) { right: 26px; bottom: 14px; transform: rotate(15deg); animation-delay: 0.3s; }
+
+.crab-eye {
+  position: absolute;
+  width: 4px; height: 6px;
+  background: #222;
+  border-radius: 50%;
+  bottom: 18px;
+}
+.crab-eye.left { left: 8px; }
+.crab-eye.right { left: 18px; }
+
+.crab-claw {
+  position: absolute;
+  width: 10px; height: 8px;
+  border: 2px solid #c48060;
+  border-radius: 50% 50% 0 0;
+  bottom: 6px;
+  border-bottom: none;
+}
+.crab-claw.left { left: -8px; transform: rotate(-20deg); }
+.crab-claw.right { right: 28px; transform: rotate(20deg) scaleX(-1); }
+
+@keyframes crabWalk {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(8px, -2px); }
+  50% { transform: translate(4px, 4px); }
+  75% { transform: translate(-4px, 1px); }
+}
+
+@keyframes crabLegMove {
+  0% { transform: rotate(-30deg); }
+  100% { transform: rotate(-20deg); }
+}
+
+/* === SMALL FISH === */
+.fish-group {
+  width: 120px; height: 80px;
+}
+
+.small-fish {
+  position: absolute;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fish-body {
+  width: 28px; height: 12px;
+  background: linear-gradient(to right, #40b0a0, #2d9a8a);
+  border-radius: 60% 40% 40% 60%;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.fish-body::before {
+  content: '';
+  position: absolute;
+  right: -8px; top: 1px;
+  width: 0; height: 0;
+  border-left: 10px solid #2d9a8a;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.fish-eye {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: white;
+  border-radius: 50%;
+  top: 3px; left: 5px;
+}
+
+.fish-eye::after {
+  content: '';
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #111;
+  border-radius: 50%;
+  top: 1px; left: 1px;
+}
+
+.small-fish:nth-child(1) { top: 10px; left: 20px; animation: fishSwim1 6s ease-in-out infinite; }
+.small-fish:nth-child(2) { top: 30px; left: 50px; animation: fishSwim2 7s ease-in-out infinite; }
+.small-fish:nth-child(3) { top: 45px; left: 10px; animation: fishSwim3 5.5s ease-in-out infinite; }
+
+@keyframes fishSwim1 {
+  0%, 100% { transform: translate(0, 0) scaleX(1); }
+  30% { transform: translate(15px, -5px) scaleX(1); }
+  50% { transform: translate(20px, 0) scaleX(1); }
+  70% { transform: translate(10px, 5px) scaleX(1); }
+}
+
+@keyframes fishSwim2 {
+  0%, 100% { transform: translate(0, 0) scaleX(-1); }
+  40% { transform: translate(-12px, 3px) scaleX(-1); }
+  80% { transform: translate(5px, -4px) scaleX(-1); }
+}
+
+@keyframes fishSwim3 {
+  0%, 100% { transform: translate(0, 0) scaleX(1); }
+  50% { transform: translate(8px, -8px) scaleX(1); }
+}
+
+/* === JELLYFISH === */
+.jellyfish {
+  width: 70px; height: 90px;
+  animation: jellyfishBob 8s ease-in-out infinite;
+}
+
+.jelly-bell {
+  width: 50px; height: 35px;
+  background: radial-gradient(ellipse at 40% 30%, rgba(180,160,220,0.5), rgba(120,100,180,0.3), rgba(80,60,140,0.2));
+  border-radius: 50% 50% 30% 30%;
+  margin: 0 auto;
+  position: relative;
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(180,160,220,0.2);
+  box-shadow: 0 0 15px rgba(120,100,180,0.2), inset 0 -5px 10px rgba(120,100,180,0.15);
+  animation: jellyPulse 3s ease-in-out infinite;
+}
+
+.jelly-bell::before {
+  content: '';
+  position: absolute;
+  width: 12px; height: 8px;
+  background: rgba(200,180,240,0.3);
+  border-radius: 50%;
+  top: 8px; left: 12px;
+}
+
+.jelly-tentacles {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding-top: 2px;
+}
+
+.jelly-tent {
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(160,140,200,0.4), rgba(140,120,180,0.1));
+  border-radius: 1px;
+  animation: tentWave 3s ease-in-out infinite;
+}
+
+.jelly-tent:nth-child(1) { height: 35px; animation-delay: 0s; }
+.jelly-tent:nth-child(2) { height: 45px; animation-delay: 0.2s; }
+.jelly-tent:nth-child(3) { height: 38px; animation-delay: 0.4s; }
+.jelly-tent:nth-child(4) { height: 42px; animation-delay: 0.1s; }
+.jelly-tent:nth-child(5) { height: 36px; animation-delay: 0.3s; }
+.jelly-tent:nth-child(6) { height: 40px; animation-delay: 0.5s; }
+
+@keyframes jellyPulse {
+  0%, 100% { transform: scaleX(1) scaleY(1); }
+  50% { transform: scaleX(1.08) scaleY(0.92); }
+}
+
+@keyframes tentWave {
+  0%, 100% { transform: translateX(0) skewX(0deg); }
+  25% { transform: translateX(3px) skewX(5deg); }
+  75% { transform: translateX(-3px) skewX(-5deg); }
+}
+
+@keyframes jellyfishBob {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -8px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(4px, -5px); }
+}
+
+/* === SEA URCHIN === */
+.sea-urchin {
+  width: 60px; height: 60px;
+  animation: urchinSit 10s ease-in-out infinite;
+}
+
+.urchin-body {
+  width: 30px; height: 24px;
+  background: radial-gradient(ellipse at 40% 30%, #4a3570, #2a1845);
+  border-radius: 50%;
+  margin: 15px auto 0;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.urchin-spine {
+  position: absolute;
+  width: 1.5px;
+  background: linear-gradient(to top, #3a2560, #6a4590);
+  left: 50%;
+  top: 50%;
+  transform-origin: bottom center;
+  border-radius: 1px;
+}
+
+@keyframes urchinSit {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(1px, 1px) rotate(2deg); }
+}
+
+/* === SEAWEED === */
+.seaweed {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.seaweed-blade {
+  width: 8px;
+  background: linear-gradient(to top, #1a5a3a, var(--kelp), #3aab6a);
+  border-radius: 4px 4px 2px 2px;
+  position: absolute;
+  bottom: 0;
+  transform-origin: bottom center;
+  animation: seaweedSway 4s ease-in-out infinite;
+}
+
+@keyframes seaweedSway {
+  0%, 100% { transform: rotate(-5deg) skewX(-2deg); }
+  50% { transform: rotate(5deg) skewX(2deg); }
+}
+
+/* === BUBBLES === */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.15);
+  z-index: 5;
+  pointer-events: none;
+  animation: bubbleRise linear forwards;
+}
+
+@keyframes bubbleRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-40vh) scale(1.1); opacity: 0.5; }
+  100% { transform: translateY(-80vh) scale(0.6); opacity: 0; }
+}
+
+/* === TIDE SLIDER === */
+#tide-control {
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#tide-control .tide-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--sandy-rock);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  opacity: 0.7;
+}
+
+#tide-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 160px;
+  height: 4px;
+  background: linear-gradient(to right, var(--pool-deep), var(--pool-shallow), var(--sandy-rock));
+  border-radius: 2px;
+  outline: none;
+  transform: rotate(-90deg);
+  cursor: none;
+}
+
+#tide-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px; height: 20px;
+  background: radial-gradient(circle, #87ceeb, #4a90b0);
+  border-radius: 50%;
+  cursor: none;
+  box-shadow: 0 0 10px rgba(135,206,235,0.4);
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+#tide-level-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  color: rgba(135,206,235,0.6);
+  letter-spacing: 1px;
+}
+
+/* === DETAIL OVERLAY === */
+#detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#detail-overlay.active {
+  pointer-events: all;
+  opacity: 1;
+}
+
+#detail-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+#detail-card {
+  position: relative;
+  max-width: 480px;
+  width: 90%;
+  background: linear-gradient(145deg, rgba(30, 58, 95, 0.95), rgba(15, 40, 64, 0.95));
+  border: 1px solid rgba(135, 206, 235, 0.15);
+  border-radius: 20px;
+  padding: 40px;
+  transform: translateY(40px) scale(0.9);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.4),
+    0 0 40px rgba(135,206,235,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+#detail-overlay.active #detail-card {
+  transform: translateY(0) scale(1);
+}
+
+#detail-card .detail-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+#detail-card h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #e0f0ff;
+}
+
+#detail-card .detail-role {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--starfish);
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+#detail-card p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(200, 220, 240, 0.8);
+  margin-bottom: 12px;
+}
+
+#detail-card .detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+#detail-card .detail-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(135,206,235,0.1);
+  border: 1px solid rgba(135,206,235,0.15);
+  color: rgba(135,206,235,0.8);
+}
+
+#detail-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.5);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+#detail-close:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+/* === HEADER === */
+#header {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  text-align: center;
+  pointer-events: none;
+}
+
+#header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sandy-rock);
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+#header .subtitle {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(135,206,235,0.5);
+}
+
+/* === FOOTER HINT === */
+#footer-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  text-align: center;
+  pointer-events: none;
+}
+
+#footer-hint span {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: rgba(135,206,235,0.35);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* === WATER SURFACE OVERLAY === */
+#water-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(135,206,250,0.03) 0%, transparent 50%, rgba(135,206,250,0.02) 100%);
+  border-radius: inherit;
+  transition: opacity 0.5s;
+}
+
+/* Tide water level overlay */
+#tide-water {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    rgba(15, 40, 64, 0.0) 0%,
+    rgba(15, 40, 64, 0.0) 40%,
+    rgba(15, 40, 64, 0.85) 100%
+  );
+  border-radius: inherit;
+  transition: opacity 0.8s ease;
+  opacity: 0;
+}
+
+/* Sandy bottom details */
+.sand-grain {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(180, 160, 130, 0.08);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Organism tide visibility */
+.organism[data-tide-reveal] {
+  transition: opacity 0.8s ease, transform 0.8s ease, filter 0.4s ease;
+}
+
+/* Loading animation */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--deep-water);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  transition: opacity 0.8s ease;
+}
+
+#loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-wave {
+  display: flex;
+  gap: 4px;
+}
+
+.loading-wave span {
+  width: 4px;
+  height: 16px;
+  background: var(--pool-shallow);
+  border-radius: 2px;
+  animation: loadWave 1s ease-in-out infinite;
+}
+
+.loading-wave span:nth-child(2) { animation-delay: 0.1s; }
+.loading-wave span:nth-child(3) { animation-delay: 0.2s; }
+.loading-wave span:nth-child(4) { animation-delay: 0.3s; }
+.loading-wave span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes loadWave {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(2.5); opacity: 1; }
+}
+
+#loading-screen p {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(135,206,235,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #pool-container {
+    width: 90vmin;
+    height: 90vmin;
+  }
+  #tide-control {
+    right: 10px;
+  }
+  #detail-card {
+    padding: 28px;
+  }
+  #detail-card h2 {
+    font-size: 20px;
+  }
+  .organism .label {
+    font-size: 9px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-wave">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p>Tide Coming In</p>
+</div>
+
+<!-- Custom cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- Header -->
+<div id="header">
+  <h1>Anshull Garg</h1>
+  <div class="subtitle">Software Developer &middot; Walmart</div>
+</div>
+
+<!-- Tide slider -->
+<div id="tide-control">
+  <div class="tide-label">High</div>
+  <input type="range" id="tide-slider" min="0" max="100" value="30">
+  <div class="tide-label">Low</div>
+  <div id="tide-level-label">30%</div>
+</div>
+
+<!-- Main scene -->
+<div id="scene">
+  <div id="rockbed"></div>
+  <div id="pool-container">
+    <div id="pool">
+      <div id="pool-water"></div>
+      <div id="caustics"></div>
+      <div id="caustics2"></div>
+      <canvas id="ripple-canvas"></canvas>
+      <div id="organisms"></div>
+      <div id="water-surface"></div>
+      <div id="tide-water"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail overlay -->
+<div id="detail-overlay">
+  <div id="detail-backdrop"></div>
+  <div id="detail-card">
+    <button id="detail-close" aria-label="Close">&times;</button>
+    <span class="detail-icon"></span>
+    <h2></h2>
+    <div class="detail-role"></div>
+    <p class="detail-desc"></p>
+    <p class="detail-extra"></p>
+    <div class="detail-tags"></div>
+  </div>
+</div>
+
+<!-- Footer hint -->
+<div id="footer-hint">
+  <span>Move cursor to create ripples &middot; Click creatures to explore &middot; Slide tide to reveal</span>
+</div>
+
+<script>
+// ========== CONFIGURATION ==========
+const ORGANISMS_DATA = [
+  {
+    id: 'starfish',
+    type: 'starfish',
+    name: 'Featured Project',
+    x: 42, y: 38,
+    tideReveal: 0,
+    detail: {
+      icon: '\u2B50',
+      title: 'Walmart E-Commerce Platform',
+      role: 'Lead Frontend Developer',
+      desc: 'Architected and built high-performance React components powering Walmart\'s e-commerce experience, serving millions of customers daily. Implemented micro-frontend architecture reducing bundle size by 40% and improving page load times significantly.',
+      extra: 'Led a team of 5 engineers, established coding standards and review processes. Drove adoption of TypeScript across the frontend codebase.',
+      tags: ['React', 'TypeScript', 'Micro-Frontends', 'Performance', 'A/B Testing', 'CI/CD']
+    }
+  },
+  {
+    id: 'anemone',
+    type: 'anemone',
+    name: 'Side Project',
+    x: 65, y: 28,
+    tideReveal: 0,
+    detail: {
+      icon: '\uD83C\uDF3A',
+      title: 'Open Source Design System',
+      role: 'Creator & Maintainer',
+      desc: 'Built and maintain a comprehensive React component library with 50+ accessible, themeable components. Used by multiple teams across the organization to ensure UI consistency.',
+      extra: 'Fully documented with Storybook, 95%+ test coverage, and automated visual regression testing. Published as an internal npm package.',
+      tags: ['React', 'Storybook', 'Accessibility', 'Design Tokens', 'Jest', 'Chromatic']
+    }
+  },
+  {
+    id: 'hermit-crab',
+    type: 'hermit-crab',
+    name: 'Skills',
+    x: 28, y: 60,
+    tideReveal: 40,
+    detail: {
+      icon: '\uD83E\uDD80',
+      title: 'Technical Skills',
+      role: 'Full Stack Expertise',
+      desc: 'JavaScript/TypeScript, React, Next.js, Node.js, Python, GraphQL, REST APIs, SQL/NoSQL databases, AWS/GCP, Docker, Kubernetes, CI/CD pipelines, and system design.',
+      extra: 'Strong focus on performance optimization, accessibility (WCAG 2.1), responsive design, and building scalable frontend architectures. Experience with agile methodologies and cross-functional collaboration.',
+      tags: ['React', 'TypeScript', 'Node.js', 'GraphQL', 'AWS', 'Docker', 'System Design', 'Accessibility']
+    }
+  },
+  {
+    id: 'fish',
+    type: 'fish',
+    name: 'About Me',
+    x: 55, y: 58,
+    tideReveal: 20,
+    detail: {
+      icon: '\uD83D\uDC1F',
+      title: 'About Anshull',
+      role: 'Software Developer at Walmart',
+      desc: 'Passionate software developer with expertise in building scalable, user-centric web applications. Currently at Walmart, working on high-impact e-commerce features that reach millions of users worldwide.',
+      extra: 'When not coding, I enjoy exploring new technologies, contributing to open source, and mentoring junior developers. I believe in writing clean, maintainable code and creating delightful user experiences.',
+      tags: ['Problem Solver', 'Team Player', 'Mentor', 'Open Source', 'Continuous Learner']
+    }
+  },
+  {
+    id: 'jellyfish',
+    type: 'jellyfish',
+    name: 'Experience',
+    x: 35, y: 22,
+    tideReveal: 10,
+    detail: {
+      icon: '\uD83E\uDEBC',
+      title: 'Professional Experience',
+      role: 'Career Journey',
+      desc: 'Software Developer at Walmart -- Building next-generation e-commerce experiences with React, TypeScript, and modern web technologies. Delivered features impacting 100M+ monthly active users.',
+      extra: 'Previously worked on enterprise SaaS products and full-stack web applications. Experienced in agile development, code reviews, technical mentorship, and cross-functional stakeholder communication.',
+      tags: ['Walmart', 'E-Commerce', 'Enterprise SaaS', 'Full Stack', 'Leadership']
+    }
+  },
+  {
+    id: 'urchin',
+    type: 'urchin',
+    name: 'Contact',
+    x: 72, y: 55,
+    tideReveal: 50,
+    detail: {
+      icon: '\uD83D\uDCEC',
+      title: 'Get In Touch',
+      role: 'Let\'s Connect',
+      desc: 'I\'m always open to discussing new opportunities, interesting projects, or just having a chat about technology. Feel free to reach out through any of the channels below.',
+      extra: 'GitHub: github.com/anshullgarg | LinkedIn: linkedin.com/in/anshullgarg | Email: hello@anshullgarg.dev',
+      tags: ['GitHub', 'LinkedIn', 'Email', 'Open to Opportunities']
+    }
+  },
+  {
+    id: 'kelp-project',
+    type: 'kelp-organism',
+    name: 'Data Pipeline',
+    x: 18, y: 40,
+    tideReveal: 60,
+    detail: {
+      icon: '\uD83C\uDF3F',
+      title: 'Real-Time Data Pipeline',
+      role: 'Backend / Infrastructure',
+      desc: 'Designed and implemented a real-time data processing pipeline handling 10K+ events per second for inventory management. Built with Node.js streams, Kafka, and Redis for low-latency processing.',
+      extra: 'Reduced data propagation latency from minutes to under 500ms. Implemented circuit breakers and dead letter queues for fault tolerance.',
+      tags: ['Node.js', 'Kafka', 'Redis', 'Streaming', 'Event-Driven', 'Monitoring']
+    }
+  },
+  {
+    id: 'coral',
+    type: 'coral-organism',
+    name: 'API Gateway',
+    x: 75, y: 40,
+    tideReveal: 70,
+    detail: {
+      icon: '\uD83E\uDEB8',
+      title: 'GraphQL API Gateway',
+      role: 'API Architecture',
+      desc: 'Built a unified GraphQL gateway aggregating 15+ microservices into a single, type-safe API. Implemented DataLoader for efficient batching, reducing database queries by 60%.',
+      extra: 'Features include automatic schema stitching, rate limiting, authentication middleware, and comprehensive request tracing with OpenTelemetry.',
+      tags: ['GraphQL', 'Apollo', 'Federation', 'DataLoader', 'OpenTelemetry', 'Security']
+    }
+  }
+];
+
+// ========== GLOBALS ==========
+let mouseX = 0, mouseY = 0;
+let poolRect = null;
+let tideLevel = 30;
+let activeOrganism = null;
+let fishScattered = false;
+let animFrame = null;
+
+// ========== CURSOR ==========
+const cursorDot = document.getElementById('cursor-dot');
+const cursorRing = document.getElementById('cursor-ring');
+let cursorX = 0, cursorY = 0;
+let ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursorX = e.clientX;
+  cursorY = e.clientY;
+});
+
+function updateCursor() {
+  cursorDot.style.left = cursorX + 'px';
+  cursorDot.style.top = cursorY + 'px';
+
+  ringX += (cursorX - ringX) * 0.15;
+  ringY += (cursorY - ringY) * 0.15;
+  cursorRing.style.left = ringX + 'px';
+  cursorRing.style.top = ringY + 'px';
+  requestAnimationFrame(updateCursor);
+}
+updateCursor();
+
+// ========== RIPPLE CANVAS ==========
+const canvas = document.getElementById('ripple-canvas');
+const ctx = canvas.getContext('2d');
+let ripples = [];
+
+function resizeCanvas() {
+  const pool = document.getElementById('pool');
+  const rect = pool.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  poolRect = rect;
+}
+
+function addRipple(x, y) {
+  ripples.push({
+    x, y,
+    radius: 2,
+    maxRadius: 40 + Math.random() * 30,
+    opacity: 0.5,
+    speed: 0.8 + Math.random() * 0.4
+  });
+  if (ripples.length > 25) ripples.shift();
+}
+
+let lastRippleTime = 0;
+document.addEventListener('mousemove', (e) => {
+  if (!poolRect) return;
+  const now = Date.now();
+  if (now - lastRippleTime < 80) return;
+
+  const px = e.clientX - poolRect.left;
+  const py = e.clientY - poolRect.top;
+
+  // Check if inside pool (rough ellipse check)
+  const cx = poolRect.width / 2;
+  const cy = poolRect.height / 2;
+  const dx = (px - cx) / cx;
+  const dy = (py - cy) / cy;
+  if (dx * dx + dy * dy < 0.9) {
+    addRipple(px, py);
+    lastRippleTime = now;
+  }
+});
+
+function drawRipples() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    const r = ripples[i];
+    r.radius += r.speed;
+    r.opacity -= 0.008;
+
+    if (r.opacity <= 0 || r.radius >= r.maxRadius) {
+      ripples.splice(i, 1);
+      continue;
+    }
+
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(180, 220, 255, ${r.opacity})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Inner ripple
+    if (r.radius > 8) {
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.radius * 0.6, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(180, 220, 255, ${r.opacity * 0.4})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+  requestAnimationFrame(drawRipples);
+}
+
+// ========== BUILD ORGANISMS ==========
+const organismsContainer = document.getElementById('organisms');
+
+function buildStarfish(data) {
+  const el = document.createElement('div');
+  el.className = 'organism starfish';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div class="starfish-body">
+        <div class="starfish-arm"></div>
+        <div class="starfish-arm"></div>
+        <div class="starfish-arm"></div>
+        <div class="starfish-arm"></div>
+        <div class="starfish-arm"></div>
+        <div class="starfish-center"></div>
+        <div class="starfish-dots">
+          <div class="starfish-dot" style="top:15px;left:30px"></div>
+          <div class="starfish-dot" style="top:25px;left:60px"></div>
+          <div class="starfish-dot" style="top:60px;left:45px"></div>
+          <div class="starfish-dot" style="top:50px;left:25px"></div>
+          <div class="starfish-dot" style="top:35px;left:50px"></div>
+        </div>
+      </div>
+      <div class="label" style="color: var(--starfish);">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildAnemone(data) {
+  const el = document.createElement('div');
+  el.className = 'organism anemone';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+
+  let tentacles = '';
+  for (let i = 0; i < 12; i++) {
+    const left = 18 + (i * 3.5);
+    const height = 30 + Math.random() * 25;
+    const delay = (i * 0.15).toFixed(2);
+    tentacles += `<div class="anemone-tentacle" style="left:${left}px;height:${height}px;animation-delay:${delay}s"><div class="anemone-tip"></div></div>`;
+  }
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      ${tentacles}
+      <div class="anemone-base"></div>
+      <div class="label" style="color: var(--sea-urchin);">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildHermitCrab(data) {
+  const el = document.createElement('div');
+  el.className = 'organism hermit-crab';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div class="crab-shell"></div>
+      <div class="crab-body"></div>
+      <div class="crab-leg"></div>
+      <div class="crab-leg"></div>
+      <div class="crab-leg"></div>
+      <div class="crab-leg"></div>
+      <div class="crab-eye left"></div>
+      <div class="crab-eye right"></div>
+      <div class="crab-claw left"></div>
+      <div class="crab-claw right"></div>
+      <div class="label" style="color: var(--sandy-rock);">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildFish(data) {
+  const el = document.createElement('div');
+  el.className = 'organism fish-group';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div class="small-fish">
+        <div class="fish-body"><div class="fish-eye"></div></div>
+      </div>
+      <div class="small-fish">
+        <div class="fish-body"><div class="fish-eye"></div></div>
+      </div>
+      <div class="small-fish">
+        <div class="fish-body"><div class="fish-eye"></div></div>
+      </div>
+      <div class="label" style="color: #40b0a0;">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildJellyfish(data) {
+  const el = document.createElement('div');
+  el.className = 'organism jellyfish';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div class="jelly-bell"></div>
+      <div class="jelly-tentacles">
+        <div class="jelly-tent"></div>
+        <div class="jelly-tent"></div>
+        <div class="jelly-tent"></div>
+        <div class="jelly-tent"></div>
+        <div class="jelly-tent"></div>
+        <div class="jelly-tent"></div>
+      </div>
+      <div class="label" style="color: rgba(180,160,220,0.8);">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildUrchin(data) {
+  const el = document.createElement('div');
+  el.className = 'organism sea-urchin';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+
+  let spines = '';
+  for (let i = 0; i < 16; i++) {
+    const angle = (i / 16) * 360;
+    const height = 12 + Math.random() * 8;
+    spines += `<div class="urchin-spine" style="height:${height}px;transform:translate(-50%,-100%) rotate(${angle}deg)"></div>`;
+  }
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div class="urchin-body">
+        ${spines}
+      </div>
+      <div class="label" style="color: #6a4590;">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildKelpOrganism(data) {
+  const el = document.createElement('div');
+  el.className = 'organism';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+  el.style.width = '50px';
+  el.style.height = '70px';
+  el.style.animation = 'seaweedSway 5s ease-in-out infinite';
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div style="position:relative;width:100%;height:100%;">
+        <div style="position:absolute;bottom:0;left:10px;width:10px;height:55px;background:linear-gradient(to top,#1a5a3a,var(--kelp),#4aab6a);border-radius:5px;transform-origin:bottom center;animation:seaweedSway 3.5s ease-in-out infinite;"></div>
+        <div style="position:absolute;bottom:0;left:22px;width:8px;height:45px;background:linear-gradient(to top,#1a5a3a,var(--kelp));border-radius:4px;transform-origin:bottom center;animation:seaweedSway 4s ease-in-out infinite 0.3s;"></div>
+        <div style="position:absolute;bottom:0;left:34px;width:7px;height:38px;background:linear-gradient(to top,#1a5a3a,#3a9b5a);border-radius:4px;transform-origin:bottom center;animation:seaweedSway 3.8s ease-in-out infinite 0.6s;"></div>
+        <div style="position:absolute;bottom:2px;left:5px;width:40px;height:8px;background:radial-gradient(ellipse,rgba(100,80,60,0.3),transparent);border-radius:50%;"></div>
+      </div>
+      <div class="label" style="color: var(--kelp);">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildCoralOrganism(data) {
+  const el = document.createElement('div');
+  el.className = 'organism';
+  el.dataset.id = data.id;
+  el.dataset.tideReveal = data.tideReveal;
+  el.style.left = data.x + '%';
+  el.style.top = data.y + '%';
+  el.style.transform = 'translate(-50%, -50%)';
+  el.style.width = '60px';
+  el.style.height = '50px';
+  el.style.animation = 'urchinSit 12s ease-in-out infinite';
+
+  el.innerHTML = `
+    <div class="organism-inner">
+      <div style="position:relative;width:100%;height:100%;">
+        <div style="position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:44px;height:30px;background:radial-gradient(ellipse at 50% 70%,#c06050,#a04535,#803828);border-radius:40% 40% 20% 20%;box-shadow:inset 0 -4px 8px rgba(0,0,0,0.2);"></div>
+        <div style="position:absolute;bottom:18px;left:8px;width:12px;height:18px;background:radial-gradient(ellipse,#d07060,#b05545);border-radius:50% 50% 30% 30%;transform:rotate(-10deg);"></div>
+        <div style="position:absolute;bottom:20px;right:10px;width:10px;height:15px;background:radial-gradient(ellipse,#d07060,#b05545);border-radius:50% 50% 30% 30%;transform:rotate(8deg);"></div>
+        <div style="position:absolute;bottom:25px;left:50%;transform:translateX(-50%);width:8px;height:14px;background:radial-gradient(ellipse,#e08070,#c06050);border-radius:50% 50% 30% 30%;"></div>
+      </div>
+      <div class="label" style="color: #d07060;">${data.name}</div>
+    </div>
+  `;
+  return el;
+}
+
+const builders = {
+  'starfish': buildStarfish,
+  'anemone': buildAnemone,
+  'hermit-crab': buildHermitCrab,
+  'fish': buildFish,
+  'jellyfish': buildJellyfish,
+  'urchin': buildUrchin,
+  'kelp-organism': buildKelpOrganism,
+  'coral-organism': buildCoralOrganism
+};
+
+// Build all organisms
+ORGANISMS_DATA.forEach(data => {
+  const builder = builders[data.type];
+  if (builder) {
+    const el = builder(data);
+    el.addEventListener('click', () => showDetail(data));
+    organismsContainer.appendChild(el);
+  }
+});
+
+// ========== SEAWEED DECORATIONS ==========
+function addSeaweed() {
+  const positions = [
+    { x: 8, y: 70, h: 60 },
+    { x: 12, y: 80, h: 45 },
+    { x: 85, y: 75, h: 55 },
+    { x: 90, y: 65, h: 40 },
+    { x: 50, y: 88, h: 50 },
+    { x: 15, y: 30, h: 35 },
+    { x: 82, y: 20, h: 42 },
+  ];
+
+  positions.forEach((pos, i) => {
+    const sw = document.createElement('div');
+    sw.className = 'seaweed';
+    sw.style.left = pos.x + '%';
+    sw.style.top = pos.y + '%';
+
+    for (let j = 0; j < 2 + Math.floor(Math.random() * 2); j++) {
+      const blade = document.createElement('div');
+      blade.className = 'seaweed-blade';
+      blade.style.height = (pos.h * (0.6 + Math.random() * 0.4)) + 'px';
+      blade.style.left = (j * 8) + 'px';
+      blade.style.animationDelay = (j * 0.5 + i * 0.3) + 's';
+      blade.style.animationDuration = (3.5 + Math.random() * 2) + 's';
+      blade.style.opacity = 0.6 + Math.random() * 0.3;
+      sw.appendChild(blade);
+    }
+
+    organismsContainer.appendChild(sw);
+  });
+}
+addSeaweed();
+
+// ========== SAND GRAINS ==========
+function addSandGrains() {
+  const poolWater = document.getElementById('pool-water');
+  for (let i = 0; i < 30; i++) {
+    const grain = document.createElement('div');
+    grain.className = 'sand-grain';
+    grain.style.width = (2 + Math.random() * 4) + 'px';
+    grain.style.height = grain.style.width;
+    grain.style.left = (10 + Math.random() * 80) + '%';
+    grain.style.top = (10 + Math.random() * 80) + '%';
+    grain.style.opacity = 0.03 + Math.random() * 0.06;
+    poolWater.appendChild(grain);
+  }
+}
+addSandGrains();
+
+// ========== BUBBLES ==========
+function spawnBubble() {
+  const pool = document.getElementById('pool');
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  const size = 3 + Math.random() * 8;
+  bubble.style.width = size + 'px';
+  bubble.style.height = size + 'px';
+  bubble.style.left = (15 + Math.random() * 70) + '%';
+  bubble.style.bottom = '10%';
+  bubble.style.animationDuration = (3 + Math.random() * 4) + 's';
+  bubble.style.zIndex = '5';
+  pool.appendChild(bubble);
+
+  setTimeout(() => bubble.remove(), 7000);
+}
+
+setInterval(spawnBubble, 2000 + Math.random() * 3000);
+// Initial burst
+setTimeout(() => { spawnBubble(); spawnBubble(); }, 1500);
+
+// ========== TIDE CONTROL ==========
+const tideSlider = document.getElementById('tide-slider');
+const tideLevelLabel = document.getElementById('tide-level-label');
+const tideWater = document.getElementById('tide-water');
+
+function updateTide(level) {
+  tideLevel = level;
+  tideLevelLabel.textContent = level + '%';
+
+  // Update water overlay opacity based on tide (high tide = more water)
+  const highTideOpacity = level / 100;
+  tideWater.style.opacity = highTideOpacity * 0.6;
+
+  // Update caustic intensity
+  document.getElementById('caustics').style.opacity = 0.08 + (level / 100) * 0.08;
+
+  // Show/hide organisms based on tide
+  document.querySelectorAll('.organism[data-tide-reveal]').forEach(org => {
+    const revealAt = parseInt(org.dataset.tideReveal);
+    // Low tide (low slider value) reveals MORE creatures
+    // Creatures with high tideReveal need low tide to be seen
+    const invertedTide = 100 - level;
+    if (invertedTide >= revealAt) {
+      org.style.opacity = '1';
+      org.style.transform = org.style.transform.replace(/scale\([^)]*\)/, '') + '';
+      org.style.pointerEvents = 'all';
+    } else {
+      const diff = revealAt - invertedTide;
+      if (diff < 20) {
+        org.style.opacity = String(1 - diff / 20);
+        org.style.pointerEvents = 'all';
+      } else {
+        org.style.opacity = '0';
+        org.style.pointerEvents = 'none';
+      }
+    }
+  });
+
+  // Pool color shifts
+  const poolWater = document.getElementById('pool-water');
+  const deepness = level / 100;
+  poolWater.style.background = `radial-gradient(ellipse at 40% 35%,
+    hsl(200, ${40 + deepness * 20}%, ${25 - deepness * 8}%) 0%,
+    hsl(205, ${35 + deepness * 15}%, ${20 - deepness * 6}%) 40%,
+    hsl(210, ${40 + deepness * 20}%, ${15 - deepness * 5}%) 100%)`;
+}
+
+tideSlider.addEventListener('input', (e) => {
+  updateTide(parseInt(e.target.value));
+});
+
+// ========== FISH SCATTER ==========
+function updateFishScatter() {
+  const fishEl = document.querySelector('[data-id="fish"]');
+  if (!fishEl || !poolRect) return;
+
+  const fishRect = fishEl.getBoundingClientRect();
+  const fishCX = fishRect.left + fishRect.width / 2;
+  const fishCY = fishRect.top + fishRect.height / 2;
+  const dist = Math.hypot(mouseX - fishCX, mouseY - fishCY);
+
+  const fishes = fishEl.querySelectorAll('.small-fish');
+  if (dist < 100) {
+    const angle = Math.atan2(mouseY - fishCY, mouseX - fishCX);
+    fishes.forEach((fish, i) => {
+      const scatter = 20 + i * 10;
+      const a = angle + Math.PI + (i - 1) * 0.5;
+      fish.style.transform = `translate(${Math.cos(a) * scatter}px, ${Math.sin(a) * scatter}px)`;
+    });
+    fishScattered = true;
+  } else if (fishScattered && dist > 140) {
+    fishes.forEach(fish => {
+      fish.style.transform = '';
+    });
+    fishScattered = false;
+  }
+
+  requestAnimationFrame(updateFishScatter);
+}
+
+// ========== DETAIL OVERLAY ==========
+const detailOverlay = document.getElementById('detail-overlay');
+const detailCard = document.getElementById('detail-card');
+const detailBackdrop = document.getElementById('detail-backdrop');
+const detailClose = document.getElementById('detail-close');
+
+function showDetail(data) {
+  const d = data.detail;
+  detailCard.querySelector('.detail-icon').textContent = d.icon;
+  detailCard.querySelector('h2').textContent = d.title;
+  detailCard.querySelector('.detail-role').textContent = d.role;
+  detailCard.querySelector('.detail-desc').textContent = d.desc;
+  detailCard.querySelector('.detail-extra').textContent = d.extra;
+
+  const tagsContainer = detailCard.querySelector('.detail-tags');
+  tagsContainer.innerHTML = '';
+  d.tags.forEach(tag => {
+    const tagEl = document.createElement('span');
+    tagEl.className = 'detail-tag';
+    tagEl.textContent = tag;
+    tagsContainer.appendChild(tagEl);
+  });
+
+  // Color accent based on type
+  const colors = {
+    'starfish': 'var(--starfish)',
+    'anemone': 'var(--sea-urchin)',
+    'hermit-crab': 'var(--sandy-rock)',
+    'fish': '#40b0a0',
+    'jellyfish': 'rgba(180,160,220,0.8)',
+    'urchin': '#6a4590',
+    'kelp-organism': 'var(--kelp)',
+    'coral-organism': '#d07060'
+  };
+
+  const accent = colors[data.type] || 'var(--starfish)';
+  detailCard.querySelector('.detail-role').style.color = accent;
+  detailCard.style.borderColor = accent.replace(')', ',0.2)').replace('rgb', 'rgba').replace('var(', '');
+  if (accent.startsWith('var(')) {
+    detailCard.style.borderColor = 'rgba(135,206,235,0.15)';
+    detailCard.querySelector('.detail-role').style.color = accent;
+  }
+
+  detailOverlay.classList.add('active');
+}
+
+function hideDetail() {
+  detailOverlay.classList.remove('active');
+}
+
+detailClose.addEventListener('click', hideDetail);
+detailBackdrop.addEventListener('click', hideDetail);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') hideDetail();
+});
+
+// ========== LOADING ==========
+window.addEventListener('load', () => {
+  resizeCanvas();
+
+  setTimeout(() => {
+    document.getElementById('loading-screen').classList.add('fade-out');
+    setTimeout(() => {
+      document.getElementById('loading-screen').style.display = 'none';
+    }, 800);
+  }, 1200);
+
+  drawRipples();
+  updateFishScatter();
+  updateTide(30);
+
+  // Initial bubbles
+  setTimeout(spawnBubble, 500);
+  setTimeout(spawnBubble, 800);
+  setTimeout(spawnBubble, 1100);
+});
+
+window.addEventListener('resize', resizeCanvas);
+
+// ========== AMBIENT ANIMATIONS ==========
+// Periodically add extra caustic shimmer
+setInterval(() => {
+  const caustics = document.getElementById('caustics');
+  caustics.style.opacity = (0.08 + Math.random() * 0.06) + '';
+}, 4000);
+
+// Gentle organism position drift (for organisms that don't have their own keyframe animation)
+let driftTime = 0;
+function driftOrganisms() {
+  driftTime += 0.005;
+  document.querySelectorAll('.organism').forEach((org, i) => {
+    if (!org.style.animation && !org.className.includes('starfish') &&
+        !org.className.includes('anemone') && !org.className.includes('hermit') &&
+        !org.className.includes('jellyfish') && !org.className.includes('fish') &&
+        !org.className.includes('urchin')) {
+      // Already handled by CSS animation
+    }
+  });
+  requestAnimationFrame(driftOrganisms);
+}
+driftOrganisms();
+</script>
+</body>
+</html>

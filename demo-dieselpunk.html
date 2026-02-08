@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG -- Industrial-Grade Software Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;600&family=Stencil&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DIESELPUNK PORTFOLIO -- INDUSTRIAL FUTURISM ca. 1943
+   "YOUR SKILLS ARE NEEDED FOR THE WAR EFFORT"
+   ============================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --soot: #2C2C2C;
+  --soot-dark: #1a1a1a;
+  --soot-light: #3a3a3a;
+  --brass: #8B6914;
+  --brass-light: #c49b2a;
+  --brass-dark: #6b5010;
+  --sepia: #704214;
+  --copper: #B87333;
+  --copper-light: #d4945a;
+  --aged-paper: #D4C5A9;
+  --aged-paper-dark: #b8a88a;
+  --warning-yellow: #d4a017;
+  --warning-black: #1a1a1a;
+  --rust: #8b4513;
+  --chrome: #c0c0c0;
+  --chrome-dark: #888;
+  --oil: #1c1c1c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--soot);
+  color: var(--aged-paper);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   RIVET TEXTURE BACKGROUND
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    /* Rivet pattern */
+    radial-gradient(circle 3px at 40px 40px, #555 2px, transparent 2.5px),
+    radial-gradient(circle 3px at 40px 40px, #333 3px, transparent 3.5px),
+    /* Brushed metal texture */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.01) 2px,
+      rgba(255,255,255,0.01) 4px
+    ),
+    /* Base */
+    linear-gradient(180deg, #2a2a2a 0%, #222 50%, #1e1e1e 100%);
+  background-size: 80px 80px, 80px 80px, 4px 4px, 100% 100%;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* ============================================================
+   STEAM / SMOKE PARTICLES
+   ============================================================ */
+.steam-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.steam-particle {
+  position: absolute;
+  bottom: -50px;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(200,200,200,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: steamRise linear infinite;
+}
+
+@keyframes steamRise {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  50% { opacity: 0.3; }
+  100% {
+    transform: translateY(-110vh) scale(3) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3, h4 {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.stencil-label {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: var(--warning-yellow);
+}
+
+/* Metallic text effect */
+.metallic-text {
+  background: linear-gradient(
+    180deg,
+    var(--brass-light) 0%,
+    var(--brass) 30%,
+    var(--copper) 50%,
+    var(--brass-dark) 70%,
+    var(--brass-light) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+
+.copper-text {
+  background: linear-gradient(
+    180deg,
+    var(--copper-light) 0%,
+    var(--copper) 40%,
+    var(--sepia) 80%,
+    var(--copper-light) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   NAVIGATION -- TOP PIPE RAIL
+   ============================================================ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, #333 0%, #2a2a2a 40%, #222 100%);
+  border-bottom: 3px solid var(--brass);
+  box-shadow:
+    0 2px 0 var(--brass-dark),
+    0 4px 20px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  padding: 0;
+}
+
+nav::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0; right: 0;
+  height: 5px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--brass-dark) 0px,
+    var(--brass-dark) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 30px;
+}
+
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--brass-light);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo .bolt {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #aaa, #555 60%, #333);
+  border: 2px solid #666;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.nav-logo .bolt::after {
+  content: '+';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: #444;
+  font-weight: 900;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--aged-paper-dark);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.nav-links a:hover {
+  color: var(--brass-light);
+  border-color: var(--brass);
+  background: rgba(139,105,20,0.1);
+}
+
+.nav-links a::before {
+  content: '//';
+  margin-right: 4px;
+  color: var(--brass);
+  opacity: 0.5;
+}
+
+/* ============================================================
+   WARNING STRIPE UTILITY
+   ============================================================ */
+.warning-stripe {
+  height: 12px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--warning-yellow) 0px,
+    var(--warning-yellow) 10px,
+    var(--warning-black) 10px,
+    var(--warning-black) 20px
+  );
+  opacity: 0.8;
+}
+
+/* ============================================================
+   METAL PLATE SECTION DIVIDER
+   ============================================================ */
+.plate-divider {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+.plate-divider-inner {
+  height: 8px;
+  background: linear-gradient(180deg, #555 0%, #444 40%, #333 100%);
+  border-radius: 2px;
+  position: relative;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.plate-divider-inner::before,
+.plate-divider-inner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #888, #444 60%, #333);
+  border: 2px solid #555;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.plate-divider-inner::before { left: 20px; }
+.plate-divider-inner::after { right: 20px; }
+
+/* ============================================================
+   HERO SECTION -- PROPAGANDA POSTER
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 30px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Industrial light beams */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(184,115,51,0.08) 0%,
+    rgba(139,105,20,0.04) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-block;
+  border: 2px solid var(--brass);
+  padding: 6px 24px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.hero-badge::before,
+.hero-badge::after {
+  content: '';
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--brass-light), var(--brass-dark));
+}
+
+.hero-badge::before { left: -4px; }
+.hero-badge::after { right: -4px; }
+
+.hero-badge span {
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.65rem;
+  color: var(--brass-light);
+  font-weight: 700;
+}
+
+.hero-propaganda {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--copper);
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  margin-bottom: 10px;
+}
+
+.hero-name {
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.95;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.hero-tagline {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.hero-tagline .bracket {
+  color: var(--copper);
+  font-size: 1.5em;
+  vertical-align: middle;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--aged-paper-dark);
+  max-width: 500px;
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.hero-subtitle strong {
+  color: var(--copper-light);
+  font-weight: 600;
+}
+
+/* Valve wheel decoration */
+.valve-wheel {
+  width: 80px;
+  height: 80px;
+  margin: 20px auto;
+  position: relative;
+  animation: valveRotate 20s linear infinite;
+}
+
+@keyframes valveRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.valve-wheel svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Pipe decorations */
+.pipe-left, .pipe-right {
+  position: absolute;
+  top: 50%;
+  width: 120px;
+  height: 20px;
+  background: linear-gradient(180deg, #555 0%, #444 30%, #333 70%, #2a2a2a 100%);
+  border: 1px solid #666;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 3px 6px rgba(0,0,0,0.4);
+}
+
+.pipe-left {
+  left: 5%;
+  transform: translateY(-50%);
+  border-radius: 0 10px 10px 0;
+}
+
+.pipe-right {
+  right: 5%;
+  transform: translateY(-50%);
+  border-radius: 10px 0 0 10px;
+}
+
+.pipe-left::after, .pipe-right::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  width: 12px;
+  height: 28px;
+  background: linear-gradient(90deg, #666, #444);
+  border: 1px solid #777;
+  border-radius: 2px;
+}
+
+.pipe-left::after { right: 15px; }
+.pipe-right::after { left: 15px; }
+
+/* CTA Button */
+.cta-btn {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.85rem;
+  color: var(--soot);
+  background: linear-gradient(180deg, var(--brass-light) 0%, var(--brass) 50%, var(--brass-dark) 100%);
+  padding: 14px 40px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  box-shadow:
+    0 4px 0 var(--brass-dark),
+    0 6px 20px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: all 0.2s;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 var(--brass-dark),
+    0 8px 25px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.cta-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 var(--brass-dark),
+    0 3px 10px rgba(0,0,0,0.4);
+}
+
+/* ============================================================
+   SECTION FRAMES -- ART DECO INDUSTRIAL
+   ============================================================ */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.section-frame {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 80px 30px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brass) 20%, var(--brass) 80%, transparent);
+  z-index: 0;
+}
+
+.section-title-plate {
+  display: inline-block;
+  background: var(--soot);
+  padding: 10px 40px;
+  position: relative;
+  z-index: 1;
+  border: 2px solid var(--brass);
+  box-shadow: 0 0 0 4px var(--soot), 0 0 0 5px var(--brass-dark);
+}
+
+.section-title-plate h2 {
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.section-title-plate .corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--brass);
+}
+
+.section-title-plate .corner.tl { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+.section-title-plate .corner.tr { top: -3px; right: -3px; border-left: none; border-bottom: none; }
+.section-title-plate .corner.bl { bottom: -3px; left: -3px; border-right: none; border-top: none; }
+.section-title-plate .corner.br { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+.section-subtitle {
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.65rem;
+  color: var(--copper);
+  margin-top: 15px;
+}
+
+/* ============================================================
+   SKILL GAUGES -- INDUSTRIAL DIALS
+   ============================================================ */
+.gauges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.gauge-unit {
+  text-align: center;
+}
+
+.gauge-container {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 15px;
+  position: relative;
+}
+
+.gauge-container svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: #3a3a3a;
+  stroke-width: 8;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: butt;
+  transition: stroke-dashoffset 2s ease-out;
+}
+
+.gauge-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #444, #2a2a2a 70%);
+  border: 3px solid #555;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,0.5),
+    0 2px 4px rgba(0,0,0,0.3);
+}
+
+.gauge-value {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--brass-light);
+  line-height: 1;
+}
+
+.gauge-unit-label {
+  font-size: 0.5rem;
+  color: var(--chrome-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.gauge-name {
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--aged-paper-dark);
+}
+
+.gauge-category {
+  font-size: 0.6rem;
+  color: var(--copper);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+
+/* Needle */
+.gauge-needle {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  width: 2px;
+  height: 55px;
+  background: linear-gradient(to top, var(--copper-light), var(--copper));
+  transform-origin: bottom center;
+  transition: transform 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 2;
+  box-shadow: 0 0 6px rgba(184,115,51,0.4);
+}
+
+.gauge-needle::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--copper-light), var(--copper));
+  border: 1px solid var(--brass-dark);
+}
+
+/* ============================================================
+   PROJECTS -- BLUEPRINT CARDS
+   ============================================================ */
+.blueprints-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.blueprint-card {
+  background: var(--aged-paper);
+  color: var(--soot);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+
+.blueprint-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 8px 0 rgba(0,0,0,0.4);
+}
+
+/* Aged paper texture overlay */
+.blueprint-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 24px,
+      rgba(112,66,20,0.08) 24px,
+      rgba(112,66,20,0.08) 25px
+    ),
+    radial-gradient(ellipse at 80% 20%, rgba(112,66,20,0.1), transparent 50%);
+  pointer-events: none;
+}
+
+/* Corner fold */
+.blueprint-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 30px; height: 30px;
+  background: linear-gradient(225deg, var(--soot) 50%, var(--aged-paper-dark) 50%);
+}
+
+.blueprint-stamp {
+  position: absolute;
+  top: 10px; right: 40px;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.6rem;
+  color: var(--rust);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  border: 2px solid var(--rust);
+  padding: 2px 8px;
+  transform: rotate(3deg);
+  opacity: 0.7;
+}
+
+.blueprint-number {
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  color: var(--sepia);
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+
+.blueprint-card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--soot);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.blueprint-card p {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.blueprint-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.blueprint-tag {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border: 1px solid var(--sepia);
+  color: var(--sepia);
+  font-weight: 700;
+}
+
+/* ============================================================
+   EXPERIENCE TIMELINE -- ASSEMBLY LINE CONVEYOR
+   ============================================================ */
+.conveyor-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.conveyor-track {
+  position: relative;
+  padding: 20px 0;
+}
+
+/* Main conveyor belt line */
+.conveyor-track::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #555, #444);
+  transform: translateX(-50%);
+  box-shadow:
+    -3px 0 0 #333,
+    3px 0 0 #333,
+    inset 0 0 4px rgba(0,0,0,0.5);
+}
+
+.conveyor-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.conveyor-item:nth-child(odd) {
+  flex-direction: row;
+}
+
+.conveyor-item:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.conveyor-content {
+  width: calc(50% - 40px);
+  background: linear-gradient(135deg, #333 0%, #2a2a2a 100%);
+  border: 1px solid #555;
+  padding: 25px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.conveyor-content::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brass), var(--copper), var(--brass));
+}
+
+/* Gear connector on the line */
+.conveyor-gear {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle at 35% 35%, var(--brass-light), var(--brass-dark));
+  border-radius: 50%;
+  border: 3px solid #555;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conveyor-gear::after {
+  content: '+';
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--soot);
+}
+
+.conveyor-content h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.conveyor-content .role {
+  color: var(--copper-light);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.conveyor-content .period {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--brass-light);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--brass);
+}
+
+.conveyor-content p {
+  font-size: 0.85rem;
+  color: var(--aged-paper-dark);
+  line-height: 1.7;
+}
+
+.conveyor-content ul {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.conveyor-content ul li {
+  font-size: 0.8rem;
+  color: var(--aged-paper-dark);
+  padding: 3px 0;
+  padding-left: 18px;
+  position: relative;
+}
+
+.conveyor-content ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 8px;
+  height: 2px;
+  background: var(--copper);
+}
+
+/* ============================================================
+   ABOUT SECTION -- DOSSIER STYLE
+   ============================================================ */
+.dossier {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.dossier-file {
+  background: linear-gradient(135deg, #333 0%, #2a2a2a 100%);
+  border: 1px solid #555;
+  padding: 30px;
+  position: relative;
+}
+
+.dossier-file::before {
+  content: 'CLASSIFIED';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.55rem;
+  color: var(--rust);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  border: 1px solid var(--rust);
+  padding: 2px 8px;
+  opacity: 0.6;
+}
+
+.dossier-file h3 {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #555;
+}
+
+.dossier-file p {
+  font-size: 0.85rem;
+  color: var(--aged-paper-dark);
+  line-height: 1.8;
+}
+
+.dossier-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.stat-plate {
+  background: linear-gradient(135deg, #3a3a3a, #2e2e2e);
+  border: 1px solid #555;
+  padding: 18px;
+  text-align: center;
+  position: relative;
+}
+
+.stat-plate::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #777, #444);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.stat-value {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aged-paper-dark);
+}
+
+/* ============================================================
+   CONTACT -- TRANSMISSION PANEL
+   ============================================================ */
+.transmission-panel {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.transmission-panel p {
+  font-size: 0.95rem;
+  color: var(--aged-paper-dark);
+  margin-bottom: 30px;
+  line-height: 1.8;
+}
+
+.contact-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.channel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: var(--aged-paper);
+  padding: 14px 30px;
+  border: 1px solid #555;
+  background: linear-gradient(135deg, #333 0%, #2a2a2a 100%);
+  transition: all 0.3s;
+  min-width: 320px;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.channel-link::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(139,105,20,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.channel-link:hover::before {
+  left: 100%;
+}
+
+.channel-link:hover {
+  border-color: var(--brass);
+  color: var(--brass-light);
+  transform: translateX(4px);
+}
+
+.channel-icon {
+  font-size: 1.2rem;
+  width: 30px;
+  text-align: center;
+}
+
+.channel-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+}
+
+/* ============================================================
+   FOOTER -- INDUSTRIAL PLATE
+   ============================================================ */
+footer {
+  text-align: center;
+  padding: 40px 30px;
+  background: linear-gradient(180deg, var(--soot) 0%, #1a1a1a 100%);
+  border-top: 3px solid var(--brass-dark);
+  position: relative;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 12px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--warning-yellow) 0px,
+    var(--warning-yellow) 10px,
+    var(--warning-black) 10px,
+    var(--warning-black) 20px
+  );
+  opacity: 0.5;
+}
+
+.footer-emblem {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--brass-light), var(--brass-dark) 70%);
+  border: 3px solid #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--soot);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+footer p {
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--chrome-dark);
+  margin: 5px 0;
+}
+
+footer .copyright {
+  color: var(--aged-paper-dark);
+  margin-top: 10px;
+}
+
+/* ============================================================
+   SCROLL ANIMATIONS
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+
+  .hero { padding: 80px 20px 40px; }
+
+  .pipe-left, .pipe-right { display: none; }
+
+  .gauges-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  .gauge-container {
+    width: 130px;
+    height: 130px;
+  }
+
+  .blueprints-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .conveyor-track::before { left: 20px; }
+
+  .conveyor-item,
+  .conveyor-item:nth-child(even) {
+    flex-direction: column;
+    padding-left: 50px;
+  }
+
+  .conveyor-content {
+    width: 100%;
+  }
+
+  .conveyor-gear {
+    left: 20px;
+    top: 0;
+  }
+
+  .dossier {
+    grid-template-columns: 1fr;
+  }
+
+  .channel-link {
+    min-width: 100%;
+  }
+
+  .section-frame {
+    padding: 50px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gauges-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .gauge-container {
+    width: 110px;
+    height: 110px;
+  }
+
+  .gauge-center {
+    width: 50px;
+    height: 50px;
+  }
+
+  .gauge-value { font-size: 0.85rem; }
+
+  .dossier-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   PRESSURE GAUGE ANIMATION
+   ============================================================ */
+@keyframes pressurePulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+}
+
+.gauge-fill {
+  animation: pressurePulse 4s ease-in-out infinite;
+}
+
+/* ============================================================
+   MOBILE NAV TOGGLE
+   ============================================================ */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 2px solid var(--brass);
+  color: var(--brass-light);
+  padding: 6px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 768px) {
+  .nav-toggle { display: block; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: #2a2a2a;
+    padding: 15px 30px;
+    border-bottom: 2px solid var(--brass);
+    gap: 10px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STEAM PARTICLES
+     ============================================================ -->
+<div class="steam-container" id="steamContainer"></div>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="bolt"></div>
+      A. GARG
+    </div>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle navigation">
+      [MENU]
+    </button>
+    <ul class="nav-links">
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#about">Dossier</a></li>
+      <li><a href="#contact">Transmit</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO SECTION -- PROPAGANDA POSTER
+     ============================================================ -->
+<section class="hero" id="hero">
+  <div class="pipe-left"></div>
+  <div class="pipe-right"></div>
+
+  <div class="hero-badge">
+    <span>Industrial-Grade Software Engineering</span>
+  </div>
+
+  <p class="hero-propaganda">Attention -- Your Skills Are Needed</p>
+
+  <h1 class="hero-name metallic-text">Anshull Garg</h1>
+
+  <p class="hero-tagline copper-text">
+    <span class="bracket">[</span>
+    Software Developer
+    <span class="bracket">]</span>
+  </p>
+
+  <p class="hero-subtitle">
+    Forging robust digital machinery at <strong>Walmart</strong>.
+    Heavy-duty code engineered for scale, precision, and relentless performance.
+  </p>
+
+  <!-- Valve Wheel -->
+  <div class="valve-wheel">
+    <svg viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="28" fill="none" stroke="#555" stroke-width="4"/>
+      <circle cx="40" cy="40" r="10" fill="#444" stroke="#666" stroke-width="2"/>
+      <line x1="40" y1="12" x2="40" y2="28" stroke="#666" stroke-width="5" stroke-linecap="round"/>
+      <line x1="40" y1="52" x2="40" y2="68" stroke="#666" stroke-width="5" stroke-linecap="round"/>
+      <line x1="12" y1="40" x2="28" y2="40" stroke="#666" stroke-width="5" stroke-linecap="round"/>
+      <line x1="52" y1="40" x2="68" y2="40" stroke="#666" stroke-width="5" stroke-linecap="round"/>
+      <line x1="20" y1="20" x2="29" y2="29" stroke="#666" stroke-width="4" stroke-linecap="round"/>
+      <line x1="51" y1="51" x2="60" y2="60" stroke="#666" stroke-width="4" stroke-linecap="round"/>
+      <line x1="60" y1="20" x2="51" y2="29" stroke="#666" stroke-width="4" stroke-linecap="round"/>
+      <line x1="29" y1="51" x2="20" y2="60" stroke="#666" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <a href="#contact" class="cta-btn">Initiate Transmission</a>
+</section>
+
+<!-- Warning Stripe Divider -->
+<div class="warning-stripe"></div>
+
+<!-- ============================================================
+     SKILLS -- GAUGE DIALS
+     ============================================================ -->
+<section id="skills">
+  <div class="section-frame">
+    <div class="section-header reveal">
+      <div class="section-title-plate">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <h2 class="metallic-text">Operational Capabilities</h2>
+      </div>
+      <p class="section-subtitle">Engineering Proficiency Gauges -- Calibrated Output</p>
+    </div>
+
+    <div class="gauges-grid">
+      <!-- Gauge 1: React -->
+      <div class="gauge-unit reveal" data-skill="92">
+        <div class="gauge-container">
+          <svg viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="65" stroke-dasharray="220 408" stroke-dashoffset="-94"/>
+            <circle class="gauge-fill" cx="80" cy="80" r="65" stroke="url(#brassGrad)" stroke-dasharray="0 408" stroke-dashoffset="-94" data-target="202"/>
+          </svg>
+          <div class="gauge-needle" style="transform: rotate(-135deg)" data-target-angle="109"></div>
+          <div class="gauge-center">
+            <span class="gauge-value">92</span>
+            <span class="gauge-unit-label">PSI</span>
+          </div>
+        </div>
+        <p class="gauge-name">React.js</p>
+        <p class="gauge-category">Frontend Engine</p>
+      </div>
+
+      <!-- Gauge 2: Java -->
+      <div class="gauge-unit reveal" data-skill="88">
+        <div class="gauge-container">
+          <svg viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="65" stroke-dasharray="220 408" stroke-dashoffset="-94"/>
+            <circle class="gauge-fill" cx="80" cy="80" r="65" stroke="url(#copperGrad)" stroke-dasharray="0 408" stroke-dashoffset="-94" data-target="194"/>
+          </svg>
+          <div class="gauge-needle" style="transform: rotate(-135deg)" data-target-angle="103"></div>
+          <div class="gauge-center">
+            <span class="gauge-value">88</span>
+            <span class="gauge-unit-label">PSI</span>
+          </div>
+        </div>
+        <p class="gauge-name">Java / Spring</p>
+        <p class="gauge-category">Core Machinery</p>
+      </div>
+
+      <!-- Gauge 3: TypeScript -->
+      <div class="gauge-unit reveal" data-skill="90">
+        <div class="gauge-container">
+          <svg viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="65" stroke-dasharray="220 408" stroke-dashoffset="-94"/>
+            <circle class="gauge-fill" cx="80" cy="80" r="65" stroke="url(#brassGrad)" stroke-dasharray="0 408" stroke-dashoffset="-94" data-target="198"/>
+          </svg>
+          <div class="gauge-needle" style="transform: rotate(-135deg)" data-target-angle="108"></div>
+          <div class="gauge-center">
+            <span class="gauge-value">90</span>
+            <span class="gauge-unit-label">PSI</span>
+          </div>
+        </div>
+        <p class="gauge-name">TypeScript</p>
+        <p class="gauge-category">Precision Tool</p>
+      </div>
+
+      <!-- Gauge 4: Node.js -->
+      <div class="gauge-unit reveal" data-skill="85">
+        <div class="gauge-container">
+          <svg viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="65" stroke-dasharray="220 408" stroke-dashoffset="-94"/>
+            <circle class="gauge-fill" cx="80" cy="80" r="65" stroke="url(#copperGrad)" stroke-dasharray="0 408" stroke-dashoffset="-94" data-target="187"/>
+          </svg>
+          <div class="gauge-needle" style="transform: rotate(-135deg)" data-target-angle="95"></div>
+          <div class="gauge-center">
+            <span class="gauge-value">85</span>
+            <span class="gauge-unit-label">PSI</span>
+          </div>
+        </div>
+        <p class="gauge-name">Node.js</p>
+        <p class="gauge-category">Power Plant</p>
+      </div>
+
+      <!-- Gauge 5: Cloud/AWS -->
+      <div class="gauge-unit reveal" data-skill="82">
+        <div class="gauge-container">
+          <svg viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="65" stroke-dasharray="220 408" stroke-dashoffset="-94"/>
+            <circle class="gauge-fill" cx="80" cy="80" r="65" stroke="url(#brassGrad)" stroke-dasharray="0 408" stroke-dashoffset="-94" data-target="180"/>
+          </svg>
+          <div class="gauge-needle" style="transform: rotate(-135deg)" data-target-angle="86"></div>
+          <div class="gauge-center">
+            <span class="gauge-value">82</span>
+            <span class="gauge-unit-label">PSI</span>
+          </div>
+        </div>
+        <p class="gauge-name">Cloud / AWS</p>
+        <p class="gauge-category">Infrastructure</p>
+      </div>
+
+      <!-- Gauge 6: System Design -->
+      <div class="gauge-unit reveal" data-skill="87">
+        <div class="gauge-container">
+          <svg viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="65" stroke-dasharray="220 408" stroke-dashoffset="-94"/>
+            <circle class="gauge-fill" cx="80" cy="80" r="65" stroke="url(#copperGrad)" stroke-dasharray="0 408" stroke-dashoffset="-94" data-target="191"/>
+          </svg>
+          <div class="gauge-needle" style="transform: rotate(-135deg)" data-target-angle="100"></div>
+          <div class="gauge-center">
+            <span class="gauge-value">87</span>
+            <span class="gauge-unit-label">PSI</span>
+          </div>
+        </div>
+        <p class="gauge-name">System Design</p>
+        <p class="gauge-category">Architecture</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Gradient Definitions -->
+  <svg style="position:absolute;width:0;height:0">
+    <defs>
+      <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#c49b2a"/>
+        <stop offset="50%" stop-color="#8B6914"/>
+        <stop offset="100%" stop-color="#c49b2a"/>
+      </linearGradient>
+      <linearGradient id="copperGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#d4945a"/>
+        <stop offset="50%" stop-color="#B87333"/>
+        <stop offset="100%" stop-color="#d4945a"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</section>
+
+<!-- Plate Divider -->
+<div class="plate-divider"><div class="plate-divider-inner"></div></div>
+
+<!-- ============================================================
+     PROJECTS -- BLUEPRINT CARDS
+     ============================================================ -->
+<section id="projects">
+  <div class="section-frame">
+    <div class="section-header reveal">
+      <div class="section-title-plate">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <h2 class="metallic-text">Engineering Schematics</h2>
+      </div>
+      <p class="section-subtitle">Declassified Project Blueprints -- Field Tested</p>
+    </div>
+
+    <div class="blueprints-grid">
+      <!-- Project 1 -->
+      <div class="blueprint-card reveal">
+        <span class="blueprint-stamp">Approved</span>
+        <p class="blueprint-number">SCHEMATIC NO. WM-2024-001</p>
+        <h3>Retail Command Center</h3>
+        <p>High-throughput inventory management system processing millions of SKU operations daily. Built for Walmart-scale reliability with real-time analytics dashboards.</p>
+        <div class="blueprint-tags">
+          <span class="blueprint-tag">React</span>
+          <span class="blueprint-tag">Java</span>
+          <span class="blueprint-tag">Kafka</span>
+          <span class="blueprint-tag">GCP</span>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="blueprint-card reveal">
+        <span class="blueprint-stamp">Deployed</span>
+        <p class="blueprint-number">SCHEMATIC NO. WM-2024-002</p>
+        <h3>Supply Chain Engine</h3>
+        <p>Microservices architecture orchestrating end-to-end supply chain operations. Event-driven pipeline handling 100K+ events per second with fault tolerance.</p>
+        <div class="blueprint-tags">
+          <span class="blueprint-tag">Spring Boot</span>
+          <span class="blueprint-tag">Kubernetes</span>
+          <span class="blueprint-tag">Redis</span>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="blueprint-card reveal">
+        <span class="blueprint-stamp">Active</span>
+        <p class="blueprint-number">SCHEMATIC NO. AG-2023-003</p>
+        <h3>Performance Monitor</h3>
+        <p>Full-stack observability platform with custom metrics collection, anomaly detection, and automated alerting. Reduced incident response time by 60%.</p>
+        <div class="blueprint-tags">
+          <span class="blueprint-tag">TypeScript</span>
+          <span class="blueprint-tag">Node.js</span>
+          <span class="blueprint-tag">Grafana</span>
+        </div>
+      </div>
+
+      <!-- Project 4 -->
+      <div class="blueprint-card reveal">
+        <span class="blueprint-stamp">Prototype</span>
+        <p class="blueprint-number">SCHEMATIC NO. AG-2023-004</p>
+        <h3>Developer Toolkit</h3>
+        <p>Internal CLI and component library accelerating team productivity. Standardized patterns, code generation, and shared utilities adopted across multiple teams.</p>
+        <div class="blueprint-tags">
+          <span class="blueprint-tag">React</span>
+          <span class="blueprint-tag">Storybook</span>
+          <span class="blueprint-tag">NPM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Warning Stripe Divider -->
+<div class="warning-stripe"></div>
+
+<!-- ============================================================
+     EXPERIENCE -- ASSEMBLY LINE CONVEYOR
+     ============================================================ -->
+<section id="experience" class="conveyor-section">
+  <div class="section-frame">
+    <div class="section-header reveal">
+      <div class="section-title-plate">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <h2 class="metallic-text">Assembly Line Record</h2>
+      </div>
+      <p class="section-subtitle">Operational Service History -- Verified Deployments</p>
+    </div>
+
+    <div class="conveyor-track">
+      <!-- Experience 1 -->
+      <div class="conveyor-item reveal">
+        <div class="conveyor-content">
+          <div class="conveyor-content-inner">
+            <span class="period">2022 -- Present</span>
+            <h3 class="copper-text">Walmart Global Tech</h3>
+            <p class="role">Software Engineer III</p>
+            <ul>
+              <li>Architecting large-scale distributed systems powering e-commerce operations</li>
+              <li>Leading frontend modernization initiative across multiple product verticals</li>
+              <li>Building high-performance microservices handling peak traffic during major sales events</li>
+              <li>Mentoring junior engineers and driving technical design reviews</li>
+            </ul>
+          </div>
+        </div>
+        <div class="conveyor-gear"></div>
+      </div>
+
+      <!-- Experience 2 -->
+      <div class="conveyor-item reveal">
+        <div class="conveyor-content">
+          <div class="conveyor-content-inner">
+            <span class="period">2020 -- 2022</span>
+            <h3 class="copper-text">Software Development</h3>
+            <p class="role">Full Stack Developer</p>
+            <ul>
+              <li>Developed and shipped production-grade web applications using React and Node.js</li>
+              <li>Designed RESTful APIs and database schemas for complex domain models</li>
+              <li>Implemented CI/CD pipelines and automated testing infrastructure</li>
+              <li>Collaborated with cross-functional teams to deliver on tight deadlines</li>
+            </ul>
+          </div>
+        </div>
+        <div class="conveyor-gear"></div>
+      </div>
+
+      <!-- Experience 3 -->
+      <div class="conveyor-item reveal">
+        <div class="conveyor-content">
+          <div class="conveyor-content-inner">
+            <span class="period">2018 -- 2020</span>
+            <h3 class="copper-text">Engineering Foundations</h3>
+            <p class="role">Junior Software Engineer</p>
+            <ul>
+              <li>Built responsive web interfaces and reusable component libraries</li>
+              <li>Contributed to backend services in Java and Python ecosystems</li>
+              <li>Participated in agile ceremonies and learned production engineering practices</li>
+              <li>Completed advanced coursework in distributed systems and algorithms</li>
+            </ul>
+          </div>
+        </div>
+        <div class="conveyor-gear"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Plate Divider -->
+<div class="plate-divider"><div class="plate-divider-inner"></div></div>
+
+<!-- ============================================================
+     ABOUT -- DOSSIER
+     ============================================================ -->
+<section id="about">
+  <div class="section-frame">
+    <div class="section-header reveal">
+      <div class="section-title-plate">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <h2 class="metallic-text">Personnel Dossier</h2>
+      </div>
+      <p class="section-subtitle">Operator Profile -- Security Clearance Level 5</p>
+    </div>
+
+    <div class="dossier reveal">
+      <div class="dossier-file">
+        <h3 class="copper-text">Mission Brief</h3>
+        <p>
+          A battle-hardened software engineer specializing in large-scale distributed systems and
+          modern web architecture. Currently stationed at <strong style="color:var(--copper-light)">Walmart Global Tech</strong>,
+          where the mission is to build and maintain the digital infrastructure serving millions
+          of customers worldwide.
+        </p>
+        <br>
+        <p>
+          Passionate about clean code, performance optimization, and mentoring the next generation
+          of engineers. Believes that great software is forged through discipline, iteration,
+          and an unwavering commitment to quality.
+        </p>
+      </div>
+
+      <div class="dossier-stats">
+        <div class="stat-plate">
+          <span class="stat-value copper-text">6+</span>
+          <span class="stat-label">Years Active</span>
+        </div>
+        <div class="stat-plate">
+          <span class="stat-value metallic-text">50+</span>
+          <span class="stat-label">Systems Built</span>
+        </div>
+        <div class="stat-plate">
+          <span class="stat-value copper-text">10M+</span>
+          <span class="stat-label">Users Served</span>
+        </div>
+        <div class="stat-plate">
+          <span class="stat-value metallic-text">99.9</span>
+          <span class="stat-label">% Uptime Target</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Warning Stripe Divider -->
+<div class="warning-stripe"></div>
+
+<!-- ============================================================
+     CONTACT -- TRANSMISSION
+     ============================================================ -->
+<section id="contact">
+  <div class="section-frame">
+    <div class="section-header reveal">
+      <div class="section-title-plate">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <h2 class="metallic-text">Open Transmission</h2>
+      </div>
+      <p class="section-subtitle">Secure Communication Channels -- All Frequencies Active</p>
+    </div>
+
+    <div class="transmission-panel reveal">
+      <p>
+        All communication lines are operational and monitored.
+        Select your preferred channel to initiate contact.
+        Response time: within 24 operational hours.
+      </p>
+
+      <div class="contact-channels">
+        <a href="mailto:anshull.garg@gmail.com" class="channel-link">
+          <span class="channel-icon">@</span>
+          <span class="channel-label">Electronic Mail -- Primary Channel</span>
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="channel-link">
+          <span class="channel-icon">in</span>
+          <span class="channel-label">LinkedIn -- Professional Network</span>
+        </a>
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="channel-link">
+          <span class="channel-icon">&lt;/&gt;</span>
+          <span class="channel-label">GitHub -- Code Repository</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="footer-emblem">AG</div>
+  <p>Anshull Garg -- Software Developer -- Walmart Global Tech</p>
+  <p class="copyright">Engineered with precision. All systems operational. MMXXVI.</p>
+  <p style="margin-top:8px;font-size:0.55rem;opacity:0.5;">
+    "THE MACHINERY OF PROGRESS DEMANDS YOUR EXPERTISE"
+  </p>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  /* -------------------------------------------------------
+     STEAM PARTICLES
+     ------------------------------------------------------- */
+  const steamContainer = document.getElementById('steamContainer');
+  const particleCount = 15;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'steam-particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.width = (20 + Math.random() * 40) + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.animationDuration = (8 + Math.random() * 15) + 's';
+    particle.style.animationDelay = (Math.random() * 10) + 's';
+    particle.style.opacity = 0;
+    steamContainer.appendChild(particle);
+  }
+
+  /* -------------------------------------------------------
+     SCROLL REVEAL
+     ------------------------------------------------------- */
+  const revealElements = document.querySelectorAll('.reveal');
+
+  function checkReveal() {
+    const windowHeight = window.innerHeight;
+    revealElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < windowHeight * 0.85) {
+        el.classList.add('visible');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', checkReveal, { passive: true });
+  window.addEventListener('load', checkReveal);
+
+  /* -------------------------------------------------------
+     GAUGE ANIMATIONS
+     ------------------------------------------------------- */
+  const gaugeUnits = document.querySelectorAll('.gauge-unit');
+  let gaugesAnimated = false;
+
+  function animateGauges() {
+    if (gaugesAnimated) return;
+
+    const skillsSection = document.getElementById('skills');
+    if (!skillsSection) return;
+
+    const rect = skillsSection.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.7) {
+      gaugesAnimated = true;
+
+      gaugeUnits.forEach((unit, index) => {
+        setTimeout(() => {
+          // Animate gauge fill
+          const fill = unit.querySelector('.gauge-fill');
+          if (fill) {
+            const target = fill.getAttribute('data-target');
+            fill.setAttribute('stroke-dasharray', target + ' 408');
+          }
+
+          // Animate needle
+          const needle = unit.querySelector('.gauge-needle');
+          if (needle) {
+            const angle = needle.getAttribute('data-target-angle');
+            needle.style.transform = 'rotate(' + (angle - 135) + 'deg)';
+          }
+        }, index * 200);
+      });
+    }
+  }
+
+  window.addEventListener('scroll', animateGauges, { passive: true });
+  window.addEventListener('load', animateGauges);
+
+  /* -------------------------------------------------------
+     SMOOTH SCROLL FOR NAV LINKS
+     ------------------------------------------------------- */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Close mobile nav if open
+        document.querySelector('.nav-links').classList.remove('open');
+      }
+    });
+  });
+
+  /* -------------------------------------------------------
+     PARALLAX PIPE DECORATIONS (subtle)
+     ------------------------------------------------------- */
+  const pipeLeft = document.querySelector('.pipe-left');
+  const pipeRight = document.querySelector('.pipe-right');
+
+  window.addEventListener('scroll', function() {
+    const scrollY = window.scrollY;
+    if (pipeLeft) pipeLeft.style.transform = 'translateY(calc(-50% + ' + (scrollY * 0.1) + 'px))';
+    if (pipeRight) pipeRight.style.transform = 'translateY(calc(-50% - ' + (scrollY * 0.05) + 'px))';
+  }, { passive: true });
+
+})();
+</script>
+</body>
+</html>
