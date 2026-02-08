@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge Conflict | Anshull Garg</title>
+<style>
+  /* ============================================================
+     MERGE CONFLICT PORTFOLIO - Anshull Garg
+     Resolve the conflicts to build the portfolio.
+     ============================================================ */
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:       #0D1117;
+    --bg-light: #161B22;
+    --bg-card:  #1C2128;
+    --border:   #30363D;
+    --text:     #C9D1D9;
+    --text-dim: #8B949E;
+    --green:    #3FB950;
+    --green-bg: rgba(63,185,80,.12);
+    --red:      #F85149;
+    --red-bg:   rgba(248,81,73,.12);
+    --blue:     #58A6FF;
+    --yellow:   #D29922;
+    --purple:   #BC8CFF;
+    --font-mono:'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',Consolas,monospace;
+    --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+
+  html{scroll-behavior:smooth}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-mono);
+    font-size:14px;
+    line-height:1.6;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ---- HEADER / TOOLBAR ---- */
+  .toolbar{
+    position:sticky;top:0;z-index:100;
+    background:var(--bg-light);
+    border-bottom:1px solid var(--border);
+    padding:12px 24px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .toolbar-left{display:flex;align-items:center;gap:12px;flex:1;min-width:260px}
+  .toolbar-icon{
+    width:32px;height:32px;border-radius:6px;
+    background:var(--red);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700;color:#fff;
+    transition:background .5s;
+  }
+  .toolbar-icon.resolved{background:var(--green)}
+  .toolbar h1{font-size:14px;font-weight:600;color:var(--text);font-family:var(--font-sans)}
+  .toolbar h1 span{color:var(--text-dim);font-weight:400}
+
+  .toolbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+  .progress-bar{
+    width:200px;height:6px;border-radius:3px;
+    background:var(--border);overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:0;border-radius:3px;
+    background:linear-gradient(90deg,var(--green),var(--blue));
+    transition:width .5s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-text{font-size:12px;color:var(--text-dim);white-space:nowrap}
+
+  .branch-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+    border:1px solid var(--border);color:var(--text-dim);
+  }
+  .branch-badge svg{width:14px;height:14px;fill:currentColor}
+
+  /* ---- FILE TAB BAR ---- */
+  .file-tabs{
+    background:var(--bg-light);
+    border-bottom:1px solid var(--border);
+    padding:0 24px;
+    display:flex;gap:0;overflow-x:auto;
+  }
+  .file-tab{
+    padding:10px 16px;font-size:12px;
+    color:var(--text-dim);cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;transition:all .2s;
+    font-family:var(--font-sans);
+    display:flex;align-items:center;gap:6px;
+  }
+  .file-tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
+  .file-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--bg)}
+  .file-tab .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--yellow);flex-shrink:0;
+  }
+  .file-tab.resolved-tab .dot{background:var(--green)}
+
+  /* ---- MAIN CONTENT ---- */
+  .editor{
+    max-width:960px;margin:0 auto;
+    padding:24px 24px 120px;
+  }
+
+  /* ---- CONFLICT BLOCK ---- */
+  .conflict-block{
+    margin-bottom:32px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    transition:border-color .3s, box-shadow .3s;
+    animation:slideUp .5s ease both;
+  }
+  .conflict-block:nth-child(2){animation-delay:.08s}
+  .conflict-block:nth-child(3){animation-delay:.16s}
+  .conflict-block:nth-child(4){animation-delay:.24s}
+  .conflict-block:nth-child(5){animation-delay:.32s}
+
+  .conflict-block:hover{border-color:#484F58}
+  .conflict-block.resolved{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+
+  @keyframes slideUp{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* conflict header */
+  .conflict-header{
+    background:var(--bg-light);
+    padding:10px 16px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    gap:8px;flex-wrap:wrap;
+  }
+  .conflict-filename{
+    font-size:13px;color:var(--blue);font-weight:600;
+    display:flex;align-items:center;gap:8px;
+  }
+  .conflict-filename svg{width:16px;height:16px;fill:var(--yellow)}
+  .conflict-status{
+    font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;
+    background:rgba(210,153,34,.15);color:var(--yellow);
+  }
+  .conflict-block.resolved .conflict-status{
+    background:rgba(63,185,80,.15);color:var(--green);
+  }
+
+  /* line numbers gutter */
+  .conflict-body{position:relative}
+
+  /* markers */
+  .marker-line{
+    padding:4px 16px 4px 56px;
+    font-size:13px;font-weight:700;
+    position:relative;
+    user-select:none;
+  }
+  .marker-line::before{
+    content:attr(data-ln);
+    position:absolute;left:0;top:4px;
+    width:44px;text-align:right;
+    color:var(--text-dim);font-weight:400;font-size:12px;
+    opacity:.5;
+  }
+  .marker-head{background:rgba(248,81,73,.08);color:var(--red)}
+  .marker-sep{background:var(--bg);color:var(--text-dim)}
+  .marker-main{background:rgba(63,185,80,.08);color:var(--green)}
+
+  /* content areas */
+  .diff-section{
+    position:relative;
+    transition:all .4s ease;
+    overflow:hidden;
+  }
+  .diff-current{background:var(--red-bg)}
+  .diff-incoming{background:var(--green-bg)}
+
+  .diff-line{
+    padding:3px 16px 3px 56px;
+    font-size:13px;line-height:1.65;
+    position:relative;
+    min-height:24px;
+  }
+  .diff-line::before{
+    content:attr(data-ln);
+    position:absolute;left:0;top:3px;
+    width:44px;text-align:right;
+    color:var(--text-dim);font-weight:400;font-size:12px;
+    opacity:.4;
+  }
+  .diff-current .diff-line{border-left:3px solid var(--red)}
+  .diff-incoming .diff-line{border-left:3px solid var(--green)}
+
+  .diff-line .keyword{color:var(--purple)}
+  .diff-line .string{color:#A5D6FF}
+  .diff-line .comment{color:var(--text-dim);font-style:italic}
+  .diff-line .func{color:var(--yellow)}
+  .diff-line .tag{color:var(--green)}
+  .diff-line .highlight{
+    background:rgba(88,166,255,.12);
+    padding:1px 4px;border-radius:3px;
+  }
+
+  /* action buttons */
+  .conflict-actions{
+    padding:10px 16px;
+    background:var(--bg-light);
+    border-top:1px solid var(--border);
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  }
+  .btn{
+    padding:6px 14px;border-radius:6px;
+    font-size:12px;font-weight:600;
+    font-family:var(--font-sans);
+    cursor:pointer;border:1px solid var(--border);
+    background:var(--bg-card);color:var(--text);
+    transition:all .15s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn:hover{background:#2A313A;border-color:#484F58}
+  .btn-current{border-color:rgba(248,81,73,.4);color:var(--red)}
+  .btn-current:hover{background:rgba(248,81,73,.15);border-color:var(--red)}
+  .btn-incoming{border-color:rgba(63,185,80,.4);color:var(--green)}
+  .btn-incoming:hover{background:rgba(63,185,80,.15);border-color:var(--green)}
+  .btn-both{border-color:rgba(88,166,255,.4);color:var(--blue)}
+  .btn-both:hover{background:rgba(88,166,255,.15);border-color:var(--blue)}
+
+  .btn:active{transform:scale(.97)}
+
+  .conflict-actions .resolved-msg{
+    font-size:12px;color:var(--green);font-weight:600;
+    display:flex;align-items:center;gap:6px;
+    font-family:var(--font-sans);
+  }
+
+  /* ---- RESOLVED CONTENT (replaces conflict) ---- */
+  .resolved-content{
+    padding:12px 16px 12px 56px;
+    font-size:13px;line-height:1.65;
+    background:var(--bg);
+    position:relative;
+    animation:fadeResolve .4s ease;
+  }
+  .resolved-content .diff-line{border-left:3px solid var(--green);padding-left:16px}
+
+  @keyframes fadeResolve{
+    from{opacity:0;transform:translateY(-8px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ---- MERGE PANEL (bottom bar) ---- */
+  .merge-panel{
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg-light);
+    border-top:1px solid var(--border);
+    padding:16px 24px;
+    display:flex;align-items:center;justify-content:center;gap:16px;
+    z-index:100;
+    transform:translateY(100%);
+    transition:transform .4s cubic-bezier(.4,0,.2,1);
+    flex-wrap:wrap;
+  }
+  .merge-panel.visible{transform:translateY(0)}
+
+  .merge-btn{
+    padding:10px 28px;border-radius:8px;
+    font-size:14px;font-weight:700;
+    font-family:var(--font-sans);
+    cursor:pointer;border:none;
+    background:var(--green);color:#0D1117;
+    transition:all .2s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .merge-btn:hover{background:#4AE05D;box-shadow:0 0 20px rgba(63,185,80,.3)}
+  .merge-btn:active{transform:scale(.97)}
+  .merge-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+  .merge-panel .info{font-size:13px;color:var(--text-dim);font-family:var(--font-sans)}
+  .merge-panel .info strong{color:var(--green)}
+
+  /* ---- FINAL MERGED PORTFOLIO ---- */
+  .portfolio-view{
+    display:none;
+    min-height:100vh;
+    background:var(--bg);
+  }
+  .portfolio-view.active{display:block}
+  .editor-view.hidden{display:none}
+
+  /* merge animation overlay */
+  .merge-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:16px;
+    opacity:0;pointer-events:none;
+    transition:opacity .3s;
+  }
+  .merge-overlay.active{opacity:1;pointer-events:all}
+  .merge-overlay .terminal-text{
+    font-family:var(--font-mono);
+    font-size:14px;color:var(--text-dim);
+    text-align:left;
+    max-width:500px;
+    width:90%;
+  }
+  .merge-overlay .terminal-text .line{
+    opacity:0;animation:typeLine .3s ease forwards;
+  }
+  .merge-overlay .terminal-text .line.success{color:var(--green);font-weight:700}
+  .merge-overlay .terminal-text .line .path{color:var(--blue)}
+  .merge-overlay .terminal-text .line .added{color:var(--green)}
+  .merge-overlay .terminal-text .line .removed{color:var(--red)}
+
+  @keyframes typeLine{
+    from{opacity:0;transform:translateX(-8px)}
+    to{opacity:1;transform:translateX(0)}
+  }
+
+  /* ---- PORTFOLIO SECTIONS ---- */
+  .p-hero{
+    padding:80px 24px 60px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .p-hero::before{
+    content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:600px;height:600px;
+    background:radial-gradient(circle,rgba(63,185,80,.08) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .p-hero .tag{
+    display:inline-block;padding:4px 14px;border-radius:20px;
+    font-size:12px;color:var(--green);font-weight:600;
+    border:1px solid rgba(63,185,80,.3);
+    margin-bottom:16px;
+    font-family:var(--font-sans);
+  }
+  .p-hero h2{
+    font-size:clamp(28px,5vw,48px);
+    font-weight:800;color:#fff;
+    font-family:var(--font-sans);
+    margin-bottom:12px;line-height:1.15;
+  }
+  .p-hero .subtitle{
+    font-size:clamp(15px,2vw,18px);
+    color:var(--text-dim);max-width:600px;
+    margin:0 auto 24px;font-family:var(--font-sans);line-height:1.6;
+  }
+  .p-hero .meta{
+    display:flex;gap:24px;justify-content:center;
+    flex-wrap:wrap;font-size:13px;color:var(--text-dim);
+    font-family:var(--font-sans);
+  }
+  .p-hero .meta span{display:flex;align-items:center;gap:6px}
+
+  .p-section{
+    padding:48px 24px;max-width:800px;margin:0 auto;
+  }
+  .p-section h3{
+    font-size:22px;font-weight:700;color:#fff;
+    margin-bottom:24px;font-family:var(--font-sans);
+    display:flex;align-items:center;gap:10px;
+  }
+  .p-section h3 .icon{
+    width:28px;height:28px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;
+  }
+
+  /* skills grid */
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:12px;
+  }
+  .skill-card{
+    background:var(--bg-light);border:1px solid var(--border);
+    border-radius:8px;padding:14px;
+    transition:border-color .2s;
+  }
+  .skill-card:hover{border-color:var(--green)}
+  .skill-card h4{font-size:13px;color:var(--green);margin-bottom:6px;font-family:var(--font-sans)}
+  .skill-card p{font-size:12px;color:var(--text-dim);font-family:var(--font-sans);line-height:1.5}
+
+  /* projects */
+  .project-card{
+    background:var(--bg-light);border:1px solid var(--border);
+    border-radius:8px;padding:20px;margin-bottom:16px;
+    transition:border-color .2s;
+  }
+  .project-card:hover{border-color:var(--blue)}
+  .project-card h4{
+    font-size:15px;color:#fff;margin-bottom:6px;
+    font-family:var(--font-sans);
+    display:flex;align-items:center;gap:8px;
+  }
+  .project-card p{
+    font-size:13px;color:var(--text-dim);line-height:1.6;
+    font-family:var(--font-sans);margin-bottom:10px;
+  }
+  .project-card .tech-tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tech-tag{
+    padding:2px 8px;border-radius:4px;font-size:11px;
+    background:rgba(88,166,255,.1);color:var(--blue);
+    font-family:var(--font-mono);
+  }
+
+  /* experience */
+  .exp-card{
+    border-left:2px solid var(--green);
+    padding:0 0 32px 24px;position:relative;
+    margin-left:8px;
+  }
+  .exp-card:last-child{border-left-color:transparent;padding-bottom:0}
+  .exp-card::before{
+    content:'';position:absolute;
+    left:-7px;top:2px;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--green);border:2px solid var(--bg);
+  }
+  .exp-card h4{font-size:15px;color:#fff;font-family:var(--font-sans)}
+  .exp-card .company{font-size:13px;color:var(--blue);margin-bottom:4px;font-family:var(--font-sans)}
+  .exp-card .period{font-size:12px;color:var(--text-dim);margin-bottom:8px;font-family:var(--font-sans)}
+  .exp-card ul{list-style:none;padding:0}
+  .exp-card li{
+    font-size:13px;color:var(--text-dim);line-height:1.6;
+    padding-left:16px;position:relative;margin-bottom:4px;
+    font-family:var(--font-sans);
+  }
+  .exp-card li::before{
+    content:'+';position:absolute;left:0;color:var(--green);font-weight:700;
+    font-family:var(--font-mono);
+  }
+
+  /* contact */
+  .contact-section{
+    text-align:center;padding:60px 24px 80px;
+  }
+  .contact-section h3{
+    justify-content:center;font-size:28px;margin-bottom:12px;
+  }
+  .contact-section p{
+    font-size:15px;color:var(--text-dim);max-width:480px;
+    margin:0 auto 24px;font-family:var(--font-sans);line-height:1.6;
+  }
+  .contact-links{
+    display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  }
+  .contact-link{
+    padding:10px 20px;border-radius:8px;
+    font-size:13px;font-weight:600;color:var(--text);
+    text-decoration:none;border:1px solid var(--border);
+    font-family:var(--font-sans);
+    transition:all .2s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .contact-link:hover{border-color:var(--green);color:var(--green);background:rgba(63,185,80,.06)}
+
+  /* back button */
+  .back-to-conflicts{
+    position:fixed;bottom:20px;right:20px;z-index:100;
+    padding:8px 16px;border-radius:8px;
+    font-size:12px;font-weight:600;color:var(--text-dim);
+    background:var(--bg-light);border:1px solid var(--border);
+    cursor:pointer;font-family:var(--font-sans);
+    transition:all .2s;
+  }
+  .back-to-conflicts:hover{color:var(--text);border-color:#484F58}
+
+  /* ---- RESPONSIVE ---- */
+  @media(max-width:640px){
+    .toolbar{padding:10px 12px}
+    .progress-bar{width:120px}
+    .file-tabs{padding:0 12px}
+    .editor{padding:16px 12px 100px}
+    .marker-line{padding-left:12px;font-size:11px}
+    .marker-line::before{display:none}
+    .diff-line{padding-left:12px;font-size:12px}
+    .diff-line::before{display:none}
+    .resolved-content{padding-left:12px}
+    .resolved-content .diff-line{padding-left:12px}
+    .conflict-actions{padding:8px 12px}
+    .btn{padding:5px 10px;font-size:11px}
+    .skills-grid{grid-template-columns:1fr}
+  }
+
+  /* Utility */
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- ====== TOOLBAR ====== -->
+<header class="toolbar" role="banner">
+  <div class="toolbar-left">
+    <div class="toolbar-icon" id="toolbarIcon" aria-hidden="true">!</div>
+    <h1>anshull-garg.portfolio <span>- merge conflicts</span></h1>
+  </div>
+  <div class="toolbar-right">
+    <span class="branch-badge" aria-label="Branch: feature/portfolio">
+      <svg viewBox="0 0 16 16"><path d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm0 2.122a2.25 2.25 0 1 0-1.5 0v5.256a2.25 2.25 0 1 0 1.5 0V5.372ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm7.5-8.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm1.122 0a2.25 2.25 0 1 0-1.5 0v.872c0 .414-.336.75-.75.75h-2.5a.75.75 0 0 0-.75.75v5.256a2.25 2.25 0 1 0 1.5 0V6.872h1.75A2.25 2.25 0 0 0 12.872 4.622ZM8.75 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></svg>
+      feature/portfolio
+    </span>
+    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="5" aria-label="Conflict resolution progress">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-text" id="progressText">Conflicts: 0/5 resolved</span>
+  </div>
+</header>
+
+<!-- ====== FILE TABS ====== -->
+<nav class="file-tabs" role="tablist" aria-label="Conflicting files">
+  <div class="file-tab active" data-tab="0" role="tab" aria-selected="true">
+    <span class="dot"></span>about.tsx
+  </div>
+  <div class="file-tab" data-tab="1" role="tab" aria-selected="false">
+    <span class="dot"></span>skills.tsx
+  </div>
+  <div class="file-tab" data-tab="2" role="tab" aria-selected="false">
+    <span class="dot"></span>projects.tsx
+  </div>
+  <div class="file-tab" data-tab="3" role="tab" aria-selected="false">
+    <span class="dot"></span>experience.tsx
+  </div>
+  <div class="file-tab" data-tab="4" role="tab" aria-selected="false">
+    <span class="dot"></span>contact.tsx
+  </div>
+</nav>
+
+<!-- ====== EDITOR (Conflict View) ====== -->
+<main class="editor editor-view" id="editorView" role="main" aria-label="Merge conflict editor">
+  <!-- Conflicts are rendered by JS -->
+</main>
+
+<!-- ====== MERGE PANEL ====== -->
+<div class="merge-panel" id="mergePanel" role="status">
+  <span class="info" id="mergePanelInfo">Resolve all <strong>5 conflicts</strong> to merge</span>
+  <button class="merge-btn" id="mergeBtn" disabled onclick="performMerge()" aria-label="Merge branch">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm0 2.122a2.25 2.25 0 1 0-1.5 0v5.256a2.25 2.25 0 1 0 1.5 0V5.372ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm7.5-8.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm1.122 0a2.25 2.25 0 1 0-1.5 0v.872c0 .414-.336.75-.75.75h-2.5a.75.75 0 0 0-.75.75v5.256a2.25 2.25 0 1 0 1.5 0V6.872h1.75A2.25 2.25 0 0 0 12.872 4.622ZM8.75 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></svg>
+    Merge branch
+  </button>
+</div>
+
+<!-- ====== MERGE ANIMATION OVERLAY ====== -->
+<div class="merge-overlay" id="mergeOverlay" role="alert" aria-live="polite">
+  <div class="terminal-text" id="terminalOutput"></div>
+</div>
+
+<!-- ====== FINAL PORTFOLIO VIEW ====== -->
+<div class="portfolio-view" id="portfolioView" aria-label="Merged portfolio">
+  <!-- Rendered by JS after merge -->
+</div>
+
+<script>
+// ============================================================
+// DATA: Each conflict has current (HEAD) and incoming (main) versions
+// ============================================================
+const conflicts = [
+  {
+    id: 'about',
+    file: 'about.tsx',
+    startLine: 1,
+    current: {
+      label: 'HEAD (Current Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">About</span> = () => {',
+        '  <span class="keyword">return</span> (',
+        '    <span class="tag">&lt;section&gt;</span>',
+        '      <span class="tag">&lt;h1&gt;</span>Hi, I\'m Anshull<span class="tag">&lt;/h1&gt;</span>',
+        '      <span class="tag">&lt;p&gt;</span>I\'m just a regular developer.<span class="tag">&lt;/p&gt;</span>',
+        '      <span class="tag">&lt;p&gt;</span>I know some coding stuff.<span class="tag">&lt;/p&gt;</span>',
+        '    <span class="tag">&lt;/section&gt;</span>',
+        '  );',
+        '};',
+      ]
+    },
+    incoming: {
+      label: 'main (Incoming Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">About</span> = () => {',
+        '  <span class="keyword">return</span> (',
+        '    <span class="tag">&lt;section&gt;</span>',
+        '      <span class="tag">&lt;h1&gt;</span>Anshull Garg<span class="tag">&lt;/h1&gt;</span>',
+        '      <span class="tag">&lt;h2&gt;</span>Software Developer @ <span class="highlight">Walmart</span><span class="tag">&lt;/h2&gt;</span>',
+        '      <span class="tag">&lt;p&gt;</span>',
+        '        Building high-performance systems that serve',
+        '        <span class="highlight">240M+ customers weekly</span>. Specializing in',
+        '        scalable web applications, distributed systems,',
+        '        and developer tooling.',
+        '      <span class="tag">&lt;/p&gt;</span>',
+        '    <span class="tag">&lt;/section&gt;</span>',
+        '  );',
+        '};',
+      ]
+    }
+  },
+  {
+    id: 'skills',
+    file: 'skills.tsx',
+    startLine: 1,
+    current: {
+      label: 'HEAD (Current Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">skills</span> = [',
+        '  <span class="string">"I know a little JavaScript"</span>,',
+        '  <span class="string">"familiar with HTML and CSS"</span>,',
+        '  <span class="string">"tried React once"</span>,',
+        '  <span class="comment">// that\'s about it I think</span>',
+        '];',
+      ]
+    },
+    incoming: {
+      label: 'main (Incoming Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">skills</span> = {',
+        '  frontend: [<span class="string">"React"</span>, <span class="string">"Next.js"</span>, <span class="string">"TypeScript"</span>, <span class="string">"Tailwind"</span>],',
+        '  backend:  [<span class="string">"Node.js"</span>, <span class="string">"Java"</span>, <span class="string">"Python"</span>, <span class="string">"GraphQL"</span>],',
+        '  infra:    [<span class="string">"AWS"</span>, <span class="string">"Docker"</span>, <span class="string">"Kubernetes"</span>, <span class="string">"CI/CD"</span>],',
+        '  data:     [<span class="string">"PostgreSQL"</span>, <span class="string">"Redis"</span>, <span class="string">"Kafka"</span>, <span class="string">"MongoDB"</span>],',
+        '  tools:    [<span class="string">"Git"</span>, <span class="string">"Webpack"</span>, <span class="string">"Vite"</span>, <span class="string">"Jest"</span>],',
+        '};',
+      ]
+    }
+  },
+  {
+    id: 'projects',
+    file: 'projects.tsx',
+    startLine: 1,
+    current: {
+      label: 'HEAD (Current Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">projects</span> = [',
+        '  {',
+        '    name: <span class="string">"Some Todo App"</span>,',
+        '    desc: <span class="string">"Made a basic todo list"</span>,',
+        '  },',
+        '  {',
+        '    name: <span class="string">"A Calculator"</span>,',
+        '    desc: <span class="string">"It does math, I guess"</span>,',
+        '  },',
+        '];',
+      ]
+    },
+    incoming: {
+      label: 'main (Incoming Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">projects</span> = [',
+        '  {',
+        '    name: <span class="string">"Walmart Checkout Platform"</span>,',
+        '    desc: <span class="string">"Re-architected the checkout flow handling</span>',
+        '           <span class="string">$500B+ in annual transactions with 99.99%</span>',
+        '           <span class="string">uptime during peak traffic events"</span>,',
+        '    tech: [<span class="string">"React"</span>, <span class="string">"Node.js"</span>, <span class="string">"Kafka"</span>, <span class="string">"Redis"</span>],',
+        '  },',
+        '  {',
+        '    name: <span class="string">"Real-Time Inventory System"</span>,',
+        '    desc: <span class="string">"Built event-driven inventory tracking across</span>',
+        '           <span class="string">4,700+ stores with sub-second sync"</span>,',
+        '    tech: [<span class="string">"TypeScript"</span>, <span class="string">"Kafka"</span>, <span class="string">"PostgreSQL"</span>],',
+        '  },',
+        '  {',
+        '    name: <span class="string">"Developer Portal"</span>,',
+        '    desc: <span class="string">"Created internal dev platform used by 2,000+</span>',
+        '           <span class="string">engineers, reducing onboarding time by 60%"</span>,',
+        '    tech: [<span class="string">"Next.js"</span>, <span class="string">"GraphQL"</span>, <span class="string">"Docker"</span>],',
+        '  },',
+        '];',
+      ]
+    }
+  },
+  {
+    id: 'experience',
+    file: 'experience.tsx',
+    startLine: 1,
+    current: {
+      label: 'HEAD (Current Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">experience</span> = [',
+        '  {',
+        '    role: <span class="string">"Worked at some company"</span>,',
+        '    period: <span class="string">"a while ago"</span>,',
+        '    tasks: [',
+        '      <span class="string">"wrote some code"</span>,',
+        '      <span class="string">"attended meetings"</span>,',
+        '      <span class="string">"fixed a bug or two"</span>,',
+        '    ]',
+        '  }',
+        '];',
+      ]
+    },
+    incoming: {
+      label: 'main (Incoming Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">experience</span> = [',
+        '  {',
+        '    role: <span class="string">"Software Developer"</span>,',
+        '    company: <span class="string">"<span class="highlight">Walmart Global Tech</span>"</span>,',
+        '    period: <span class="string">"2022 - Present"</span>,',
+        '    tasks: [',
+        '      <span class="string">"Architected microservices handling 50K+ RPM"</span>,',
+        '      <span class="string">"Led migration from monolith to event-driven</span>',
+        '       <span class="string">architecture, reducing latency by 40%"</span>,',
+        '      <span class="string">"Mentored 5 junior developers and established</span>',
+        '       <span class="string">code review standards for the team"</span>,',
+        '      <span class="string">"Implemented automated testing pipeline,</span>',
+        '       <span class="string">increasing code coverage from 45% to 92%"</span>,',
+        '    ]',
+        '  },',
+        '  {',
+        '    role: <span class="string">"Software Engineering Intern"</span>,',
+        '    company: <span class="string">"Walmart Global Tech"</span>,',
+        '    period: <span class="string">"Summer 2021"</span>,',
+        '    tasks: [',
+        '      <span class="string">"Built internal dashboard reducing manual</span>',
+        '       <span class="string">reporting by 12 hours per week"</span>,',
+        '      <span class="string">"Received return offer within 4 weeks"</span>,',
+        '    ]',
+        '  },',
+        '];',
+      ]
+    }
+  },
+  {
+    id: 'contact',
+    file: 'contact.tsx',
+    startLine: 1,
+    current: {
+      label: 'HEAD (Current Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">Contact</span> = () => (',
+        '  <span class="tag">&lt;footer&gt;</span>',
+        '    <span class="tag">&lt;p&gt;</span>Maybe email me? idk<span class="tag">&lt;/p&gt;</span>',
+        '    <span class="tag">&lt;p&gt;</span>I don\'t really check my inbox<span class="tag">&lt;/p&gt;</span>',
+        '  <span class="tag">&lt;/footer&gt;</span>',
+        ');',
+      ]
+    },
+    incoming: {
+      label: 'main (Incoming Change)',
+      lines: [
+        '<span class="keyword">const</span> <span class="func">Contact</span> = () => (',
+        '  <span class="tag">&lt;footer&gt;</span>',
+        '    <span class="tag">&lt;h2&gt;</span>Let\'s Build Something Together<span class="tag">&lt;/h2&gt;</span>',
+        '    <span class="tag">&lt;p&gt;</span>',
+        '      Always open to interesting projects, open-source',
+        '      collaborations, and conversations about scalable',
+        '      systems architecture.',
+        '    <span class="tag">&lt;/p&gt;</span>',
+        '    <span class="tag">&lt;a</span> href=<span class="string">"mailto:anshull.garg@gmail.com"</span><span class="tag">&gt;</span>Email<span class="tag">&lt;/a&gt;</span>',
+        '    <span class="tag">&lt;a</span> href=<span class="string">"https://github.com/anshullgarg"</span><span class="tag">&gt;</span>GitHub<span class="tag">&lt;/a&gt;</span>',
+        '    <span class="tag">&lt;a</span> href=<span class="string">"https://linkedin.com/in/anshullgarg"</span><span class="tag">&gt;</span>LinkedIn<span class="tag">&lt;/a&gt;</span>',
+        '  <span class="tag">&lt;/footer&gt;</span>',
+        ');',
+      ]
+    }
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let resolutions = {}; // { conflictId: 'current' | 'incoming' | 'both' }
+let resolvedCount = 0;
+
+// ============================================================
+// RENDER CONFLICTS
+// ============================================================
+function renderConflicts() {
+  const editor = document.getElementById('editorView');
+  editor.innerHTML = '';
+
+  conflicts.forEach((conflict, idx) => {
+    const isResolved = !!resolutions[conflict.id];
+    const block = document.createElement('div');
+    block.className = 'conflict-block' + (isResolved ? ' resolved' : '');
+    block.id = 'conflict-' + conflict.id;
+    block.setAttribute('role', 'region');
+    block.setAttribute('aria-label', 'Merge conflict in ' + conflict.file);
+
+    let ln = conflict.startLine;
+
+    if (!isResolved) {
+      // Unresolved conflict
+      block.innerHTML = `
+        <div class="conflict-header">
+          <span class="conflict-filename">
+            <svg viewBox="0 0 16 16"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm9-3a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM8 6.75a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 6.75Z"/></svg>
+            ${conflict.file}
+          </span>
+          <span class="conflict-status">CONFLICT</span>
+        </div>
+        <div class="conflict-body">
+          <div class="marker-line marker-head" data-ln="${ln++}">&lt;&lt;&lt;&lt;&lt;&lt;&lt; ${conflict.current.label}</div>
+          <div class="diff-section diff-current">
+            ${conflict.current.lines.map(l => `<div class="diff-line" data-ln="${ln++}">${l}</div>`).join('')}
+          </div>
+          <div class="marker-line marker-sep" data-ln="${ln++}">=======</div>
+          <div class="diff-section diff-incoming">
+            ${conflict.incoming.lines.map(l => `<div class="diff-line" data-ln="${ln++}">${l}</div>`).join('')}
+          </div>
+          <div class="marker-line marker-main" data-ln="${ln++}">&gt;&gt;&gt;&gt;&gt;&gt;&gt; ${conflict.incoming.label}</div>
+        </div>
+        <div class="conflict-actions">
+          <button class="btn btn-current" onclick="resolveConflict('${conflict.id}','current')" aria-label="Accept current change in ${conflict.file}">
+            Accept Current
+          </button>
+          <button class="btn btn-incoming" onclick="resolveConflict('${conflict.id}','incoming')" aria-label="Accept incoming change in ${conflict.file}">
+            Accept Incoming
+          </button>
+          <button class="btn btn-both" onclick="resolveConflict('${conflict.id}','both')" aria-label="Accept both changes in ${conflict.file}">
+            Accept Both
+          </button>
+        </div>
+      `;
+    } else {
+      // Resolved
+      const choice = resolutions[conflict.id];
+      let resolvedLines = [];
+      if (choice === 'current') resolvedLines = conflict.current.lines;
+      else if (choice === 'incoming') resolvedLines = conflict.incoming.lines;
+      else resolvedLines = [...conflict.current.lines, '', '<span class="comment">// --- merged ---</span>', '', ...conflict.incoming.lines];
+
+      block.innerHTML = `
+        <div class="conflict-header">
+          <span class="conflict-filename">
+            <svg viewBox="0 0 16 16" style="fill:var(--green)"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>
+            ${conflict.file}
+          </span>
+          <span class="conflict-status">RESOLVED</span>
+        </div>
+        <div class="resolved-content">
+          ${resolvedLines.map((l, i) => `<div class="diff-line" data-ln="${conflict.startLine + i}">${l}</div>`).join('')}
+        </div>
+        <div class="conflict-actions">
+          <span class="resolved-msg">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--green)"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>
+            Conflict resolved (${choice === 'current' ? 'accepted current' : choice === 'incoming' ? 'accepted incoming' : 'accepted both'})
+          </span>
+          <button class="btn" onclick="unresolveConflict('${conflict.id}')" style="margin-left:auto" aria-label="Undo resolution for ${conflict.file}">Undo</button>
+        </div>
+      `;
+    }
+
+    editor.appendChild(block);
+  });
+}
+
+// ============================================================
+// RESOLVE / UNRESOLVE
+// ============================================================
+function resolveConflict(id, choice) {
+  if (resolutions[id]) return;
+  resolutions[id] = choice;
+  resolvedCount = Object.keys(resolutions).length;
+  updateUI();
+  renderConflicts();
+
+  // Scroll resolved block into view smoothly
+  const el = document.getElementById('conflict-' + id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // Auto-advance to next unresolved tab
+  const nextUnresolved = conflicts.findIndex(c => !resolutions[c.id]);
+  if (nextUnresolved >= 0) {
+    updateActiveTab(nextUnresolved);
+  }
+}
+
+function unresolveConflict(id) {
+  delete resolutions[id];
+  resolvedCount = Object.keys(resolutions).length;
+  updateUI();
+  renderConflicts();
+}
+
+// ============================================================
+// UPDATE UI (progress, tabs, merge panel)
+// ============================================================
+function updateUI() {
+  // Progress
+  const pct = (resolvedCount / 5) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Conflicts: ${resolvedCount}/5 resolved`;
+  document.querySelector('.progress-bar').setAttribute('aria-valuenow', resolvedCount);
+
+  // Toolbar icon
+  const icon = document.getElementById('toolbarIcon');
+  if (resolvedCount === 5) {
+    icon.classList.add('resolved');
+    icon.textContent = '\u2713';
+  } else {
+    icon.classList.remove('resolved');
+    icon.textContent = '!';
+  }
+
+  // File tabs
+  document.querySelectorAll('.file-tab').forEach((tab, i) => {
+    const c = conflicts[i];
+    if (resolutions[c.id]) {
+      tab.classList.add('resolved-tab');
+    } else {
+      tab.classList.remove('resolved-tab');
+    }
+  });
+
+  // Merge panel
+  const panel = document.getElementById('mergePanel');
+  const btn = document.getElementById('mergeBtn');
+  const info = document.getElementById('mergePanelInfo');
+
+  if (resolvedCount > 0) {
+    panel.classList.add('visible');
+  }
+
+  if (resolvedCount === 5) {
+    btn.disabled = false;
+    info.innerHTML = 'All conflicts resolved! <strong>Ready to merge.</strong>';
+  } else {
+    btn.disabled = true;
+    info.innerHTML = `Resolve all <strong>${5 - resolvedCount} remaining conflict${5 - resolvedCount > 1 ? 's' : ''}</strong> to merge`;
+  }
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function updateActiveTab(idx) {
+  document.querySelectorAll('.file-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+    t.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+  });
+}
+
+document.querySelectorAll('.file-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const idx = parseInt(tab.dataset.tab);
+    updateActiveTab(idx);
+    const target = document.getElementById('conflict-' + conflicts[idx].id);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ============================================================
+// MERGE ANIMATION
+// ============================================================
+function performMerge() {
+  const overlay = document.getElementById('mergeOverlay');
+  const output = document.getElementById('terminalOutput');
+  overlay.classList.add('active');
+
+  const lines = [
+    { text: '$ git merge main', delay: 0, cls: '' },
+    { text: 'Updating a1b2c3d..f4e5d6c', delay: 400, cls: '' },
+    { text: 'Fast-forward', delay: 700, cls: '' },
+    { text: ' <span class="path">src/components/about.tsx</span>    | <span class="added">+14</span> <span class="removed">-6</span>', delay: 1000, cls: '' },
+    { text: ' <span class="path">src/components/skills.tsx</span>   | <span class="added">+7</span>  <span class="removed">-5</span>', delay: 1200, cls: '' },
+    { text: ' <span class="path">src/components/projects.tsx</span> | <span class="added">+21</span> <span class="removed">-8</span>', delay: 1400, cls: '' },
+    { text: ' <span class="path">src/components/experience.tsx</span>| <span class="added">+24</span> <span class="removed">-9</span>', delay: 1600, cls: '' },
+    { text: ' <span class="path">src/components/contact.tsx</span>  | <span class="added">+12</span> <span class="removed">-4</span>', delay: 1800, cls: '' },
+    { text: ' 5 files changed, 78 insertions(+), 32 deletions(-)', delay: 2100, cls: '' },
+    { text: '', delay: 2300, cls: '' },
+    { text: 'Merge successful. Branch is up to date.', delay: 2500, cls: 'success' },
+  ];
+
+  output.innerHTML = '';
+
+  lines.forEach(({ text, delay, cls }) => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = 'line' + (cls ? ' ' + cls : '');
+      div.innerHTML = text || '&nbsp;';
+      div.style.animationDelay = '0s';
+      output.appendChild(div);
+
+      // On last line, transition to portfolio
+      if (cls === 'success') {
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          showPortfolio();
+        }, 1500);
+      }
+    }, delay);
+  });
+}
+
+// ============================================================
+// SHOW FINAL PORTFOLIO
+// ============================================================
+function showPortfolio() {
+  document.getElementById('editorView').classList.add('hidden');
+  document.getElementById('mergePanel').classList.remove('visible');
+  document.querySelector('.toolbar').style.display = 'none';
+  document.querySelector('.file-tabs').style.display = 'none';
+
+  const pv = document.getElementById('portfolioView');
+  pv.classList.add('active');
+
+  pv.innerHTML = `
+    <!-- Hero -->
+    <section class="p-hero">
+      <span class="tag">merge successful</span>
+      <h2>Anshull Garg</h2>
+      <p class="subtitle">
+        Software Developer at <strong style="color:var(--blue)">Walmart Global Tech</strong>.
+        Building high-performance systems that serve 240M+ customers weekly.
+        Specializing in scalable web applications, distributed systems, and developer tooling.
+      </p>
+      <div class="meta">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--text-dim)"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+          4+ Years Experience
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--text-dim)"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/></svg>
+          Walmart Scale Systems
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--text-dim)"><path d="M1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0ZM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0Zm.5 4.75a.75.75 0 0 0-1.5 0v3.5a.75.75 0 0 0 .37.65l2.5 1.5a.75.75 0 1 0 .77-1.29L8.5 7.94V4.75Z"/></svg>
+          240M+ Customers
+        </span>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="p-section">
+      <h3>
+        <span class="icon" style="background:rgba(63,185,80,.15);color:var(--green)">+</span>
+        Technical Skills
+      </h3>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h4>Frontend</h4>
+          <p>React, Next.js, TypeScript, Tailwind CSS, Redux, Webpack, Vite</p>
+        </div>
+        <div class="skill-card">
+          <h4>Backend</h4>
+          <p>Node.js, Java, Python, GraphQL, REST APIs, Express</p>
+        </div>
+        <div class="skill-card">
+          <h4>Infrastructure</h4>
+          <p>AWS, Docker, Kubernetes, CI/CD, Terraform, GitHub Actions</p>
+        </div>
+        <div class="skill-card">
+          <h4>Data</h4>
+          <p>PostgreSQL, Redis, Apache Kafka, MongoDB, Elasticsearch</p>
+        </div>
+        <div class="skill-card">
+          <h4>Tools & Practices</h4>
+          <p>Git, Jest, Cypress, Agile/Scrum, System Design, Code Review</p>
+        </div>
+        <div class="skill-card">
+          <h4>Architecture</h4>
+          <p>Microservices, Event-Driven, Domain-Driven Design, CQRS</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="p-section">
+      <h3>
+        <span class="icon" style="background:rgba(88,166,255,.15);color:var(--blue)">#</span>
+        Key Projects
+      </h3>
+      <div class="project-card">
+        <h4>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--yellow)"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c.464 0 .91.184 1.238.513l.55.55a.25.25 0 0 0 .177.073h6.282a.75.75 0 0 1 .75.75v.5H.75a.75.75 0 0 1-.75-.75V1.75Zm.75 4h14.5a.75.75 0 0 1 .75.75v7.75a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1-.75-.75V6.5a.75.75 0 0 1 .75-.75Z"/></svg>
+          Walmart Checkout Platform
+        </h4>
+        <p>
+          Re-architected the checkout flow handling $500B+ in annual transactions
+          with 99.99% uptime during peak traffic events like Black Friday.
+        </p>
+        <div class="tech-tags">
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">Kafka</span>
+          <span class="tech-tag">Redis</span>
+          <span class="tech-tag">Kubernetes</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h4>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--yellow)"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c.464 0 .91.184 1.238.513l.55.55a.25.25 0 0 0 .177.073h6.282a.75.75 0 0 1 .75.75v.5H.75a.75.75 0 0 1-.75-.75V1.75Zm.75 4h14.5a.75.75 0 0 1 .75.75v7.75a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1-.75-.75V6.5a.75.75 0 0 1 .75-.75Z"/></svg>
+          Real-Time Inventory System
+        </h4>
+        <p>
+          Built event-driven inventory tracking across 4,700+ stores with
+          sub-second synchronization, eliminating overselling during flash sales.
+        </p>
+        <div class="tech-tags">
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">Kafka</span>
+          <span class="tech-tag">PostgreSQL</span>
+          <span class="tech-tag">AWS</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h4>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--yellow)"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c.464 0 .91.184 1.238.513l.55.55a.25.25 0 0 0 .177.073h6.282a.75.75 0 0 1 .75.75v.5H.75a.75.75 0 0 1-.75-.75V1.75Zm.75 4h14.5a.75.75 0 0 1 .75.75v7.75a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1-.75-.75V6.5a.75.75 0 0 1 .75-.75Z"/></svg>
+          Developer Portal
+        </h4>
+        <p>
+          Created internal developer platform used by 2,000+ engineers,
+          reducing onboarding time by 60% with interactive docs and tooling.
+        </p>
+        <div class="tech-tags">
+          <span class="tech-tag">Next.js</span>
+          <span class="tech-tag">GraphQL</span>
+          <span class="tech-tag">Docker</span>
+          <span class="tech-tag">MDX</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="p-section">
+      <h3>
+        <span class="icon" style="background:rgba(210,153,34,.15);color:var(--yellow)">~</span>
+        Experience
+      </h3>
+      <div class="exp-card">
+        <h4>Software Developer</h4>
+        <div class="company">Walmart Global Tech</div>
+        <div class="period">2022 - Present</div>
+        <ul>
+          <li>Architected microservices handling 50K+ requests per minute</li>
+          <li>Led migration from monolith to event-driven architecture, reducing latency by 40%</li>
+          <li>Mentored 5 junior developers and established code review standards for the team</li>
+          <li>Implemented automated testing pipeline, increasing code coverage from 45% to 92%</li>
+          <li>Championed accessibility standards resulting in WCAG AA compliance across all products</li>
+        </ul>
+      </div>
+      <div class="exp-card">
+        <h4>Software Engineering Intern</h4>
+        <div class="company">Walmart Global Tech</div>
+        <div class="period">Summer 2021</div>
+        <ul>
+          <li>Built internal dashboard reducing manual reporting by 12 hours per week</li>
+          <li>Received return offer within 4 weeks of the internship</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact-section">
+      <h3>Let's Build Something Together</h3>
+      <p>
+        Always open to interesting projects, open-source collaborations,
+        and conversations about scalable systems architecture.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:anshull.garg@gmail.com" class="contact-link">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88l6.5-3.81Z"/></svg>
+          Email
+        </a>
+        <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146Zm4.943 12.248V6.169H2.542v7.225h2.401Zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016ZM6.032 13.394h2.401V9.525c0-.207.015-.414.076-.562.167-.414.548-.843 1.188-.843.837 0 1.172.638 1.172 1.573v3.701h2.401V9.388c0-2.146-1.145-3.144-2.672-3.144-1.25 0-1.8.698-2.109 1.174h.016V6.169H6.032c.031.675 0 7.225 0 7.225Z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </section>
+
+    <button class="back-to-conflicts" onclick="backToConflicts()" aria-label="Go back to conflict view">
+      &larr; Back to conflict view
+    </button>
+  `;
+
+  // Animate sections in
+  pv.querySelectorAll('.p-hero, .p-section, .contact-section').forEach((s, i) => {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(24px)';
+    s.style.transition = 'opacity .5s ease, transform .5s ease';
+    setTimeout(() => {
+      s.style.opacity = '1';
+      s.style.transform = 'translateY(0)';
+    }, 200 + i * 150);
+  });
+}
+
+// ============================================================
+// BACK TO CONFLICTS
+// ============================================================
+function backToConflicts() {
+  document.getElementById('portfolioView').classList.remove('active');
+  document.getElementById('editorView').classList.remove('hidden');
+  document.querySelector('.toolbar').style.display = '';
+  document.querySelector('.file-tabs').style.display = '';
+  document.getElementById('mergePanel').classList.add('visible');
+}
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+renderConflicts();
+updateUI();
+
+// Show merge panel after slight delay
+setTimeout(() => {
+  document.getElementById('mergePanel').classList.add('visible');
+}, 800);
+</script>
+</body>
+</html>

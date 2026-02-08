@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rubber Duck Debugging - Anshull Garg</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --duck-yellow:#FFD700;
+    --duck-orange:#FF8C00;
+    --duck-light:#FFF3B0;
+    --water-blue:#4A90D9;
+    --water-dark:#2C5F8A;
+    --white:#FFFFFF;
+    --dark:#1A1A2E;
+    --dark-light:#2A2A4E;
+    --bubble-bg:#F5F5DC;
+    --card-bg:rgba(255,255,255,0.06);
+  }
+
+  @font-face{font-family:'Fira Code';src:local('Fira Code')}
+
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+    background:var(--dark);
+    color:var(--white);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ===== WATER BACKGROUND ===== */
+  .water-bg{
+    position:fixed;inset:0;z-index:0;
+    background:linear-gradient(180deg,var(--dark) 0%,#1a1a3e 40%,var(--water-dark) 100%);
+    overflow:hidden;
+  }
+  .water-bg .ripple{
+    position:absolute;bottom:0;width:200%;height:120px;
+    background:repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(74,144,217,0.08) 40px,
+      rgba(74,144,217,0.08) 80px
+    );
+    animation:drift 8s ease-in-out infinite alternate;
+  }
+  .water-bg .ripple:nth-child(2){
+    height:80px;opacity:0.5;
+    animation:drift 6s ease-in-out infinite alternate-reverse;
+  }
+  .water-bg .ripple:nth-child(3){
+    height:50px;opacity:0.3;
+    animation:drift 10s ease-in-out infinite alternate;
+  }
+  @keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ===== LAYOUT ===== */
+  .app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+
+  /* ===== HEADER ===== */
+  .header{
+    text-align:center;padding:2rem 1rem 0.5rem;
+    opacity:0;animation:fadeDown 0.8s ease forwards;
+  }
+  .header h1{
+    font-size:clamp(1.4rem,4vw,2.2rem);font-weight:700;
+    color:var(--duck-yellow);letter-spacing:-0.5px;
+  }
+  .header h1 span{color:var(--white);font-weight:300}
+  .header p{
+    color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:0.3rem;
+    font-family:'Courier New',monospace;
+  }
+  @keyframes fadeDown{0%{opacity:0;transform:translateY(-20px)}100%{opacity:1;transform:translateY(0)}}
+
+  /* ===== DUCK STAGE ===== */
+  .duck-stage{
+    position:relative;width:100%;max-width:500px;
+    display:flex;flex-direction:column;align-items:center;
+    padding:1rem 1rem 0;
+    flex-shrink:0;
+  }
+
+  /* ===== SPEECH BUBBLE (DUCK) ===== */
+  .duck-speech{
+    position:relative;
+    background:var(--bubble-bg);
+    color:var(--dark);
+    padding:0.8rem 1.2rem;
+    border-radius:16px;
+    font-size:0.95rem;
+    font-weight:600;
+    max-width:320px;
+    text-align:center;
+    opacity:0;
+    transform:scale(0.8) translateY(10px);
+    transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    margin-bottom:0.8rem;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+  }
+  .duck-speech.visible{opacity:1;transform:scale(1) translateY(0)}
+  .duck-speech::after{
+    content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+    border-left:10px solid transparent;border-right:10px solid transparent;
+    border-top:12px solid var(--bubble-bg);
+  }
+  .duck-speech .quack{color:var(--duck-orange);font-weight:800;font-size:1.05rem}
+  .duck-speech .translation{color:#666;font-style:italic;font-weight:400;font-size:0.85rem}
+
+  /* ===== THE DUCK ===== */
+  .duck-container{
+    position:relative;width:180px;height:180px;
+    animation:bob 3s ease-in-out infinite;
+    cursor:pointer;
+    transition:transform 0.3s ease;
+  }
+  .duck-container:hover{transform:scale(1.05)}
+
+  /* Duck animations by state */
+  .duck-container.nod{animation:bob 3s ease-in-out infinite, nod 0.4s ease-in-out 3}
+  .duck-container.tilt{animation:bob 3s ease-in-out infinite, tilt 0.6s ease-in-out 2}
+  .duck-container.excited{animation:bob 3s ease-in-out infinite, excited 0.25s ease-in-out 5}
+  .duck-container.dance{animation:dance 0.4s ease-in-out infinite}
+
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes nod{0%,100%{transform:rotate(0)}50%{transform:rotate(-8deg)}}
+  @keyframes tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(15deg)}}
+  @keyframes excited{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.08)}}
+  @keyframes dance{
+    0%{transform:translateY(0) rotate(0) scale(1)}
+    25%{transform:translateY(-15px) rotate(-10deg) scale(1.1)}
+    50%{transform:translateY(0) rotate(0) scale(1)}
+    75%{transform:translateY(-15px) rotate(10deg) scale(1.1)}
+    100%{transform:translateY(0) rotate(0) scale(1)}
+  }
+
+  /* CSS Duck body */
+  .duck-body{
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+    width:130px;height:100px;
+    background:radial-gradient(ellipse at 50% 40%,#FFE44D,var(--duck-yellow) 60%,#E6BE00);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow:
+      inset -8px -8px 20px rgba(0,0,0,0.1),
+      inset 8px 8px 20px rgba(255,255,255,0.3),
+      0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  /* Duck head */
+  .duck-head{
+    position:absolute;top:10px;left:50%;transform:translateX(-55%);
+    width:80px;height:75px;
+    background:radial-gradient(ellipse at 50% 40%,#FFE44D,var(--duck-yellow) 70%,#E6BE00);
+    border-radius:50%;
+    box-shadow:
+      inset -4px -4px 12px rgba(0,0,0,0.08),
+      inset 4px 4px 12px rgba(255,255,255,0.3);
+    z-index:2;
+  }
+
+  /* Eyes */
+  .duck-eye{
+    position:absolute;width:14px;height:16px;
+    background:var(--white);border-radius:50%;
+    box-shadow:inset 0 0 4px rgba(0,0,0,0.1);
+    z-index:3;
+  }
+  .duck-eye::after{
+    content:'';position:absolute;
+    width:8px;height:9px;
+    background:#1a1a1a;border-radius:50%;
+    top:4px;left:4px;
+    transition:all 0.3s ease;
+  }
+  .duck-eye::before{
+    content:'';position:absolute;
+    width:3px;height:3px;
+    background:white;border-radius:50%;
+    top:3px;left:6px;z-index:4;
+  }
+  .duck-eye.left{top:22px;left:14px}
+  .duck-eye.right{top:22px;left:46px}
+
+  /* Blink */
+  .duck-container.blink .duck-eye::after{
+    height:2px;top:8px;
+  }
+
+  /* Beak */
+  .duck-beak{
+    position:absolute;top:42px;left:50%;transform:translateX(-50%);
+    z-index:4;
+  }
+  .duck-beak-top{
+    width:30px;height:10px;
+    background:linear-gradient(180deg,var(--duck-orange),#E07000);
+    border-radius:50% 50% 0 0;
+    position:relative;
+  }
+  .duck-beak-bottom{
+    width:26px;height:7px;
+    background:linear-gradient(180deg,#CC6600,#B85C00);
+    border-radius:0 0 50% 50%;
+    margin:0 auto;
+    transform-origin:top center;
+    animation:none;
+  }
+  .duck-container.talking .duck-beak-bottom{
+    animation:talk 0.15s ease-in-out infinite alternate;
+  }
+  @keyframes talk{0%{transform:scaleY(1) translateY(0)}100%{transform:scaleY(1.8) translateY(2px)}}
+
+  /* Cheeks (blush) */
+  .duck-cheek{
+    position:absolute;top:38px;width:16px;height:10px;
+    background:rgba(255,150,100,0.35);border-radius:50%;
+    z-index:3;
+  }
+  .duck-cheek.left{left:8px}
+  .duck-cheek.right{left:52px}
+
+  /* Wing */
+  .duck-wing{
+    position:absolute;bottom:35px;right:-2px;
+    width:40px;height:55px;
+    background:linear-gradient(135deg,#E6C800,#D4B200);
+    border-radius:0 60% 60% 30%;
+    transform:rotate(-10deg);
+    z-index:1;
+    transition:transform 0.3s ease;
+  }
+  .duck-container.excited .duck-wing,
+  .duck-container.dance .duck-wing{
+    animation:wave 0.3s ease-in-out infinite alternate;
+  }
+  @keyframes wave{0%{transform:rotate(-10deg)}100%{transform:rotate(-30deg)}}
+
+  /* Tail */
+  .duck-tail{
+    position:absolute;bottom:55px;left:2px;
+    width:20px;height:25px;
+    background:linear-gradient(135deg,#E6C800,#D4B200);
+    border-radius:60% 0 30% 60%;
+    transform:rotate(20deg);
+    z-index:0;
+  }
+
+  /* Water / desk surface */
+  .duck-surface{
+    width:240px;height:30px;margin-top:-12px;
+    background:linear-gradient(180deg,rgba(74,144,217,0.4),rgba(74,144,217,0.15));
+    border-radius:50%;
+    position:relative;
+    animation:surfaceBob 3s ease-in-out infinite;
+  }
+  .duck-surface::before{
+    content:'';position:absolute;inset:-6px;
+    background:radial-gradient(ellipse,rgba(74,144,217,0.2),transparent 70%);
+    border-radius:50%;
+  }
+  @keyframes surfaceBob{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.05)}}
+
+  /* ===== USER PROMPT AREA ===== */
+  .prompt-area{
+    width:100%;max-width:600px;
+    padding:0.8rem 1.5rem;
+    text-align:center;
+  }
+
+  .user-bubble{
+    display:inline-block;
+    background:var(--water-blue);
+    color:var(--white);
+    padding:0.7rem 1.2rem;
+    border-radius:18px 18px 4px 18px;
+    font-size:0.95rem;
+    max-width:90%;
+    text-align:left;
+    box-shadow:0 4px 15px rgba(74,144,217,0.3);
+    min-height:2.2em;
+    position:relative;
+    opacity:0;
+    transform:translateY(10px);
+    transition:all 0.4s ease;
+  }
+  .user-bubble.visible{opacity:1;transform:translateY(0)}
+  .user-bubble .cursor{
+    display:inline-block;width:2px;height:1em;
+    background:var(--white);vertical-align:text-bottom;
+    animation:blink-cursor 0.6s infinite;
+    margin-left:2px;
+  }
+  @keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
+
+  .advance-hint{
+    margin-top:0.8rem;
+    font-size:0.8rem;
+    color:rgba(255,255,255,0.35);
+    animation:pulse-hint 2s ease-in-out infinite;
+    cursor:pointer;
+    user-select:none;
+  }
+  .advance-hint:hover{color:rgba(255,255,255,0.6)}
+  @keyframes pulse-hint{0%,100%{opacity:0.4}50%{opacity:0.8}}
+
+  /* ===== CONTENT SECTIONS ===== */
+  .content-area{
+    width:100%;max-width:800px;
+    padding:0 1.5rem 3rem;
+  }
+
+  .section{
+    opacity:0;
+    transform:translateY(30px);
+    transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    margin-bottom:1.5rem;
+    pointer-events:none;
+  }
+  .section.revealed{
+    opacity:1;transform:translateY(0);pointer-events:auto;
+  }
+
+  .section-card{
+    background:var(--card-bg);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:1.5rem;
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);
+    transition:border-color 0.3s ease,box-shadow 0.3s ease;
+  }
+  .section-card:hover{
+    border-color:rgba(255,215,0,0.2);
+    box-shadow:0 8px 32px rgba(255,215,0,0.05);
+  }
+
+  .section-title{
+    font-size:1.1rem;font-weight:700;
+    color:var(--duck-yellow);
+    margin-bottom:0.8rem;
+    display:flex;align-items:center;gap:0.5rem;
+  }
+  .section-title .icon{font-size:1.3rem}
+
+  .section-text{
+    color:rgba(255,255,255,0.75);
+    font-size:0.9rem;line-height:1.7;
+  }
+
+  /* ===== ABOUT ===== */
+  .about-grid{display:flex;gap:1rem;flex-wrap:wrap}
+  .about-stat{
+    flex:1;min-width:100px;
+    background:rgba(255,215,0,0.06);
+    border:1px solid rgba(255,215,0,0.1);
+    border-radius:10px;padding:0.8rem;text-align:center;
+  }
+  .about-stat .val{font-size:1.4rem;font-weight:800;color:var(--duck-yellow)}
+  .about-stat .label{font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:0.2rem}
+
+  /* ===== EXPERIENCE ===== */
+  .exp-item{
+    padding:0.8rem 0;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .exp-item:last-child{border-bottom:none}
+  .exp-role{font-weight:700;color:var(--white);font-size:0.95rem}
+  .exp-company{color:var(--water-blue);font-weight:600;font-size:0.85rem}
+  .exp-date{color:rgba(255,255,255,0.4);font-size:0.75rem;margin-bottom:0.3rem}
+  .exp-desc{color:rgba(255,255,255,0.6);font-size:0.82rem;line-height:1.5}
+
+  /* ===== PROJECTS ===== */
+  .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+  .project-card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:12px;padding:1rem;
+    transition:all 0.3s ease;
+  }
+  .project-card:hover{
+    border-color:var(--water-blue);
+    transform:translateY(-3px);
+    box-shadow:0 6px 20px rgba(74,144,217,0.15);
+  }
+  .project-name{font-weight:700;font-size:0.9rem;color:var(--white);margin-bottom:0.3rem}
+  .project-desc{font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:0.5rem}
+  .project-tags{display:flex;flex-wrap:wrap;gap:0.3rem}
+  .project-tag{
+    font-size:0.65rem;padding:0.15rem 0.5rem;
+    background:rgba(74,144,217,0.15);color:var(--water-blue);
+    border-radius:20px;
+  }
+
+  /* ===== SKILLS ===== */
+  .skills-grid{display:flex;flex-wrap:wrap;gap:0.5rem}
+  .skill-chip{
+    padding:0.4rem 0.8rem;
+    background:rgba(255,215,0,0.08);
+    border:1px solid rgba(255,215,0,0.15);
+    border-radius:20px;
+    font-size:0.78rem;
+    color:var(--duck-yellow);
+    font-weight:500;
+    transition:all 0.3s ease;
+  }
+  .skill-chip:hover{
+    background:rgba(255,215,0,0.15);
+    transform:translateY(-2px);
+  }
+  .skill-category{
+    width:100%;font-size:0.7rem;font-weight:700;
+    color:rgba(255,255,255,0.4);text-transform:uppercase;
+    letter-spacing:1px;margin-top:0.5rem;margin-bottom:0.2rem;
+  }
+  .skill-category:first-child{margin-top:0}
+
+  /* ===== CONTACT ===== */
+  .contact-links{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.5rem}
+  .contact-link{
+    display:inline-flex;align-items:center;gap:0.4rem;
+    padding:0.5rem 1rem;
+    background:rgba(74,144,217,0.12);
+    border:1px solid rgba(74,144,217,0.2);
+    border-radius:10px;
+    color:var(--water-blue);font-size:0.82rem;font-weight:600;
+    text-decoration:none;
+    transition:all 0.3s ease;
+  }
+  .contact-link:hover{
+    background:var(--water-blue);color:var(--white);
+    transform:translateY(-2px);
+    box-shadow:0 4px 15px rgba(74,144,217,0.3);
+  }
+
+  /* ===== ROUND INDICATOR ===== */
+  .round-dots{
+    display:flex;gap:0.5rem;justify-content:center;
+    margin:0.5rem 0;
+  }
+  .round-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    transition:all 0.4s ease;
+  }
+  .round-dot.active{background:var(--duck-yellow);box-shadow:0 0 8px rgba(255,215,0,0.4)}
+  .round-dot.done{background:rgba(255,215,0,0.4)}
+
+  /* ===== FINAL STATE ===== */
+  .final-message{
+    text-align:center;padding:1rem;
+    opacity:0;transition:opacity 0.6s ease;
+  }
+  .final-message.visible{opacity:1}
+  .final-message p{
+    color:rgba(255,255,255,0.5);font-size:0.8rem;
+    font-family:'Courier New',monospace;
+  }
+
+  /* ===== BUBBLES DECORATION ===== */
+  .bubble-deco{
+    position:fixed;border-radius:50%;
+    background:rgba(74,144,217,0.06);
+    pointer-events:none;z-index:0;
+  }
+  .bubble-deco:nth-child(1){width:200px;height:200px;top:10%;left:-50px;animation:float-bubble 12s ease-in-out infinite}
+  .bubble-deco:nth-child(2){width:150px;height:150px;bottom:20%;right:-30px;animation:float-bubble 10s ease-in-out infinite reverse}
+  .bubble-deco:nth-child(3){width:100px;height:100px;top:50%;left:20%;animation:float-bubble 14s ease-in-out infinite}
+  @keyframes float-bubble{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
+
+  /* ===== MOBILE ===== */
+  @media(max-width:600px){
+    .duck-container{width:140px;height:140px}
+    .duck-body{width:100px;height:78px}
+    .duck-head{width:62px;height:58px;top:10px}
+    .duck-eye{width:11px;height:13px}
+    .duck-eye::after{width:6px;height:7px;top:3px;left:3px}
+    .duck-eye::before{width:2px;height:2px;top:2px;left:5px}
+    .duck-eye.left{top:17px;left:10px}
+    .duck-eye.right{top:17px;left:36px}
+    .duck-beak{top:33px}
+    .duck-beak-top{width:24px;height:8px}
+    .duck-beak-bottom{width:20px;height:5px}
+    .duck-cheek{top:30px;width:12px;height:8px}
+    .duck-cheek.left{left:5px}
+    .duck-cheek.right{left:41px}
+    .duck-wing{width:32px;height:44px;bottom:28px}
+    .duck-tail{bottom:44px;width:16px;height:20px}
+    .duck-surface{width:190px;height:24px}
+    .projects-grid{grid-template-columns:1fr}
+    .content-area{padding:0 1rem 3rem}
+    .section-card{padding:1.2rem}
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:rgba(255,215,0,0.2);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(255,215,0,0.4)}
+
+  /* ===== START SCREEN ===== */
+  .start-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:var(--dark);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity 0.6s ease,visibility 0.6s ease;
+  }
+  .start-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .start-title{
+    font-size:clamp(1.5rem,5vw,2.5rem);font-weight:800;
+    color:var(--duck-yellow);margin-bottom:0.5rem;
+    text-align:center;
+  }
+  .start-sub{
+    color:rgba(255,255,255,0.5);font-size:0.9rem;
+    margin-bottom:2rem;text-align:center;
+    font-family:'Courier New',monospace;
+  }
+  .start-duck{
+    width:120px;height:120px;
+    animation:bob 2s ease-in-out infinite;
+    margin-bottom:2rem;
+  }
+  .start-btn{
+    padding:0.8rem 2rem;
+    background:var(--duck-yellow);
+    color:var(--dark);
+    border:none;border-radius:30px;
+    font-size:1rem;font-weight:700;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 20px rgba(255,215,0,0.3);
+  }
+  .start-btn:hover{
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 8px 30px rgba(255,215,0,0.5);
+  }
+  .start-btn:active{transform:translateY(0) scale(0.98)}
+
+  .code-comment{
+    font-family:'Courier New',monospace;
+    color:rgba(255,255,255,0.25);
+    font-size:0.72rem;
+    margin-top:1.5rem;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="water-bg">
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+</div>
+<div class="bubble-deco"></div>
+<div class="bubble-deco"></div>
+<div class="bubble-deco"></div>
+
+<!-- Start Overlay -->
+<div class="start-overlay" id="startOverlay">
+  <div class="start-duck">
+    <svg viewBox="0 0 120 120" fill="none">
+      <ellipse cx="60" cy="82" rx="45" ry="32" fill="#FFD700"/>
+      <ellipse cx="60" cy="82" rx="45" ry="32" fill="url(#duckGrad1)"/>
+      <circle cx="55" cy="48" r="28" fill="#FFD700"/>
+      <circle cx="55" cy="48" r="28" fill="url(#duckGrad2)"/>
+      <ellipse cx="44" cy="42" rx="5" ry="6" fill="white"/>
+      <circle cx="45" cy="43" r="3" fill="#1a1a1a"/>
+      <circle cx="46" cy="41" r="1" fill="white"/>
+      <ellipse cx="64" cy="42" rx="5" ry="6" fill="white"/>
+      <circle cx="65" cy="43" r="3" fill="#1a1a1a"/>
+      <circle cx="66" cy="41" r="1" fill="white"/>
+      <path d="M48 54 Q55 60 66 54" fill="#FF8C00"/>
+      <path d="M50 54 Q55 58 64 54" fill="#CC6600"/>
+      <ellipse cx="38" cy="52" rx="6" ry="3.5" fill="rgba(255,150,100,0.3)"/>
+      <ellipse cx="72" cy="52" rx="6" ry="3.5" fill="rgba(255,150,100,0.3)"/>
+      <path d="M88 72 Q105 65 95 90 Q90 100 85 95" fill="#E6C800"/>
+      <defs>
+        <radialGradient id="duckGrad1" cx="50%" cy="30%"><stop offset="0%" stop-color="#FFE44D" stop-opacity="0.5"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <radialGradient id="duckGrad2" cx="40%" cy="35%"><stop offset="0%" stop-color="#FFE44D" stop-opacity="0.4"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="start-title">Rubber Duck Debugging</div>
+  <div class="start-sub">// explain your code to the duck</div>
+  <button class="start-btn" id="startBtn">Start Debugging Session</button>
+  <div class="code-comment">/* Every developer's secret weapon */</div>
+</div>
+
+<!-- Main App -->
+<div class="app" id="app" style="display:none">
+  <header class="header">
+    <h1>Anshull Garg <span>x</span> Rubber Duck</h1>
+    <p>// debugging session in progress...</p>
+  </header>
+
+  <!-- Duck Stage -->
+  <div class="duck-stage">
+    <!-- Duck Speech Bubble -->
+    <div class="duck-speech" id="duckSpeech">
+      <span class="quack">Quack!</span><br>
+      <span class="translation">(I'm listening...)</span>
+    </div>
+
+    <!-- The Duck -->
+    <div class="duck-container" id="duck" title="Click me to continue!">
+      <div class="duck-head">
+        <div class="duck-eye left"></div>
+        <div class="duck-eye right"></div>
+        <div class="duck-cheek left"></div>
+        <div class="duck-cheek right"></div>
+        <div class="duck-beak">
+          <div class="duck-beak-top"></div>
+          <div class="duck-beak-bottom"></div>
+        </div>
+      </div>
+      <div class="duck-body">
+        <div class="duck-wing"></div>
+        <div class="duck-tail"></div>
+      </div>
+    </div>
+    <div class="duck-surface"></div>
+
+    <!-- Round Dots -->
+    <div class="round-dots">
+      <div class="round-dot" data-round="0"></div>
+      <div class="round-dot" data-round="1"></div>
+      <div class="round-dot" data-round="2"></div>
+      <div class="round-dot" data-round="3"></div>
+      <div class="round-dot" data-round="4"></div>
+    </div>
+  </div>
+
+  <!-- User Prompt -->
+  <div class="prompt-area">
+    <div class="user-bubble" id="userBubble"></div>
+    <div class="advance-hint" id="advanceHint">Click the duck or press Space to continue</div>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="content-area">
+
+    <!-- ABOUT -->
+    <div class="section" id="section-0">
+      <div class="section-card">
+        <div class="section-title"><span class="icon">&#129414;</span> About Me</div>
+        <div class="section-text">
+          <p>Hey there! I'm <strong>Anshull Garg</strong>, a Software Developer who believes in the ancient art of rubber duck debugging. I talk to ducks, write clean code, and occasionally do both at the same time.</p>
+          <p style="margin-top:0.5rem">I'm passionate about building scalable systems, crafting elegant user experiences, and solving problems that make real impact for millions of users.</p>
+        </div>
+        <div class="about-grid" style="margin-top:1rem">
+          <div class="about-stat"><div class="val">3+</div><div class="label">Years Experience</div></div>
+          <div class="about-stat"><div class="val">10M+</div><div class="label">Users Impacted</div></div>
+          <div class="about-stat"><div class="val">50+</div><div class="label">Projects Shipped</div></div>
+          <div class="about-stat"><div class="val">1</div><div class="label">Rubber Duck</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="section" id="section-1">
+      <div class="section-card">
+        <div class="section-title"><span class="icon">&#128188;</span> Experience</div>
+        <div class="exp-item">
+          <div class="exp-role">Software Developer</div>
+          <div class="exp-company">Walmart Global Tech</div>
+          <div class="exp-date">Present</div>
+          <div class="exp-desc">Building and scaling systems at the world's largest retailer. Working on high-traffic applications serving millions of customers, optimizing performance, and driving engineering excellence across the stack.</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">Software Engineering Intern</div>
+          <div class="exp-company">Walmart Global Tech</div>
+          <div class="exp-date">Previously</div>
+          <div class="exp-desc">Developed internal tools and contributed to customer-facing features. Gained deep experience in enterprise-scale React applications and microservices architecture.</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">Freelance Developer</div>
+          <div class="exp-company">Independent</div>
+          <div class="exp-date">Earlier</div>
+          <div class="exp-desc">Built full-stack web applications for startups and small businesses. Delivered end-to-end solutions from design to deployment.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="section" id="section-2">
+      <div class="section-card">
+        <div class="section-title"><span class="icon">&#128187;</span> Projects</div>
+        <div class="projects-grid">
+          <div class="project-card">
+            <div class="project-name">E-Commerce Platform</div>
+            <div class="project-desc">High-performance shopping experience with real-time inventory management and personalized recommendations.</div>
+            <div class="project-tags">
+              <span class="project-tag">React</span>
+              <span class="project-tag">Node.js</span>
+              <span class="project-tag">Redis</span>
+            </div>
+          </div>
+          <div class="project-card">
+            <div class="project-name">Analytics Dashboard</div>
+            <div class="project-desc">Real-time data visualization platform processing millions of events with interactive charts and alerts.</div>
+            <div class="project-tags">
+              <span class="project-tag">TypeScript</span>
+              <span class="project-tag">D3.js</span>
+              <span class="project-tag">Kafka</span>
+            </div>
+          </div>
+          <div class="project-card">
+            <div class="project-name">CI/CD Pipeline</div>
+            <div class="project-desc">Automated deployment infrastructure reducing release cycles from days to minutes with zero-downtime deploys.</div>
+            <div class="project-tags">
+              <span class="project-tag">Docker</span>
+              <span class="project-tag">Jenkins</span>
+              <span class="project-tag">K8s</span>
+            </div>
+          </div>
+          <div class="project-card">
+            <div class="project-name">Design System</div>
+            <div class="project-desc">Shared component library used across multiple teams, ensuring consistent UX and accelerating development velocity.</div>
+            <div class="project-tags">
+              <span class="project-tag">React</span>
+              <span class="project-tag">Storybook</span>
+              <span class="project-tag">CSS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="section" id="section-3">
+      <div class="section-card">
+        <div class="section-title"><span class="icon">&#9889;</span> Skills</div>
+        <div class="skills-grid">
+          <div class="skill-category">Frontend</div>
+          <span class="skill-chip">React</span>
+          <span class="skill-chip">TypeScript</span>
+          <span class="skill-chip">Next.js</span>
+          <span class="skill-chip">JavaScript</span>
+          <span class="skill-chip">HTML/CSS</span>
+          <span class="skill-chip">Tailwind</span>
+          <span class="skill-chip">Redux</span>
+
+          <div class="skill-category">Backend</div>
+          <span class="skill-chip">Node.js</span>
+          <span class="skill-chip">Express</span>
+          <span class="skill-chip">Python</span>
+          <span class="skill-chip">Java</span>
+          <span class="skill-chip">REST APIs</span>
+          <span class="skill-chip">GraphQL</span>
+
+          <div class="skill-category">Infrastructure</div>
+          <span class="skill-chip">AWS</span>
+          <span class="skill-chip">Docker</span>
+          <span class="skill-chip">Kubernetes</span>
+          <span class="skill-chip">CI/CD</span>
+          <span class="skill-chip">Git</span>
+
+          <div class="skill-category">Data</div>
+          <span class="skill-chip">PostgreSQL</span>
+          <span class="skill-chip">MongoDB</span>
+          <span class="skill-chip">Redis</span>
+          <span class="skill-chip">Kafka</span>
+
+          <div class="skill-category">Other</div>
+          <span class="skill-chip">System Design</span>
+          <span class="skill-chip">Agile/Scrum</span>
+          <span class="skill-chip">Rubber Duck Debugging</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="section" id="section-4">
+      <div class="section-card">
+        <div class="section-title"><span class="icon">&#128236;</span> Let's Connect</div>
+        <div class="section-text">
+          <p>The duck says you should hire me. Ducks are wise. Trust the duck.</p>
+        </div>
+        <div class="contact-links">
+          <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 4 10 8 10-8"/></svg>
+            Email
+          </a>
+          <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+            LinkedIn
+          </a>
+          <a href="https://github.com/anshullgarg" class="contact-link" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="https://anshullgarg.com" class="contact-link" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            Website
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Message -->
+    <div class="final-message" id="finalMessage">
+      <p>/* Debugging session complete. The duck approves. */</p>
+      <p style="margin-top:0.3rem;color:rgba(255,215,0,0.4)">Built with rubber duck methodology by Anshull Garg</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  // ===== ROUNDS CONFIG =====
+  const rounds = [
+    {
+      userText: "Hey duck, let me tell you about myself...",
+      duckQuack: "Quack!",
+      duckTranslation: "(Tell me more, I'm all ears... wait, do I have ears?)",
+      duckAnim: "nod",
+      sectionId: "section-0"
+    },
+    {
+      userText: "So I work at this company called Walmart...",
+      duckQuack: "Quack quack!",
+      duckTranslation: "(That's literally Fortune #1! Go on...)",
+      duckAnim: "nod",
+      sectionId: "section-1"
+    },
+    {
+      userText: "And I've built some really cool things...",
+      duckQuack: "Quack?!",
+      duckTranslation: "(Ooh, show me the projects!)",
+      duckAnim: "tilt",
+      sectionId: "section-2"
+    },
+    {
+      userText: "I know React, Node, TypeScript, and a lot more...",
+      duckQuack: "Quack quack quack!",
+      duckTranslation: "(Full-stack AND rubber duck certified!)",
+      duckAnim: "excited",
+      sectionId: "section-3"
+    },
+    {
+      userText: "So... want to hire me?",
+      duckQuack: "QUACK!!!",
+      duckTranslation: "(OBVIOUSLY! Who wouldn't?!)",
+      duckAnim: "dance",
+      sectionId: "section-4"
+    }
+  ];
+
+  // ===== STATE =====
+  let currentRound = -1; // -1 = not started yet
+  let isAnimating = false;
+  let blinkInterval;
+
+  // ===== DOM =====
+  const startOverlay = document.getElementById('startOverlay');
+  const startBtn = document.getElementById('startBtn');
+  const app = document.getElementById('app');
+  const duck = document.getElementById('duck');
+  const duckSpeech = document.getElementById('duckSpeech');
+  const userBubble = document.getElementById('userBubble');
+  const advanceHint = document.getElementById('advanceHint');
+  const finalMessage = document.getElementById('finalMessage');
+  const dots = document.querySelectorAll('.round-dot');
+
+  // ===== BLINK SYSTEM =====
+  function startBlinking(){
+    blinkInterval = setInterval(()=>{
+      duck.classList.add('blink');
+      setTimeout(()=> duck.classList.remove('blink'), 150);
+    }, 3000 + Math.random()*2000);
+  }
+
+  // ===== TYPEWRITER =====
+  function typeText(element, text, speed = 40){
+    return new Promise(resolve => {
+      element.innerHTML = '';
+      element.classList.add('visible');
+      let i = 0;
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+
+      function type(){
+        if(i < text.length){
+          element.textContent = text.substring(0, i + 1);
+          element.appendChild(cursor);
+          i++;
+          setTimeout(type, speed + Math.random()*20);
+        } else {
+          // Remove cursor after a beat
+          setTimeout(()=>{
+            if(cursor.parentNode) cursor.remove();
+            resolve();
+          }, 400);
+        }
+      }
+      type();
+    });
+  }
+
+  // ===== DUCK REACTION =====
+  function duckReact(animClass, quack, translation){
+    return new Promise(resolve => {
+      // Clear previous animation
+      duck.className = 'duck-container';
+
+      // Start talking
+      duck.classList.add('talking');
+
+      // Show speech bubble
+      duckSpeech.innerHTML = `<span class="quack">${quack}</span><br><span class="translation">${translation}</span>`;
+      duckSpeech.classList.add('visible');
+
+      // After a beat, do the reaction animation
+      setTimeout(()=>{
+        duck.classList.remove('talking');
+        duck.classList.add(animClass);
+
+        // For dance, keep it going; others settle
+        const duration = animClass === 'dance' ? 2500 : 1500;
+        setTimeout(()=>{
+          if(animClass !== 'dance'){
+            duck.className = 'duck-container';
+          }
+          resolve();
+        }, duration);
+      }, 600);
+    });
+  }
+
+  // ===== REVEAL SECTION =====
+  function revealSection(sectionId){
+    const section = document.getElementById(sectionId);
+    if(section){
+      section.classList.add('revealed');
+      // Scroll into view smoothly
+      setTimeout(()=>{
+        section.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 200);
+    }
+  }
+
+  // ===== UPDATE DOTS =====
+  function updateDots(round){
+    dots.forEach((dot, i) => {
+      dot.classList.remove('active','done');
+      if(i < round) dot.classList.add('done');
+      if(i === round) dot.classList.add('active');
+    });
+  }
+
+  // ===== ADVANCE ROUND =====
+  async function advanceRound(){
+    if(isAnimating) return;
+
+    currentRound++;
+    if(currentRound >= rounds.length){
+      // All done!
+      advanceHint.style.display = 'none';
+      finalMessage.classList.add('visible');
+      // Keep duck dancing
+      duck.className = 'duck-container dance';
+      return;
+    }
+
+    isAnimating = true;
+    const round = rounds[currentRound];
+
+    // Update dots
+    updateDots(currentRound);
+
+    // Hide hint during animation
+    advanceHint.style.opacity = '0';
+
+    // Hide previous duck speech
+    duckSpeech.classList.remove('visible');
+
+    // Type user message
+    await typeText(userBubble, round.userText, 35);
+
+    // Small pause
+    await new Promise(r => setTimeout(r, 500));
+
+    // Duck reacts
+    await duckReact(round.duckAnim, round.duckQuack, round.duckTranslation);
+
+    // Reveal section
+    revealSection(round.sectionId);
+
+    // Update dots (mark as done after)
+    updateDots(currentRound + 1);
+
+    // Show hint again
+    if(currentRound < rounds.length - 1){
+      advanceHint.style.opacity = '1';
+      advanceHint.textContent = 'Click the duck or press Space to continue';
+    } else {
+      advanceHint.style.opacity = '1';
+      advanceHint.textContent = 'Debugging session complete!';
+      setTimeout(()=>{
+        finalMessage.classList.add('visible');
+        advanceHint.style.display = 'none';
+      }, 1000);
+      duck.className = 'duck-container dance';
+    }
+
+    isAnimating = false;
+  }
+
+  // ===== START =====
+  function startSession(){
+    startOverlay.classList.add('hidden');
+    app.style.display = 'flex';
+    startBlinking();
+
+    // Initial duck speech
+    setTimeout(()=>{
+      duckSpeech.innerHTML = '<span class="quack">Quack!</span><br><span class="translation">(Hi! Tell me about your bugs... or yourself!)</span>';
+      duckSpeech.classList.add('visible');
+      userBubble.classList.add('visible');
+      userBubble.innerHTML = '<span style="color:rgba(255,255,255,0.5);font-style:italic">Click the duck to start talking...</span>';
+    }, 500);
+  }
+
+  // ===== EVENT LISTENERS =====
+  startBtn.addEventListener('click', startSession);
+
+  duck.addEventListener('click', advanceRound);
+  advanceHint.addEventListener('click', advanceRound);
+
+  document.addEventListener('keydown', (e) => {
+    if(e.code === 'Space' || e.code === 'Enter'){
+      e.preventDefault();
+      if(startOverlay.classList.contains('hidden')){
+        advanceRound();
+      } else {
+        startSession();
+      }
+    }
+  });
+
+  // ===== EASTER EGG: Click duck lots of times after complete =====
+  let easterEggClicks = 0;
+  duck.addEventListener('click', ()=>{
+    if(currentRound >= rounds.length){
+      easterEggClicks++;
+      if(easterEggClicks > 5){
+        duckSpeech.innerHTML = '<span class="quack">QUAAAAAACK!!!</span><br><span class="translation">(Stop poking me and go hire Anshull already!)</span>';
+        duckSpeech.classList.add('visible');
+        easterEggClicks = 0;
+      }
+    }
+  });
+
+  // ===== MOBILE TOUCH =====
+  duck.addEventListener('touchend', (e)=>{
+    e.preventDefault();
+    duck.click();
+  }, {passive:false});
+
+})();
+</script>
+
+</body>
+</html>

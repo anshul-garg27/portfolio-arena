@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint Retro Board | Anshull Garg | Software Developer</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@400;500;600;700&display=swap');
+
+  :root{
+    --board:#F0F2F5;
+    --green:#D1FAE5;--green-dark:#059669;
+    --red:#FEE2E2;--red-dark:#DC2626;
+    --blue:#DBEAFE;--blue-dark:#2563EB;
+    --sticky-yellow:#FEF9C3;--sticky-pink:#FCE7F3;
+    --sticky-blue:#DBEAFE;--sticky-green:#D1FAE5;
+    --sticky-orange:#FFEDD5;--sticky-purple:#EDE9FE;
+    --shadow:0 4px 14px rgba(0,0,0,.12);
+    --font-sans:'Inter',system-ui,sans-serif;
+    --font-hand:'Caveat',cursive;
+  }
+
+  html{font-size:16px;scroll-behavior:smooth}
+  body{
+    font-family:var(--font-sans);
+    background:var(--board);
+    min-height:100vh;
+    color:#1e293b;
+    overflow-x:hidden;
+  }
+
+  /* ---- HEADER ---- */
+  .retro-header{
+    background:#fff;
+    border-bottom:3px solid #e2e8f0;
+    padding:16px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;
+    position:sticky;top:0;z-index:100;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+  .retro-header h1{
+    font-size:1.15rem;font-weight:700;
+    display:flex;align-items:center;gap:8px;
+    flex-wrap:wrap;
+  }
+  .retro-header h1 .sep{color:#94a3b8;font-weight:400}
+  .retro-header h1 .sprint-tag{
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff;font-size:.7rem;font-weight:700;
+    padding:3px 10px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+  .header-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .meta-item{
+    display:flex;align-items:center;gap:6px;
+    font-size:.8rem;color:#64748b;
+  }
+  .meta-item svg{width:16px;height:16px;flex-shrink:0}
+  .timer-display{
+    font-family:'Courier New',monospace;
+    font-size:1.3rem;font-weight:700;
+    color:#1e293b;background:#f8fafc;
+    border:2px solid #e2e8f0;border-radius:8px;
+    padding:6px 16px;min-width:80px;text-align:center;
+    cursor:pointer;user-select:none;
+    transition:border-color .2s;
+  }
+  .timer-display:hover{border-color:#6366f1}
+  .timer-display.running{border-color:#059669;color:#059669}
+  .timer-display.paused{border-color:#f59e0b;color:#f59e0b}
+  .timer-display.done{border-color:#dc2626;color:#dc2626;animation:pulse-red 1s infinite}
+  @keyframes pulse-red{0%,100%{opacity:1}50%{opacity:.5}}
+
+  .participants{
+    display:flex;align-items:center;gap:-6px;
+  }
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    border:2px solid #fff;display:flex;align-items:center;justify-content:center;
+    font-size:.65rem;font-weight:700;color:#fff;
+    margin-left:-6px;cursor:default;
+    position:relative;
+  }
+  .avatar:first-child{margin-left:0}
+  .avatar[data-tooltip]:hover::after{
+    content:attr(data-tooltip);
+    position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+    background:#1e293b;color:#fff;font-size:.65rem;font-weight:500;
+    padding:3px 8px;border-radius:4px;white-space:nowrap;z-index:10;
+  }
+
+  .btn-end-retro{
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff;border:none;border-radius:8px;
+    padding:8px 20px;font-size:.8rem;font-weight:600;
+    cursor:pointer;transition:transform .15s,box-shadow .15s;
+    font-family:var(--font-sans);
+  }
+  .btn-end-retro:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,.4)}
+  .btn-end-retro:active{transform:translateY(0)}
+
+  /* ---- TOOLBAR ---- */
+  .toolbar{
+    display:flex;align-items:center;justify-content:center;
+    gap:12px;padding:14px 32px;flex-wrap:wrap;
+  }
+  .btn-add-note{
+    display:flex;align-items:center;gap:6px;
+    background:#fff;border:2px dashed #cbd5e1;
+    border-radius:8px;padding:8px 18px;
+    font-size:.8rem;font-weight:600;color:#64748b;
+    cursor:pointer;transition:all .2s;
+    font-family:var(--font-sans);
+  }
+  .btn-add-note:hover{border-color:#6366f1;color:#6366f1;background:#f5f3ff}
+  .btn-add-note svg{width:16px;height:16px}
+
+  .filter-pills{display:flex;gap:6px;flex-wrap:wrap}
+  .pill{
+    font-size:.7rem;font-weight:600;
+    padding:4px 12px;border-radius:20px;
+    border:1.5px solid #e2e8f0;background:#fff;color:#64748b;
+    cursor:pointer;transition:all .2s;
+    font-family:var(--font-sans);
+  }
+  .pill:hover,.pill.active{background:#6366f1;color:#fff;border-color:#6366f1}
+
+  .note-count{
+    font-size:.75rem;color:#94a3b8;font-weight:500;
+  }
+
+  /* ---- BOARD ---- */
+  .board{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    padding:0 24px 40px;
+    max-width:1400px;margin:0 auto;
+    min-height:calc(100vh - 180px);
+  }
+
+  .column{
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 1px 4px rgba(0,0,0,.06);
+    display:flex;flex-direction:column;
+    min-height:400px;
+    overflow:hidden;
+    transition:box-shadow .2s;
+  }
+  .column.drag-over{
+    box-shadow:0 0 0 3px #6366f1,0 4px 20px rgba(99,102,241,.15);
+  }
+
+  .column-header{
+    padding:16px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:2px solid rgba(0,0,0,.05);
+    position:sticky;top:0;z-index:2;
+  }
+  .column-header h2{
+    font-size:.9rem;font-weight:700;
+    display:flex;align-items:center;gap:8px;
+  }
+  .column-header .col-count{
+    font-size:.7rem;font-weight:600;
+    padding:2px 8px;border-radius:10px;
+    background:rgba(0,0,0,.08);
+  }
+  .column-header .col-icon{font-size:1.1rem}
+
+  .col-green .column-header{background:var(--green)}
+  .col-red .column-header{background:var(--red)}
+  .col-blue .column-header{background:var(--blue)}
+
+  .column-body{
+    padding:16px;
+    flex:1;
+    display:flex;flex-direction:column;gap:12px;
+    overflow-y:auto;
+  }
+
+  /* ---- STICKY NOTE ---- */
+  .sticky{
+    position:relative;
+    padding:16px 16px 36px;
+    border-radius:3px;
+    min-height:90px;
+    cursor:grab;
+    user-select:none;
+    transition:transform .18s ease,box-shadow .18s ease;
+    font-family:var(--font-hand);
+    font-size:1.15rem;
+    font-weight:500;
+    line-height:1.4;
+    color:#1e293b;
+    box-shadow:
+      2px 3px 8px rgba(0,0,0,.1),
+      inset 0 -2px 4px rgba(0,0,0,.03);
+  }
+  .sticky::before{
+    content:'';position:absolute;
+    top:0;right:0;
+    width:0;height:0;
+    border-style:solid;
+    border-width:0 24px 24px 0;
+    border-color:transparent rgba(0,0,0,.06) transparent transparent;
+    border-radius:0 3px 0 0;
+  }
+  .sticky::after{
+    content:'';position:absolute;
+    bottom:0;left:10%;right:10%;height:6px;
+    background:linear-gradient(transparent,rgba(0,0,0,.04));
+    border-radius:0 0 3px 3px;
+  }
+  .sticky:hover{
+    transform:scale(1.03) rotate(0deg) !important;
+    box-shadow:4px 6px 20px rgba(0,0,0,.18);
+    z-index:10;
+  }
+  .sticky.dragging{
+    opacity:.6;transform:rotate(3deg) scale(1.05) !important;
+    box-shadow:8px 12px 30px rgba(0,0,0,.25);
+    z-index:100;
+  }
+
+  .sticky-author{
+    position:absolute;bottom:8px;left:16px;
+    font-family:var(--font-sans);
+    font-size:.6rem;font-weight:600;
+    color:rgba(0,0,0,.3);
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+
+  .sticky-vote{
+    position:absolute;bottom:6px;right:12px;
+    display:flex;align-items:center;gap:4px;
+    background:rgba(255,255,255,.7);
+    border-radius:12px;padding:2px 8px;
+    cursor:pointer;transition:all .15s;
+    font-family:var(--font-sans);
+    border:1px solid rgba(0,0,0,.08);
+  }
+  .sticky-vote:hover{background:rgba(255,255,255,.95);transform:scale(1.1)}
+  .sticky-vote:active{transform:scale(.95)}
+  .sticky-vote .vote-icon{font-size:.75rem}
+  .sticky-vote .vote-count{font-size:.7rem;font-weight:700;color:#6366f1}
+
+  .sticky-delete{
+    position:absolute;top:4px;left:6px;
+    width:18px;height:18px;border-radius:50%;
+    background:rgba(0,0,0,.08);border:none;
+    color:rgba(0,0,0,.3);font-size:.65rem;
+    cursor:pointer;display:none;
+    align-items:center;justify-content:center;
+    transition:all .15s;font-family:var(--font-sans);
+  }
+  .sticky:hover .sticky-delete{display:flex}
+  .sticky-delete:hover{background:#ef4444;color:#fff}
+
+  /* Color Variants */
+  .sticky-yellow{background:var(--sticky-yellow)}
+  .sticky-pink{background:var(--sticky-pink)}
+  .sticky-blue{background:var(--sticky-blue)}
+  .sticky-green{background:var(--sticky-green)}
+  .sticky-orange{background:var(--sticky-orange)}
+  .sticky-purple{background:var(--sticky-purple)}
+
+  /* ---- ADD NOTE ZONE ---- */
+  .add-note-zone{
+    border:2px dashed #d1d5db;
+    border-radius:8px;
+    padding:12px;
+    text-align:center;
+    color:#9ca3af;
+    font-size:.8rem;
+    cursor:pointer;
+    transition:all .2s;
+    margin-top:auto;
+  }
+  .add-note-zone:hover{
+    border-color:#6366f1;color:#6366f1;
+    background:rgba(99,102,241,.04);
+  }
+
+  /* ---- MODAL ---- */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(15,23,42,.6);
+    backdrop-filter:blur(4px);
+    z-index:1000;
+    display:none;align-items:center;justify-content:center;
+    padding:20px;
+    animation:fadeIn .2s;
+  }
+  .modal-overlay.show{display:flex}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  .modal{
+    background:#fff;border-radius:20px;
+    padding:32px;max-width:500px;width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+    animation:slideUp .3s ease;
+    max-height:90vh;overflow-y:auto;
+  }
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  .modal h3{font-size:1.2rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .modal label{font-size:.8rem;font-weight:600;color:#64748b;display:block;margin-bottom:6px}
+  .modal textarea{
+    width:100%;border:2px solid #e2e8f0;border-radius:10px;
+    padding:12px;font-family:var(--font-hand);font-size:1.1rem;
+    resize:vertical;min-height:80px;
+    transition:border-color .2s;
+  }
+  .modal textarea:focus{outline:none;border-color:#6366f1}
+
+  .color-picker{display:flex;gap:8px;margin:12px 0 20px;flex-wrap:wrap}
+  .color-swatch{
+    width:32px;height:32px;border-radius:8px;
+    border:3px solid transparent;cursor:pointer;
+    transition:all .15s;
+  }
+  .color-swatch:hover,.color-swatch.selected{
+    border-color:#6366f1;transform:scale(1.15);
+  }
+
+  .column-select{display:flex;gap:8px;margin:8px 0 20px;flex-wrap:wrap}
+  .col-option{
+    flex:1;padding:8px 12px;border-radius:8px;
+    border:2px solid #e2e8f0;text-align:center;
+    font-size:.75rem;font-weight:600;cursor:pointer;
+    transition:all .15s;min-width:80px;
+  }
+  .col-option:hover,.col-option.selected{border-color:#6366f1;background:#f5f3ff}
+  .col-option.opt-green.selected{background:var(--green);border-color:var(--green-dark)}
+  .col-option.opt-red.selected{background:var(--red);border-color:var(--red-dark)}
+  .col-option.opt-blue.selected{background:var(--blue);border-color:var(--blue-dark)}
+
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+  .btn-modal{
+    padding:8px 20px;border-radius:8px;
+    font-size:.8rem;font-weight:600;
+    cursor:pointer;transition:all .15s;
+    border:2px solid #e2e8f0;background:#fff;color:#64748b;
+    font-family:var(--font-sans);
+  }
+  .btn-modal:hover{border-color:#6366f1;color:#6366f1}
+  .btn-modal.primary{background:#6366f1;color:#fff;border-color:#6366f1}
+  .btn-modal.primary:hover{background:#4f46e5}
+
+  /* ---- SUMMARY MODAL ---- */
+  .summary-content{display:flex;flex-direction:column;gap:20px}
+  .summary-section{
+    padding:16px;border-radius:12px;
+    border:1px solid #e2e8f0;
+  }
+  .summary-section h4{
+    font-size:.85rem;font-weight:700;margin-bottom:10px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .summary-section.s-green{background:var(--green);border-color:#a7f3d0}
+  .summary-section.s-red{background:var(--red);border-color:#fecaca}
+  .summary-section.s-blue{background:var(--blue);border-color:#bfdbfe}
+
+  .summary-item{
+    font-size:.8rem;color:#374151;padding:3px 0;
+    display:flex;align-items:center;gap:6px;
+  }
+  .summary-item .votes-badge{
+    background:#6366f1;color:#fff;
+    font-size:.6rem;font-weight:700;
+    padding:1px 6px;border-radius:8px;
+  }
+
+  .summary-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+    margin-bottom:16px;
+  }
+  .stat-card{
+    text-align:center;padding:16px;border-radius:12px;
+    background:#f8fafc;border:1px solid #e2e8f0;
+  }
+  .stat-card .stat-num{font-size:1.8rem;font-weight:800;color:#6366f1}
+  .stat-card .stat-label{font-size:.7rem;font-weight:600;color:#94a3b8;margin-top:2px}
+
+  .contact-banner{
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff;border-radius:12px;padding:20px;
+    text-align:center;
+  }
+  .contact-banner h4{font-size:1rem;font-weight:700;margin-bottom:8px}
+  .contact-banner p{font-size:.8rem;opacity:.9;margin-bottom:12px}
+  .contact-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .contact-link{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.2);color:#fff;
+    padding:6px 14px;border-radius:20px;
+    font-size:.75rem;font-weight:600;
+    text-decoration:none;
+    transition:background .15s;
+  }
+  .contact-link:hover{background:rgba(255,255,255,.35)}
+
+  /* ---- CONFETTI ---- */
+  .confetti-piece{
+    position:fixed;
+    width:10px;height:10px;
+    z-index:2000;
+    pointer-events:none;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media(max-width:900px){
+    .board{grid-template-columns:1fr;gap:16px;padding:0 12px 32px}
+    .retro-header{padding:12px 16px}
+    .retro-header h1{font-size:.95rem}
+    .toolbar{padding:10px 12px}
+    .column{min-height:300px}
+  }
+  @media(max-width:600px){
+    .retro-header{flex-direction:column;align-items:flex-start}
+    .header-meta{width:100%;justify-content:space-between}
+    .summary-stats{grid-template-columns:1fr}
+  }
+
+  /* ---- SCROLLBAR ---- */
+  .column-body::-webkit-scrollbar{width:4px}
+  .column-body::-webkit-scrollbar-track{background:transparent}
+  .column-body::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:4px}
+
+  /* ---- ENTRANCE ANIMATIONS ---- */
+  @keyframes dropIn{
+    from{opacity:0;transform:translateY(-30px) rotate(0deg)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .sticky.entering{animation:dropIn .4s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="retro-header">
+  <h1>
+    <span class="sprint-tag">Sprint 2026-Q1</span>
+    <span>Retrospective</span>
+    <span class="sep">|</span>
+    <span>Anshull Garg</span>
+    <span class="sep">|</span>
+    <span style="font-weight:500;color:#64748b">Software Developer</span>
+  </h1>
+  <div class="header-meta">
+    <div class="meta-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <div class="timer-display" id="timer" title="Click to start/pause timer">15:00</div>
+    </div>
+    <div class="participants" id="participants">
+      <div class="avatar" style="background:#6366f1" data-tooltip="Anshull Garg (Facilitator)">AG</div>
+      <div class="avatar" style="background:#059669" data-tooltip="React Expert">RE</div>
+      <div class="avatar" style="background:#dc2626" data-tooltip="TypeScript Fan">TS</div>
+      <div class="avatar" style="background:#f59e0b" data-tooltip="DevOps Lead">DL</div>
+      <div class="avatar" style="background:#8b5cf6" data-tooltip="You!">+1</div>
+    </div>
+    <div class="meta-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span><strong>5</strong> participants</span>
+    </div>
+    <div class="meta-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4-4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Facilitator: <strong>Anshull</strong></span>
+    </div>
+    <button class="btn-end-retro" id="btnEndRetro">End Retro</button>
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="btn-add-note" id="btnAddNote">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add Note
+  </button>
+  <div class="filter-pills">
+    <span class="pill active" data-filter="all">All</span>
+    <span class="pill" data-filter="most-voted">Most Voted</span>
+    <span class="pill" data-filter="recent">Recent</span>
+  </div>
+  <span class="note-count" id="noteCount"></span>
+</div>
+
+<!-- BOARD -->
+<div class="board" id="board">
+  <!-- COLUMN: What Went Well -->
+  <div class="column col-green" data-column="well" id="colWell">
+    <div class="column-header">
+      <h2><span class="col-icon">&#127881;</span> What Went Well <span class="col-count" id="countWell">0</span></h2>
+    </div>
+    <div class="column-body" id="bodyWell"></div>
+  </div>
+
+  <!-- COLUMN: What Didn't Go Well -->
+  <div class="column col-red" data-column="bad" id="colBad">
+    <div class="column-header">
+      <h2><span class="col-icon">&#128148;</span> What Didn't Go Well <span class="col-count" id="countBad">0</span></h2>
+    </div>
+    <div class="column-body" id="bodyBad"></div>
+  </div>
+
+  <!-- COLUMN: Action Items -->
+  <div class="column col-blue" data-column="action" id="colAction">
+    <div class="column-header">
+      <h2><span class="col-icon">&#9889;</span> Action Items <span class="col-count" id="countAction">0</span></h2>
+    </div>
+    <div class="column-body" id="bodyAction"></div>
+  </div>
+</div>
+
+<!-- ADD NOTE MODAL -->
+<div class="modal-overlay" id="addNoteModal">
+  <div class="modal">
+    <h3>&#128221; Add a Retro Note</h3>
+    <label for="noteText">What's on your mind?</label>
+    <textarea id="noteText" placeholder="Type your retro note here..."></textarea>
+
+    <label style="margin-top:12px">Pick a color</label>
+    <div class="color-picker" id="colorPicker">
+      <div class="color-swatch selected" style="background:var(--sticky-yellow)" data-color="sticky-yellow"></div>
+      <div class="color-swatch" style="background:var(--sticky-pink)" data-color="sticky-pink"></div>
+      <div class="color-swatch" style="background:var(--sticky-blue)" data-color="sticky-blue"></div>
+      <div class="color-swatch" style="background:var(--sticky-green)" data-color="sticky-green"></div>
+      <div class="color-swatch" style="background:var(--sticky-orange)" data-color="sticky-orange"></div>
+      <div class="color-swatch" style="background:var(--sticky-purple)" data-color="sticky-purple"></div>
+    </div>
+
+    <label>Add to column</label>
+    <div class="column-select" id="columnSelect">
+      <div class="col-option opt-green selected" data-col="well">What Went Well</div>
+      <div class="col-option opt-red" data-col="bad">Didn't Go Well</div>
+      <div class="col-option opt-blue" data-col="action">Action Items</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal" id="btnCancelNote">Cancel</button>
+      <button class="btn-modal primary" id="btnSubmitNote">Add Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY MODAL -->
+<div class="modal-overlay" id="summaryModal">
+  <div class="modal" style="max-width:600px">
+    <h3>&#128200; Retro Summary</h3>
+    <div class="summary-stats" id="summaryStats"></div>
+    <div class="summary-content" id="summaryContent"></div>
+    <div class="contact-banner" style="margin-top:20px">
+      <h4>Let's Connect!</h4>
+      <p>Enjoyed this retro? Let's build something great together.</p>
+      <div class="contact-links">
+        <a href="mailto:anshull@email.com" class="contact-link">&#9993; anshull@email.com</a>
+        <a href="https://github.com/anshullgarg" class="contact-link" target="_blank">&#128187; GitHub</a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank">&#128101; LinkedIn</a>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-modal" id="btnCloseSummary">Close</button>
+      <button class="btn-modal primary" id="btnExportSummary">Copy Summary</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============ DATA ============ */
+  const COLORS = ['sticky-yellow','sticky-pink','sticky-blue','sticky-green','sticky-orange','sticky-purple'];
+  const AUTHORS = ['Anshull','React Pro','TS Fan','DevOps','You'];
+
+  const initialNotes = {
+    well: [
+      { text: 'Shipped checkout optimization - 40% faster!', color: 'sticky-yellow', votes: 8, author: 'Anshull' },
+      { text: 'Component library adopted by 12 teams', color: 'sticky-green', votes: 5, author: 'Anshull' },
+      { text: 'Zero production incidents this sprint', color: 'sticky-blue', votes: 12, author: 'React Pro' },
+      { text: 'React + TypeScript = <3', color: 'sticky-pink', votes: 6, author: 'TS Fan' },
+      { text: 'Got promoted to Senior!', color: 'sticky-orange', votes: 15, author: 'Anshull' },
+      { text: 'Mentored 3 junior devs', color: 'sticky-purple', votes: 9, author: 'Anshull' },
+    ],
+    bad: [
+      { text: "Still can't exit vim on the first try", color: 'sticky-pink', votes: 20, author: 'Anshull' },
+      { text: 'Spent 4 hours on a CSS bug (it was z-index)', color: 'sticky-yellow', votes: 14, author: 'React Pro' },
+      { text: 'Deployed on Friday once (never again)', color: 'sticky-orange', votes: 18, author: 'DevOps' },
+      { text: 'Wrote code without tests (sorry)', color: 'sticky-blue', votes: 7, author: 'Anshull' },
+      { text: "Said 'it works on my machine' in standup", color: 'sticky-green', votes: 11, author: 'Anshull' },
+    ],
+    action: [
+      { text: 'Learn Rust (for real this time)', color: 'sticky-purple', votes: 6, author: 'Anshull' },
+      { text: 'Contribute to open source monthly', color: 'sticky-yellow', votes: 4, author: 'Anshull' },
+      { text: 'Write more blog posts', color: 'sticky-pink', votes: 3, author: 'Anshull' },
+      { text: 'Contact me: anshull@email.com', color: 'sticky-blue', votes: 10, author: 'Anshull' },
+      { text: 'Check out my GitHub', color: 'sticky-green', votes: 8, author: 'Anshull' },
+    ],
+  };
+
+  let notes = { well: [], bad: [], action: [] };
+  let noteIdCounter = 0;
+
+  /* ============ TIMER ============ */
+  let timerSeconds = 15 * 60;
+  let timerInterval = null;
+  let timerRunning = false;
+  const timerEl = document.getElementById('timer');
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
+  function updateTimerDisplay() {
+    timerEl.textContent = formatTime(timerSeconds);
+    if (timerSeconds <= 0) {
+      timerEl.classList.add('done');
+      timerEl.classList.remove('running', 'paused');
+      clearInterval(timerInterval);
+      timerRunning = false;
+    }
+  }
+
+  timerEl.addEventListener('click', function() {
+    if (timerSeconds <= 0) {
+      timerSeconds = 15 * 60;
+      timerEl.classList.remove('done');
+      updateTimerDisplay();
+      return;
+    }
+    if (timerRunning) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerEl.classList.remove('running');
+      timerEl.classList.add('paused');
+    } else {
+      timerInterval = setInterval(function() {
+        timerSeconds--;
+        updateTimerDisplay();
+      }, 1000);
+      timerRunning = true;
+      timerEl.classList.remove('paused');
+      timerEl.classList.add('running');
+    }
+  });
+
+  /* ============ NOTE RENDERING ============ */
+  function randomRotation() {
+    return (Math.random() * 4 - 2).toFixed(2);
+  }
+
+  function createStickyEl(note) {
+    const div = document.createElement('div');
+    div.className = 'sticky ' + note.color + ' entering';
+    div.setAttribute('draggable', 'true');
+    div.dataset.id = note.id;
+    div.style.transform = 'rotate(' + note.rotation + 'deg)';
+
+    div.innerHTML =
+      '<button class="sticky-delete" title="Remove note">&times;</button>' +
+      '<span class="sticky-text">' + escapeHtml(note.text) + '</span>' +
+      '<span class="sticky-author">' + escapeHtml(note.author) + '</span>' +
+      '<div class="sticky-vote" title="Vote!">' +
+        '<span class="vote-icon">&#128077;</span>' +
+        '<span class="vote-count">' + note.votes + '</span>' +
+      '</div>';
+
+    // Remove entrance animation after it plays
+    div.addEventListener('animationend', function() {
+      div.classList.remove('entering');
+    });
+
+    // Vote handler
+    div.querySelector('.sticky-vote').addEventListener('click', function(e) {
+      e.stopPropagation();
+      note.votes++;
+      this.querySelector('.vote-count').textContent = note.votes;
+      burstEffect(this);
+    });
+
+    // Delete handler
+    div.querySelector('.sticky-delete').addEventListener('click', function(e) {
+      e.stopPropagation();
+      div.style.transform = 'scale(0) rotate(20deg)';
+      div.style.opacity = '0';
+      div.style.transition = 'all .3s ease';
+      setTimeout(function() {
+        removeNoteById(note.id);
+        renderBoard();
+      }, 300);
+    });
+
+    // Drag handlers
+    div.addEventListener('dragstart', function(e) {
+      e.dataTransfer.setData('text/plain', note.id);
+      e.dataTransfer.effectAllowed = 'move';
+      div.classList.add('dragging');
+      setTimeout(function() { div.style.opacity = '.4'; }, 0);
+    });
+
+    div.addEventListener('dragend', function() {
+      div.classList.remove('dragging');
+      div.style.opacity = '1';
+      document.querySelectorAll('.column').forEach(function(c) { c.classList.remove('drag-over'); });
+    });
+
+    return div;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function burstEffect(el) {
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 6; i++) {
+      const s = document.createElement('div');
+      s.style.cssText =
+        'position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9999;' +
+        'left:' + (rect.left + rect.width / 2) + 'px;top:' + (rect.top + rect.height / 2) + 'px;' +
+        'background:' + ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899'][i] + ';';
+      document.body.appendChild(s);
+      const angle = (Math.PI * 2 / 6) * i;
+      const dist = 20 + Math.random() * 20;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+      s.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(0)', opacity: 0 }
+      ], { duration: 400, easing: 'ease-out' });
+      setTimeout(function() { s.remove(); }, 400);
+    }
+  }
+
+  function renderBoard() {
+    ['well', 'bad', 'action'].forEach(function(col) {
+      const body = document.getElementById('body' + col.charAt(0).toUpperCase() + col.slice(1));
+      // Build a set of existing note IDs in the DOM
+      const existingEls = {};
+      body.querySelectorAll('.sticky').forEach(function(el) {
+        existingEls[el.dataset.id] = el;
+      });
+
+      // Remove notes that no longer belong
+      Object.keys(existingEls).forEach(function(id) {
+        if (!notes[col].find(function(n) { return String(n.id) === String(id); })) {
+          existingEls[id].remove();
+        }
+      });
+
+      // Add new notes
+      notes[col].forEach(function(note) {
+        if (!existingEls[note.id]) {
+          body.appendChild(createStickyEl(note));
+        }
+      });
+
+      // Update count
+      document.getElementById('count' + col.charAt(0).toUpperCase() + col.slice(1)).textContent = notes[col].length;
+    });
+
+    // Total note count
+    const total = notes.well.length + notes.bad.length + notes.action.length;
+    document.getElementById('noteCount').textContent = total + ' notes total';
+  }
+
+  function removeNoteById(id) {
+    ['well', 'bad', 'action'].forEach(function(col) {
+      notes[col] = notes[col].filter(function(n) { return n.id !== id; });
+    });
+  }
+
+  function findNoteById(id) {
+    for (var col of ['well', 'bad', 'action']) {
+      var found = notes[col].find(function(n) { return String(n.id) === String(id); });
+      if (found) return { note: found, column: col };
+    }
+    return null;
+  }
+
+  /* ============ DRAG & DROP ON COLUMNS ============ */
+  document.querySelectorAll('.column').forEach(function(column) {
+    var colName = column.dataset.column;
+    var body = column.querySelector('.column-body');
+
+    body.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      column.classList.add('drag-over');
+    });
+
+    body.addEventListener('dragleave', function(e) {
+      if (!column.contains(e.relatedTarget)) {
+        column.classList.remove('drag-over');
+      }
+    });
+
+    body.addEventListener('drop', function(e) {
+      e.preventDefault();
+      column.classList.remove('drag-over');
+      var noteId = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      var info = findNoteById(noteId);
+      if (!info) return;
+      if (info.column === colName) return; // Same column, skip
+
+      // Move note
+      notes[info.column] = notes[info.column].filter(function(n) { return n.id !== noteId; });
+      notes[colName].push(info.note);
+
+      // Remove old DOM element
+      var oldEl = document.querySelector('.sticky[data-id="' + noteId + '"]');
+      if (oldEl) oldEl.remove();
+
+      renderBoard();
+    });
+  });
+
+  /* ============ ADD NOTE MODAL ============ */
+  var addModal = document.getElementById('addNoteModal');
+  var selectedColor = 'sticky-yellow';
+  var selectedColumn = 'well';
+
+  document.getElementById('btnAddNote').addEventListener('click', function() {
+    addModal.classList.add('show');
+    document.getElementById('noteText').focus();
+  });
+
+  // Also allow adding from toolbar pills is not implemented; keeping it clean
+  document.querySelectorAll('.add-note-zone').forEach(function(zone) {
+    zone.addEventListener('click', function() {
+      selectedColumn = zone.dataset.column;
+      addModal.classList.add('show');
+    });
+  });
+
+  document.getElementById('btnCancelNote').addEventListener('click', function() {
+    addModal.classList.remove('show');
+    document.getElementById('noteText').value = '';
+  });
+
+  addModal.addEventListener('click', function(e) {
+    if (e.target === addModal) {
+      addModal.classList.remove('show');
+      document.getElementById('noteText').value = '';
+    }
+  });
+
+  // Color picker
+  document.querySelectorAll('.color-swatch').forEach(function(swatch) {
+    swatch.addEventListener('click', function() {
+      document.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('selected'); });
+      swatch.classList.add('selected');
+      selectedColor = swatch.dataset.color;
+    });
+  });
+
+  // Column select
+  document.querySelectorAll('.col-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      document.querySelectorAll('.col-option').forEach(function(o) { o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      selectedColumn = opt.dataset.col;
+    });
+  });
+
+  // Submit note
+  document.getElementById('btnSubmitNote').addEventListener('click', function() {
+    var text = document.getElementById('noteText').value.trim();
+    if (!text) return;
+    var note = {
+      id: ++noteIdCounter,
+      text: text,
+      color: selectedColor,
+      votes: 0,
+      author: 'You',
+      rotation: randomRotation(),
+    };
+    notes[selectedColumn].push(note);
+    renderBoard();
+    addModal.classList.remove('show');
+    document.getElementById('noteText').value = '';
+  });
+
+  // Submit on Ctrl+Enter
+  document.getElementById('noteText').addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      document.getElementById('btnSubmitNote').click();
+    }
+  });
+
+  /* ============ FILTER PILLS ============ */
+  document.querySelectorAll('.pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      var filter = pill.dataset.filter;
+      applyFilter(filter);
+    });
+  });
+
+  function applyFilter(filter) {
+    var allStickies = document.querySelectorAll('.sticky');
+    if (filter === 'all') {
+      allStickies.forEach(function(s) { s.style.display = ''; });
+      return;
+    }
+    if (filter === 'most-voted') {
+      // Show only notes with 10+ votes
+      allStickies.forEach(function(s) {
+        var id = parseInt(s.dataset.id, 10);
+        var info = findNoteById(id);
+        if (info && info.note.votes >= 10) {
+          s.style.display = '';
+        } else {
+          s.style.display = 'none';
+        }
+      });
+    }
+    if (filter === 'recent') {
+      // Show only the last 3 notes added (highest IDs)
+      var allNotes = [];
+      ['well', 'bad', 'action'].forEach(function(col) {
+        notes[col].forEach(function(n) { allNotes.push(n); });
+      });
+      allNotes.sort(function(a, b) { return b.id - a.id; });
+      var recentIds = allNotes.slice(0, 5).map(function(n) { return n.id; });
+      allStickies.forEach(function(s) {
+        var id = parseInt(s.dataset.id, 10);
+        s.style.display = recentIds.indexOf(id) !== -1 ? '' : 'none';
+      });
+    }
+  }
+
+  /* ============ END RETRO / SUMMARY ============ */
+  var summaryModal = document.getElementById('summaryModal');
+
+  document.getElementById('btnEndRetro').addEventListener('click', function() {
+    // Stop timer
+    if (timerRunning) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerEl.classList.remove('running');
+    }
+
+    // Build summary
+    var totalVotes = 0;
+    var allNotes = [];
+    ['well', 'bad', 'action'].forEach(function(col) {
+      notes[col].forEach(function(n) {
+        totalVotes += n.votes;
+        allNotes.push(n);
+      });
+    });
+
+    var statsHtml =
+      '<div class="stat-card"><div class="stat-num">' + allNotes.length + '</div><div class="stat-label">Total Notes</div></div>' +
+      '<div class="stat-card"><div class="stat-num">' + totalVotes + '</div><div class="stat-label">Total Votes</div></div>' +
+      '<div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Participants</div></div>';
+    document.getElementById('summaryStats').innerHTML = statsHtml;
+
+    var contentHtml = '';
+    var colConfig = [
+      { key: 'well', label: 'What Went Well', icon: '&#127881;', cls: 's-green' },
+      { key: 'bad', label: "What Didn't Go Well", icon: '&#128148;', cls: 's-red' },
+      { key: 'action', label: 'Action Items', icon: '&#9889;', cls: 's-blue' },
+    ];
+    colConfig.forEach(function(cfg) {
+      var sorted = notes[cfg.key].slice().sort(function(a, b) { return b.votes - a.votes; });
+      contentHtml += '<div class="summary-section ' + cfg.cls + '">';
+      contentHtml += '<h4>' + cfg.icon + ' ' + cfg.label + ' (' + sorted.length + ')</h4>';
+      sorted.forEach(function(n) {
+        contentHtml += '<div class="summary-item">' +
+          '<span class="votes-badge">' + n.votes + '</span> ' +
+          escapeHtml(n.text) + '</div>';
+      });
+      contentHtml += '</div>';
+    });
+    document.getElementById('summaryContent').innerHTML = contentHtml;
+    summaryModal.classList.add('show');
+
+    // Confetti
+    launchConfetti();
+  });
+
+  document.getElementById('btnCloseSummary').addEventListener('click', function() {
+    summaryModal.classList.remove('show');
+  });
+
+  summaryModal.addEventListener('click', function(e) {
+    if (e.target === summaryModal) summaryModal.classList.remove('show');
+  });
+
+  document.getElementById('btnExportSummary').addEventListener('click', function() {
+    var text = '=== Sprint 2026-Q1 Retrospective ===\n';
+    text += 'Facilitator: Anshull Garg | Software Developer @ Walmart\n\n';
+    var colConfig = [
+      { key: 'well', label: 'WHAT WENT WELL' },
+      { key: 'bad', label: "WHAT DIDN'T GO WELL" },
+      { key: 'action', label: 'ACTION ITEMS' },
+    ];
+    colConfig.forEach(function(cfg) {
+      text += '--- ' + cfg.label + ' ---\n';
+      notes[cfg.key].sort(function(a, b) { return b.votes - a.votes; }).forEach(function(n) {
+        text += '  [' + n.votes + ' votes] ' + n.text + '\n';
+      });
+      text += '\n';
+    });
+    text += '---\nContact: anshull@email.com\n';
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('btnExportSummary');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy Summary'; }, 2000);
+    });
+  });
+
+  /* ============ CONFETTI ============ */
+  function launchConfetti() {
+    var colors = ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+    for (var i = 0; i < 60; i++) {
+      (function(idx) {
+        setTimeout(function() {
+          var el = document.createElement('div');
+          el.className = 'confetti-piece';
+          var size = 6 + Math.random() * 8;
+          var isCircle = Math.random() > 0.5;
+          el.style.cssText =
+            'position:fixed;pointer-events:none;z-index:2000;' +
+            'width:' + size + 'px;height:' + (isCircle ? size : size * 2.5) + 'px;' +
+            'border-radius:' + (isCircle ? '50%' : '2px') + ';' +
+            'background:' + colors[Math.floor(Math.random() * colors.length)] + ';' +
+            'left:' + (Math.random() * 100) + 'vw;top:-20px;';
+          document.body.appendChild(el);
+
+          var duration = 2000 + Math.random() * 2000;
+          var xDrift = (Math.random() - 0.5) * 200;
+          el.animate([
+            { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+            { transform: 'translate(' + xDrift + 'px, ' + (window.innerHeight + 40) + 'px) rotate(' + (Math.random() * 720 - 360) + 'deg)', opacity: 0.6 }
+          ], { duration: duration, easing: 'cubic-bezier(.25,.46,.45,.94)' });
+          setTimeout(function() { el.remove(); }, duration);
+        }, idx * 30);
+      })(i);
+    }
+  }
+
+  /* ============ INITIALIZE ============ */
+  function init() {
+    // Load initial notes with IDs and rotations
+    ['well', 'bad', 'action'].forEach(function(col) {
+      initialNotes[col].forEach(function(item, idx) {
+        notes[col].push({
+          id: ++noteIdCounter,
+          text: item.text,
+          color: item.color,
+          votes: item.votes,
+          author: item.author,
+          rotation: randomRotation(),
+        });
+      });
+    });
+    renderBoard();
+
+    // Stagger the entrance animation
+    var allStickies = document.querySelectorAll('.sticky');
+    allStickies.forEach(function(s, i) {
+      s.style.animationDelay = (i * 80) + 'ms';
+    });
+  }
+
+  init();
+
+  /* ============ KEYBOARD SHORTCUTS ============ */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      addModal.classList.remove('show');
+      summaryModal.classList.remove('show');
+    }
+    // N to add note (if no modal is open and not typing)
+    if (e.key === 'n' && !addModal.classList.contains('show') && !summaryModal.classList.contains('show') && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') {
+      addModal.classList.add('show');
+      document.getElementById('noteText').focus();
+    }
+  });
+
+  /* ============ TOUCH DRAG SUPPORT ============ */
+  var touchDragNote = null;
+  var touchClone = null;
+  var touchOffsetX = 0;
+  var touchOffsetY = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    var sticky = e.target.closest('.sticky');
+    if (!sticky) return;
+    if (e.target.closest('.sticky-vote') || e.target.closest('.sticky-delete')) return;
+
+    touchDragNote = sticky;
+    var rect = sticky.getBoundingClientRect();
+    var touch = e.touches[0];
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+
+    // Create visual clone
+    touchClone = sticky.cloneNode(true);
+    touchClone.style.position = 'fixed';
+    touchClone.style.width = rect.width + 'px';
+    touchClone.style.zIndex = '9999';
+    touchClone.style.opacity = '0.85';
+    touchClone.style.pointerEvents = 'none';
+    touchClone.style.transform = 'rotate(3deg) scale(1.05)';
+    touchClone.style.boxShadow = '8px 12px 30px rgba(0,0,0,.25)';
+    touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+    touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+    document.body.appendChild(touchClone);
+
+    sticky.style.opacity = '0.3';
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!touchClone) return;
+    var touch = e.touches[0];
+    touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+    touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+    // Highlight column under finger
+    document.querySelectorAll('.column').forEach(function(col) {
+      var rect = col.getBoundingClientRect();
+      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        col.classList.add('drag-over');
+      } else {
+        col.classList.remove('drag-over');
+      }
+    });
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!touchClone || !touchDragNote) return;
+    var touch = e.changedTouches[0];
+
+    // Find target column
+    var targetCol = null;
+    document.querySelectorAll('.column').forEach(function(col) {
+      var rect = col.getBoundingClientRect();
+      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        targetCol = col.dataset.column;
+      }
+      col.classList.remove('drag-over');
+    });
+
+    var noteId = parseInt(touchDragNote.dataset.id, 10);
+    var info = findNoteById(noteId);
+
+    if (targetCol && info && info.column !== targetCol) {
+      notes[info.column] = notes[info.column].filter(function(n) { return n.id !== noteId; });
+      notes[targetCol].push(info.note);
+      touchDragNote.remove();
+      renderBoard();
+    } else {
+      touchDragNote.style.opacity = '1';
+    }
+
+    touchClone.remove();
+    touchClone = null;
+    touchDragNote = null;
+  });
+
+})();
+</script>
+</body>
+</html>

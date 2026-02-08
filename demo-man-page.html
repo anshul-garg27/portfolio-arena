@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL-GARG(1) - Developer Manual</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --bg:#1A1A1A;
+    --fg:#E0E0E0;
+    --bold:#FFFFFF;
+    --dim:#888888;
+    --underline:#E0E0E0;
+    --highlight-bg:#FFD700;
+    --highlight-fg:#1A1A1A;
+    --selection-bg:#3A3A3A;
+    --link:#E0E0E0;
+    --scrollbar:#333;
+    --scrollbar-thumb:#555;
+  }
+
+  html{
+    font-size:15px;
+    scroll-behavior:smooth;
+  }
+
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'SF Mono','Fira Code','Cascadia Code','JetBrains Mono',
+                'Source Code Pro','IBM Plex Mono','Menlo','Monaco',
+                'Consolas','Liberation Mono','Courier New',monospace;
+    line-height:1.45;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  ::selection{
+    background:var(--selection-bg);
+    color:var(--bold);
+  }
+
+  ::-webkit-scrollbar{width:8px;background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:#777}
+
+  /* ---- TERMINAL CHROME ---- */
+  #terminal-chrome{
+    position:fixed;top:0;left:0;right:0;
+    height:38px;
+    background:#2A2A2A;
+    border-bottom:1px solid #3A3A3A;
+    display:flex;align-items:center;
+    padding:0 14px;
+    z-index:100;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .dot{width:12px;height:12px;border-radius:50%;margin-right:8px}
+  .dot-r{background:#FF5F57}
+  .dot-y{background:#FFBD2E}
+  .dot-g{background:#28CA42}
+  #terminal-title{
+    flex:1;text-align:center;
+    color:var(--dim);font-size:12px;
+    letter-spacing:0.5px;
+  }
+
+  /* ---- STATUS BAR ---- */
+  #status-bar{
+    position:fixed;bottom:0;left:0;right:0;
+    height:28px;
+    background:#2A2A2A;
+    border-top:1px solid #3A3A3A;
+    display:flex;align-items:center;
+    padding:0 14px;
+    z-index:100;
+    font-size:12px;
+    color:var(--dim);
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  #status-bar .left{flex:1}
+  #status-bar .right{text-align:right}
+  #mode-indicator{
+    color:var(--highlight-bg);
+    font-weight:bold;
+    margin-right:12px;
+  }
+
+  /* ---- SEARCH BAR ---- */
+  #search-overlay{
+    position:fixed;bottom:28px;left:0;right:0;
+    height:32px;
+    background:#2A2A2A;
+    border-top:1px solid #3A3A3A;
+    display:none;align-items:center;
+    padding:0 14px;
+    z-index:100;
+    font-size:13px;
+  }
+  #search-overlay.active{display:flex}
+  #search-overlay label{color:var(--highlight-bg);margin-right:4px}
+  #search-input{
+    background:transparent;
+    border:none;outline:none;
+    color:var(--fg);
+    font-family:inherit;
+    font-size:13px;
+    flex:1;
+  }
+  #search-count{color:var(--dim);margin-left:8px;font-size:11px}
+
+  /* ---- COMMAND BAR ---- */
+  #command-overlay{
+    position:fixed;bottom:28px;left:0;right:0;
+    height:32px;
+    background:#2A2A2A;
+    border-top:1px solid #3A3A3A;
+    display:none;align-items:center;
+    padding:0 14px;
+    z-index:100;
+    font-size:13px;
+  }
+  #command-overlay.active{display:flex}
+  #command-overlay label{color:var(--highlight-bg);margin-right:4px}
+  #command-input{
+    background:transparent;
+    border:none;outline:none;
+    color:var(--fg);
+    font-family:inherit;
+    font-size:13px;
+    flex:1;
+  }
+
+  /* ---- MAIN CONTENT ---- */
+  #man-page{
+    padding:52px 0 48px 0;
+    max-width:80ch;
+    margin:0 auto;
+    padding-left:16px;
+    padding-right:16px;
+  }
+
+  @media(min-width:900px){
+    #man-page{
+      padding-left:0;
+      padding-right:0;
+    }
+  }
+
+  /* ---- MAN PAGE TYPOGRAPHY ---- */
+  .man-header,.man-footer{
+    display:flex;
+    justify-content:space-between;
+    color:var(--bold);
+    font-weight:bold;
+    padding:8px 0;
+    border:none;
+  }
+  .man-header{margin-bottom:16px}
+  .man-footer{margin-top:24px;padding-bottom:24px}
+
+  .section-heading{
+    color:var(--bold);
+    font-weight:bold;
+    margin-top:20px;
+    margin-bottom:4px;
+    scroll-margin-top:60px;
+  }
+
+  .man-body{
+    white-space:pre-wrap;
+    word-wrap:break-word;
+  }
+
+  .indent{padding-left:7ch}
+  .indent2{padding-left:14ch}
+
+  .bold{color:var(--bold);font-weight:bold}
+  .dim{color:var(--dim)}
+  .underline{text-decoration:underline;text-underline-offset:2px}
+
+  .option-flag{
+    color:var(--bold);
+    font-weight:bold;
+    cursor:pointer;
+    transition:color 0.15s;
+  }
+  .option-flag:hover{color:var(--highlight-bg)}
+
+  .cross-ref{
+    text-decoration:underline;
+    text-underline-offset:2px;
+    cursor:pointer;
+    transition:color 0.15s;
+  }
+  .cross-ref:hover{color:var(--highlight-bg)}
+
+  a.man-link{
+    color:var(--link);
+    text-decoration:underline;
+    text-underline-offset:2px;
+    transition:color 0.15s;
+  }
+  a.man-link:hover{color:var(--highlight-bg)}
+
+  /* ---- SEARCH HIGHLIGHT ---- */
+  mark.search-hit{
+    background:var(--highlight-bg);
+    color:var(--highlight-fg);
+    border-radius:2px;
+    padding:0 1px;
+  }
+  mark.search-hit.current{
+    outline:2px solid #FFF;
+  }
+
+  /* ---- QUIT OVERLAY ---- */
+  #quit-overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.92);
+    display:none;align-items:center;justify-content:center;
+    z-index:200;
+    flex-direction:column;
+  }
+  #quit-overlay.active{display:flex}
+  #quit-overlay .quit-box{
+    max-width:50ch;
+    text-align:center;
+    color:var(--fg);
+  }
+  #quit-overlay .quit-box h2{
+    color:var(--bold);
+    font-size:18px;
+    margin-bottom:16px;
+    font-weight:bold;
+  }
+  #quit-overlay .quit-box p{
+    margin-bottom:8px;
+    font-size:14px;
+    line-height:1.5;
+  }
+  #quit-overlay .quit-box .contacts{
+    margin-top:20px;
+    text-align:left;
+    display:inline-block;
+  }
+  #quit-overlay .quit-box .contacts a{
+    display:block;
+    color:var(--highlight-bg);
+    text-decoration:none;
+    margin:6px 0;
+    font-size:14px;
+  }
+  #quit-overlay .quit-box .contacts a:hover{text-decoration:underline}
+  #quit-overlay .dismiss{
+    margin-top:24px;
+    color:var(--dim);
+    font-size:12px;
+  }
+
+  /* ---- SCROLL PROGRESS ---- */
+  #scroll-progress{
+    position:fixed;top:38px;left:0;
+    height:2px;
+    background:var(--highlight-bg);
+    width:0;
+    z-index:101;
+    transition:width 0.1s;
+  }
+
+  /* ---- CLICKABLE SYNOPSIS FLAGS ---- */
+  .synopsis-flag{
+    cursor:pointer;
+    transition:color 0.15s;
+  }
+  .synopsis-flag:hover{
+    color:var(--highlight-bg);
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media(max-width:600px){
+    html{font-size:13px}
+    #man-page{padding-left:10px;padding-right:10px}
+    .indent{padding-left:4ch}
+    .indent2{padding-left:8ch}
+  }
+
+  /* ---- LOADING ANIMATION ---- */
+  #loading-screen{
+    position:fixed;inset:0;
+    background:var(--bg);
+    z-index:500;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    transition:opacity 0.4s;
+  }
+  #loading-screen.fade{opacity:0;pointer-events:none}
+  #loading-text{
+    color:var(--fg);
+    font-family:inherit;
+    font-size:14px;
+    white-space:pre;
+  }
+  .cursor-blink{
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{
+    0%,100%{opacity:1}
+    50%{opacity:0}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div id="loading-text"></div>
+</div>
+
+<!-- TERMINAL CHROME -->
+<div id="terminal-chrome">
+  <div class="dot dot-r"></div>
+  <div class="dot dot-y"></div>
+  <div class="dot dot-g"></div>
+  <div id="terminal-title">man anshull-garg -- Terminal.app</div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress"></div>
+
+<!-- MAIN CONTENT -->
+<div id="man-page" style="visibility:hidden">
+
+<!-- HEADER -->
+<div class="man-header">
+  <span>ANSHULL-GARG(1)</span>
+  <span>Developer Manual</span>
+  <span>ANSHULL-GARG(1)</span>
+</div>
+
+<!-- NAME -->
+<div class="section-heading" id="sec-name">NAME</div>
+<div class="man-body indent">anshull-garg - a full-stack software developer at Walmart</div>
+
+<!-- SYNOPSIS -->
+<div class="section-heading" id="sec-synopsis">SYNOPSIS</div>
+<div class="man-body indent"><span class="bold">anshull-garg</span> [<span class="synopsis-flag" data-target="sec-skills">--skills</span>] [<span class="synopsis-flag" data-target="sec-projects">--projects</span>] [<span class="synopsis-flag" data-target="sec-experience">--experience</span>]
+             [<span class="synopsis-flag" data-target="sec-contact">--contact</span>] [<span class="synopsis-flag" data-target="sec-hire">--hire</span>] [<span class="synopsis-flag" data-target="sec-verbose">--verbose</span>]</div>
+
+<!-- DESCRIPTION -->
+<div class="section-heading" id="sec-description">DESCRIPTION</div>
+<div class="man-body indent"><span class="bold">anshull-garg</span> is a high-performance, production-ready
+software developer currently deployed at <span class="bold">Walmart Global
+Tech</span>. Capable of processing complex requirements and
+outputting clean, tested, maintainable code.
+
+Built for scale. Optimized for reliability. Available
+for interesting conversations.</div>
+
+<!-- OPTIONS -->
+<div class="section-heading" id="sec-options">OPTIONS</div>
+
+<div class="man-body indent" id="sec-skills"><span class="option-flag" data-target="sec-skills">--skills</span>
+       Display the complete technology stack.
+
+       <span class="bold">Frontend:</span> React, Next.js, TypeScript, Tailwind
+       <span class="bold">Backend:</span>  Node.js, Java, Python, Express
+       <span class="bold">Infra:</span>    AWS, Docker, Kubernetes, CI/CD
+       <span class="bold">Data:</span>     PostgreSQL, MongoDB, Redis, GraphQL</div>
+
+<div class="man-body indent" id="sec-projects"><span class="option-flag" data-target="sec-projects">--projects</span>
+       List notable projects and their impact.
+
+       <span class="cross-ref" title="Checkout performance optimization">checkout-optimizer(1)</span>
+              Reduced latency by 40% for 240M+ users
+
+       <span class="cross-ref" title="Shared component library">component-lib(1)</span>
+              Adopted by 12 teams across the org
+
+       <span class="cross-ref" title="Supply chain analytics dashboard">analytics-dashboard(1)</span>
+              Real-time monitoring for supply chain</div>
+
+<div class="man-body indent" id="sec-experience"><span class="option-flag" data-target="sec-experience">--experience</span>
+       Show career history.
+
+       <span class="bold">2023-present</span>    Walmart Global Tech (SDE)
+       <span class="bold">2021-2023</span>       Previous Role (Full Stack)
+       <span class="bold">2020</span>            Initial Deployment (Education)</div>
+
+<div class="man-body indent" id="sec-contact"><span class="option-flag" data-target="sec-contact">--contact</span>
+       Open communication channels.
+
+       <span class="bold">Email:</span>    <a class="man-link" href="mailto:anshull@email.com">anshull@email.com</a>
+       <span class="bold">GitHub:</span>   <a class="man-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a>
+       <span class="bold">LinkedIn:</span> <a class="man-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a></div>
+
+<div class="man-body indent" id="sec-hire"><span class="option-flag" data-target="sec-hire">--hire</span>
+       Initiate the recruitment process. Requires
+       <span class="bold">--interesting-problems</span> flag.</div>
+
+<div class="man-body indent" id="sec-verbose"><span class="option-flag" data-target="sec-verbose">--verbose</span>
+       Include fun facts, hobbies, and easter eggs.</div>
+
+<!-- EXAMPLES -->
+<div class="section-heading" id="sec-examples">EXAMPLES</div>
+<div class="man-body indent">Display all information:
+       <span class="dim">$</span> <span class="bold">man anshull-garg --verbose</span>
+
+Quick hire:
+       <span class="dim">$</span> <span class="bold">anshull-garg --hire --interesting-problems</span>
+
+Check version:
+       <span class="dim">$</span> <span class="bold">anshull-garg --version</span>
+       anshull-garg v4.2.0 (stable)</div>
+
+<!-- EXIT STATUS -->
+<div class="section-heading" id="sec-exit">EXIT STATUS</div>
+<div class="man-body indent"><span class="bold">0</span>      Success (hired!)
+<span class="bold">1</span>      Error (position already filled)</div>
+
+<!-- ENVIRONMENT -->
+<div class="section-heading" id="sec-environment">ENVIRONMENT</div>
+<div class="man-body indent"><span class="bold">$EDITOR</span>
+       Preferred: VS Code. Survived: Vim.
+
+<span class="bold">$SHELL</span>
+       zsh with oh-my-zsh. Aliases everything.
+
+<span class="bold">$TZ</span>
+       Flexible. Async-friendly.</div>
+
+<!-- BUGS -->
+<div class="section-heading" id="sec-bugs">BUGS</div>
+<div class="man-body indent">Known issues:
+- Cannot exit vim on the first try
+- Occasionally explains architecture at parties
+- Coffee dependency is non-optional
+- Will refactor "just one more thing" at 2 AM
+- Tab vs spaces opinion: strong (tabs)</div>
+
+<!-- SEE ALSO -->
+<div class="section-heading" id="sec-seealso">SEE ALSO</div>
+<div class="man-body indent"><span class="cross-ref" data-url="https://react.dev">react(1)</span>, <span class="cross-ref" data-url="https://nodejs.org">nodejs(1)</span>, <span class="cross-ref" data-url="https://www.typescriptlang.org">typescript(1)</span>, <span class="cross-ref" data-url="https://www.walmart.com">walmart(1)</span>,
+<span class="cross-ref" data-url="https://nextjs.org">nextjs(1)</span>, <span class="cross-ref" data-url="https://aws.amazon.com">aws(1)</span>, <span class="cross-ref" data-url="https://docker.com">docker(1)</span>, <span class="cross-ref" data-url="https://kubernetes.io">kubernetes(1)</span></div>
+
+<!-- HISTORY -->
+<div class="section-heading" id="sec-history">HISTORY</div>
+<div class="man-body indent">The <span class="bold">anshull-garg</span> command first appeared in 2020.
+This manual page was last updated February 2026.</div>
+
+<!-- AUTHOR -->
+<div class="section-heading" id="sec-author">AUTHOR</div>
+<div class="man-body indent">Written by <span class="bold">Anshull Garg</span> &lt;<a class="man-link" href="mailto:anshull@email.com">anshull@email.com</a>&gt;</div>
+
+<!-- FOOTER -->
+<div class="man-footer">
+  <span>ANSHULL-GARG(1)</span>
+  <span>February 2026</span>
+  <span>ANSHULL-GARG(1)</span>
+</div>
+
+</div><!-- /man-page -->
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay">
+  <label>/</label>
+  <input type="text" id="search-input" placeholder="search..." autocomplete="off" spellcheck="false">
+  <span id="search-count"></span>
+</div>
+
+<!-- COMMAND OVERLAY -->
+<div id="command-overlay">
+  <label>:</label>
+  <input type="text" id="command-input" placeholder="command..." autocomplete="off" spellcheck="false">
+</div>
+
+<!-- STATUS BAR -->
+<div id="status-bar">
+  <div class="left">
+    <span id="mode-indicator">NORMAL</span>
+    <span id="status-hint">j/k scroll &middot; / search &middot; : command &middot; q quit</span>
+  </div>
+  <div class="right">
+    <span id="scroll-percent">Top</span>
+  </div>
+</div>
+
+<!-- QUIT OVERLAY -->
+<div id="quit-overlay">
+  <div class="quit-box">
+    <h2>:q! -- Thanks for reading.</h2>
+    <p>If you've made it this far, we should probably talk.</p>
+    <p>I'm always interested in challenging problems, great teams, and meaningful work.</p>
+    <div class="contacts">
+      <a href="mailto:anshull@email.com">anshull@email.com</a>
+      <a href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a>
+    </div>
+    <div class="dismiss">Press any key or click to dismiss</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ============================================
+  // LOADING SEQUENCE
+  // ============================================
+  const loadingEl = document.getElementById('loading-screen');
+  const loadingText = document.getElementById('loading-text');
+  const manPage = document.getElementById('man-page');
+
+  const loadLines = [
+    'Formatting page, please wait...',
+    'Reformatting anshull-garg(1), wait...',
+    'Loading developer manual...',
+    'done.'
+  ];
+
+  let loadIdx = 0;
+  let charIdx = 0;
+  let currentLine = '';
+
+  function typeLoad(){
+    if(loadIdx >= loadLines.length){
+      setTimeout(()=>{
+        loadingEl.classList.add('fade');
+        manPage.style.visibility = 'visible';
+        setTimeout(()=>{ loadingEl.style.display='none'; }, 400);
+      }, 300);
+      return;
+    }
+    const line = loadLines[loadIdx];
+    if(charIdx <= line.length){
+      currentLine = line.substring(0, charIdx);
+      loadingText.innerHTML = currentLine + '<span class="cursor-blink">_</span>';
+      charIdx++;
+      setTimeout(typeLoad, 18 + Math.random()*22);
+    } else {
+      loadIdx++;
+      charIdx = 0;
+      if(loadIdx < loadLines.length){
+        currentLine += '\n';
+        setTimeout(typeLoad, 200 + Math.random()*200);
+      } else {
+        setTimeout(typeLoad, 100);
+      }
+    }
+  }
+  typeLoad();
+
+  // ============================================
+  // SCROLL TRACKING
+  // ============================================
+  const progressBar = document.getElementById('scroll-progress');
+  const scrollPercent = document.getElementById('scroll-percent');
+
+  function updateScroll(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if(docHeight <= 0){
+      progressBar.style.width = '100%';
+      scrollPercent.textContent = 'All';
+      return;
+    }
+    const pct = Math.min(scrollTop / docHeight, 1);
+    progressBar.style.width = (pct * 100) + '%';
+    if(pct <= 0.01) scrollPercent.textContent = 'Top';
+    else if(pct >= 0.99) scrollPercent.textContent = 'Bot';
+    else scrollPercent.textContent = Math.round(pct * 100) + '%';
+  }
+  window.addEventListener('scroll', updateScroll, {passive:true});
+  updateScroll();
+
+  // ============================================
+  // SECTION MAP
+  // ============================================
+  const sectionMap = {
+    'skills': 'sec-skills',
+    'projects': 'sec-projects',
+    'experience': 'sec-experience',
+    'contact': 'sec-contact',
+    'hire': 'sec-hire',
+    'verbose': 'sec-verbose',
+    'name': 'sec-name',
+    'synopsis': 'sec-synopsis',
+    'description': 'sec-description',
+    'options': 'sec-options',
+    'examples': 'sec-examples',
+    'exit': 'sec-exit',
+    'environment': 'sec-environment',
+    'bugs': 'sec-bugs',
+    'see also': 'sec-seealso',
+    'seealso': 'sec-seealso',
+    'history': 'sec-history',
+    'author': 'sec-author'
+  };
+
+  function scrollToSection(id){
+    const el = document.getElementById(id);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  // ============================================
+  // CLICKABLE ELEMENTS
+  // ============================================
+
+  // Synopsis flags
+  document.querySelectorAll('.synopsis-flag').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const t = el.getAttribute('data-target');
+      if(t) scrollToSection(t);
+    });
+  });
+
+  // Option flags
+  document.querySelectorAll('.option-flag').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const t = el.getAttribute('data-target');
+      if(t) scrollToSection(t);
+    });
+  });
+
+  // Cross-references with URLs
+  document.querySelectorAll('.cross-ref[data-url]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const url = el.getAttribute('data-url');
+      if(url) window.open(url, '_blank', 'noopener');
+    });
+  });
+
+  // ============================================
+  // VIM KEYBINDINGS
+  // ============================================
+  const SCROLL_AMOUNT = 60;
+  const PAGE_AMOUNT = window.innerHeight * 0.8;
+  const modeIndicator = document.getElementById('mode-indicator');
+  const statusHint = document.getElementById('status-hint');
+  const searchOverlay = document.getElementById('search-overlay');
+  const searchInput = document.getElementById('search-input');
+  const searchCount = document.getElementById('search-count');
+  const commandOverlay = document.getElementById('command-overlay');
+  const commandInput = document.getElementById('command-input');
+  const quitOverlay = document.getElementById('quit-overlay');
+
+  let mode = 'normal'; // normal, search, command
+  let searchHits = [];
+  let currentHitIdx = -1;
+
+  function setMode(m){
+    mode = m;
+    if(m === 'normal'){
+      modeIndicator.textContent = 'NORMAL';
+      statusHint.textContent = 'j/k scroll \u00b7 / search \u00b7 : command \u00b7 q quit';
+      searchOverlay.classList.remove('active');
+      commandOverlay.classList.remove('active');
+    } else if(m === 'search'){
+      modeIndicator.textContent = 'SEARCH';
+      statusHint.textContent = 'Enter confirm \u00b7 Esc cancel \u00b7 n/N next/prev match';
+      searchOverlay.classList.add('active');
+      commandOverlay.classList.remove('active');
+      searchInput.focus();
+    } else if(m === 'command'){
+      modeIndicator.textContent = 'COMMAND';
+      statusHint.textContent = 'Enter execute \u00b7 Esc cancel';
+      commandOverlay.classList.add('active');
+      searchOverlay.classList.remove('active');
+      commandInput.focus();
+    }
+  }
+
+  // Global keydown
+  document.addEventListener('keydown', (e)=>{
+    // Quit overlay dismiss
+    if(quitOverlay.classList.contains('active')){
+      quitOverlay.classList.remove('active');
+      e.preventDefault();
+      return;
+    }
+
+    // Loading screen: ignore
+    if(manPage.style.visibility === 'hidden') return;
+
+    if(mode === 'normal'){
+      handleNormalKey(e);
+    } else if(mode === 'search'){
+      handleSearchKey(e);
+    } else if(mode === 'command'){
+      handleCommandKey(e);
+    }
+  });
+
+  // Quit overlay click dismiss
+  quitOverlay.addEventListener('click', (e)=>{
+    if(e.target === quitOverlay || e.target.closest('.quit-box')){
+      // only dismiss if not clicking a link
+      if(!e.target.closest('a')){
+        quitOverlay.classList.remove('active');
+      }
+    }
+  });
+
+  function handleNormalKey(e){
+    const k = e.key;
+
+    // Don't intercept if user is in an input/textarea
+    if(document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+    switch(k){
+      case 'j':
+        e.preventDefault();
+        window.scrollBy({top: SCROLL_AMOUNT, behavior:'smooth'});
+        break;
+      case 'k':
+        e.preventDefault();
+        window.scrollBy({top: -SCROLL_AMOUNT, behavior:'smooth'});
+        break;
+      case 'd':
+        if(e.ctrlKey){
+          e.preventDefault();
+          window.scrollBy({top: PAGE_AMOUNT / 2, behavior:'smooth'});
+        }
+        break;
+      case 'u':
+        if(e.ctrlKey){
+          e.preventDefault();
+          window.scrollBy({top: -PAGE_AMOUNT / 2, behavior:'smooth'});
+        }
+        break;
+      case 'f':
+        if(e.ctrlKey){
+          e.preventDefault();
+          window.scrollBy({top: PAGE_AMOUNT, behavior:'smooth'});
+        }
+        break;
+      case 'b':
+        if(e.ctrlKey){
+          e.preventDefault();
+          window.scrollBy({top: -PAGE_AMOUNT, behavior:'smooth'});
+        }
+        break;
+      case 'g':
+        e.preventDefault();
+        window.scrollTo({top:0, behavior:'smooth'});
+        break;
+      case 'G':
+        e.preventDefault();
+        window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'});
+        break;
+      case '/':
+        e.preventDefault();
+        searchInput.value = '';
+        searchCount.textContent = '';
+        setMode('search');
+        break;
+      case ':':
+        e.preventDefault();
+        commandInput.value = '';
+        setMode('command');
+        break;
+      case 'q':
+        e.preventDefault();
+        quitOverlay.classList.add('active');
+        break;
+      case 'n':
+        e.preventDefault();
+        navigateSearch(1);
+        break;
+      case 'N':
+        e.preventDefault();
+        navigateSearch(-1);
+        break;
+    }
+  }
+
+  function handleSearchKey(e){
+    if(e.key === 'Escape'){
+      e.preventDefault();
+      clearSearch();
+      setMode('normal');
+    } else if(e.key === 'Enter'){
+      e.preventDefault();
+      executeSearch(searchInput.value);
+      setMode('normal');
+    }
+  }
+
+  function handleCommandKey(e){
+    if(e.key === 'Escape'){
+      e.preventDefault();
+      setMode('normal');
+    } else if(e.key === 'Enter'){
+      e.preventDefault();
+      executeCommand(commandInput.value);
+      setMode('normal');
+    }
+  }
+
+  // ============================================
+  // SEARCH
+  // ============================================
+  function clearSearch(){
+    document.querySelectorAll('mark.search-hit').forEach(mark=>{
+      const parent = mark.parentNode;
+      parent.replaceChild(document.createTextNode(mark.textContent), mark);
+      parent.normalize();
+    });
+    searchHits = [];
+    currentHitIdx = -1;
+    searchCount.textContent = '';
+  }
+
+  function executeSearch(query){
+    clearSearch();
+    if(!query || query.trim().length === 0) return;
+
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escapedQuery, 'gi');
+
+    // Walk text nodes in man-page
+    const walker = document.createTreeWalker(
+      manPage,
+      NodeFilter.SHOW_TEXT,
+      null,
+      false
+    );
+
+    const textNodes = [];
+    while(walker.nextNode()){
+      textNodes.push(walker.currentNode);
+    }
+
+    textNodes.forEach(node=>{
+      const text = node.textContent;
+      if(!regex.test(text)) return;
+      regex.lastIndex = 0;
+
+      const frag = document.createDocumentFragment();
+      let lastIdx = 0;
+      let match;
+
+      while((match = regex.exec(text)) !== null){
+        if(match.index > lastIdx){
+          frag.appendChild(document.createTextNode(text.substring(lastIdx, match.index)));
+        }
+        const mark = document.createElement('mark');
+        mark.className = 'search-hit';
+        mark.textContent = match[0];
+        frag.appendChild(mark);
+        lastIdx = regex.lastIndex;
+      }
+      if(lastIdx < text.length){
+        frag.appendChild(document.createTextNode(text.substring(lastIdx)));
+      }
+      node.parentNode.replaceChild(frag, node);
+    });
+
+    searchHits = Array.from(document.querySelectorAll('mark.search-hit'));
+    if(searchHits.length > 0){
+      currentHitIdx = 0;
+      highlightCurrent();
+      searchCount.textContent = searchHits.length + ' match' + (searchHits.length===1?'':'es');
+    } else {
+      searchCount.textContent = 'no matches';
+    }
+  }
+
+  function highlightCurrent(){
+    searchHits.forEach((m,i)=>{
+      m.classList.toggle('current', i === currentHitIdx);
+    });
+    if(searchHits[currentHitIdx]){
+      searchHits[currentHitIdx].scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    if(searchHits.length > 0){
+      searchCount.textContent = (currentHitIdx+1) + '/' + searchHits.length;
+    }
+  }
+
+  function navigateSearch(dir){
+    if(searchHits.length === 0) return;
+    currentHitIdx = (currentHitIdx + dir + searchHits.length) % searchHits.length;
+    highlightCurrent();
+  }
+
+  // ============================================
+  // COMMAND EXECUTION
+  // ============================================
+  function executeCommand(cmd){
+    cmd = cmd.trim().toLowerCase();
+
+    // :q or :quit
+    if(cmd === 'q' || cmd === 'quit' || cmd === 'q!' || cmd === 'wq'){
+      quitOverlay.classList.add('active');
+      return;
+    }
+
+    // :top / :0
+    if(cmd === 'top' || cmd === '0'){
+      window.scrollTo({top:0, behavior:'smooth'});
+      return;
+    }
+
+    // :bot / :$
+    if(cmd === 'bot' || cmd === 'bottom' || cmd === '$'){
+      window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'});
+      return;
+    }
+
+    // man --flag or just --flag
+    let flag = cmd.replace(/^man\s+/, '').replace(/^--/, '').replace(/^-/, '');
+
+    // Try section map
+    if(sectionMap[flag]){
+      scrollToSection(sectionMap[flag]);
+      return;
+    }
+
+    // Try partial match
+    for(const key of Object.keys(sectionMap)){
+      if(key.startsWith(flag)){
+        scrollToSection(sectionMap[key]);
+        return;
+      }
+    }
+
+    // Version easter egg
+    if(flag === 'version' || cmd === 'version'){
+      showVersionEasterEgg();
+      return;
+    }
+
+    // help
+    if(flag === 'help' || cmd === 'help'){
+      scrollToSection('sec-synopsis');
+      return;
+    }
+  }
+
+  function showVersionEasterEgg(){
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#2A2A2A;border:1px solid #3A3A3A;padding:24px 32px;z-index:300;font-size:14px;color:#E0E0E0;white-space:pre;border-radius:4px;';
+    el.textContent = 'anshull-garg v4.2.0 (stable)\nCompiled: Feb 2026\nRuntime: Coffee + Curiosity\nUptime: 100%\n\nPress any key to dismiss.';
+    document.body.appendChild(el);
+
+    function dismiss(){
+      el.remove();
+      document.removeEventListener('keydown', dismiss);
+      document.removeEventListener('click', dismiss);
+    }
+    setTimeout(()=>{
+      document.addEventListener('keydown', dismiss, {once:true});
+      document.addEventListener('click', dismiss, {once:true});
+    }, 100);
+  }
+
+  // ============================================
+  // LIVE SEARCH (as-you-type in search mode)
+  // ============================================
+  let searchDebounce = null;
+  searchInput.addEventListener('input', ()=>{
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(()=>{
+      const val = searchInput.value;
+      if(val.length >= 2){
+        executeSearch(val);
+      } else {
+        clearSearch();
+      }
+    }, 200);
+  });
+
+  // ============================================
+  // TOUCH / MOBILE: tap section headings to nav
+  // ============================================
+  document.querySelectorAll('.section-heading').forEach(h=>{
+    h.style.cursor = 'pointer';
+    h.addEventListener('click', ()=>{
+      h.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
