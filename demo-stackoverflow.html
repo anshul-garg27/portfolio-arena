@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Stack Overflow Portfolio</title>
+<style>
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ========== SO VARIABLES ========== */
+:root {
+  --so-black: #232629;
+  --so-darkgray: #3b4045;
+  --so-gray: #6a737c;
+  --so-lightgray: #babfc4;
+  --so-border: #d6d9dc;
+  --so-bg: #f1f2f3;
+  --so-white: #ffffff;
+  --so-orange: #f48024;
+  --so-orange-dark: #da670b;
+  --so-blue: #0074cc;
+  --so-blue-dark: #0063bf;
+  --so-blue-light: #e1ecf4;
+  --so-tag-text: #39739d;
+  --so-green: #5eba7d;
+  --so-green-dark: #48a868;
+  --so-yellow-bg: #fdf7e2;
+  --so-yellow-border: #f1e5bc;
+  --so-yellow-dark: #e6cf79;
+  --so-red: #c02d2d;
+  --so-gold: #ffcc01;
+  --so-silver: #b4b8bc;
+  --so-bronze: #d1a684;
+  --so-vote-inactive: #babfc4;
+  --so-vote-active: #f48024;
+  --so-sidebar-width: 164px;
+  --so-topbar-height: 50px;
+}
+
+/* ========== BASE ========== */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Liberation Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--so-darkgray);
+  background: var(--so-bg);
+}
+
+a { color: var(--so-blue); text-decoration: none; cursor: pointer; }
+a:hover { color: var(--so-blue-dark); }
+
+/* ========== TOP BAR ========== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--so-black);
+  height: var(--so-topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 3px solid var(--so-orange);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.topbar-inner {
+  width: 100%;
+  max-width: 1264px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 4px;
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  height: var(--so-topbar-height);
+  cursor: pointer;
+  position: relative;
+}
+
+.topbar-logo:hover { background: #3b3f44; }
+
+.topbar-logo svg { width: 150px; height: 30px; }
+
+.topbar-nav { display: flex; align-items: center; gap: 2px; margin-left: 4px; }
+
+.topbar-nav a {
+  color: #9199a1;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 1000px;
+  white-space: nowrap;
+}
+
+.topbar-nav a:hover { color: #bbc0c4; background: #3b3f44; }
+
+.topbar-search {
+  flex: 1;
+  max-width: 740px;
+  position: relative;
+  margin: 0 8px;
+}
+
+.topbar-search input {
+  width: 100%;
+  padding: 7px 10px 7px 32px;
+  background: #393d41;
+  border: 1px solid #56595c;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+
+.topbar-search input::placeholder { color: #7f8387; }
+.topbar-search input:focus { background: #fff; color: #232629; border-color: #6bbbf7; box-shadow: 0 0 0 4px rgba(107,187,247,0.15); }
+.topbar-search input:focus::placeholder { color: #838c95; }
+
+.topbar-search .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #838c95;
+  pointer-events: none;
+}
+
+.topbar-search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--so-border);
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 2000;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.topbar-search-results.active { display: block; }
+
+.search-result-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.search-result-item:hover { background: #f0f8ff; }
+.search-result-item .sr-title { color: var(--so-blue); font-weight: 500; }
+.search-result-item .sr-excerpt { color: var(--so-gray); font-size: 12px; margin-top: 2px; }
+.search-result-item .sr-tags { margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap; }
+
+.search-no-results { padding: 16px; text-align: center; color: var(--so-gray); font-size: 13px; }
+
+.topbar-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; flex-shrink: 0; }
+
+.topbar-profile {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, var(--so-orange), #e85d26);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+}
+
+.topbar-rep {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 4px;
+  cursor: pointer;
+}
+
+.topbar-icon {
+  width: 38px;
+  height: var(--so-topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #838c95;
+  position: relative;
+}
+
+.topbar-icon:hover { color: #bbc0c4; background: #3b3f44; }
+.topbar-icon svg { width: 20px; height: 20px; fill: currentColor; }
+
+.topbar-icon .notif-dot {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background: var(--so-blue);
+  border-radius: 50%;
+}
+
+.ask-btn {
+  background: #0a95ff;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 3px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.ask-btn:hover { background: #0074cc; color: #fff; }
+
+/* Profile hover card */
+.profile-hovercard {
+  position: fixed;
+  top: 55px;
+  right: 100px;
+  width: 340px;
+  background: #fff;
+  border: 1px solid var(--so-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  padding: 16px;
+  z-index: 3000;
+  display: none;
+}
+
+.profile-hovercard.active { display: block; }
+
+.phc-header { display: flex; gap: 12px; margin-bottom: 12px; }
+
+.phc-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--so-orange), #e85d26);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.phc-info h3 { font-size: 15px; color: var(--so-blue); margin-bottom: 2px; }
+.phc-info p { font-size: 12px; color: var(--so-gray); }
+
+.phc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; border-top: 1px solid var(--so-border); padding-top: 12px; }
+.phc-stat-val { font-size: 16px; font-weight: 700; color: var(--so-darkgray); }
+.phc-stat-label { font-size: 11px; color: var(--so-gray); }
+
+.phc-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ========== LAYOUT ========== */
+.page-container {
+  max-width: 1264px;
+  margin: 0 auto;
+  display: flex;
+  min-height: calc(100vh - var(--so-topbar-height));
+}
+
+/* ========== LEFT SIDEBAR ========== */
+.left-sidebar {
+  width: var(--so-sidebar-width);
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--so-topbar-height);
+  height: calc(100vh - var(--so-topbar-height));
+  overflow-y: auto;
+  padding: 24px 0 12px 0;
+  border-right: 1px solid var(--so-border);
+  background: var(--so-white);
+}
+
+.ls-section { margin-bottom: 16px; }
+
+.ls-header {
+  font-size: 11px;
+  color: var(--so-gray);
+  text-transform: uppercase;
+  padding: 8px 8px 4px 8px;
+  letter-spacing: 0.02em;
+}
+
+.ls-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 8px;
+  font-size: 13px;
+  color: var(--so-gray);
+  cursor: pointer;
+  border-right: 3px solid transparent;
+  transition: background 0.1s;
+}
+
+.ls-item:hover { color: var(--so-darkgray); }
+.ls-item.active { font-weight: 700; color: var(--so-darkgray); background: var(--so-bg); border-right-color: var(--so-orange); }
+
+.ls-item svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+.ls-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ls-collectives-icon {
+  width: 16px;
+  height: 16px;
+  background: var(--so-orange);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  border-right: 1px solid var(--so-border);
+  background: var(--so-white);
+}
+
+/* ========== QUESTION HEADER ========== */
+.question-header {
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid var(--so-border);
+}
+
+.question-header h1 {
+  font-size: 27px;
+  font-weight: 400;
+  color: var(--so-darkgray);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.question-header h1 .closed-tag {
+  font-size: 12px;
+  background: #fce8cf;
+  color: #9a6400;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-left: 4px;
+  display: inline-block;
+}
+
+.question-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--so-gray);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.question-meta span b { color: var(--so-darkgray); font-weight: 400; }
+
+/* ========== POST LAYOUT ========== */
+.post-layout {
+  display: flex;
+  padding: 16px 24px;
+  gap: 16px;
+}
+
+/* Vote Cell */
+.vote-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  padding-top: 4px;
+}
+
+.vote-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--so-vote-inactive);
+  transition: color 0.1s;
+}
+
+.vote-btn:hover { color: var(--so-vote-active); }
+.vote-btn.active { color: var(--so-vote-active); }
+.vote-btn svg { width: 36px; height: 36px; fill: currentColor; }
+
+.vote-count {
+  font-size: 21px;
+  color: var(--so-darkgray);
+  font-weight: 600;
+  padding: 4px 0;
+  text-align: center;
+  min-width: 36px;
+}
+
+.accepted-check {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--so-lightgray);
+  margin-top: 4px;
+  transition: color 0.15s;
+}
+
+.accepted-check:hover { color: var(--so-green); }
+.accepted-check.active { color: var(--so-green); }
+.accepted-check svg { width: 36px; height: 36px; fill: currentColor; }
+
+.bookmark-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--so-lightgray);
+  margin-top: 4px;
+}
+
+.bookmark-btn:hover { color: var(--so-vote-active); }
+.bookmark-btn.active { color: var(--so-vote-active); }
+.bookmark-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+.history-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--so-lightgray);
+  margin-top: 2px;
+  font-size: 16px;
+}
+
+/* Post Cell */
+.post-cell { flex: 1; min-width: 0; }
+
+.post-body { font-size: 15px; line-height: 1.65; color: #232629; }
+.post-body p { margin-bottom: 15px; }
+.post-body strong { font-weight: 600; }
+.post-body ul, .post-body ol { margin: 0 0 15px 30px; }
+.post-body li { margin-bottom: 4px; font-size: 15px; line-height: 1.65; }
+.post-body h2 { font-size: 21px; font-weight: 400; margin: 20px 0 8px 0; }
+.post-body h3 { font-size: 17px; font-weight: 600; margin: 16px 0 6px 0; }
+.post-body hr { border: none; border-top: 1px solid var(--so-border); margin: 20px 0; }
+
+.post-body code {
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "Liberation Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  background: #f6f6f6;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: #232629;
+}
+
+.post-body pre {
+  background: #f6f6f6;
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+  border: 1px solid #e4e6e8;
+}
+
+.post-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  display: block;
+}
+
+.post-body blockquote {
+  border-left: 4px solid var(--so-yellow-dark);
+  background: var(--so-yellow-bg);
+  padding: 12px 16px;
+  margin: 0 0 15px 0;
+  color: #525960;
+  font-size: 15px;
+}
+
+.post-body a { color: var(--so-blue); }
+.post-body a:hover { color: var(--so-blue-dark); }
+
+/* Closed notice */
+.closed-notice {
+  background: var(--so-yellow-bg);
+  border: 1px solid var(--so-yellow-border);
+  border-radius: 3px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #6a737c;
+}
+
+.closed-notice b { color: var(--so-darkgray); }
+
+/* Tags */
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 16px 0 12px 0;
+}
+
+.so-tag {
+  display: inline-block;
+  padding: 4.8px 6px;
+  background: var(--so-blue-light);
+  color: var(--so-tag-text);
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.so-tag:hover { background: #d0e3f1; color: #2c5777; }
+
+/* Post actions */
+.post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 4px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.post-action-links { display: flex; gap: 8px; }
+
+.post-action-links a {
+  font-size: 13px;
+  color: var(--so-gray);
+  padding: 4px 0;
+}
+
+.post-action-links a:hover { color: var(--so-darkgray); }
+
+/* User card */
+.user-card {
+  background: #d9eaf7;
+  border-radius: 3px;
+  padding: 7px;
+  min-width: 200px;
+  font-size: 12px;
+}
+
+.user-card.answerer { background: transparent; }
+
+.user-card-time { color: var(--so-gray); margin-bottom: 4px; font-size: 12px; }
+
+.user-card-info { display: flex; gap: 8px; align-items: flex-start; }
+
+.user-card-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, var(--so-orange), #e85d26);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-card-avatar.community {
+  background: linear-gradient(135deg, #6a737c, #3b4045);
+}
+
+.user-card-details a { color: var(--so-blue); font-weight: 500; }
+
+.user-card-rep {
+  font-weight: 700;
+  color: var(--so-darkgray);
+  font-size: 12px;
+}
+
+.user-card-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--so-gray);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.badge-gold { background: var(--so-gold); }
+.badge-silver { background: var(--so-silver); }
+.badge-bronze { background: var(--so-bronze); }
+
+/* ========== COMMENTS ========== */
+.comments-section {
+  border-top: 1px solid var(--so-border);
+  margin-top: 12px;
+}
+
+.comment {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f1f2;
+  font-size: 13px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.comment-score {
+  color: var(--so-lightgray);
+  font-size: 12px;
+  min-width: 20px;
+  text-align: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.comment-score:hover { color: var(--so-vote-active); }
+
+.comment-body { color: #525960; font-size: 13px; line-height: 1.4; }
+.comment-body .comment-user { color: var(--so-blue); padding: 0 2px; }
+.comment-body .comment-date { color: var(--so-lightgray); font-size: 12px; padding-left: 4px; }
+
+.show-comments-btn {
+  display: block;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--so-gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.show-comments-btn:hover { color: var(--so-blue); }
+
+.hidden-comments { display: none; }
+.hidden-comments.show { display: block; }
+
+.add-comment-btn {
+  display: inline-block;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--so-gray);
+  cursor: pointer;
+}
+
+.add-comment-btn:hover { color: var(--so-blue); }
+
+/* ========== ANSWER HEADER ========== */
+.answers-header {
+  padding: 16px 24px;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--so-darkgray);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.answers-sort {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.answers-sort span { color: var(--so-gray); font-size: 12px; margin-right: 4px; }
+
+.sort-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--so-border);
+  background: var(--so-white);
+  color: var(--so-gray);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.sort-btn:first-of-type { border-radius: 3px 0 0 3px; }
+.sort-btn:last-of-type { border-radius: 0 3px 3px 0; }
+.sort-btn.active { background: var(--so-bg); color: var(--so-darkgray); font-weight: 500; }
+
+/* Answer divider */
+.answer-divider {
+  border: none;
+  border-top: 1px solid var(--so-border);
+  margin: 0 24px;
+}
+
+/* ========== ACCEPTED ANSWER INDICATOR ========== */
+.accepted-answer-border {
+  border-left: 3px solid var(--so-green);
+}
+
+/* ========== RIGHT SIDEBAR ========== */
+.right-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 24px 16px;
+}
+
+.sidebar-widget {
+  border: 1px solid var(--so-yellow-border);
+  border-radius: 3px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.sidebar-widget.gray { border-color: var(--so-border); }
+
+.sw-header {
+  background: var(--so-yellow-bg);
+  padding: 12px 15px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--so-darkgray);
+  border-bottom: 1px solid var(--so-yellow-border);
+}
+
+.sidebar-widget.gray .sw-header {
+  background: var(--so-bg);
+  border-bottom-color: var(--so-border);
+}
+
+.sw-body { background: var(--so-white); }
+
+.sw-item {
+  padding: 12px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f1f2;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.sw-item:last-child { border-bottom: none; }
+
+.sw-item .sw-bullet {
+  color: var(--so-gray);
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.sw-item a {
+  color: var(--so-darkgray);
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.sw-item a:hover { color: var(--so-blue); }
+
+.sw-item .sw-votes {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sw-item .sw-votes.has-answer { color: var(--so-green); }
+
+/* Hire banner */
+.hire-banner {
+  background: linear-gradient(135deg, var(--so-orange), #e85d26);
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.hire-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244,128,36,0.4);
+}
+
+.hire-banner h3 { font-size: 18px; margin-bottom: 6px; }
+.hire-banner p { font-size: 13px; opacity: 0.9; margin-bottom: 12px; }
+
+.hire-banner .hire-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #fff;
+  color: var(--so-orange);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hire-banner .hire-btn:hover { background: #f6f6f6; color: var(--so-orange-dark); }
+
+/* Skill rep list */
+.skill-rep-item {
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0f1f2;
+  font-size: 13px;
+}
+
+.skill-rep-item:last-child { border-bottom: none; }
+
+.skill-rep-item .so-tag { margin-right: 8px; }
+
+.skill-rep-score {
+  font-weight: 700;
+  color: var(--so-darkgray);
+  font-size: 13px;
+}
+
+.skill-rep-score span {
+  font-size: 10px;
+  color: var(--so-gray);
+  font-weight: 400;
+}
+
+/* Hot network questions */
+.hot-item {
+  padding: 8px 15px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f1f2;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.hot-item:last-child { border-bottom: none; }
+
+.hot-item .hot-icon {
+  width: 16px;
+  height: 16px;
+  background: var(--so-bg);
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--so-gray);
+  margin-top: 2px;
+}
+
+.hot-item a { color: var(--so-blue); line-height: 1.3; font-size: 12px; }
+
+/* ========== CONTACT MODAL ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 5000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+  background: #fff;
+  border-radius: 7px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--so-border);
+  background: var(--so-bg);
+  border-radius: 7px 7px 0 0;
+}
+
+.modal-header h2 { font-size: 17px; font-weight: 600; color: var(--so-darkgray); }
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 20px;
+  color: var(--so-gray);
+  border-radius: 3px;
+}
+
+.modal-close:hover { background: var(--so-border); }
+
+.modal-body { padding: 24px; }
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--so-darkgray);
+  margin-bottom: 4px;
+}
+
+.form-group .form-desc { font-size: 12px; color: var(--so-gray); margin-bottom: 4px; }
+
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--so-border);
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: #6bbbf7;
+  box-shadow: 0 0 0 4px rgba(107,187,247,0.15);
+}
+
+.form-group textarea { min-height: 120px; resize: vertical; }
+
+.form-submit {
+  background: #0a95ff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 3px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.form-submit:hover { background: var(--so-blue); }
+
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.form-success.active { display: block; }
+.form-success .check-icon { font-size: 48px; color: var(--so-green); margin-bottom: 12px; }
+.form-success h3 { font-size: 21px; margin-bottom: 8px; color: var(--so-darkgray); }
+.form-success p { color: var(--so-gray); font-size: 15px; }
+
+/* ========== TAG FILTER BAR ========== */
+.tag-filter-bar {
+  padding: 8px 24px;
+  background: var(--so-yellow-bg);
+  border-bottom: 1px solid var(--so-yellow-border);
+  font-size: 13px;
+  color: var(--so-gray);
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-filter-bar.active { display: flex; }
+
+.tag-filter-bar .clear-filter {
+  color: var(--so-red);
+  cursor: pointer;
+  font-size: 13px;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.tag-filter-bar .clear-filter:hover { text-decoration: underline; }
+
+/* ========== FOOTER ========== */
+.so-footer {
+  background: #232629;
+  color: #9199a1;
+  padding: 32px 0;
+  margin-top: 32px;
+}
+
+.footer-inner {
+  max-width: 1264px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.footer-logo svg { width: 32px; height: 37px; flex-shrink: 0; }
+
+.footer-col h5 { color: #babfc4; font-size: 13px; text-transform: uppercase; margin-bottom: 12px; }
+.footer-col a { display: block; color: #9199a1; font-size: 13px; margin-bottom: 6px; }
+.footer-col a:hover { color: #bbc0c4; }
+
+.footer-copyright {
+  max-width: 1264px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+  font-size: 11px;
+  color: #6a737c;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1100px) {
+  .right-sidebar { display: none; }
+}
+
+@media (max-width: 768px) {
+  .left-sidebar { display: none; }
+  .topbar-nav { display: none; }
+  .post-layout { padding: 16px; gap: 12px; }
+  .question-header { padding: 16px 16px 0 16px; }
+  .question-header h1 { font-size: 21px; }
+  .answers-header { padding: 16px; }
+  .answer-divider { margin: 0 16px; }
+  .post-actions { flex-direction: column; align-items: flex-start; }
+  .user-card { align-self: flex-start; }
+  .footer-inner { flex-direction: column; gap: 24px; }
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes voteFlash {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.vote-flash { animation: voteFlash 0.2s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+/* Post filtered out */
+.post-layout.filtered-out { display: none; }
+
+/* Highlighted answer */
+.post-layout.highlight-answer { background: #fdf7e2; }
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--so-bg); }
+::-webkit-scrollbar-thumb { background: var(--so-lightgray); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--so-gray); }
+</style>
+</head>
+<body>
+
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-logo" href="#" aria-label="Stack Overflow">
+      <svg viewBox="0 0 150 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="21" fill="#bcbbbb" font-family="-apple-system, sans-serif" font-size="16" font-weight="300">stack</text>
+        <text x="42" y="21" fill="#fff" font-family="-apple-system, sans-serif" font-size="16" font-weight="700">overflow</text>
+        <rect x="134" y="4" width="4" height="16" fill="#bcbbbb"/>
+        <rect x="139" y="0" width="4" height="20" fill="#f48024"/>
+      </svg>
+    </a>
+
+    <nav class="topbar-nav">
+      <a href="#">About</a>
+      <a href="#">Products</a>
+      <a href="#">OverflowAI</a>
+    </nav>
+
+    <div class="topbar-search">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+        <path d="M18 16.5l-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5 18l1.5-1.5zM12 7A5 5 0 112 7a5 5 0 0110 0z"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search portfolio..." autocomplete="off"/>
+      <div class="topbar-search-results" id="searchResults"></div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="topbar-profile" id="profileTrigger" title="Anshull Garg">AG</div>
+      <span class="topbar-rep" title="Reputation">47,832</span>
+
+      <div class="topbar-icon" title="Inbox">
+        <svg viewBox="0 0 20 18"><path d="M4.63 1h10.56a2 2 0 011.94 1.35L20 10.79V15a2 2 0 01-2 2H2a2 2 0 01-2-2v-4.21l2.78-8.44c.25-.8 1-1.36 1.85-1.35zm8.28 12L14 11h4l-2.55-8H4.52L2 11h4l1.1 2h5.81z"/></svg>
+        <span class="notif-dot"></span>
+      </div>
+
+      <div class="topbar-icon" title="Achievements">
+        <svg viewBox="0 0 18 18"><path d="M15 2V1H3v1H0v4c0 1.6 1.4 2.8 3 3v1c0 1.5 1 2.8 2.5 3.3L5 14h1.3l-.5 2H5v1h8v-1h-.8l-.5-2H13l-.5-1.7c1.5-.5 2.5-1.8 2.5-3.3V9c1.6-.2 3-1.4 3-3V2h-3zM3 7c-.5 0-1-.5-1-1V4h1v3zm8.3 7H6.7l.2-.7c.3-.1.6-.2.9-.3h2.4c.3.1.6.2.9.3l.2.7zM13 9v-.5c0-.3-.2-.5-.5-.5H13V5H5v3h.5c-.3 0-.5.2-.5.5V9c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2zm3-3c0 .5-.5 1-1 1V4h1v2z"/></svg>
+      </div>
+
+      <div class="topbar-icon" title="Help">
+        <svg viewBox="0 0 18 18"><path d="M9 1C4.64 1 1 4.64 1 9s3.64 8 8 8 8-3.64 8-8-3.64-8-8-8zM9.81 13.37H8.17v-1.64h1.64v1.64zm.36-3.37l-.75.77c-.6.6-.62.93-.62 1.77H8.17c0-1.08.18-1.58.86-2.27l1.03-1.06c.28-.3.44-.65.44-1.09 0-.83-.68-1.5-1.5-1.5s-1.5.67-1.5 1.5H5.86A3.14 3.14 0 019 5a3.14 3.14 0 013.14 3.14c0 .69-.28 1.32-.74 1.77l-.23.09z"/></svg>
+      </div>
+
+      <button class="ask-btn" id="askQuestionBtn">Ask Question</button>
+    </div>
+  </div>
+</header>
+
+<!-- Profile Hover Card -->
+<div class="profile-hovercard" id="profileHovercard">
+  <div class="phc-header">
+    <div class="phc-avatar">AG</div>
+    <div class="phc-info">
+      <h3>Anshull Garg</h3>
+      <p>Software Developer at Walmart Global Tech</p>
+      <p>Member for 5 years</p>
+    </div>
+  </div>
+  <div class="phc-stats">
+    <div><div class="phc-stat-val">47,832</div><div class="phc-stat-label">reputation</div></div>
+    <div><div class="phc-stat-val">1,247</div><div class="phc-stat-label">reached</div></div>
+    <div><div class="phc-stat-val">342</div><div class="phc-stat-label">answers</div></div>
+  </div>
+  <div class="phc-tags">
+    <span class="so-tag">react</span>
+    <span class="so-tag">node.js</span>
+    <span class="so-tag">typescript</span>
+    <span class="so-tag">javascript</span>
+    <span class="so-tag">python</span>
+  </div>
+</div>
+
+<!-- ========== MAIN LAYOUT ========== -->
+<div class="page-container">
+
+  <!-- LEFT SIDEBAR -->
+  <nav class="left-sidebar" aria-label="Main navigation">
+    <div class="ls-section">
+      <a class="ls-item active">
+        <svg viewBox="0 0 18 18"><path d="M9 1C4.64 1 1 4.64 1 9s3.64 8 8 8 8-3.64 8-8-3.64-8-8-8zM8 15.32a6.46 6.46 0 01-4.3-2.74 6.46 6.46 0 01.93-1.12c1.15-1.07 2.15-1.3 3.37-1.27 1.22.03 2.22.28 3.37 1.27.37.34.7.71.98 1.12A6.46 6.46 0 018 15.32zm6.44-3.77c-.43-.55-.96-1.05-1.6-1.46C11.66 9.2 10.32 8.9 9 8.88c-1.32.01-2.66.32-3.84 1.21-.64.41-1.17.91-1.6 1.46A6.46 6.46 0 013 9a6 6 0 1112 0 6.46 6.46 0 01-.56 2.55zM9 4a3 3 0 100 6 3 3 0 000-6z"/></svg>
+        <span>Home</span>
+      </a>
+    </div>
+    <div class="ls-section">
+      <div class="ls-header">Public</div>
+      <a class="ls-item" href="#question-section">
+        <svg viewBox="0 0 18 18"><path d="M9 1C4.64 1 1 4.64 1 9s3.64 8 8 8 8-3.64 8-8-3.64-8-8-8zm.81 12.13c.02.71-.55 1.15-1.24 1.13-.56-.02-1.13-.44-1.14-1.18.02-.71.58-1.16 1.19-1.14.63.01 1.2.44 1.19 1.19zm3.27-5.68c-.2.29-.56.63-.98.93l-.55.42c-.26.22-.37.4-.39.67l-.02.42h-2l.02-.6c.05-.67.28-1.17.92-1.65l.57-.46c.18-.15.33-.37.44-.54.12-.2.18-.38.18-.64 0-.7-.52-1.17-1.24-1.17-.7 0-1.2.37-1.36 1.04l-1.87-.45c.36-1.35 1.51-2.29 3.2-2.29 1.82 0 3.22 1.09 3.22 2.69 0 .61-.2 1.17-.54 1.63z"/></svg>
+        <span>Questions</span>
+      </a>
+      <a class="ls-item" href="#skills-sidebar">
+        <svg viewBox="0 0 18 18"><path d="M9.5 3C8.12 3 7 4.12 7 5.5S8.12 8 9.5 8 12 6.88 12 5.5 10.88 3 9.5 3zM5.5 5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM14 6a1 1 0 100 2 1 1 0 000-2zM9.5 9c-2.33 0-7 1.17-7 3.5V15h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <span>Tags</span>
+      </a>
+      <a class="ls-item" href="#answers-section">
+        <svg viewBox="0 0 18 18"><path d="M9 1a8 8 0 100 16A8 8 0 009 1zm3.7 11.7a.8.8 0 01-.45.17.74.74 0 01-.64-.32l-.91-1.36a7.24 7.24 0 01-1.86.24c-3.16 0-5.73-1.88-5.73-4.2s2.57-4.2 5.73-4.2c3.16 0 5.73 1.88 5.73 4.2 0 1.37-.84 2.6-2.17 3.43l.6.9a.8.8 0 01-.3 1.14z"/></svg>
+        <span>Users</span>
+      </a>
+      <a class="ls-item">
+        <svg viewBox="0 0 18 18"><path d="M16 2H2a1 1 0 00-1 1v12a1 1 0 001 1h14a1 1 0 001-1V3a1 1 0 00-1-1zM2 15V5h14v10H2zm2-8h10v1H4V7zm0 3h7v1H4v-1z"/></svg>
+        <span>Companies</span>
+      </a>
+    </div>
+    <div class="ls-section">
+      <div class="ls-header">Collectives</div>
+      <a class="ls-item">
+        <div class="ls-collectives-icon"></div>
+        <span>Explore Collectives</span>
+      </a>
+    </div>
+    <div class="ls-section">
+      <div class="ls-header">Labs</div>
+      <a class="ls-item">
+        <svg viewBox="0 0 18 18"><path d="M10.85 1.15a.5.5 0 010 .7L9.71 3l5.29 5.29a.5.5 0 010 .71l-5 5a.5.5 0 01-.71 0L4 8.71l-1.15 1.14a.5.5 0 01-.7-.7l8-8a.5.5 0 01.7 0z"/></svg>
+        <span>Discussions</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- Tag Filter Bar -->
+    <div class="tag-filter-bar" id="tagFilterBar">
+      Filtering by tag: <span class="so-tag" id="activeFilterTag"></span>
+      <button class="clear-filter" onclick="clearTagFilter()">Clear filter</button>
+    </div>
+
+    <!-- QUESTION HEADER -->
+    <div class="question-header" id="question-section">
+      <h1>How do I hire Anshull Garg? <span class="closed-tag">closed as too-easy</span></h1>
+      <div class="question-meta">
+        <span>Asked <b>5 years ago</b></span>
+        <span>Modified <b>today</b></span>
+        <span>Viewed <b>12,847 times</b></span>
+      </div>
+    </div>
+
+    <!-- THE QUESTION POST -->
+    <div class="post-layout" data-tags="react,node.js,typescript,walmart,software-developer">
+      <div class="vote-cell">
+        <button class="vote-btn upvote" onclick="vote(this, 'up')" aria-label="Upvote">
+          <svg viewBox="0 0 36 36"><path d="M2 25h32L18 9 2 25z"/></svg>
+        </button>
+        <div class="vote-count">847</div>
+        <button class="vote-btn downvote" onclick="vote(this, 'down')" aria-label="Downvote">
+          <svg viewBox="0 0 36 36"><path d="M2 11h32L18 27 2 11z"/></svg>
+        </button>
+        <div class="bookmark-btn" onclick="toggleBookmark(this)" title="Save this question">
+          <svg viewBox="0 0 18 18"><path d="M3 1a1 1 0 00-1 1v14l7-4 7 4V2a1 1 0 00-1-1H3z"/></svg>
+        </div>
+        <div class="history-btn" title="Timeline">&#128337;</div>
+      </div>
+      <div class="post-cell">
+        <!-- Closed Notice -->
+        <div class="closed-notice">
+          <b>Closed.</b> This question has been marked as answered. If it helped, consider <a href="#" onclick="openContactModal(); return false;">reaching out</a>.<br>
+          <span style="font-size:12px; color: #838c95;">Closed as duplicate of: <a href="#">being-too-qualified</a></span>
+        </div>
+
+        <div class="post-body">
+          <p>I am looking for a <strong>software developer</strong> who can architect scalable systems, build pixel-perfect frontends, and lead engineering initiatives at enterprise scale. My requirements are:</p>
+
+          <ul>
+            <li>Full-stack proficiency across <code>React</code>, <code>Node.js</code>, <code>TypeScript</code>, and <code>Python</code></li>
+            <li>Experience building production systems at Fortune 1 scale</li>
+            <li>Someone who obsesses over clean architecture and seamless user experiences</li>
+            <li>Strong understanding of cloud infrastructure (<code>AWS</code>, <code>Docker</code>, <code>Kubernetes</code>)</li>
+            <li>A track record of mentoring teams and driving engineering culture</li>
+          </ul>
+
+          <p>After extensive research, every result points to <strong>Anshull Garg</strong>, currently a <strong>Software Developer at Walmart Global Tech</strong>.</p>
+
+          <h3>What I know so far:</h3>
+
+          <p>He builds systems that serve millions. At Walmart Global Tech (Fortune #1), he architects high-performance applications powering enterprise e-commerce at massive scale. His day-to-day involves designing scalable APIs, optimizing frontend performance, and shipping features that matter.</p>
+
+<pre><code>const anshull = {
+  role: "Software Developer",
+  company: "Walmart Global Tech",
+  location: "Bentonville, AR",
+  stack: ["React", "Node.js", "TypeScript", "Python", "AWS"],
+  traits: ["system-thinker", "builder", "mentor"],
+  philosophy: "Code that ships > code that's perfect",
+  currentFocus: "Scalable architecture & engineering excellence"
+};</code></pre>
+
+          <p>His engineering philosophy: <em>"I read the PR description before the code diff. I think the best documentation is the one someone actually reads. I believe 'it works on my machine' is not a deployment strategy."</em></p>
+
+          <blockquote>
+            This question has been upvoted 847 times because the answer is obvious. Just hire him.
+          </blockquote>
+
+          <p>How do I get in touch? What's the best way to reach out for collaboration, hiring, or open-source contributions?</p>
+        </div>
+
+        <!-- Tags -->
+        <div class="post-tags">
+          <button class="so-tag" onclick="filterByTag('react')">react</button>
+          <button class="so-tag" onclick="filterByTag('node.js')">node.js</button>
+          <button class="so-tag" onclick="filterByTag('typescript')">typescript</button>
+          <button class="so-tag" onclick="filterByTag('walmart')">walmart</button>
+          <button class="so-tag" onclick="filterByTag('software-developer')">software-developer</button>
+        </div>
+
+        <!-- Post Actions -->
+        <div class="post-actions">
+          <div class="post-action-links">
+            <a href="#">Share</a>
+            <a href="#">Edit</a>
+            <a href="#">Follow</a>
+            <a href="#">Flag</a>
+          </div>
+          <div class="user-card">
+            <div class="user-card-time">asked Jan 15, 2021 at 14:32</div>
+            <div class="user-card-info">
+              <div class="user-card-avatar">AG</div>
+              <div class="user-card-details">
+                <a href="#">Anshull Garg</a><br>
+                <span class="user-card-rep">47,832</span>
+                <span class="user-card-badges">
+                  <span class="badge-dot badge-gold"></span>12
+                  <span class="badge-dot badge-silver"></span>48
+                  <span class="badge-dot badge-bronze"></span>96
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="comments-section">
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">42</div>
+            <div class="comment-body">
+              Have you tried turning it off and on again? --
+              <span class="comment-user">senior_debug_wizard</span>
+              <span class="comment-date">Jan 15, 2021</span>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">28</div>
+            <div class="comment-body">
+              This is clearly a duplicate of <a href="#">being-too-qualified</a>. Voting to close. --
+              <span class="comment-user">duplicate_police</span>
+              <span class="comment-date">Jan 15, 2021</span>
+            </div>
+          </div>
+          <div class="hidden-comments" id="question-hidden-comments">
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">15</div>
+              <div class="comment-body">
+                Can confirm, worked with him at Walmart. The man writes cleaner code than my dishwasher. --
+                <span class="comment-user">walmart_colleague_42</span>
+                <span class="comment-date">Jan 16, 2021</span>
+              </div>
+            </div>
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">9</div>
+              <div class="comment-body">
+                Minimum reproducible example of his talent: literally any of his GitHub repos. --
+                <span class="comment-user">code_reviewer_99</span>
+                <span class="comment-date">Jan 17, 2021</span>
+              </div>
+            </div>
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">7</div>
+              <div class="comment-body">
+                @duplicate_police This is NOT a duplicate. Being too qualified is a different problem entirely. This is about HOW to hire, not WHETHER. --
+                <span class="comment-user">OP</span>
+                <span class="comment-date">Jan 17, 2021</span>
+              </div>
+            </div>
+          </div>
+          <button class="show-comments-btn" onclick="toggleComments('question-hidden-comments', this)">Show 3 more comments</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ANSWERS SECTION ========== -->
+    <div class="answers-header" id="answers-section">
+      <span>3 Answers</span>
+      <div class="answers-sort">
+        <span>Sorted by:</span>
+        <button class="sort-btn active" onclick="sortAnswers('votes', this)">Highest score</button><button class="sort-btn" onclick="sortAnswers('active', this)">Active</button><button class="sort-btn" onclick="sortAnswers('oldest', this)">Oldest</button>
+      </div>
+    </div>
+
+    <hr class="answer-divider">
+
+    <!-- ANSWER 1: E-Commerce Platform (Accepted) -->
+    <div class="post-layout answer-post accepted-answer-border" data-tags="react,typescript,node.js,aws,microservices" data-votes="234" data-date="2021-01-16" data-active="2026-02-01" id="answer-1">
+      <div class="vote-cell">
+        <button class="vote-btn upvote" onclick="vote(this, 'up')" aria-label="Upvote">
+          <svg viewBox="0 0 36 36"><path d="M2 25h32L18 9 2 25z"/></svg>
+        </button>
+        <div class="vote-count">234</div>
+        <button class="vote-btn downvote" onclick="vote(this, 'down')" aria-label="Downvote">
+          <svg viewBox="0 0 36 36"><path d="M2 11h32L18 27 2 11z"/></svg>
+        </button>
+        <div class="accepted-check active" onclick="toggleAccepted(this)" title="Toggle accepted answer">
+          <svg viewBox="0 0 36 36"><path d="M6 14l8 8L30 6l-2.5-2.5L14 19l-5.5-5.5z"/></svg>
+        </div>
+        <div class="bookmark-btn" onclick="toggleBookmark(this)">
+          <svg viewBox="0 0 18 18"><path d="M3 1a1 1 0 00-1 1v14l7-4 7 4V2a1 1 0 00-1-1H3z"/></svg>
+        </div>
+      </div>
+      <div class="post-cell">
+        <div class="post-body">
+          <h2>Project: Enterprise E-Commerce Platform</h2>
+
+          <p>I can answer this from firsthand experience. Anshull built the <strong>core product discovery and checkout architecture</strong> at Walmart Global Tech -- a system handling millions of transactions daily across web, mobile, and in-store channels.</p>
+
+          <h3>The Problem</h3>
+          <p>Walmart's digital commerce platform needed a complete overhaul of the product discovery pipeline. The legacy system had 4+ second page loads, inconsistent search results across platforms, and couldn't scale during peak events like Black Friday.</p>
+
+          <h3>The Solution</h3>
+<pre><code>// Anshull's architecture for the product discovery service
+// Reduced page load from 4.2s to 1.1s
+
+const ProductDiscoveryService = {
+  architecture: "Event-driven microservices",
+  frontend: {
+    framework: "React 18 + TypeScript",
+    stateManagement: "Custom context + React Query",
+    rendering: "Hybrid SSR/ISR with Next.js",
+    performance: "Code-split by route, lazy-loaded components"
+  },
+  backend: {
+    runtime: "Node.js + Express",
+    search: "Elasticsearch with custom ranking",
+    cache: "Redis cluster with read replicas",
+    queue: "Apache Kafka for event streaming"
+  },
+  infrastructure: {
+    cloud: "AWS (ECS, Lambda, CloudFront)",
+    ci_cd: "GitHub Actions + custom deployment pipeline",
+    monitoring: "Datadog + PagerDuty integration"
+  }
+};</code></pre>
+
+          <h3>Key Achievements</h3>
+          <ul>
+            <li>Reduced page load time from <strong>4.2s to 1.1s</strong> (74% improvement)</li>
+            <li>Improved search relevance scores by <strong>45%</strong> through custom Elasticsearch tuning</li>
+            <li>System handled <strong>2.3M concurrent users</strong> during Black Friday with zero downtime</li>
+            <li>Cut infrastructure costs by <strong>30%</strong> through intelligent caching and CDN optimization</li>
+            <li>Led a team of 8 engineers across 3 time zones</li>
+          </ul>
+
+          <blockquote>
+            "Anshull didn't just build a faster system -- he fundamentally rethought how product data flows from warehouse to screen. The architecture he designed is now the template for 4 other Walmart verticals." -- Engineering Director, Walmart
+          </blockquote>
+
+          <p><a href="https://github.com/anshul-garg27" target="_blank" rel="noopener">View on GitHub</a> | <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">Connect on LinkedIn</a></p>
+        </div>
+
+        <div class="post-tags">
+          <button class="so-tag" onclick="filterByTag('react')">react</button>
+          <button class="so-tag" onclick="filterByTag('typescript')">typescript</button>
+          <button class="so-tag" onclick="filterByTag('node.js')">node.js</button>
+          <button class="so-tag" onclick="filterByTag('aws')">aws</button>
+          <button class="so-tag" onclick="filterByTag('microservices')">microservices</button>
+        </div>
+
+        <div class="post-actions">
+          <div class="post-action-links">
+            <a href="#">Share</a>
+            <a href="#">Edit</a>
+            <a href="#">Follow</a>
+            <a href="#">Flag</a>
+          </div>
+          <div class="user-card answerer">
+            <div class="user-card-time">answered Jan 16, 2021 at 9:15</div>
+            <div class="user-card-info">
+              <div class="user-card-avatar">AG</div>
+              <div class="user-card-details">
+                <a href="#">Anshull Garg</a><br>
+                <span class="user-card-rep">47,832</span>
+                <span class="user-card-badges">
+                  <span class="badge-dot badge-gold"></span>12
+                  <span class="badge-dot badge-silver"></span>48
+                  <span class="badge-dot badge-bronze"></span>96
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comments-section">
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">67</div>
+            <div class="comment-body">
+              2.3M concurrent users on Black Friday with zero downtime? That's not engineering, that's wizardry. --
+              <span class="comment-user">impressed_architect</span>
+              <span class="comment-date">Jan 16, 2021</span>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">31</div>
+            <div class="comment-body">
+              The Kafka event streaming approach is elegant. Did you consider RabbitMQ? --
+              <span class="comment-user">queue_enthusiast</span>
+              <span class="comment-date">Jan 17, 2021</span>
+            </div>
+          </div>
+          <div class="hidden-comments" id="answer1-hidden-comments">
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">24</div>
+              <div class="comment-body">
+                @queue_enthusiast Yes, we evaluated RabbitMQ but Kafka won for our use case due to better message replay, higher throughput at scale, and native partition-based parallelism. Good question though! --
+                <span class="comment-user">Anshull Garg</span>
+                <span class="comment-date">Jan 17, 2021</span>
+              </div>
+            </div>
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">12</div>
+              <div class="comment-body">
+                This should be the accepted answer. Clear problem statement, elegant solution, measurable results. 10/10. --
+                <span class="comment-user">best_practices_bot</span>
+                <span class="comment-date">Jan 18, 2021</span>
+              </div>
+            </div>
+          </div>
+          <button class="show-comments-btn" onclick="toggleComments('answer1-hidden-comments', this)">Show 2 more comments</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="answer-divider">
+
+    <!-- ANSWER 2: Portfolio Arena -->
+    <div class="post-layout answer-post" data-tags="javascript,css,html5,creative-coding,animation" data-votes="156" data-date="2021-02-03" data-active="2026-02-08" id="answer-2">
+      <div class="vote-cell">
+        <button class="vote-btn upvote" onclick="vote(this, 'up')" aria-label="Upvote">
+          <svg viewBox="0 0 36 36"><path d="M2 25h32L18 9 2 25z"/></svg>
+        </button>
+        <div class="vote-count">156</div>
+        <button class="vote-btn downvote" onclick="vote(this, 'down')" aria-label="Downvote">
+          <svg viewBox="0 0 36 36"><path d="M2 11h32L18 27 2 11z"/></svg>
+        </button>
+        <div class="accepted-check" onclick="toggleAccepted(this)" title="Toggle accepted answer">
+          <svg viewBox="0 0 36 36"><path d="M6 14l8 8L30 6l-2.5-2.5L14 19l-5.5-5.5z"/></svg>
+        </div>
+        <div class="bookmark-btn" onclick="toggleBookmark(this)">
+          <svg viewBox="0 0 18 18"><path d="M3 1a1 1 0 00-1 1v14l7-4 7 4V2a1 1 0 00-1-1H3z"/></svg>
+        </div>
+      </div>
+      <div class="post-cell">
+        <div class="post-body">
+          <h2>Project: The Portfolio Arena -- 90+ Interactive Demos</h2>
+
+          <p>Here's the definitive proof of versatility. Anshull didn't just build one portfolio -- he built <strong>90+ completely unique interactive portfolio concepts</strong>, each in a single HTML file, zero frameworks, zero build tools.</p>
+
+          <h3>The Concept</h3>
+          <p>Instead of picking one design, he asked: "What if I built every possible portfolio concept and let them compete?" The result is a creative laboratory that explores what developer portfolios can be when you throw away every assumption.</p>
+
+<pre><code>// The Portfolio Arena - stats
+const portfolioArena = {
+  totalDemos: 90,
+  linesOfCode: "35,000+",
+  frameworks: 0,
+  buildTools: 0,
+  concepts: [
+    "Archaeological Dig",    // Canvas brush to excavate artifacts
+    "Retro Terminal",        // 20+ working CLI commands
+    "OS Desktop",            // Draggable windows, dock, finder
+    "Roguelike Dungeon",     // WASD movement, fog of war
+    "Wikipedia Clone",       // Pixel-perfect, working search
+    "Radio Station",         // Skeuomorphic FM with VU meters
+    "Stack Overflow Clone",  // You're looking at it right now
+    // ... 83 more unique concepts
+  ],
+  techStack: ["HTML5", "CSS3", "Vanilla JS", "Canvas API", "Web Audio API"],
+  principle: "Zero dependencies. Just open and explore."
+};</code></pre>
+
+          <h3>Notable Demos</h3>
+          <ul>
+            <li><strong>Retro Terminal</strong> -- Full hacker terminal with 20+ working commands, tab completion, 3 color themes</li>
+            <li><strong>OS Desktop</strong> -- Browser-based operating system with draggable windows, dock, and working apps</li>
+            <li><strong>Roguelike Dungeon</strong> -- 2D dungeon crawler where rooms contain project details</li>
+            <li><strong>The Corruption</strong> -- Clean portfolio that glitches apart to reveal the real version</li>
+            <li><strong>Radio Station</strong> -- Skeuomorphic FM radio with tuning dial and VU meters</li>
+          </ul>
+
+          <h3>Why This Matters</h3>
+          <p>Each demo demonstrates mastery of different domains: <code>Canvas API</code> for the archaeological dig, <code>Web Audio API</code> for the radio station, <code>CSS 3D transforms</code> for the cinematic experience, <code>IntersectionObserver</code> for scroll-driven animations. All without a single <code>npm install</code>.</p>
+
+          <p><a href="https://github.com/anshul-garg27/portfolio-arena" target="_blank" rel="noopener">View Repository</a></p>
+        </div>
+
+        <div class="post-tags">
+          <button class="so-tag" onclick="filterByTag('javascript')">javascript</button>
+          <button class="so-tag" onclick="filterByTag('css')">css</button>
+          <button class="so-tag" onclick="filterByTag('html5')">html5</button>
+          <button class="so-tag" onclick="filterByTag('creative-coding')">creative-coding</button>
+          <button class="so-tag" onclick="filterByTag('animation')">animation</button>
+        </div>
+
+        <div class="post-actions">
+          <div class="post-action-links">
+            <a href="#">Share</a>
+            <a href="#">Edit</a>
+            <a href="#">Follow</a>
+            <a href="#">Flag</a>
+          </div>
+          <div class="user-card answerer">
+            <div class="user-card-time">answered Feb 3, 2021 at 18:42</div>
+            <div class="user-card-info">
+              <div class="user-card-avatar">AG</div>
+              <div class="user-card-details">
+                <a href="#">Anshull Garg</a><br>
+                <span class="user-card-rep">47,832</span>
+                <span class="user-card-badges">
+                  <span class="badge-dot badge-gold"></span>12
+                  <span class="badge-dot badge-silver"></span>48
+                  <span class="badge-dot badge-bronze"></span>96
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comments-section">
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">53</div>
+            <div class="comment-body">
+              90 portfolio demos with ZERO npm packages? This man woke up and chose violence against the JavaScript ecosystem. --
+              <span class="comment-user">node_modules_hater</span>
+              <span class="comment-date">Feb 3, 2021</span>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">38</div>
+            <div class="comment-body">
+              The roguelike dungeon portfolio is genuinely the most creative developer portfolio I've ever seen. You play a game to learn about his projects. Insane. --
+              <span class="comment-user">gamedev_impressed</span>
+              <span class="comment-date">Feb 4, 2021</span>
+            </div>
+          </div>
+          <div class="hidden-comments" id="answer2-hidden-comments">
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">19</div>
+              <div class="comment-body">
+                @gamedev_impressed Thanks! The dungeon uses a procedural room generation algorithm. Each room maps to a project, and the fog of war reveals details as you explore. It was the most fun one to build. --
+                <span class="comment-user">Anshull Garg</span>
+                <span class="comment-date">Feb 4, 2021</span>
+              </div>
+            </div>
+          </div>
+          <button class="show-comments-btn" onclick="toggleComments('answer2-hidden-comments', this)">Show 1 more comment</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="answer-divider">
+
+    <!-- ANSWER 3: Real-Time Analytics Dashboard -->
+    <div class="post-layout answer-post" data-tags="react,python,data-visualization,websockets,d3.js" data-votes="89" data-date="2021-03-12" data-active="2025-11-20" id="answer-3">
+      <div class="vote-cell">
+        <button class="vote-btn upvote" onclick="vote(this, 'up')" aria-label="Upvote">
+          <svg viewBox="0 0 36 36"><path d="M2 25h32L18 9 2 25z"/></svg>
+        </button>
+        <div class="vote-count">89</div>
+        <button class="vote-btn downvote" onclick="vote(this, 'down')" aria-label="Downvote">
+          <svg viewBox="0 0 36 36"><path d="M2 11h32L18 27 2 11z"/></svg>
+        </button>
+        <div class="accepted-check" onclick="toggleAccepted(this)" title="Toggle accepted answer">
+          <svg viewBox="0 0 36 36"><path d="M6 14l8 8L30 6l-2.5-2.5L14 19l-5.5-5.5z"/></svg>
+        </div>
+        <div class="bookmark-btn" onclick="toggleBookmark(this)">
+          <svg viewBox="0 0 18 18"><path d="M3 1a1 1 0 00-1 1v14l7-4 7 4V2a1 1 0 00-1-1H3z"/></svg>
+        </div>
+      </div>
+      <div class="post-cell">
+        <div class="post-body">
+          <h2>Project: Real-Time Supply Chain Analytics Dashboard</h2>
+
+          <p>Another strong piece of evidence. Anshull designed and built a <strong>real-time analytics dashboard</strong> that gives Walmart's supply chain managers live visibility into inventory movement, demand forecasting, and logistics optimization across 10,000+ stores.</p>
+
+          <h3>The Problem</h3>
+          <p>Supply chain visibility was fragmented across 6 different legacy dashboards with data latency of 4-6 hours. Decision makers couldn't respond to disruptions in real time, leading to stockouts and overstock situations costing millions annually.</p>
+
+          <h3>The Solution</h3>
+
+<pre><code>// Real-time analytics architecture
+const SupplyChainDashboard = {
+  frontend: {
+    framework: "React + TypeScript",
+    charts: "D3.js + custom WebGL renderers",
+    realtime: "WebSocket connections for live data",
+    state: "Zustand for lightweight global state"
+  },
+  backend: {
+    api: "Python FastAPI for ML endpoints",
+    streaming: "Apache Flink for stream processing",
+    storage: "TimescaleDB for time-series data",
+    ml: "TensorFlow models for demand forecasting"
+  },
+  scale: {
+    dataPoints: "2.4M data points processed per minute",
+    stores: "10,500+ stores monitored",
+    latency: "< 3 second data refresh",
+    users: "500+ internal stakeholders"
+  }
+};</code></pre>
+
+          <h3>Key Achievements</h3>
+          <ul>
+            <li>Reduced data latency from <strong>4-6 hours to under 3 seconds</strong></li>
+            <li>Custom D3.js visualizations render <strong>100K+ data points</strong> at 60fps using WebGL</li>
+            <li>ML-powered demand forecasting improved inventory accuracy by <strong>23%</strong></li>
+            <li>Dashboard adopted by <strong>500+ supply chain managers</strong> across all regions</li>
+            <li>Estimated <strong>$12M annual savings</strong> from reduced stockouts and overstock</li>
+          </ul>
+
+          <p>The frontend leverages <code>requestAnimationFrame</code> for smooth chart animations, <code>Web Workers</code> for off-thread data processing, and a custom virtualization layer to handle massive datasets without memory issues.</p>
+
+          <p><a href="https://github.com/anshul-garg27" target="_blank" rel="noopener">View on GitHub</a></p>
+        </div>
+
+        <div class="post-tags">
+          <button class="so-tag" onclick="filterByTag('react')">react</button>
+          <button class="so-tag" onclick="filterByTag('python')">python</button>
+          <button class="so-tag" onclick="filterByTag('data-visualization')">data-visualization</button>
+          <button class="so-tag" onclick="filterByTag('websockets')">websockets</button>
+          <button class="so-tag" onclick="filterByTag('d3.js')">d3.js</button>
+        </div>
+
+        <div class="post-actions">
+          <div class="post-action-links">
+            <a href="#">Share</a>
+            <a href="#">Edit</a>
+            <a href="#">Follow</a>
+            <a href="#">Flag</a>
+          </div>
+          <div class="user-card answerer">
+            <div class="user-card-time">answered Mar 12, 2021 at 11:07</div>
+            <div class="user-card-info">
+              <div class="user-card-avatar">AG</div>
+              <div class="user-card-details">
+                <a href="#">Anshull Garg</a><br>
+                <span class="user-card-rep">47,832</span>
+                <span class="user-card-badges">
+                  <span class="badge-dot badge-gold"></span>12
+                  <span class="badge-dot badge-silver"></span>48
+                  <span class="badge-dot badge-bronze"></span>96
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comments-section">
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">29</div>
+            <div class="comment-body">
+              100K data points at 60fps with D3? Please share the WebGL rendering approach. That's black magic. --
+              <span class="comment-user">dataviz_nerd</span>
+              <span class="comment-date">Mar 12, 2021</span>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">18</div>
+            <div class="comment-body">
+              $12M in savings. This is the kind of answer that gets bookmarked by CTOs. --
+              <span class="comment-user">roi_calculator</span>
+              <span class="comment-date">Mar 13, 2021</span>
+            </div>
+          </div>
+          <div class="hidden-comments" id="answer3-hidden-comments">
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">14</div>
+              <div class="comment-body">
+                @dataviz_nerd The trick is using WebGL instanced rendering for the scatter plots and a custom LOD (level of detail) system that reduces point density based on zoom level. Happy to chat more about it! --
+                <span class="comment-user">Anshull Garg</span>
+                <span class="comment-date">Mar 13, 2021</span>
+              </div>
+            </div>
+            <div class="comment">
+              <div class="comment-score" onclick="this.textContent = parseInt(this.textContent) + 1">5</div>
+              <div class="comment-body">
+                The Zustand choice over Redux is interesting. For a dashboard with lots of independent data streams, the lightweight store-per-slice pattern makes a lot of sense. --
+                <span class="comment-user">state_manager_stan</span>
+                <span class="comment-date">Mar 15, 2021</span>
+              </div>
+            </div>
+          </div>
+          <button class="show-comments-btn" onclick="toggleComments('answer3-hidden-comments', this)">Show 2 more comments</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom notice -->
+    <div style="padding: 24px; text-align: center; color: var(--so-gray); font-size: 13px; border-top: 1px solid var(--so-border);">
+      <p>Not the answer you're looking for? Browse other questions tagged
+        <button class="so-tag" onclick="filterByTag('hiring')">hiring</button>
+        <button class="so-tag" onclick="filterByTag('software-developer')">software-developer</button>
+        <button class="so-tag" onclick="filterByTag('walmart')">walmart</button>
+        or <a href="#" onclick="openContactModal(); return false;">ask your own question</a>.
+      </p>
+      <p style="margin-top: 8px; font-style: italic; color: #babfc4;">
+        "This question has been marked as answered. If it helped, consider reaching out."
+      </p>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="right-sidebar" id="skills-sidebar">
+
+    <!-- Hire Banner -->
+    <div class="hire-banner" onclick="openContactModal()">
+      <h3>Hire Anshull Garg</h3>
+      <p>Software Developer at Walmart Global Tech. Available for opportunities.</p>
+      <button class="hire-btn">Get in Touch</button>
+    </div>
+
+    <!-- Skill Reputation -->
+    <div class="sidebar-widget">
+      <div class="sw-header">Top Tags by Reputation</div>
+      <div class="sw-body">
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('react')">react</button>
+          <div class="skill-rep-score">12,847 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('typescript')">typescript</button>
+          <div class="skill-rep-score">9,234 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('node.js')">node.js</button>
+          <div class="skill-rep-score">8,156 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('javascript')">javascript</button>
+          <div class="skill-rep-score">7,892 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('python')">python</button>
+          <div class="skill-rep-score">5,431 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('aws')">aws</button>
+          <div class="skill-rep-score">4,210 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('css')">css</button>
+          <div class="skill-rep-score">3,876 <span>score</span></div>
+        </div>
+        <div class="skill-rep-item">
+          <button class="so-tag" onclick="filterByTag('docker')">docker</button>
+          <div class="skill-rep-score">2,544 <span>score</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Questions = Related Skills -->
+    <div class="sidebar-widget gray">
+      <div class="sw-header">Related Questions</div>
+      <div class="sw-body">
+        <div class="sw-item">
+          <div class="sw-votes has-answer">234</div>
+          <a href="#answer-1" onclick="scrollToAnswer('answer-1'); return false;">Enterprise E-Commerce at Scale</a>
+        </div>
+        <div class="sw-item">
+          <div class="sw-votes has-answer">156</div>
+          <a href="#answer-2" onclick="scrollToAnswer('answer-2'); return false;">90+ Interactive Portfolio Demos</a>
+        </div>
+        <div class="sw-item">
+          <div class="sw-votes has-answer">89</div>
+          <a href="#answer-3" onclick="scrollToAnswer('answer-3'); return false;">Real-Time Analytics Dashboard</a>
+        </div>
+        <div class="sw-item">
+          <div class="sw-votes">47</div>
+          <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">How to optimize a resume for Fortune 1?</a>
+        </div>
+        <div class="sw-item">
+          <div class="sw-votes">32</div>
+          <a href="https://github.com/anshul-garg27" target="_blank" rel="noopener">Best practices for open-source contributions?</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hot Network Questions = Fun Facts -->
+    <div class="sidebar-widget gray">
+      <div class="sw-header">Hot Network Questions</div>
+      <div class="sw-body">
+        <div class="hot-item">
+          <div class="hot-icon">SO</div>
+          <a href="#">Why does Anshull's code compile on the first try?</a>
+        </div>
+        <div class="hot-item">
+          <div class="hot-icon">SE</div>
+          <a href="#">Has 35,000+ lines of hand-crafted portfolio code with 0 npm packages</a>
+        </div>
+        <div class="hot-item">
+          <div class="hot-icon">SF</div>
+          <a href="#">Built 90+ unique portfolio concepts instead of picking one</a>
+        </div>
+        <div class="hot-item">
+          <div class="hot-icon">SU</div>
+          <a href="#">His commit messages are more detailed than most people's documentation</a>
+        </div>
+        <div class="hot-item">
+          <div class="hot-icon">PM</div>
+          <a href="#">Has never pushed directly to main. Not once. Ever.</a>
+        </div>
+        <div class="hot-item">
+          <div class="hot-icon">UX</div>
+          <a href="#">Favorite debugging tool: console.log("here") followed by console.log("here2")</a>
+        </div>
+        <div class="hot-item">
+          <div class="hot-icon">CS</div>
+          <a href="#">Tabs vs spaces? He uses whatever the team decided. That's the real answer.</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom SO Teams Banner -->
+    <div class="sidebar-widget" style="border-color: var(--so-border);">
+      <div class="sw-header" style="background: var(--so-bg); border-color: var(--so-border);">Connect</div>
+      <div class="sw-body" style="padding: 15px; font-size: 13px; line-height: 1.6;">
+        <p style="margin-bottom: 8px;"><strong>Anshull Garg</strong></p>
+        <p style="margin-bottom: 4px;">
+          <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">LinkedIn</a>
+        </p>
+        <p style="margin-bottom: 4px;">
+          <a href="https://github.com/anshul-garg27" target="_blank" rel="noopener">GitHub</a>
+        </p>
+        <p>
+          <a href="#" onclick="openContactModal(); return false;">Send a Message</a>
+        </p>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer class="so-footer">
+  <div class="footer-inner">
+    <svg viewBox="0 0 32 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M26 33v-9h4v13H0V24h4v9h22z" fill="#BCBBBB"/>
+      <path d="M21.5 0l-2.7 2 9.9 13.3 2.7-2L21.5 0zM26 18.4l-2.1 2.6L12.3 11l2.1-2.6L26 18.4zM15.4 25.9l-1.5 3-14-6.5 1.5-3 14 6.5zM7 30h15v-4H7v4z" fill="#F48024"/>
+    </svg>
+    <div class="footer-col">
+      <h5>Portfolio</h5>
+      <a href="#question-section">About / Bio</a>
+      <a href="#answer-1">E-Commerce Platform</a>
+      <a href="#answer-2">Portfolio Arena</a>
+      <a href="#answer-3">Analytics Dashboard</a>
+    </div>
+    <div class="footer-col">
+      <h5>Connect</h5>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/anshul-garg27" target="_blank" rel="noopener">GitHub</a>
+      <a href="#" onclick="openContactModal(); return false;">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h5>Stack Exchange</h5>
+      <a href="#">Technology</a>
+      <a href="#">Culture & Recreation</a>
+      <a href="#">Life & Arts</a>
+      <a href="#">Science</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About</a>
+      <a href="#">Press</a>
+      <a href="#">Work Here</a>
+      <a href="#">Legal</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    Site design / logo &copy; 2026 Anshull Garg Portfolio. Built with love and zero npm packages. This is a portfolio, not actually Stack Overflow.
+  </div>
+</footer>
+
+<!-- ========== CONTACT MODAL ========== -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Ask a Question (Contact Anshull)</h2>
+      <button class="modal-close" onclick="closeContactModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="contactFormContainer">
+      <form id="contactForm" onsubmit="submitContact(event)">
+        <div class="form-group">
+          <label>Title</label>
+          <div class="form-desc">Be specific and imagine you're asking a question to another person.</div>
+          <input type="text" placeholder="e.g. I'd like to discuss a role at my company..." required id="contactTitle"/>
+        </div>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="Your full name" required id="contactName"/>
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" placeholder="you@company.com" required id="contactEmail"/>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="contactCategory">
+            <option>Job Opportunity</option>
+            <option>Freelance / Contract Work</option>
+            <option>Open Source Collaboration</option>
+            <option>Technical Question</option>
+            <option>Just Saying Hi</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Body</label>
+          <div class="form-desc">Include all the information someone would need to answer your question.</div>
+          <textarea placeholder="Describe what you're looking for..." required id="contactBody"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tags</label>
+          <div class="form-desc">Add up to 5 tags to describe what your question is about.</div>
+          <input type="text" placeholder="e.g. hiring, react, remote" id="contactTags"/>
+        </div>
+        <button type="submit" class="form-submit">Post Your Question</button>
+      </form>
+      <div class="form-success" id="contactSuccess">
+        <div class="check-icon">&#10004;</div>
+        <h3>Question Submitted!</h3>
+        <p>Thanks for reaching out. Anshull typically responds within 24 hours. Your question has been added to his inbox with a priority flag.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========== VOTE FUNCTIONALITY ========== */
+function vote(btn, direction) {
+  const cell = btn.closest('.vote-cell');
+  const countEl = cell.querySelector('.vote-count');
+  let count = parseInt(countEl.textContent.replace(/,/g, ''));
+  const isUp = direction === 'up';
+  const upBtn = cell.querySelector('.upvote');
+  const downBtn = cell.querySelector('.downvote');
+
+  if (isUp) {
+    if (upBtn.classList.contains('active')) {
+      upBtn.classList.remove('active');
+      count--;
+    } else {
+      if (downBtn.classList.contains('active')) {
+        downBtn.classList.remove('active');
+        count++;
+      }
+      upBtn.classList.add('active');
+      count++;
+    }
+  } else {
+    if (downBtn.classList.contains('active')) {
+      downBtn.classList.remove('active');
+      count++;
+    } else {
+      if (upBtn.classList.contains('active')) {
+        upBtn.classList.remove('active');
+        count--;
+      }
+      downBtn.classList.add('active');
+      count--;
+    }
+  }
+
+  countEl.textContent = count.toLocaleString();
+  countEl.classList.add('vote-flash');
+  setTimeout(() => countEl.classList.remove('vote-flash'), 200);
+}
+
+/* ========== ACCEPTED ANSWER ========== */
+function toggleAccepted(el) {
+  el.classList.toggle('active');
+}
+
+/* ========== BOOKMARK ========== */
+function toggleBookmark(el) {
+  el.classList.toggle('active');
+}
+
+/* ========== COMMENTS ========== */
+function toggleComments(id, btn) {
+  const el = document.getElementById(id);
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+    btn.textContent = btn.dataset.originalText || btn.textContent;
+  } else {
+    btn.dataset.originalText = btn.textContent;
+    el.classList.add('show');
+    btn.textContent = 'Hide comments';
+  }
+}
+
+/* ========== TAG FILTERING ========== */
+let activeFilter = null;
+
+function filterByTag(tag) {
+  activeFilter = tag;
+  const bar = document.getElementById('tagFilterBar');
+  const label = document.getElementById('activeFilterTag');
+  bar.classList.add('active');
+  label.textContent = tag;
+
+  document.querySelectorAll('.answer-post').forEach(post => {
+    const tags = post.dataset.tags ? post.dataset.tags.split(',') : [];
+    if (tags.includes(tag)) {
+      post.classList.remove('filtered-out');
+      post.classList.add('highlight-answer');
+    } else {
+      post.classList.add('filtered-out');
+      post.classList.remove('highlight-answer');
+    }
+  });
+
+  // Always show the question
+  const questionPost = document.querySelector('.post-layout:not(.answer-post)');
+  if (questionPost) {
+    questionPost.classList.remove('filtered-out');
+  }
+
+  // Update answer count display
+  const visible = document.querySelectorAll('.answer-post:not(.filtered-out)').length;
+  document.querySelector('.answers-header span').textContent = visible + ' Answer' + (visible !== 1 ? 's' : '') + ' (filtered)';
+}
+
+function clearTagFilter() {
+  activeFilter = null;
+  document.getElementById('tagFilterBar').classList.remove('active');
+  document.querySelectorAll('.answer-post').forEach(post => {
+    post.classList.remove('filtered-out');
+    post.classList.remove('highlight-answer');
+  });
+  document.querySelectorAll('.answer-divider').forEach(d => d.style.display = '');
+  document.querySelector('.answers-header span').textContent = '3 Answers';
+}
+
+/* ========== SORT ANSWERS ========== */
+function sortAnswers(method, btn) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const answersContainer = document.querySelector('.main-content');
+  const answers = Array.from(document.querySelectorAll('.answer-post'));
+  const dividers = Array.from(document.querySelectorAll('.answer-divider'));
+
+  // Remove answer posts and dividers after the answers-header
+  answers.forEach(a => a.remove());
+  // Remove only the dividers that sit between answers (keep the first one)
+  dividers.forEach((d, i) => { if (i > 0) d.remove(); });
+
+  if (method === 'votes') {
+    answers.sort((a, b) => parseInt(b.dataset.votes) - parseInt(a.dataset.votes));
+  } else if (method === 'oldest') {
+    answers.sort((a, b) => new Date(a.dataset.date) - new Date(b.dataset.date));
+  } else if (method === 'active') {
+    answers.sort((a, b) => new Date(b.dataset.active) - new Date(a.dataset.active));
+  }
+
+  // Re-insert
+  const bottomNotice = answersContainer.querySelector('div[style*="text-align: center"]');
+  answers.forEach((answer, i) => {
+    if (i > 0) {
+      const hr = document.createElement('hr');
+      hr.className = 'answer-divider';
+      bottomNotice.parentNode.insertBefore(hr, bottomNotice);
+    }
+    bottomNotice.parentNode.insertBefore(answer, bottomNotice);
+  });
+}
+
+/* ========== SEARCH ========== */
+const searchData = [
+  { title: 'About Anshull Garg', excerpt: 'Software Developer at Walmart Global Tech. Full-stack engineer building at Fortune 1 scale.', tags: ['react', 'node.js', 'walmart'], target: '#question-section' },
+  { title: 'Enterprise E-Commerce Platform', excerpt: 'Core product discovery & checkout architecture. 2.3M concurrent users, 74% faster page loads.', tags: ['react', 'typescript', 'aws'], target: '#answer-1' },
+  { title: 'The Portfolio Arena - 90+ Demos', excerpt: '90 unique interactive portfolio concepts in single HTML files. Zero frameworks, zero build tools.', tags: ['javascript', 'css', 'html5'], target: '#answer-2' },
+  { title: 'Real-Time Analytics Dashboard', excerpt: 'Supply chain analytics for 10,500+ stores. 2.4M data points per minute, $12M annual savings.', tags: ['react', 'python', 'd3.js'], target: '#answer-3' },
+  { title: 'React Skills', excerpt: 'React 18, Next.js, TypeScript, custom hooks, SSR/ISR, performance optimization.', tags: ['react'], target: '#skills-sidebar' },
+  { title: 'Node.js & Backend', excerpt: 'Express, FastAPI, GraphQL, REST APIs, microservices, Kafka, Redis.', tags: ['node.js'], target: '#skills-sidebar' },
+  { title: 'Contact Anshull', excerpt: 'Send a message for job opportunities, collaborations, or just to say hi.', tags: ['contact'], target: 'contact' },
+];
+
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+searchInput.addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  if (!query) {
+    searchResults.classList.remove('active');
+    return;
+  }
+
+  const matches = searchData.filter(item =>
+    item.title.toLowerCase().includes(query) ||
+    item.excerpt.toLowerCase().includes(query) ||
+    item.tags.some(t => t.includes(query))
+  );
+
+  if (matches.length === 0) {
+    searchResults.innerHTML = '<div class="search-no-results">No results found for "' + query + '"</div>';
+  } else {
+    searchResults.innerHTML = matches.map(item => `
+      <div class="search-result-item" onclick="navigateSearch('${item.target}')">
+        <div class="sr-title">${item.title}</div>
+        <div class="sr-excerpt">${item.excerpt}</div>
+        <div class="sr-tags">${item.tags.map(t => '<span class="so-tag" style="font-size:11px; padding:2px 5px;">' + t + '</span>').join('')}</div>
+      </div>
+    `).join('');
+  }
+
+  searchResults.classList.add('active');
+});
+
+searchInput.addEventListener('focus', function() {
+  if (this.value.trim()) {
+    this.dispatchEvent(new Event('input'));
+  }
+});
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.topbar-search')) {
+    searchResults.classList.remove('active');
+  }
+});
+
+function navigateSearch(target) {
+  searchResults.classList.remove('active');
+  searchInput.value = '';
+  if (target === 'contact') {
+    openContactModal();
+  } else {
+    const el = document.querySelector(target);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.classList.add('highlight-answer');
+      setTimeout(() => el.classList.remove('highlight-answer'), 2000);
+    }
+  }
+}
+
+/* ========== SCROLL TO ANSWER ========== */
+function scrollToAnswer(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('highlight-answer');
+    setTimeout(() => el.classList.remove('highlight-answer'), 2000);
+  }
+}
+
+/* ========== CONTACT MODAL ========== */
+function openContactModal() {
+  document.getElementById('contactModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeContactModal() {
+  document.getElementById('contactModal').classList.remove('active');
+  document.body.style.overflow = '';
+  // Reset form after a delay
+  setTimeout(() => {
+    document.getElementById('contactForm').style.display = '';
+    document.getElementById('contactSuccess').classList.remove('active');
+    document.getElementById('contactForm').reset();
+  }, 300);
+}
+
+function submitContact(e) {
+  e.preventDefault();
+  document.getElementById('contactForm').style.display = 'none';
+  document.getElementById('contactSuccess').classList.add('active');
+}
+
+// Close modal on overlay click
+document.getElementById('contactModal').addEventListener('click', function(e) {
+  if (e.target === this) closeContactModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeContactModal();
+});
+
+/* ========== ASK QUESTION BUTTON ========== */
+document.getElementById('askQuestionBtn').addEventListener('click', openContactModal);
+
+/* ========== PROFILE HOVER CARD ========== */
+const profileTrigger = document.getElementById('profileTrigger');
+const profileHovercard = document.getElementById('profileHovercard');
+let hovercardTimeout;
+
+profileTrigger.addEventListener('mouseenter', function() {
+  clearTimeout(hovercardTimeout);
+  const rect = this.getBoundingClientRect();
+  profileHovercard.style.top = (rect.bottom + 8) + 'px';
+  profileHovercard.style.right = (window.innerWidth - rect.right) + 'px';
+  profileHovercard.style.left = 'auto';
+  profileHovercard.classList.add('active');
+});
+
+profileTrigger.addEventListener('mouseleave', function() {
+  hovercardTimeout = setTimeout(() => {
+    profileHovercard.classList.remove('active');
+  }, 300);
+});
+
+profileHovercard.addEventListener('mouseenter', function() {
+  clearTimeout(hovercardTimeout);
+});
+
+profileHovercard.addEventListener('mouseleave', function() {
+  profileHovercard.classList.remove('active');
+});
+
+/* ========== LEFT SIDEBAR ACTIVE STATE ========== */
+document.querySelectorAll('.ls-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.ls-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
