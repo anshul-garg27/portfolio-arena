@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I built 115 portfolio demos in one session. Software Developer at Walmart. AMA! : r/webdev</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --reddit-bg: #030303;
+  --reddit-canvas: #1A1A1B;
+  --reddit-card: #1A1A1B;
+  --reddit-nav: #1A1A1B;
+  --reddit-border: #343536;
+  --reddit-text: #D7DADC;
+  --reddit-text-muted: #818384;
+  --reddit-text-link: #4FBCFF;
+  --reddit-orange: #FF4500;
+  --reddit-orange-hover: #FF5722;
+  --reddit-blue: #0079D3;
+  --reddit-blue-hover: #1484D6;
+  --reddit-green: #46D160;
+  --reddit-gold: #FFD700;
+  --reddit-platinum: #A0E8FF;
+  --reddit-helpful: #FF6B6B;
+  --reddit-upvote: #FF4500;
+  --reddit-downvote: #7193FF;
+  --reddit-op: #0079D3;
+  --reddit-hover: #2D2D2E;
+  --reddit-input: #272729;
+  --reddit-separator: #343536;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--reddit-bg);
+  color: var(--reddit-text);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a { color: var(--reddit-text-link); text-decoration: none; cursor: pointer; }
+a:hover { text-decoration: underline; }
+
+/* ========== NAVBAR ========== */
+.reddit-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--reddit-nav);
+  border-bottom: 1px solid var(--reddit-border);
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.nav-left { display: flex; align-items: center; gap: 16px; }
+
+.reddit-logo { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.reddit-logo svg { flex-shrink: 0; }
+.reddit-wordmark { font-size: 18px; font-weight: 700; color: var(--reddit-text); letter-spacing: -0.5px; }
+
+.nav-subreddit-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--reddit-input);
+  border: 1px solid var(--reddit-border);
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  min-width: 220px;
+  height: 36px;
+}
+
+.nav-subreddit-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--reddit-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.nav-subreddit-name { font-size: 13px; color: var(--reddit-text); font-weight: 500; flex: 1; }
+
+.nav-subreddit-dropdown .chevron {
+  color: var(--reddit-text-muted);
+  font-size: 10px;
+}
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.nav-search {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+}
+
+.nav-search input {
+  width: 100%;
+  background: var(--reddit-input);
+  border: 1px solid var(--reddit-border);
+  border-radius: 20px;
+  padding: 8px 16px 8px 40px;
+  color: var(--reddit-text);
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+.nav-search input::placeholder { color: var(--reddit-text-muted); }
+.nav-search input:focus { border-color: var(--reddit-text); }
+
+.nav-search .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--reddit-text-muted);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.nav-icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--reddit-text-muted);
+  background: none;
+  border: none;
+  font-size: 18px;
+}
+
+.nav-icon-btn:hover { background: var(--reddit-hover); color: var(--reddit-text); }
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  border: 1px solid var(--reddit-border);
+  border-radius: 4px;
+  cursor: pointer;
+  height: 36px;
+  margin-left: 4px;
+}
+
+.nav-user:hover { border-color: var(--reddit-text-muted); }
+
+.nav-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--reddit-orange), #ff6b35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.nav-user-info { display: flex; flex-direction: column; line-height: 1.2; }
+.nav-username { font-size: 12px; font-weight: 500; color: var(--reddit-text); }
+.nav-karma { font-size: 11px; color: var(--reddit-text-muted); display: flex; align-items: center; gap: 3px; }
+.nav-karma .karma-icon { color: var(--reddit-orange); font-size: 9px; }
+
+/* ========== SUBREDDIT HEADER ========== */
+.subreddit-banner {
+  background: linear-gradient(135deg, #0079D3, #00A3FF, #0066B8);
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.subreddit-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 80px);
+}
+
+.subreddit-banner::after {
+  content: '</>';
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 80px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.06);
+  font-family: 'Courier New', monospace;
+}
+
+.subreddit-header {
+  background: var(--reddit-card);
+  border-bottom: 1px solid var(--reddit-border);
+}
+
+.subreddit-header-inner {
+  max-width: 976px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  position: relative;
+  top: -16px;
+  margin-bottom: -16px;
+}
+
+.subreddit-icon-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--reddit-card);
+  border: 4px solid var(--reddit-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.subreddit-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0079D3, #00B4D8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 22px;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+}
+
+.subreddit-info { padding-bottom: 12px; display: flex; align-items: center; gap: 16px; flex: 1; }
+
+.subreddit-names h1 { font-size: 26px; font-weight: 700; color: var(--reddit-text); line-height: 1.2; }
+.subreddit-names p { font-size: 13px; color: var(--reddit-text-muted); }
+
+.subreddit-join-btn {
+  background: var(--reddit-text);
+  color: var(--reddit-card);
+  border: none;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.subreddit-join-btn:hover { opacity: 0.9; }
+
+.subreddit-nav {
+  max-width: 976px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 0;
+}
+
+.subreddit-nav-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--reddit-text-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s;
+}
+
+.subreddit-nav-item:hover { color: var(--reddit-text); }
+.subreddit-nav-item.active { color: var(--reddit-text); border-bottom-color: var(--reddit-blue); }
+
+/* ========== MAIN CONTENT ========== */
+.content-wrapper {
+  max-width: 976px;
+  margin: 20px auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 24px;
+}
+
+.main-content { flex: 1; min-width: 0; }
+
+/* ========== POST ========== */
+.post {
+  background: var(--reddit-card);
+  border: 1px solid var(--reddit-border);
+  border-radius: 4px;
+  display: flex;
+  overflow: hidden;
+}
+
+.post-vote-bar {
+  width: 40px;
+  background: #161617;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.vote-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--reddit-text-muted);
+  font-size: 18px;
+  transition: color 0.1s, background 0.1s;
+  padding: 0;
+}
+
+.vote-btn:hover { background: var(--reddit-hover); }
+.vote-btn.upvoted { color: var(--reddit-upvote); }
+.vote-btn.downvoted { color: var(--reddit-downvote); }
+
+.vote-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--reddit-text);
+  text-align: center;
+  min-width: 28px;
+  line-height: 1;
+}
+
+.vote-count.upvoted { color: var(--reddit-upvote); }
+.vote-count.downvoted { color: var(--reddit-downvote); }
+
+.post-body { flex: 1; padding: 8px 8px 4px; }
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--reddit-text-muted);
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.post-flair {
+  background: #1a3f5c;
+  color: #4FBCFF;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.post-meta .subreddit-link { font-weight: 700; color: var(--reddit-text); }
+.post-meta .dot { margin: 0 2px; }
+.post-meta .user-link { color: var(--reddit-text-muted); }
+.post-meta .user-link:hover { text-decoration: underline; color: var(--reddit-text); }
+
+.post-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--reddit-text);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.post-awards {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.award-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--reddit-text-muted);
+}
+
+.award-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.award-gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+.award-platinum { background: linear-gradient(135deg, #A0E8FF, #6FC3DF); color: #000; }
+.award-helpful { background: linear-gradient(135deg, #FF6B6B, #ee5a5a); color: #fff; }
+
+.post-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--reddit-text);
+  padding: 4px 0 12px;
+}
+
+.post-content p { margin-bottom: 12px; }
+.post-content p:last-child { margin-bottom: 0; }
+.post-content strong { font-weight: 600; }
+.post-content em { font-style: italic; color: var(--reddit-text-muted); }
+.post-content code { background: var(--reddit-input); padding: 2px 6px; border-radius: 3px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 13px; }
+
+.post-content ul {
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.post-content li { margin-bottom: 4px; }
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0 8px;
+  flex-wrap: wrap;
+}
+
+.post-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--reddit-text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.post-action-btn:hover { background: var(--reddit-hover); }
+.post-action-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+/* ========== SORT BAR ========== */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  font-size: 12px;
+  color: var(--reddit-text-muted);
+  border-bottom: 1px solid var(--reddit-border);
+  margin-bottom: 16px;
+}
+
+.sort-label { font-weight: 400; }
+
+.sort-dropdown {
+  background: none;
+  border: none;
+  color: var(--reddit-blue);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sort-dropdown:hover { color: var(--reddit-blue-hover); }
+
+/* ========== COMMENTS ========== */
+.comment {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.comment-thread {
+  position: relative;
+  padding-left: 22px;
+}
+
+.comment-thread::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--reddit-border);
+  cursor: pointer;
+  border-radius: 1px;
+  transition: background 0.15s;
+}
+
+.comment-thread:hover::before { background: var(--reddit-text-muted); }
+
+.comment-main {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.comment-vote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.comment-vote .vote-btn {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+
+.comment-vote .vote-count {
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+}
+
+.comment-content-area { flex: 1; min-width: 0; }
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.comment-username {
+  font-weight: 600;
+  color: var(--reddit-text);
+  cursor: pointer;
+}
+
+.comment-username:hover { text-decoration: underline; }
+
+.op-badge {
+  background: var(--reddit-op);
+  color: #fff;
+  padding: 0px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.user-flair {
+  font-size: 11px;
+  color: var(--reddit-text-muted);
+  background: rgba(255,255,255,0.05);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: var(--reddit-text-muted);
+}
+
+.comment-awards-inline {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.comment-awards-inline .award-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 8px;
+}
+
+.comment-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--reddit-text);
+  padding: 2px 0 4px;
+}
+
+.comment-text p { margin-bottom: 10px; }
+.comment-text p:last-child { margin-bottom: 0; }
+.comment-text strong { font-weight: 600; }
+.comment-text code { background: var(--reddit-input); padding: 2px 6px; border-radius: 3px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 13px; }
+.comment-text blockquote { border-left: 3px solid var(--reddit-border); padding-left: 12px; color: var(--reddit-text-muted); margin: 8px 0; font-style: italic; }
+.comment-text ul { padding-left: 20px; margin: 8px 0; }
+.comment-text li { margin-bottom: 4px; }
+.comment-text a { color: var(--reddit-text-link); }
+
+.comment-text .skill-tag {
+  display: inline-block;
+  background: #1a3351;
+  color: #4FBCFF;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 2px 2px;
+}
+
+.comment-text .highlight {
+  background: rgba(255, 69, 0, 0.12);
+  border-left: 3px solid var(--reddit-orange);
+  padding: 10px 14px;
+  border-radius: 0 4px 4px 0;
+  margin: 10px 0;
+}
+
+.comment-text .project-card {
+  background: var(--reddit-input);
+  border: 1px solid var(--reddit-border);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 10px 0;
+}
+
+.comment-text .project-card h4 {
+  font-size: 15px;
+  color: var(--reddit-text);
+  margin-bottom: 6px;
+}
+
+.comment-text .project-card p {
+  font-size: 13px;
+  color: var(--reddit-text-muted);
+  margin-bottom: 6px;
+}
+
+.comment-text .project-card .tech-stack {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 0;
+}
+
+.comment-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--reddit-text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.comment-action-btn:hover { background: var(--reddit-hover); }
+
+.comment-replies {
+  padding-left: 0;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar { width: 312px; flex-shrink: 0; }
+
+.sidebar-card {
+  background: var(--reddit-card);
+  border: 1px solid var(--reddit-border);
+  border-radius: 4px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.sidebar-card-header {
+  background: var(--reddit-blue);
+  padding: 12px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sidebar-card-body { padding: 12px; }
+
+.sidebar-about-desc {
+  font-size: 13px;
+  color: var(--reddit-text);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.sidebar-stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-top: 1px solid var(--reddit-border);
+}
+
+.sidebar-stat { text-align: left; }
+.sidebar-stat-val { font-size: 16px; font-weight: 600; color: var(--reddit-text); display: block; }
+.sidebar-stat-label { font-size: 12px; color: var(--reddit-text-muted); }
+
+.sidebar-create-btn {
+  width: 100%;
+  background: var(--reddit-text);
+  color: var(--reddit-card);
+  border: none;
+  padding: 8px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 12px;
+}
+
+.sidebar-create-btn:hover { opacity: 0.9; }
+
+.sidebar-rules { list-style: none; }
+
+.sidebar-rule {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--reddit-border);
+  font-size: 13px;
+  color: var(--reddit-text);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.sidebar-rule:last-child { border-bottom: none; }
+
+.sidebar-rule-num {
+  font-weight: 700;
+  color: var(--reddit-text-muted);
+  flex-shrink: 0;
+  min-width: 16px;
+}
+
+.sidebar-moderators {
+  font-size: 13px;
+  color: var(--reddit-text-muted);
+}
+
+.sidebar-moderators a {
+  display: block;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.sidebar-flair-list { display: flex; flex-direction: column; gap: 8px; }
+
+.sidebar-flair-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.sidebar-flair-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 960px) {
+  .sidebar { display: none; }
+  .content-wrapper { max-width: 700px; }
+}
+
+@media (max-width: 640px) {
+  .reddit-nav { padding: 0 8px; }
+  .nav-subreddit-dropdown { display: none; }
+  .nav-search { padding: 0; }
+  .nav-icon-btn:not(:first-child) { display: none; }
+  .nav-user-info { display: none; }
+  .subreddit-banner { height: 80px; }
+  .subreddit-header-inner { padding: 0 12px; }
+  .subreddit-names h1 { font-size: 20px; }
+  .content-wrapper { padding: 0 4px; margin: 8px auto; }
+  .post-title { font-size: 17px; }
+  .post-content { font-size: 13px; }
+  .comment-thread { padding-left: 14px; }
+  .comment-thread::before { left: 6px; }
+}
+
+/* ========== MISC ========== */
+.cake-day { color: #4FBCFF; font-size: 11px; }
+
+.gilded-highlight {
+  border-left: 3px solid var(--reddit-gold) !important;
+}
+
+.expand-replies {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--reddit-blue);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  margin: 4px 0 4px 22px;
+}
+
+.expand-replies:hover { background: var(--reddit-hover); }
+
+.ama-proof {
+  background: var(--reddit-input);
+  border: 1px solid var(--reddit-border);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.ama-proof strong { color: var(--reddit-orange); }
+
+.comment-collapsed .comment-text,
+.comment-collapsed .comment-actions,
+.comment-collapsed .comment-replies {
+  display: none;
+}
+
+.comment-collapsed .comment-header .collapse-indicator::after {
+  content: ' [+]';
+  color: var(--reddit-text-muted);
+  font-size: 11px;
+}
+</style>
+</head>
+<body>
+
+<!-- ========== NAVBAR ========== -->
+<nav class="reddit-nav">
+  <div class="nav-left">
+    <div class="reddit-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="16" fill="#FF4500"/>
+        <ellipse cx="16" cy="18" rx="10" ry="7" fill="#fff"/>
+        <circle cx="11.5" cy="16.5" r="2" fill="#FF4500"/>
+        <circle cx="20.5" cy="16.5" r="2" fill="#FF4500"/>
+        <circle cx="26" cy="8" r="2.5" fill="#FF4500"/>
+        <path d="M22 8 C22 8 24 5 26 8" stroke="#FF4500" stroke-width="1.5" fill="none"/>
+        <ellipse cx="16" cy="20" rx="3" ry="1.2" fill="none" stroke="#FF4500" stroke-width="0.8"/>
+        <circle cx="16" cy="5" r="2.5" fill="#fff"/>
+        <rect x="15.2" y="5" width="1.6" height="5" fill="#fff"/>
+      </svg>
+      <span class="reddit-wordmark">reddit</span>
+    </div>
+    <div class="nav-subreddit-dropdown">
+      <div class="nav-subreddit-icon">&lt;/&gt;</div>
+      <span class="nav-subreddit-name">r/webdev</span>
+      <span class="chevron">&#9662;</span>
+    </div>
+  </div>
+  <div class="nav-center">
+    <div class="nav-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M14.386 14.386l4.088 4.088-4.088-4.088A7.533 7.533 0 1116.95 3.05a7.533 7.533 0 01-2.564 11.336zM8.95 14.95a6 6 0 100-12 6 6 0 000 12z"/>
+      </svg>
+      <input type="text" placeholder="Search Reddit">
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon-btn" title="Popular">&#9733;</button>
+    <button class="nav-icon-btn" title="Chat">&#9993;</button>
+    <button class="nav-icon-btn" title="Notifications" style="position:relative;">
+      &#128276;
+      <span style="position:absolute;top:5px;right:5px;width:8px;height:8px;background:var(--reddit-orange);border-radius:50;border:2px solid var(--reddit-nav);"></span>
+    </button>
+    <button class="nav-icon-btn" title="Create Post">&#43;</button>
+    <div class="nav-user">
+      <div class="nav-avatar">AG</div>
+      <div class="nav-user-info">
+        <span class="nav-username">AnshullGarg</span>
+        <span class="nav-karma"><span class="karma-icon">&#9650;</span> 12,847 karma</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== SUBREDDIT HEADER ========== -->
+<div class="subreddit-banner"></div>
+<div class="subreddit-header">
+  <div class="subreddit-header-inner">
+    <div class="subreddit-icon-wrap">
+      <div class="subreddit-icon">&lt;/&gt;</div>
+    </div>
+    <div class="subreddit-info">
+      <div class="subreddit-names">
+        <h1>r/webdev</h1>
+        <p>r/webdev &bull; 2,147,832 members</p>
+      </div>
+      <button class="subreddit-join-btn">Joined</button>
+    </div>
+  </div>
+  <div class="subreddit-nav">
+    <div class="subreddit-nav-item">Posts</div>
+    <div class="subreddit-nav-item active">Hot</div>
+    <div class="subreddit-nav-item">New</div>
+    <div class="subreddit-nav-item">Top</div>
+    <div class="subreddit-nav-item">Wiki</div>
+  </div>
+</div>
+
+<!-- ========== CONTENT ========== -->
+<div class="content-wrapper">
+  <div class="main-content">
+
+    <!-- POST -->
+    <div class="post" id="main-post">
+      <div class="post-vote-bar">
+        <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'post')" title="Upvote" aria-label="Upvote">&#9650;</button>
+        <span class="vote-count" id="post-vote-count">12.8k</span>
+        <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'post')" title="Downvote" aria-label="Downvote">&#9660;</button>
+      </div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-flair">AMA</span>
+          <span>Posted by</span>
+          <a class="user-link" href="#">u/AnshullGarg</a>
+          <span class="op-badge">OP</span>
+          <span class="dot">&bull;</span>
+          <span>8 hours ago</span>
+          <span class="dot">&bull;</span>
+          <span class="cake-day" title="Cake Day!">&#127856; Cake Day</span>
+        </div>
+
+        <h1 class="post-title">I built 115 portfolio demos in one session. Software Developer at Walmart. AMA!</h1>
+
+        <div class="post-awards">
+          <div class="award-badge">
+            <span class="award-icon award-gold">&#9733;</span>
+            Gold
+          </div>
+          <div class="award-badge">
+            <span class="award-icon award-platinum">&#9830;</span>
+            Platinum
+          </div>
+          <div class="award-badge">
+            <span class="award-icon award-helpful">&#10084;</span>
+            Helpful
+          </div>
+          <div class="award-badge">
+            &amp; 14 more
+          </div>
+        </div>
+
+        <div class="post-content">
+          <p>Hey r/webdev! I'm <strong>Anshull Garg</strong>, a Software Developer at <strong>Walmart Global Tech</strong> (Fortune #1, for those keeping score). I recently did something a little unhinged -- I built <strong>115 unique portfolio website demos</strong> in a single session. Each one is a completely different concept: from retro terminals to Spotify Wrapped, from Stack Overflow clones to this very Reddit AMA format.</p>
+
+          <p>A bit about me:</p>
+          <ul>
+            <li>Software Developer at Walmart, building systems that serve millions at enterprise scale</li>
+            <li>Full-stack engineer: React, Next.js, TypeScript, Node.js, Python, and more</li>
+            <li>Obsessed with clean architecture, performance optimization, and developer experience</li>
+            <li>I believe great software lives at the intersection of craft and empathy</li>
+          </ul>
+
+          <p>I will be here for the next few hours answering questions about my tech stack, career at Walmart, side projects, the 115 demos, system design, or anything else you want to know. <strong>AMA!</strong></p>
+
+          <div class="ama-proof">
+            <strong>Proof:</strong> My portfolio directory has 115 HTML files, each a fully self-contained demo with zero dependencies. Verified by the moderators of r/webdev. GitHub: <a href="#">github.com/anshullgarg</a> | LinkedIn: <a href="#">linkedin.com/in/anshullgarg</a>
+          </div>
+        </div>
+
+        <div class="post-actions">
+          <button class="post-action-btn">
+            <svg viewBox="0 0 20 20"><path d="M10 19H1.871a.75.75 0 01-.53-1.28l1.97-1.97A9.002 9.002 0 0110 1a9 9 0 010 18z"/></svg>
+            847 Comments
+          </button>
+          <button class="post-action-btn">
+            <svg viewBox="0 0 20 20"><path d="M18 5h-2.586l-1.707-1.707A1 1 0 0013 3H7a1 1 0 00-.707.293L4.586 5H2a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V7a2 2 0 00-2-2zM5 7h10l.5-.5h3.5v9H1V7h4z"/></svg>
+            Share
+          </button>
+          <button class="post-action-btn">
+            <svg viewBox="0 0 20 20"><path d="M3 2h14a1 1 0 011 1v14a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm0 1v14h14V3H3zm3 3h8v1H6V6zm0 3h8v1H6V9zm0 3h5v1H6v-1z"/></svg>
+            Save
+          </button>
+          <button class="post-action-btn">&#8226;&#8226;&#8226;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SORT BAR -->
+    <div class="sort-bar">
+      <span class="sort-label">Sort by:</span>
+      <button class="sort-dropdown">Top &#9662;</button>
+    </div>
+
+    <!-- ==================== COMMENTS ==================== -->
+
+    <!-- COMMENT 1: Skills Question -->
+    <div class="comment" id="c1">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c1')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c1-vote">3,847</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c1')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#7B68EE,#9370DB);">RS</div>
+            <span class="comment-username">rust_and_wasm_dev</span>
+            <span class="user-flair">Full Stack | 8 YoE</span>
+            <span class="comment-time">&bull; 7h</span>
+            <div class="comment-awards-inline">
+              <span class="award-icon award-gold" style="width:16px;height:16px;font-size:9px;">&#9733;</span>
+            </div>
+          </div>
+          <div class="comment-text">
+            <p>Alright, I'll bite. What's your actual tech stack? And I don't mean the "I've touched it once in a tutorial" list -- what do you <strong>reach for daily</strong> and feel confident defending in a system design interview?</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 19H1.871a.75.75 0 01-.53-1.28l1.97-1.97A9.002 9.002 0 0110 1a9 9 0 010 18z"/></svg>
+              Reply
+            </button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <!-- OP Reply -->
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c1r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c1r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c1r1-vote">5,219</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c1r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 7h</span>
+                      <div class="comment-awards-inline">
+                        <span class="award-icon award-helpful" style="width:16px;height:16px;font-size:8px;">&#10084;</span>
+                        <span class="award-icon award-platinum" style="width:16px;height:16px;font-size:8px;">&#9830;</span>
+                      </div>
+                    </div>
+                    <div class="comment-text">
+                      <p>Great question. Here is what I actually use and would confidently whiteboard in an interview:</p>
+
+                      <div class="highlight">
+                        <p><strong>Frontend Engineering</strong></p>
+                        <p><span class="skill-tag">React</span> <span class="skill-tag">Next.js</span> <span class="skill-tag">TypeScript</span> <span class="skill-tag">Tailwind CSS</span> <span class="skill-tag">Framer Motion</span></p>
+                        <p style="margin-top:6px;">Production React at Walmart scale. Performance-obsessed -- I profile, I measure Core Web Vitals, I code-split aggressively. Not just "I can build a component" but "I can architect a design system that 50 engineers can ship with."</p>
+                      </div>
+
+                      <div class="highlight">
+                        <p><strong>Backend & APIs</strong></p>
+                        <p><span class="skill-tag">Node.js</span> <span class="skill-tag">Express</span> <span class="skill-tag">Python</span> <span class="skill-tag">GraphQL</span> <span class="skill-tag">REST</span></p>
+                        <p style="margin-top:6px;">I design APIs that other teams actually enjoy consuming. RESTful and GraphQL, depending on the use case. At Walmart, every endpoint I build has to handle the kind of traffic that would melt most startups on Black Friday.</p>
+                      </div>
+
+                      <div class="highlight">
+                        <p><strong>Data & Infrastructure</strong></p>
+                        <p><span class="skill-tag">PostgreSQL</span> <span class="skill-tag">MongoDB</span> <span class="skill-tag">Redis</span> <span class="skill-tag">Docker</span> <span class="skill-tag">Kubernetes</span> <span class="skill-tag">AWS</span> <span class="skill-tag">CI/CD</span></p>
+                        <p style="margin-top:6px;">Schema design, query optimization, caching strategies. I containerize everything. CI/CD is not optional -- it is the first thing I set up on any project.</p>
+                      </div>
+
+                      <div class="highlight">
+                        <p><strong>Practices I Live By</strong></p>
+                        <p><span class="skill-tag">TDD</span> <span class="skill-tag">Code Review</span> <span class="skill-tag">Agile</span> <span class="skill-tag">Accessibility</span> <span class="skill-tag">Performance Profiling</span></p>
+                        <p style="margin-top:6px;">I read the PR description before the code diff. I believe tests are documentation that executes. Accessibility is not a feature -- it is a baseline.</p>
+                      </div>
+
+                      <p>The 115 demos, by the way, are all vanilla HTML/CSS/JS with zero frameworks -- proof that understanding fundamentals matters more than knowing which <code>npm install</code> to run.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                      <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+                    </div>
+
+                    <!-- Nested reply -->
+                    <div class="comment-replies">
+                      <div class="comment-thread">
+                        <div class="comment" id="c1r1r1">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c1r1r1')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c1r1r1-vote">892</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c1r1r1')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#20B2AA,#3CB371);">JK</div>
+                                <span class="comment-username">jsx_junkie</span>
+                                <span class="user-flair">React Enthusiast</span>
+                                <span class="comment-time">&bull; 6h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>"Tests are documentation that executes" -- stealing this for my team's engineering principles doc. The zero-dependency thing on the 115 demos is genuinely impressive. Respect.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENT 2: Projects Question -->
+    <div class="comment" id="c2" style="margin-top:8px;">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c2')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c2-vote">2,634</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c2')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#FF69B4,#FF1493);">KT</div>
+            <span class="comment-username">kernel_panic_at_disco</span>
+            <span class="user-flair">Senior Dev | FAANG</span>
+            <span class="comment-time">&bull; 6h</span>
+            <div class="comment-awards-inline">
+              <span class="award-icon award-helpful" style="width:16px;height:16px;font-size:8px;">&#10084;</span>
+            </div>
+          </div>
+          <div class="comment-text">
+            <p>OK the 115 demos thing has me curious. What are 3-4 projects you're most proud of? And more importantly -- what <strong>technical decisions</strong> did you have to make that taught you something? I'm tired of portfolios that just list features.</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">Reply</button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <!-- OP Reply -->
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c2r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c2r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c2r1-vote">4,102</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c2r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 6h</span>
+                      <div class="comment-awards-inline">
+                        <span class="award-icon award-gold" style="width:16px;height:16px;font-size:9px;">&#9733;</span>
+                      </div>
+                    </div>
+                    <div class="comment-text">
+                      <p>Love this question. Here are the ones that actually made me a better engineer:</p>
+
+                      <div class="project-card">
+                        <h4>1. Enterprise E-Commerce Platform @ Walmart</h4>
+                        <p>Architected frontend micro-services powering digital retail for one of the world's largest platforms. The hard decision: choosing between a monolithic React app vs. micro-frontends. We went micro-frontends with Module Federation, which let 12 teams deploy independently. Trade-off was increased complexity in shared state management -- solved with a custom event bus + Redis-backed session store.</p>
+                        <div class="tech-stack">
+                          <span class="skill-tag">React</span>
+                          <span class="skill-tag">Module Federation</span>
+                          <span class="skill-tag">Node.js</span>
+                          <span class="skill-tag">Redis</span>
+                          <span class="skill-tag">Kubernetes</span>
+                        </div>
+                      </div>
+
+                      <div class="project-card">
+                        <h4>2. Real-Time Inventory Sync System</h4>
+                        <p>Built a system that keeps inventory counts accurate across 4,700+ stores and the website in near-real-time. The interesting decision was choosing PostgreSQL over MongoDB for the core data layer. Everyone said "use Mongo, it's flexible." But our data had deep relational dependencies between products, locations, and supply chains. PostgreSQL's JSONB columns gave us the document flexibility we wanted without sacrificing referential integrity. Reduced inventory discrepancies by 34%.</p>
+                        <div class="tech-stack">
+                          <span class="skill-tag">PostgreSQL</span>
+                          <span class="skill-tag">WebSockets</span>
+                          <span class="skill-tag">Python</span>
+                          <span class="skill-tag">Docker</span>
+                          <span class="skill-tag">AWS</span>
+                        </div>
+                      </div>
+
+                      <div class="project-card">
+                        <h4>3. Performance Optimization Initiative</h4>
+                        <p>Reduced page load time by 40% across key customer-facing pages. The decision that mattered most: implementing aggressive code-splitting with dynamic imports instead of just lazy-loading routes. We profiled every component, identified 23 heavy third-party dependencies, and replaced 8 of them with lightweight custom implementations. Core Web Vitals went from "needs improvement" to "good" across all metrics.</p>
+                        <div class="tech-stack">
+                          <span class="skill-tag">Webpack</span>
+                          <span class="skill-tag">Lighthouse</span>
+                          <span class="skill-tag">React.lazy</span>
+                          <span class="skill-tag">Performance API</span>
+                        </div>
+                      </div>
+
+                      <div class="project-card">
+                        <h4>4. The 115 Portfolio Demos (This Madness)</h4>
+                        <p>Each demo is a completely self-contained HTML file with inline CSS and vanilla JS. Zero npm, zero build tools, zero dependencies. The constraint forced me to deeply understand CSS (no Tailwind to lean on), raw DOM APIs (no React), and creative problem-solving. Themes range from retro terminals to tarot cards to this Reddit AMA clone. Every one is responsive and accessible.</p>
+                        <div class="tech-stack">
+                          <span class="skill-tag">HTML</span>
+                          <span class="skill-tag">CSS</span>
+                          <span class="skill-tag">Vanilla JS</span>
+                          <span class="skill-tag">Zero Dependencies</span>
+                        </div>
+                      </div>
+
+                      <p>The common thread: I care more about the <em>why</em> behind a technical decision than the <em>what</em>. Any developer can pick a tool. Fewer can articulate why that tool was the right choice for the constraints they faced.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                    </div>
+
+                    <!-- Nested replies -->
+                    <div class="comment-replies">
+                      <div class="comment-thread">
+                        <div class="comment" id="c2r1r1">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c2r1r1')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c2r1r1-vote">645</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c2r1r1')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#FF69B4,#FF1493);">KT</div>
+                                <span class="comment-username">kernel_panic_at_disco</span>
+                                <span class="user-flair">Senior Dev | FAANG</span>
+                                <span class="comment-time">&bull; 5h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>The PostgreSQL over MongoDB decision with JSONB is *chef's kiss*. That's exactly the kind of nuanced thinking I look for when interviewing candidates. Most people just default to whatever tutorial they followed. This person actually thought about it.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENT 3: Experience at Walmart -->
+    <div class="comment" id="c3" style="margin-top:8px;">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c3')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c3-vote">1,923</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c3')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#32CD32,#228B22);">DV</div>
+            <span class="comment-username">devops_diva_2026</span>
+            <span class="user-flair">Platform Eng | AWS</span>
+            <span class="comment-time">&bull; 6h</span>
+          </div>
+          <div class="comment-text">
+            <p>What's it actually like working at Walmart Global Tech? I feel like Walmart gets slept on as a tech company compared to FAANG. What kind of engineering challenges are you solving day-to-day, and how does the scale compare?</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">Reply</button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <!-- OP Reply -->
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c3r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c3r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c3r1-vote">3,412</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c3r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 5h</span>
+                    </div>
+                    <div class="comment-text">
+                      <p>You're right that Walmart gets underrated as a tech company, and honestly, that's part of what makes it interesting. Here's the reality:</p>
+
+                      <p><strong>The scale is genuinely massive.</strong> Walmart.com serves hundreds of millions of customers. On Black Friday, the traffic spikes would bring most tech stacks to their knees. When I say "enterprise scale," I mean my code runs in production serving more users than most unicorn startups will ever see. That is not a humble-brag -- it is just the reality of building at Fortune #1.</p>
+
+                      <p><strong>Day-to-day engineering challenges:</strong></p>
+                      <ul>
+                        <li>Designing systems for 99.99% uptime -- because when Walmart goes down, it is national news</li>
+                        <li>Performance optimization at a level where saving 50ms on an API response translates to millions in revenue</li>
+                        <li>Coordinating across teams of hundreds of engineers with shared codebases and microservices</li>
+                        <li>Building accessible, performant frontends that work on every device, every network, every browser</li>
+                        <li>Shipping features through rigorous CI/CD pipelines with automated testing, canary deployments, and feature flags</li>
+                      </ul>
+
+                      <p><strong>What surprised me most:</strong> The engineering culture is genuinely strong. Code reviews are thorough. There is real investment in developer experience, internal tooling, and engineering excellence. I have grown more here in terms of system design thinking and production-grade engineering than I would have at most places.</p>
+
+                      <p>The best part? The problems are real. You are not optimizing ad clicks or engagement metrics -- you are building systems that help real people buy groceries, clothes, and essentials. That feels meaningful in a way I didn't expect.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                    </div>
+
+                    <div class="comment-replies">
+                      <div class="comment-thread">
+                        <div class="comment" id="c3r1r1">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c3r1r1')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c3r1r1-vote">487</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c3r1r1')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#32CD32,#228B22);">DV</div>
+                                <span class="comment-username">devops_diva_2026</span>
+                                <span class="user-flair">Platform Eng | AWS</span>
+                                <span class="comment-time">&bull; 5h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>"When Walmart goes down, it's national news" is the best way I've ever heard someone describe the pressure of enterprise engineering. Honestly, this makes me want to apply there. Thanks for the honest breakdown.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENT 4: Engineering Philosophy -->
+    <div class="comment" id="c4" style="margin-top:8px;">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c4')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c4-vote">1,456</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c4')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#FFA500,#FF8C00);">ML</div>
+            <span class="comment-username">midnight_deployer</span>
+            <span class="user-flair">Tech Lead | Fintech</span>
+            <span class="comment-time">&bull; 5h</span>
+          </div>
+          <div class="comment-text">
+            <p>I always ask this in interviews and most candidates fumble it: what are your core engineering principles? Not buzzwords -- the actual rules you follow when writing code that has to survive production.</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">Reply</button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c4r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c4r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c4r1-vote">2,891</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c4r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 5h</span>
+                      <div class="comment-awards-inline">
+                        <span class="award-icon award-gold" style="width:16px;height:16px;font-size:9px;">&#9733;</span>
+                        <span class="award-icon award-helpful" style="width:16px;height:16px;font-size:8px;">&#10084;</span>
+                      </div>
+                    </div>
+                    <div class="comment-text">
+                      <p>This is my favorite question. Here is my actual engineering manifesto -- the things I believe deeply enough to argue about:</p>
+
+                      <blockquote><strong>1. Readability is not optional.</strong> Code is read 10x more than it is written. If your teammate cannot understand your code without a walkthrough, you have failed -- regardless of how clever the implementation is.</blockquote>
+
+                      <blockquote><strong>2. Tests are documentation that executes.</strong> I write tests not because my manager told me to, but because future-me will forget why this function exists. A well-named test tells you the intent faster than any comment.</blockquote>
+
+                      <blockquote><strong>3. The best abstraction is the one you do not need yet.</strong> Premature abstraction has killed more codebases than code duplication ever has. I will happily duplicate code twice before I abstract. Three times is the signal.</blockquote>
+
+                      <blockquote><strong>4. Ship, measure, iterate.</strong> Perfection is the enemy of progress. I would rather ship a good feature on Thursday than a perfect feature never. But "ship" does not mean "skip tests" -- it means prioritize ruthlessly.</blockquote>
+
+                      <blockquote><strong>5. Every PR should leave the codebase better than you found it.</strong> The Boy Scout Rule, applied to software. Fix that typo. Update that outdated comment. Refactor that one function while you are in the file. Compounding improvement beats big rewrites.</blockquote>
+
+                      <blockquote><strong>6. Accessibility is a baseline, not a feature.</strong> It is not something you add at the end. It is built into every component from the start. Semantic HTML, ARIA labels, keyboard navigation -- these are not extras.</blockquote>
+
+                      <blockquote><strong>7. "It works on my machine" is not a deployment strategy.</strong> If it is not containerized, tested in CI, and reproducible on a fresh environment, it does not work.</blockquote>
+
+                      <p>These are not aspirational -- they are habits. I apply them on every commit, every review, every architecture decision.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                    </div>
+
+                    <div class="comment-replies">
+                      <div class="comment-thread">
+                        <div class="comment" id="c4r1r1">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c4r1r1')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c4r1r1-vote">1,203</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c4r1r1')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#FFA500,#FF8C00);">ML</div>
+                                <span class="comment-username">midnight_deployer</span>
+                                <span class="user-flair">Tech Lead | Fintech</span>
+                                <span class="comment-time">&bull; 4h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>Point 3 alone would have passed my interview. The number of candidates who say "I always abstract early for reusability" is terrifying. This person gets it. Saving this comment.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="comment-thread">
+                        <div class="comment" id="c4r1r2">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c4r1r2')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c4r1r2-vote">334</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c4r1r2')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#DA70D6,#BA55D3);">NX</div>
+                                <span class="comment-username">nextjs_or_die</span>
+                                <span class="user-flair">Frontend @ Shopify</span>
+                                <span class="comment-time">&bull; 3h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>Point 7 made me physically laugh because I literally had this argument yesterday. Bookmarking this entire AMA for my junior devs to read.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENT 5: Career Advice -->
+    <div class="comment" id="c5" style="margin-top:8px;">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c5')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c5-vote">1,178</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c5')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#6495ED,#4169E1);">CS</div>
+            <span class="comment-username">cs_grad_confused</span>
+            <span class="user-flair">New Grad 2026</span>
+            <span class="comment-time">&bull; 4h</span>
+          </div>
+          <div class="comment-text">
+            <p>I'm about to graduate and the job market terrifies me. Any advice for someone trying to break into the industry? How did you land a role at Walmart, and what would you do differently if you were starting over today?</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">Reply</button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c5r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c5r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c5r1-vote">2,567</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c5r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 4h</span>
+                      <div class="comment-awards-inline">
+                        <span class="award-icon award-helpful" style="width:16px;height:16px;font-size:8px;">&#10084;</span>
+                      </div>
+                    </div>
+                    <div class="comment-text">
+                      <p>I hear you. The market is tough, but you have more control than you think. Here is what I wish someone had told me:</p>
+
+                      <p><strong>1. Build 3 projects that solve real problems, not 30 that follow tutorials.</strong> I do not care if you built a to-do app, but I care if you can articulate <em>why</em> you chose React over Vue, why you used a specific state management pattern, and what trade-offs you made. Framing matters more than the project itself.</p>
+
+                      <p><strong>2. Your portfolio IS the interview before the interview.</strong> This is exactly why I built 115 demos -- to demonstrate range, depth, and fundamentals. You do not need 115, but you need something that makes a hiring manager pause scrolling and think "this person actually built this?"</p>
+
+                      <p><strong>3. Understand the fundamentals deeply.</strong> Frameworks come and go. If you understand how the DOM works, how HTTP requests flow, how databases index queries, and how to think about algorithmic complexity -- you can learn any framework in a week. I got my Walmart offer because I could explain <em>how</em> React works under the hood, not just how to use it.</p>
+
+                      <p><strong>4. Contribute to open source.</strong> Even a small PR to a project you use shows you can read someone else's code, navigate a large codebase, follow contribution guidelines, and communicate through code review. That is 80% of a real job.</p>
+
+                      <p><strong>5. Network through building, not through DMs.</strong> I never cold-messaged a recruiter. I built things, shared them in communities like this one, and let the work speak. People notice when you consistently ship.</p>
+
+                      <p>The market rewards builders. Keep building. The right opportunity will find you if you are visible and you are good. Feel free to DM me if you want a portfolio review -- I mean it.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                    </div>
+
+                    <div class="comment-replies">
+                      <div class="comment-thread">
+                        <div class="comment" id="c5r1r1">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c5r1r1')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c5r1r1-vote">756</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c5r1r1')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#6495ED,#4169E1);">CS</div>
+                                <span class="comment-username">cs_grad_confused</span>
+                                <span class="user-flair">New Grad 2026</span>
+                                <span class="comment-time">&bull; 3h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>The fact that you offered to review portfolios from a complete stranger on Reddit tells me everything I need to know about the kind of engineer you are. DMing you. Thank you so much.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENT 6: What's Next -->
+    <div class="comment" id="c6" style="margin-top:8px;">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c6')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c6-vote">967</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c6')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#DC143C,#B22222);">TF</div>
+            <span class="comment-username">tensorflow_terry</span>
+            <span class="user-flair">ML Eng | PhD</span>
+            <span class="comment-time">&bull; 3h</span>
+          </div>
+          <div class="comment-text">
+            <p>What are you learning right now? What's next for you? And is there a way to get in touch outside of Reddit?</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">Reply</button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c6r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c6r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c6r1-vote">1,834</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c6r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 3h</span>
+                    </div>
+                    <div class="comment-text">
+                      <div class="highlight">
+                        <p><strong>What I'm currently exploring (Feb 2026):</strong></p>
+                        <ul>
+                          <li><strong>Building:</strong> A developer productivity CLI tool that automates the tedious parts of project setup, linting config, and CI/CD scaffolding</li>
+                          <li><strong>Learning:</strong> Rust for systems programming and WebAssembly -- I want to understand performance at the lowest levels</li>
+                          <li><strong>Reading:</strong> "Designing Data-Intensive Applications" by Martin Kleppmann (second time through -- it hits different with production experience)</li>
+                          <li><strong>Thinking about:</strong> How AI-assisted development changes the role of the software engineer -- and what skills become MORE valuable, not less</li>
+                        </ul>
+                      </div>
+
+                      <p><strong>What's next:</strong> I am always open to conversations about interesting engineering challenges, collaboration on open-source projects, or just talking shop about software architecture. I genuinely enjoy connecting with other builders.</p>
+
+                      <p><strong>How to reach me:</strong></p>
+                      <ul>
+                        <li>GitHub: <a href="#">github.com/anshullgarg</a></li>
+                        <li>LinkedIn: <a href="#">linkedin.com/in/anshullgarg</a></li>
+                        <li>Email: <a href="#">anshullgarg@email.com</a></li>
+                        <li>Portfolio: <a href="#">anshullgarg.dev</a> (yes, it has all 115 demos)</li>
+                      </ul>
+
+                      <p>Whether you have a role in mind, a project idea, or just want to connect -- I would love to hear from you. No recruiter-only disclaimer here. Everyone is welcome. I typically respond within 24 hours.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENT 7: Fun/personality -->
+    <div class="comment" id="c7" style="margin-top:8px;">
+      <div class="comment-main">
+        <div class="comment-vote">
+          <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c7')" aria-label="Upvote">&#9650;</button>
+          <span class="vote-count" id="c7-vote">2,103</span>
+          <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c7')" aria-label="Downvote">&#9660;</button>
+        </div>
+        <div class="comment-content-area">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#FFD700,#FFA500);">BG</div>
+            <span class="comment-username">big_o_no_she_didnt</span>
+            <span class="user-flair">Chaos Engineer</span>
+            <span class="comment-time">&bull; 2h</span>
+          </div>
+          <div class="comment-text">
+            <p>OK I have to ask: of the 115 demos, which is the most unhinged? And what's your favorite that you'd actually use as your real portfolio?</p>
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action-btn">Reply</button>
+            <button class="comment-action-btn">Give Award</button>
+            <button class="comment-action-btn">Share</button>
+            <button class="comment-action-btn">&#8226;&#8226;&#8226;</button>
+          </div>
+
+          <div class="comment-replies">
+            <div class="comment-thread">
+              <div class="comment" id="c7r1">
+                <div class="comment-main">
+                  <div class="comment-vote">
+                    <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c7r1')" aria-label="Upvote">&#9650;</button>
+                    <span class="vote-count" id="c7r1-vote">3,298</span>
+                    <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c7r1')" aria-label="Downvote">&#9660;</button>
+                  </div>
+                  <div class="comment-content-area">
+                    <div class="comment-header">
+                      <div class="comment-avatar" style="background:linear-gradient(135deg,#FF4500,#ff6b35);">AG</div>
+                      <span class="comment-username" style="color:#4FBCFF;">AnshullGarg</span>
+                      <span class="op-badge">OP</span>
+                      <span class="user-flair">SDE @ Walmart</span>
+                      <span class="comment-time">&bull; 2h</span>
+                      <div class="comment-awards-inline">
+                        <span class="award-icon award-gold" style="width:16px;height:16px;font-size:9px;">&#9733;</span>
+                        <span class="award-icon award-platinum" style="width:16px;height:16px;font-size:8px;">&#9830;</span>
+                      </div>
+                    </div>
+                    <div class="comment-text">
+                      <p>Oh this is a great question.</p>
+
+                      <p><strong>Most unhinged:</strong> It is a tie between the <em>Tarot Card Reading</em> portfolio (where you flip cards to reveal skills/projects as mystical fortunes) and the <em>Rubber Duck Debugging</em> one (where a rubber duck asks you questions about my career and you talk it through). Also honorable mention to <em>Roguelike Dungeon Crawler</em> where you navigate a dungeon and each room is a portfolio section.</p>
+
+                      <p><strong>Personal favorite:</strong> Honestly? This Reddit AMA format. The conversational structure lets me show personality, depth, and real engineering thinking in a way that a traditional portfolio never could. It reads like a real conversation, not a brochure. Plus the vote counts subtly communicate social proof.</p>
+
+                      <p><strong>Most technically impressive:</strong> The <em>OS Desktop</em> demo -- a full windowed operating system in the browser with draggable windows, a taskbar, a file system, and working apps. All in one HTML file. It is essentially a mini React without React.</p>
+
+                      <p><strong>The full list includes:</strong> retro terminal, Spotify Wrapped, Stack Overflow, GitHub PR, dev tools console, trading dashboard, space mission control, vaporwave, vintage TV, podcast episode, Jira board, npm install, slot machine, escape room, and about 100 more. Each one taught me something different about CSS, layout, animation, or interaction design.</p>
+
+                      <p>The real lesson from building all 115: constraints breed creativity. No frameworks, no dependencies, just fundamentals -- and it turns out fundamentals are all you really need.</p>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="comment-action-btn">Reply</button>
+                      <button class="comment-action-btn">Give Award</button>
+                      <button class="comment-action-btn">Share</button>
+                    </div>
+
+                    <div class="comment-replies">
+                      <div class="comment-thread">
+                        <div class="comment" id="c7r1r1">
+                          <div class="comment-main">
+                            <div class="comment-vote">
+                              <button class="vote-btn upvote-btn" onclick="vote(this, 'up', 'c7r1r1')" aria-label="Upvote">&#9650;</button>
+                              <span class="vote-count" id="c7r1r1-vote">1,432</span>
+                              <button class="vote-btn downvote-btn" onclick="vote(this, 'down', 'c7r1r1')" aria-label="Downvote">&#9660;</button>
+                            </div>
+                            <div class="comment-content-area">
+                              <div class="comment-header">
+                                <div class="comment-avatar" style="background:linear-gradient(135deg,#FFD700,#FFA500);">BG</div>
+                                <span class="comment-username">big_o_no_she_didnt</span>
+                                <span class="user-flair">Chaos Engineer</span>
+                                <span class="comment-time">&bull; 1h</span>
+                              </div>
+                              <div class="comment-text">
+                                <p>"Constraints breed creativity" needs to be on a t-shirt. Also the fact that you built a literal dungeon crawler as a portfolio is the most chaotic good thing I've seen on this subreddit. Take my award.</p>
+                              </div>
+                              <div class="comment-actions">
+                                <button class="comment-action-btn">Reply</button>
+                                <button class="comment-action-btn">Give Award</button>
+                                <button class="comment-action-btn">Share</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Load more comments -->
+    <div style="padding:16px 0; text-align:center;">
+      <button style="background:var(--reddit-blue);color:#fff;border:none;padding:8px 24px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">View More Comments (840 more)</button>
+    </div>
+
+  </div>
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+
+    <!-- About Community -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">About Community</div>
+      <div class="sidebar-card-body">
+        <div class="sidebar-about-desc">A community dedicated to all things web development: both front-end and back-end. This is a place to share everything related to web dev.</div>
+        <div class="sidebar-stat-row">
+          <div class="sidebar-stat">
+            <span class="sidebar-stat-val">2.1m</span>
+            <span class="sidebar-stat-label">Members</span>
+          </div>
+          <div class="sidebar-stat">
+            <span class="sidebar-stat-val">4,821</span>
+            <span class="sidebar-stat-label">Online</span>
+          </div>
+        </div>
+        <div class="sidebar-stat-row">
+          <div class="sidebar-stat">
+            <span class="sidebar-stat-val">#12</span>
+            <span class="sidebar-stat-label">Ranked by Size</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--reddit-text-muted);padding-top:8px;border-top:1px solid var(--reddit-border);">
+          Created Jan 25, 2008
+        </div>
+        <button class="sidebar-create-btn">Create Post</button>
+      </div>
+    </div>
+
+    <!-- AMA Guest Info -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header" style="background:var(--reddit-orange);">AMA Guest</div>
+      <div class="sidebar-card-body">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#FF4500,#ff6b35);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;">AG</div>
+          <div>
+            <div style="font-weight:700;color:var(--reddit-text);font-size:15px;">Anshull Garg</div>
+            <div style="font-size:12px;color:var(--reddit-text-muted);">u/AnshullGarg</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--reddit-text);margin-bottom:12px;line-height:1.5;">
+          Software Developer at Walmart Global Tech. Full-stack engineer building systems at enterprise scale. Built 115 portfolio demos in a single session to prove that fundamentals matter.
+        </div>
+        <div class="sidebar-stat-row">
+          <div class="sidebar-stat">
+            <span class="sidebar-stat-val">12,847</span>
+            <span class="sidebar-stat-label">Post Karma</span>
+          </div>
+          <div class="sidebar-stat">
+            <span class="sidebar-stat-val">28,431</span>
+            <span class="sidebar-stat-label">Comment Karma</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;font-size:12px;">
+          <a href="#" style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:14px;">&#128279;</span> github.com/anshullgarg
+          </a>
+          <a href="#" style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:14px;">&#128279;</span> linkedin.com/in/anshullgarg
+          </a>
+          <a href="#" style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:14px;">&#128279;</span> anshullgarg.dev
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rules -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">r/webdev Rules</div>
+      <div class="sidebar-card-body" style="padding:8px 12px;">
+        <ul class="sidebar-rules">
+          <li class="sidebar-rule"><span class="sidebar-rule-num">1.</span> No self-promotion spam</li>
+          <li class="sidebar-rule"><span class="sidebar-rule-num">2.</span> Be respectful and constructive</li>
+          <li class="sidebar-rule"><span class="sidebar-rule-num">3.</span> No "which framework" flamewars</li>
+          <li class="sidebar-rule"><span class="sidebar-rule-num">4.</span> Include code in code posts</li>
+          <li class="sidebar-rule"><span class="sidebar-rule-num">5.</span> AMA guests must provide proof</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- User Flairs -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header" style="background:#333;">User Flair Legend</div>
+      <div class="sidebar-card-body">
+        <div class="sidebar-flair-list">
+          <div class="sidebar-flair-item">
+            <div class="sidebar-flair-color" style="background:var(--reddit-orange);"></div>
+            <span style="color:var(--reddit-text);font-size:12px;">OP - Original Poster (AMA Host)</span>
+          </div>
+          <div class="sidebar-flair-item">
+            <div class="sidebar-flair-color" style="background:#7B68EE;"></div>
+            <span style="color:var(--reddit-text);font-size:12px;">Full Stack Developer</span>
+          </div>
+          <div class="sidebar-flair-item">
+            <div class="sidebar-flair-color" style="background:#32CD32;"></div>
+            <span style="color:var(--reddit-text);font-size:12px;">Platform / DevOps</span>
+          </div>
+          <div class="sidebar-flair-item">
+            <div class="sidebar-flair-color" style="background:#FFD700;"></div>
+            <span style="color:var(--reddit-text);font-size:12px;">Chaos Engineer</span>
+          </div>
+          <div class="sidebar-flair-item">
+            <div class="sidebar-flair-color" style="background:#6495ED;"></div>
+            <span style="color:var(--reddit-text);font-size:12px;">New Graduate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moderators -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header" style="background:#333;">Moderators</div>
+      <div class="sidebar-card-body">
+        <div class="sidebar-moderators">
+          <a href="#">u/webdev_mod_bot</a>
+          <a href="#">u/css_wizard_42</a>
+          <a href="#">u/node_guardian</a>
+          <div style="margin-top:8px;">
+            <a href="#" style="color:var(--reddit-blue);font-weight:600;">Message the mods</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back to Top -->
+    <div style="text-align:center;padding:16px 0;">
+      <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:var(--reddit-input);border:1px solid var(--reddit-border);color:var(--reddit-text);padding:8px 24px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;">Back to Top</button>
+    </div>
+
+  </aside>
+</div>
+
+<!-- Footer -->
+<footer style="background:var(--reddit-card);border-top:1px solid var(--reddit-border);padding:20px;text-align:center;margin-top:40px;">
+  <div style="max-width:976px;margin:0 auto;font-size:12px;color:var(--reddit-text-muted);line-height:1.8;">
+    <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+      <a href="#" style="color:var(--reddit-text-muted);">Help</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Reddit Coins</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Reddit Premium</a>
+      <a href="#" style="color:var(--reddit-text-muted);">About</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Careers</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Press</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Advertise</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Blog</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Terms</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Content Policy</a>
+      <a href="#" style="color:var(--reddit-text-muted);">Privacy Policy</a>
+    </div>
+    <div>Reddit Inc &copy; 2026. All rights reserved. &bull; This is a portfolio demo by Anshull Garg, not affiliated with Reddit.</div>
+  </div>
+</footer>
+
+<script>
+// ========== VOTE SYSTEM ==========
+const voteStates = {};
+
+function parseVoteCount(str) {
+  str = str.trim();
+  if (str.includes('k')) {
+    return parseFloat(str.replace('k', '')) * 1000;
+  }
+  return parseInt(str.replace(/,/g, ''), 10);
+}
+
+function formatVoteCount(num) {
+  if (num >= 10000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  }
+  if (num >= 1000) {
+    return num.toLocaleString();
+  }
+  return num.toString();
+}
+
+function vote(btn, direction, id) {
+  const parent = btn.closest('.comment-vote, .post-vote-bar');
+  const countEl = parent.querySelector('.vote-count');
+  const upBtn = parent.querySelector('.upvote-btn');
+  const downBtn = parent.querySelector('.downvote-btn');
+
+  if (!voteStates[id]) {
+    voteStates[id] = {
+      original: parseVoteCount(countEl.textContent),
+      state: 'none'
+    };
+  }
+
+  const vs = voteStates[id];
+
+  if (direction === 'up') {
+    if (vs.state === 'up') {
+      // Un-upvote
+      vs.state = 'none';
+      upBtn.classList.remove('upvoted');
+      countEl.classList.remove('upvoted');
+      countEl.textContent = formatVoteCount(vs.original);
+    } else {
+      // Upvote
+      const offset = vs.state === 'down' ? 2 : 1;
+      vs.state = 'up';
+      upBtn.classList.add('upvoted');
+      downBtn.classList.remove('downvoted');
+      countEl.classList.add('upvoted');
+      countEl.classList.remove('downvoted');
+      countEl.textContent = formatVoteCount(vs.original + 1);
+    }
+  } else {
+    if (vs.state === 'down') {
+      // Un-downvote
+      vs.state = 'none';
+      downBtn.classList.remove('downvoted');
+      countEl.classList.remove('downvoted');
+      countEl.textContent = formatVoteCount(vs.original);
+    } else {
+      // Downvote
+      vs.state = 'down';
+      downBtn.classList.add('downvoted');
+      upBtn.classList.remove('upvoted');
+      countEl.classList.remove('upvoted');
+      countEl.classList.add('downvoted');
+      countEl.textContent = formatVoteCount(vs.original - 1);
+    }
+  }
+}
+
+// ========== COLLAPSE THREADS ==========
+document.querySelectorAll('.comment-thread::before, .comment-thread').forEach(thread => {
+  // Click on the thread line to collapse
+  thread.addEventListener('click', function(e) {
+    if (e.target === this && e.offsetX < 14) {
+      const comment = this.querySelector('.comment');
+      if (comment) {
+        comment.classList.toggle('comment-collapsed');
+      }
+    }
+  });
+});
+
+// ========== SMOOTH ENTRANCE ANIMATION ==========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.comment').forEach((comment, i) => {
+  comment.style.opacity = '0';
+  comment.style.transform = 'translateY(10px)';
+  comment.style.transition = `opacity 0.4s ease ${i * 0.05}s, transform 0.4s ease ${i * 0.05}s`;
+  observer.observe(comment);
+});
+
+// Also animate the main post
+const mainPost = document.getElementById('main-post');
+if (mainPost) {
+  mainPost.style.opacity = '0';
+  mainPost.style.transform = 'translateY(10px)';
+  mainPost.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  setTimeout(() => {
+    mainPost.style.opacity = '1';
+    mainPost.style.transform = 'translateY(0)';
+  }, 100);
+}
+</script>
+</body>
+</html>
