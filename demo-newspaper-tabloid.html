@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE DAILY DEVELOPER - Anshull Garg Special Edition</title>
+<style>
+  /* ============================================
+     RESET & BASE
+     ============================================ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --yellow: #FFD700;
+    --red: #CC0000;
+    --black: #1A1A1A;
+    --white: #FFFFFF;
+    --cream: #FFF8DC;
+    --paper: #FAF0E6;
+    --ink: #2A2A2A;
+    --rule: #1A1A1A;
+    --faded: #8B8680;
+  }
+
+  @font-face {
+    font-family: 'Tabloid';
+    src: local('Georgia');
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* ============================================
+     NEWSPAPER TEXTURE & AGING
+     ============================================ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.015) 2px,
+        rgba(0,0,0,0.015) 4px
+      );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ============================================
+     UTILITY CLASSES
+     ============================================ */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ============================================
+     TOP BAR - "WEATHER" STRIP
+     ============================================ */
+  .top-bar {
+    background: var(--black);
+    color: var(--white);
+    padding: 6px 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    overflow: hidden;
+  }
+
+  .top-bar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ticker {
+    display: inline-flex;
+    gap: 30px;
+    animation: ticker 25s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker span {
+    display: inline-block;
+  }
+
+  .ticker .hot {
+    color: var(--yellow);
+    font-weight: 700;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ============================================
+     MASTHEAD
+     ============================================ */
+  .masthead {
+    background: var(--white);
+    border-bottom: 4px double var(--black);
+    padding: 20px 0 12px;
+    text-align: center;
+    position: relative;
+  }
+
+  .masthead::before {
+    content: '';
+    display: block;
+    height: 6px;
+    background: var(--red);
+    margin-bottom: 16px;
+  }
+
+  .masthead-date {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--faded);
+    margin-bottom: 4px;
+  }
+
+  .masthead-title {
+    font-family: Georgia, serif;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--black);
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+  }
+
+  .masthead-title::before,
+  .masthead-title::after {
+    content: '\2605';
+    font-size: 0.4em;
+    vertical-align: middle;
+    margin: 0 12px;
+    color: var(--red);
+  }
+
+  .masthead-subtitle {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--faded);
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .masthead-tagline {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--black);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 4px 16px;
+    margin-top: 10px;
+  }
+
+  .masthead-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-top: 14px;
+    border-top: 1px solid var(--black);
+    border-bottom: 1px solid var(--black);
+    flex-wrap: wrap;
+  }
+
+  .masthead-nav a {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--black);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-right: 1px solid rgba(0,0,0,0.15);
+    transition: background 0.2s, color 0.2s;
+    font-weight: 600;
+  }
+
+  .masthead-nav a:last-child { border-right: none; }
+
+  .masthead-nav a:hover,
+  .masthead-nav a:focus-visible {
+    background: var(--red);
+    color: var(--white);
+    outline: none;
+  }
+
+  /* ============================================
+     COMMON COMPONENTS
+     ============================================ */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    line-height: 1.4;
+  }
+
+  .tag--breaking {
+    background: var(--red);
+    color: var(--white);
+    animation: pulse-tag 1.5s ease-in-out infinite;
+  }
+
+  .tag--exclusive {
+    background: var(--yellow);
+    color: var(--black);
+  }
+
+  .tag--shocking {
+    background: var(--black);
+    color: var(--yellow);
+  }
+
+  .tag--update {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .tag--opinion {
+    border: 2px solid var(--red);
+    color: var(--red);
+  }
+
+  .tag--special {
+    background: var(--red);
+    color: var(--yellow);
+    animation: pulse-tag 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-tag {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .rule { border: none; border-top: 1px solid var(--rule); margin: 20px 0; }
+  .rule--thick { border-top-width: 3px; }
+  .rule--double { border-top: 3px double var(--rule); }
+  .rule--dashed { border-top-style: dashed; }
+
+  .byline {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--faded);
+    margin-top: 6px;
+  }
+
+  .dateline {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faded);
+    font-weight: 700;
+  }
+
+  .dropcap::first-letter {
+    float: left;
+    font-size: 3.8em;
+    line-height: 0.8;
+    font-weight: 900;
+    color: var(--red);
+    margin: 0 8px 0 0;
+    padding-top: 4px;
+  }
+
+  .pull-quote {
+    font-size: 1.4rem;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--red);
+    border-left: 5px solid var(--yellow);
+    padding: 12px 20px;
+    margin: 20px 0;
+    line-height: 1.3;
+  }
+
+  .pull-quote cite {
+    display: block;
+    font-size: 0.65rem;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faded);
+    margin-top: 8px;
+  }
+
+  /* Photo placeholder */
+  .photo-block {
+    background: var(--black);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+  }
+
+  .photo-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(255,255,255,0.03) 8px,
+        rgba(255,255,255,0.03) 16px
+      );
+  }
+
+  .photo-block .icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+  }
+
+  .photo-caption {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: var(--faded);
+    margin-top: 4px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .photo-caption strong {
+    color: var(--black);
+    font-style: normal;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ============================================
+     FRONT PAGE HERO -- THE BIG STORY
+     ============================================ */
+  .front-page {
+    background: var(--white);
+    border-bottom: 6px solid var(--black);
+    padding: 30px 0 40px;
+  }
+
+  .hero-headline {
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 5.5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.0;
+    color: var(--black);
+    text-transform: uppercase;
+    margin: 12px 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-headline .highlight {
+    color: var(--red);
+  }
+
+  .hero-subheadline {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  .hero-text p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 14px;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .hero-sidebar {
+    border-left: 2px solid var(--black);
+    padding-left: 20px;
+  }
+
+  .sidebar-box {
+    border: 2px solid var(--black);
+    padding: 16px;
+    margin-bottom: 20px;
+    background: var(--cream);
+  }
+
+  .sidebar-box h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid var(--black);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  .sidebar-box ul {
+    list-style: none;
+    font-size: 0.8rem;
+  }
+
+  .sidebar-box li {
+    padding: 4px 0;
+    border-bottom: 1px dotted rgba(0,0,0,0.2);
+  }
+
+  .sidebar-box li:last-child { border-bottom: none; }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faded);
+  }
+
+  /* ============================================
+     SECTION: ARTICLES GRID
+     ============================================ */
+  .articles-section {
+    padding: 40px 0;
+  }
+
+  .section-header {
+    text-align: center;
+    padding: 10px 0;
+    border-top: 3px solid var(--black);
+    border-bottom: 1px solid var(--black);
+    margin-bottom: 30px;
+  }
+
+  .section-header h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--black);
+  }
+
+  /* Multi-column newspaper grid */
+  .news-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  .news-grid .article {
+    padding: 0 20px;
+    border-right: 1px solid rgba(0,0,0,0.15);
+  }
+
+  .news-grid .article:last-child { border-right: none; }
+
+  .article h3 {
+    font-family: Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--black);
+    text-transform: uppercase;
+    margin: 8px 0;
+  }
+
+  .article p {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    margin-bottom: 10px;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* ============================================
+     BANNER HEADLINE (full-width)
+     ============================================ */
+  .banner {
+    background: var(--red);
+    color: var(--white);
+    padding: 30px 0;
+    text-align: center;
+    border-top: 4px solid var(--black);
+    border-bottom: 4px solid var(--black);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .banner::before {
+    content: 'EXCLUSIVE EXCLUSIVE EXCLUSIVE EXCLUSIVE EXCLUSIVE EXCLUSIVE EXCLUSIVE EXCLUSIVE';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 6rem;
+    font-weight: 900;
+    opacity: 0.06;
+    white-space: nowrap;
+    letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+
+  .banner h2 {
+    font-family: Georgia, serif;
+    font-size: clamp(1.6rem, 4.5vw, 3.2rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+    position: relative;
+  }
+
+  .banner .tag {
+    margin-bottom: 10px;
+  }
+
+  .banner p {
+    font-size: 1rem;
+    font-style: italic;
+    margin-top: 10px;
+    opacity: 0.9;
+    position: relative;
+  }
+
+  /* ============================================
+     YELLOW BANNER
+     ============================================ */
+  .banner--yellow {
+    background: var(--yellow);
+    color: var(--black);
+  }
+
+  .banner--yellow::before {
+    content: 'SHOCKING SHOCKING SHOCKING SHOCKING SHOCKING SHOCKING SHOCKING SHOCKING SHOCKING';
+    opacity: 0.08;
+  }
+
+  /* ============================================
+     EXPERIENCE -- "INVESTIGATIVE REPORT"
+     ============================================ */
+  .investigation {
+    background: var(--white);
+    padding: 40px 0;
+    border-top: 6px solid var(--black);
+  }
+
+  .investigation-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .investigation-header h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+    color: var(--black);
+    margin: 10px 0 6px;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+    border-left: 3px solid var(--red);
+    margin: 30px 0;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed rgba(0,0,0,0.15);
+  }
+
+  .timeline-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -48px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    background: var(--red);
+    border: 3px solid var(--white);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--red);
+  }
+
+  .timeline-date {
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+
+  .timeline-item h3 {
+    font-size: 1.15rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--black);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .timeline-org {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--faded);
+    margin-bottom: 8px;
+  }
+
+  .timeline-item p {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    text-align: justify;
+  }
+
+  .timeline-item ul {
+    margin-top: 8px;
+    padding-left: 16px;
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+
+  .timeline-item li {
+    margin-bottom: 4px;
+  }
+
+  /* ============================================
+     SKILLS -- "CLASSIFIED ADS"
+     ============================================ */
+  .classifieds {
+    background: var(--cream);
+    padding: 40px 0;
+    border-top: 4px double var(--black);
+    border-bottom: 4px double var(--black);
+  }
+
+  .classifieds-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .classifieds-header h2 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 3px solid var(--black);
+    display: inline-block;
+    padding: 8px 24px;
+  }
+
+  .classifieds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .classified-ad {
+    border: 2px solid var(--black);
+    padding: 16px;
+    background: var(--white);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .classified-ad:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0 var(--black);
+  }
+
+  .classified-ad h3 {
+    font-size: 0.9rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 2px solid var(--yellow);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    color: var(--black);
+  }
+
+  .classified-ad .skills-list {
+    list-style: none;
+    font-size: 0.8rem;
+    line-height: 1.8;
+  }
+
+  .classified-ad .skills-list li::before {
+    content: '\25A0';
+    color: var(--red);
+    margin-right: 6px;
+    font-size: 0.6em;
+    vertical-align: middle;
+  }
+
+  .classified-ad .stamp {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: var(--red);
+    color: var(--white);
+    font-size: 0.55rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    transform: rotate(2deg);
+  }
+
+  /* ============================================
+     PROJECTS -- "FEATURE STORIES"
+     ============================================ */
+  .features {
+    padding: 40px 0;
+    background: var(--white);
+  }
+
+  .feature-story {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .feature-story:nth-child(even) {
+    direction: rtl;
+  }
+
+  .feature-story:nth-child(even) > * {
+    direction: ltr;
+  }
+
+  .feature-story:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .feature-story .photo-block {
+    min-height: 280px;
+  }
+
+  .feature-text h3 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.1;
+    color: var(--black);
+    margin: 8px 0 10px;
+  }
+
+  .feature-text p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+
+  .feature-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .feature-meta span {
+    background: var(--cream);
+    border: 1px solid rgba(0,0,0,0.2);
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  /* ============================================
+     EDITORIAL / ABOUT
+     ============================================ */
+  .editorial {
+    background: var(--paper);
+    padding: 40px 0;
+    border-top: 3px solid var(--black);
+  }
+
+  .editorial-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .editorial .photo-block {
+    min-height: 350px;
+    border: 3px solid var(--black);
+  }
+
+  .editorial-content h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin-bottom: 4px;
+  }
+
+  .editorial-content h2 .red { color: var(--red); }
+
+  .editorial-content p {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 14px;
+    text-align: justify;
+  }
+
+  .fact-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--white);
+    border: 2px solid var(--black);
+  }
+
+  .fact-item {
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .fact-item:not(:last-child) {
+    border-right: 1px solid rgba(0,0,0,0.15);
+  }
+
+  .fact-item .stat-number { font-size: 1.8rem; }
+
+  /* ============================================
+     TESTIMONIALS -- "LETTERS TO THE EDITOR"
+     ============================================ */
+  .letters {
+    padding: 40px 0;
+    background: var(--cream);
+    border-top: 4px double var(--black);
+  }
+
+  .letters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .letter {
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,0.15);
+    padding: 24px;
+    position: relative;
+  }
+
+  .letter::before {
+    content: '\201C';
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--yellow);
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    opacity: 0.4;
+    font-family: Georgia, serif;
+  }
+
+  .letter p {
+    font-size: 0.88rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .letter-author {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--red);
+  }
+
+  .letter-title {
+    font-size: 0.7rem;
+    color: var(--faded);
+  }
+
+  /* ============================================
+     CONTACT -- "PERSONAL ADS"
+     ============================================ */
+  .personal-ads {
+    background: var(--black);
+    color: var(--white);
+    padding: 50px 0;
+    text-align: center;
+    border-top: 8px solid var(--yellow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .personal-ads::before {
+    content: 'HIRE ME HIRE ME HIRE ME HIRE ME HIRE ME HIRE ME HIRE ME HIRE ME HIRE ME ';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 5rem;
+    font-weight: 900;
+    opacity: 0.03;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: slide-text 20s linear infinite;
+  }
+
+  @keyframes slide-text {
+    0% { transform: translateY(-50%) translateX(0); }
+    100% { transform: translateY(-50%) translateX(-50%); }
+  }
+
+  .personal-ads h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin: 12px 0;
+    position: relative;
+  }
+
+  .personal-ads .ad-copy {
+    font-size: 1rem;
+    font-style: italic;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    opacity: 0.85;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .contact-link {
+    display: inline-block;
+    padding: 14px 32px;
+    font-family: Georgia, serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    border: 3px solid var(--yellow);
+    color: var(--yellow);
+    background: transparent;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+
+  .contact-link:hover,
+  .contact-link:focus-visible {
+    background: var(--yellow);
+    color: var(--black);
+    outline: none;
+  }
+
+  .contact-link--primary {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--white);
+  }
+
+  .contact-link--primary:hover,
+  .contact-link--primary:focus-visible {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: var(--black);
+  }
+
+  /* ============================================
+     FOOTER -- LEGAL STRIP
+     ============================================ */
+  .footer {
+    background: var(--black);
+    color: var(--faded);
+    text-align: center;
+    padding: 20px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    border-top: 2px solid var(--yellow);
+  }
+
+  .footer p + p { margin-top: 4px; }
+
+  /* ============================================
+     EXTRA EDITION STAMP
+     ============================================ */
+  .extra-stamp {
+    position: fixed;
+    top: 20px;
+    right: -35px;
+    background: var(--red);
+    color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 8px 50px;
+    transform: rotate(45deg);
+    z-index: 1000;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+
+  /* ============================================
+     SCROLL ANIMATIONS
+     ============================================ */
+  .animate-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .animate-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ============================================
+     "LATE EDITION" SIDEBAR TEASERS
+     ============================================ */
+  .sidebar-teasers {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0;
+    background: var(--white);
+    border-top: 3px solid var(--black);
+    border-bottom: 3px solid var(--black);
+  }
+
+  .teaser {
+    padding: 16px;
+    border-right: 1px solid rgba(0,0,0,0.15);
+    text-align: center;
+  }
+
+  .teaser:last-child { border-right: none; }
+
+  .teaser .stat-number {
+    font-size: 2.2rem;
+  }
+
+  .teaser h4 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faded);
+    margin-top: 4px;
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-sidebar { border-left: none; padding-left: 0; border-top: 2px solid var(--black); padding-top: 20px; }
+    .news-grid { grid-template-columns: 1fr; }
+    .news-grid .article { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 20px 0; }
+    .news-grid .article:last-child { border-bottom: none; }
+    .feature-story { grid-template-columns: 1fr; }
+    .feature-story:nth-child(even) { direction: ltr; }
+    .editorial-layout { grid-template-columns: 1fr; }
+    .letters-grid { grid-template-columns: 1fr; }
+    .sidebar-teasers { grid-template-columns: 1fr 1fr; }
+    .fact-box { grid-template-columns: 1fr; }
+    .fact-item:not(:last-child) { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.15); padding-bottom: 10px; }
+  }
+
+  @media (max-width: 550px) {
+    .masthead-title { font-size: 2rem; }
+    .masthead-title::before, .masthead-title::after { display: none; }
+    .masthead-nav a { font-size: 0.6rem; padding: 6px 10px; }
+    .hero-headline { font-size: 1.6rem; }
+    .sidebar-teasers { grid-template-columns: 1fr; }
+    .teaser { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.15); }
+    .teaser:last-child { border-bottom: none; }
+    .contact-links { flex-direction: column; align-items: center; }
+    .extra-stamp { display: none; }
+    .classifieds-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ============================================
+     PRINT STYLES
+     ============================================ */
+  @media print {
+    body { background: white; }
+    .top-bar, .extra-stamp { display: none; }
+    .animate-in { opacity: 1; transform: none; }
+    .banner { color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- EXTRA EDITION RIBBON -->
+<div class="extra-stamp" aria-hidden="true">Extra!</div>
+
+<!-- SKIP LINK -->
+<a href="#main-content" class="sr-only" style="position:absolute;top:0;left:0;background:var(--yellow);color:var(--black);padding:8px 16px;z-index:10000;font-size:0.9rem;">Skip to main content</a>
+
+<!-- TOP TICKER BAR -->
+<div class="top-bar" role="marquee" aria-label="News ticker">
+  <div class="container" style="overflow:hidden;">
+    <div class="ticker">
+      <span class="hot">BREAKING:</span><span>Developer portfolio detected -- you are now reading it!</span>
+      <span>&bull;</span>
+      <span class="hot">UPDATE:</span><span>Sources confirm Anshull Garg still deploying to production on Fridays</span>
+      <span>&bull;</span>
+      <span class="hot">ALERT:</span><span>Local code reviewer spotted smiling -- investigation ongoing</span>
+      <span>&bull;</span>
+      <span class="hot">FLASH:</span><span>240M customers served weekly -- authorities say "nothing can be done"</span>
+      <span>&bull;</span>
+      <span class="hot">BREAKING:</span><span>Developer portfolio detected -- you are now reading it!</span>
+      <span>&bull;</span>
+      <span class="hot">UPDATE:</span><span>Sources confirm Anshull Garg still deploying to production on Fridays</span>
+      <span>&bull;</span>
+      <span class="hot">ALERT:</span><span>Local code reviewer spotted smiling -- investigation ongoing</span>
+      <span>&bull;</span>
+      <span class="hot">FLASH:</span><span>240M customers served weekly -- authorities say "nothing can be done"</span>
+    </div>
+  </div>
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="container">
+    <p class="masthead-date">Saturday, February 8, 2026 &bull; Special Portfolio Edition &bull; Price: One Job Offer</p>
+    <h1 class="masthead-title">The Daily Developer</h1>
+    <p class="masthead-subtitle">"All the Code That's Fit to Ship" &mdash; Est. 2022</p>
+    <span class="masthead-tagline">Anshull Garg Special Investigation</span>
+    <nav class="masthead-nav" aria-label="Main navigation">
+      <a href="#front-page">Front Page</a>
+      <a href="#about">Editorial</a>
+      <a href="#experience">Investigations</a>
+      <a href="#skills">Classifieds</a>
+      <a href="#projects">Features</a>
+      <a href="#testimonials">Letters</a>
+      <a href="#contact">Personal Ads</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- =============================================
+       STATS TEASERS
+       ============================================= -->
+  <div class="sidebar-teasers animate-in" aria-label="Key statistics">
+    <div class="teaser">
+      <div class="stat-number">240M+</div>
+      <h4>Customers Served Weekly</h4>
+    </div>
+    <div class="teaser">
+      <div class="stat-number">40%</div>
+      <h4>Latency Reduction</h4>
+    </div>
+    <div class="teaser">
+      <div class="stat-number">#1</div>
+      <h4>Fortune 500 Company</h4>
+    </div>
+    <div class="teaser">
+      <div class="stat-number">0</div>
+      <h4>Senior Engineers Left Unshaken</h4>
+    </div>
+  </div>
+
+  <!-- =============================================
+       FRONT PAGE HERO
+       ============================================= -->
+  <section class="front-page" id="front-page" aria-labelledby="hero-headline">
+    <div class="container">
+      <span class="tag tag--breaking">Breaking News</span>
+      <h2 class="hero-headline animate-in" id="hero-headline">
+        Developer Writes Code So Clean It Made Senior Engineers <span class="highlight">Cry!</span>
+      </h2>
+      <p class="hero-subheadline animate-in">Walmart Global Tech rocked by "unprecedented levels of readability." HR investigating whether tears constitute a workplace incident.</p>
+
+      <div class="hero-grid">
+        <div class="hero-text animate-in">
+          <p class="dateline">Bentonville, AR &mdash; February 2026</p>
+          <p class="dropcap">In what industry analysts are calling "the most significant code review event of the decade," Software Engineer Anshull Garg has reportedly authored production code so impeccably clean that multiple senior engineers were seen visibly weeping during a routine pull request review on Thursday afternoon.</p>
+          <p>"I opened the diff and I just...I couldn't help it," confessed a senior staff engineer who asked to remain anonymous, dabbing tears with a printout of the company's style guide. "The abstractions were so elegant. The naming conventions were so clear. I could actually understand what the code was doing without reading the comments. I didn't even know that was possible."</p>
+          <p>The incident reportedly began at approximately 2:47 PM when Garg submitted a pull request containing a refactored checkout service module. Within minutes, three separate reviewers had stamped it with approval, and one had forwarded it to the VP of Engineering with the subject line: "This is what I've been trying to tell you."</p>
+          <p>Garg, for his part, appeared unfazed. "I just follow SOLID principles and write code like someone else will have to maintain it at 3 AM during an incident," he told reporters, while casually closing a Jira ticket. "It's really not that complicated."</p>
+
+          <div class="pull-quote">
+            "The abstractions were so elegant. I could actually understand what the code was doing without reading the comments."
+            <cite>&mdash; Anonymous Senior Staff Engineer, Walmart Global Tech</cite>
+          </div>
+
+          <p>Sources within the engineering department say this is not the first time Garg's code has provoked an emotional response. Last quarter, a junior developer reportedly printed out one of his utility functions and framed it above their desk. The function, a debounce implementation, was described by colleagues as "mathematically beautiful and operationally bulletproof."</p>
+        </div>
+
+        <aside class="hero-sidebar">
+          <div class="sidebar-box animate-in">
+            <h3>By the Numbers</h3>
+            <ul>
+              <li><strong style="color:var(--red);">240M+</strong> customers served weekly</li>
+              <li><strong style="color:var(--red);">40%</strong> latency reduction achieved</li>
+              <li><strong style="color:var(--red);">100%</strong> code review approval rate*</li>
+              <li><strong style="color:var(--red);">0</strong> "it works on my machine" incidents</li>
+              <li><strong style="color:var(--red);">Fortune #1</strong> company in the world</li>
+            </ul>
+            <p style="font-size:0.6rem;margin-top:8px;color:var(--faded);font-style:italic;">*Approval rate may be inflated by emotional bias from reviewers</p>
+          </div>
+
+          <div class="sidebar-box animate-in">
+            <h3>Related Headlines</h3>
+            <ul>
+              <li style="font-weight:700;">"Man Claims 'It's Just My Job' -- Nobody Believes Him"</li>
+              <li>"Scientists Still Baffled by Latency Numbers"</li>
+              <li>"Clean Architecture Spotted in the Wild, Experts Stunned"</li>
+              <li>"Junior Devs Form Fan Club -- Story on Page 4"</li>
+            </ul>
+          </div>
+
+          <div class="photo-block animate-in" style="min-height:180px;border:3px solid var(--black);">
+            <span class="icon" aria-hidden="true">&#128248;</span>
+            <span>Exclusive Photo</span>
+            <span style="font-size:0.6rem;opacity:0.5;">The PR that started it all</span>
+          </div>
+          <p class="photo-caption"><strong>Photo:</strong> A screenshot of the pull request in question, which sources say had zero requested changes. "Not even a nitpick," said one reviewer.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       BANNER: EXCLUSIVE HEADLINE
+       ============================================= -->
+  <div class="banner animate-in" role="banner" aria-label="Exclusive headline">
+    <div class="container">
+      <span class="tag tag--exclusive">Exclusive Report</span>
+      <h2>Man Serves 240M Customers Weekly, Claims "It's Just My Job"!</h2>
+      <p>Walmart Global Tech insider speaks out. Full investigative report below.</p>
+    </div>
+  </div>
+
+  <!-- =============================================
+       ABOUT / EDITORIAL SECTION
+       ============================================= -->
+  <section class="editorial" id="about" aria-labelledby="editorial-headline">
+    <div class="container">
+      <div class="section-header">
+        <h2>The Editor's Profile</h2>
+      </div>
+
+      <div class="editorial-layout animate-in">
+        <div>
+          <div class="photo-block" style="min-height:400px;">
+            <span class="icon" aria-hidden="true">&#128100;</span>
+            <span>Anshull Garg</span>
+            <span style="font-size:0.6rem;opacity:0.5;">Software Engineer</span>
+          </div>
+          <p class="photo-caption"><strong>Portrait:</strong> Anshull Garg, photographed at his workstation moments before deploying to production on a Friday. Witnesses say he didn't even flinch.</p>
+        </div>
+
+        <div class="editorial-content">
+          <span class="tag tag--opinion">Editor's Profile</span>
+          <h2 id="editorial-headline">The Man Behind <span class="red">the Code</span></h2>
+          <p class="byline">Profile by The Daily Developer Staff &bull; Special Portfolio Edition</p>
+
+          <hr class="rule">
+
+          <p class="dropcap">Software Engineer at Walmart Global Tech -- the Fortune #1 company in the world. Anshull Garg builds the systems that power digital commerce for hundreds of millions of customers every single week. And according to multiple sources, he does it while making it look disturbingly easy.</p>
+
+          <p>A full-stack engineer with a focus on scalable architecture and exceptional user experience, Garg specializes in React ecosystems, Node.js microservices, and the kind of performance optimization that makes monitoring dashboards look like modern art -- all green, trending downward in the places that matter, upward in the places that count.</p>
+
+          <p>"He thinks in systems," said one colleague, who spoke on condition of anonymity because they were supposed to be in a standup meeting. "Most developers see a feature request. Anshull sees the architecture three sprints ahead. It's genuinely unsettling."</p>
+
+          <div class="fact-box">
+            <div class="fact-item">
+              <div class="stat-number">Full Stack</div>
+              <div class="stat-label">Engineering Depth</div>
+            </div>
+            <div class="fact-item">
+              <div class="stat-number">React</div>
+              <div class="stat-label">Frontend Weapon of Choice</div>
+            </div>
+            <div class="fact-item">
+              <div class="stat-number">Node.js</div>
+              <div class="stat-label">Backend Backbone</div>
+            </div>
+          </div>
+
+          <p>When not engineering at Fortune-1 scale, Garg is reportedly pursuing continuous learning, contributing to open-source projects, and maintaining what colleagues describe as "an almost suspicious level of enthusiasm for code reviews."</p>
+
+          <div class="pull-quote">
+            "He thinks in systems. Most developers see a feature request. Anshull sees the architecture three sprints ahead. It's genuinely unsettling."
+            <cite>&mdash; Anonymous colleague, currently hiding from standup</cite>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       BANNER: SHOCKING HEADLINE
+       ============================================= -->
+  <div class="banner banner--yellow animate-in" role="banner" aria-label="Shocking headline">
+    <div class="container">
+      <span class="tag tag--shocking">Shocking Development</span>
+      <h2>Local Dev Reduces Latency by 40%, Scientists Baffled!</h2>
+      <p>Performance metrics "defy conventional engineering wisdom," says lead researcher.</p>
+    </div>
+  </div>
+
+  <!-- =============================================
+       EXPERIENCE -- INVESTIGATIVE REPORT
+       ============================================= -->
+  <section class="investigation" id="experience" aria-labelledby="investigation-headline">
+    <div class="container">
+      <div class="investigation-header">
+        <span class="tag tag--breaking">Investigative Report</span>
+        <h2 id="investigation-headline">The Career Files:<br>A Deep Dive Investigation</h2>
+        <p class="byline">An exhaustive, multi-source investigation into the professional trajectory of Anshull Garg</p>
+      </div>
+
+      <div class="timeline animate-in">
+        <article class="timeline-item">
+          <div class="timeline-date">Present &mdash; The Main Event</div>
+          <h3>Software Engineer, Walmart Global Tech</h3>
+          <p class="timeline-org">Fortune #1 Company &bull; Enterprise Scale &bull; Bentonville, AR</p>
+          <p>In what insiders describe as the "most consequential engineering role of the investigation," Garg currently engineers production systems at the world's largest company. Our investigation uncovered the following verified achievements:</p>
+          <ul>
+            <li>Architected and shipped features serving <strong>240M+ customers weekly</strong> across Walmart's digital retail platform</li>
+            <li>Reduced page latency by <strong>40%</strong> through aggressive performance optimization, code splitting, and caching strategies -- a figure that continues to "baffle" the performance monitoring team</li>
+            <li>Designed scalable React component architectures adopted across multiple engineering teams</li>
+            <li>Built and maintained Node.js microservices handling enterprise-scale transaction volumes</li>
+            <li>Collaborated cross-functionally with product, design, and QA teams to deliver high-impact features on aggressive timelines</li>
+            <li>Contributed to internal tooling used by <strong>hundreds of engineers</strong> across the organization</li>
+          </ul>
+
+          <div class="pull-quote" style="margin-top:16px;">
+            "We checked the metrics three times. The numbers are real. We have no explanation."
+            <cite>&mdash; Unnamed performance analytics lead</cite>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-date">Earlier Chapter &mdash; The Origin Story</div>
+          <h3>Education &amp; Early Engineering</h3>
+          <p class="timeline-org">The Formative Years</p>
+          <p>Long before the Fortune 1 headlines, Garg was already displaying what professors described as "concerning levels of enthusiasm for data structures." Our investigation uncovered evidence of early contributions to open-source projects, personal engineering experiments, and a systematic approach to skill development that one academic advisor called "almost algorithmically optimized."</p>
+          <ul>
+            <li>Developed strong foundations in computer science fundamentals, algorithms, and system design</li>
+            <li>Built multiple full-stack applications demonstrating production-quality engineering practices</li>
+            <li>Cultivated expertise in modern JavaScript ecosystems, cloud infrastructure, and DevOps tooling</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       MID-PAGE ARTICLES GRID
+       ============================================= -->
+  <section class="articles-section" aria-labelledby="inside-section-header">
+    <div class="container">
+      <div class="section-header" id="inside-section-header">
+        <h2>Inside This Edition</h2>
+      </div>
+
+      <div class="news-grid animate-in">
+        <article class="article">
+          <span class="tag tag--update">Technology Desk</span>
+          <h3>React Component Spotted Working on First Try -- Engineers "Suspicious"</h3>
+          <p class="byline">By our Technology Correspondent</p>
+          <hr class="rule--dashed">
+          <p>In an incident that has alarmed the debugging community, a React component authored by Garg reportedly rendered correctly on its first attempt, with zero console warnings and no unexpected re-renders. A colleague who witnessed the event described feeling "deeply uncomfortable," adding: "Components don't just work. That's not how this industry operates."</p>
+          <p>The component in question, a dynamically-loaded checkout module with complex state management, was later found to have been accompanied by comprehensive unit tests written <em>before</em> the implementation code. "Test-driven development," Garg allegedly said, as if that explained everything.</p>
+        </article>
+
+        <article class="article">
+          <span class="tag tag--exclusive">Exclusive</span>
+          <h3>API Response Times "Illegally Fast," Report Claims!</h3>
+          <p class="byline">By our Investigative Unit</p>
+          <hr class="rule--dashed">
+          <p>A leaked internal performance report has revealed that several API endpoints authored by Garg are responding at speeds that one network engineer described as "bordering on suspicious." The endpoints, which handle critical e-commerce operations, consistently return responses in under 50ms -- a figure that caused the monitoring dashboard to display a previously unseen shade of green.</p>
+          <p>"We actually thought the monitoring was broken," said a site reliability engineer. "We recalibrated the instruments twice. The numbers held." An investigation into whether these response times violate any known laws of physics is reportedly underway.</p>
+        </article>
+
+        <article class="article">
+          <span class="tag tag--shocking">Shocking</span>
+          <h3>Code Documentation Found in the Wild -- "Most Complete Specimen in Years"</h3>
+          <p class="byline">By our Science Editor</p>
+          <hr class="rule--dashed">
+          <p>Researchers at the International Institute of Software Archaeology announced Thursday the discovery of what they are calling "the most complete documentation specimen found in a production codebase in over seven years." The documentation, attributed to Garg, was found alongside a microservice module and includes inline comments, a comprehensive README, JSDoc annotations, and -- in what experts are calling "the most shocking detail" -- an up-to-date architecture diagram.</p>
+          <p>"We carbon-dated the comments and they match the code," said the lead researcher, visibly emotional. "They weren't written after the fact. They were written <em>at the same time</em>."</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       SKILLS -- CLASSIFIED ADS
+       ============================================= -->
+  <section class="classifieds" id="skills" aria-labelledby="classifieds-headline">
+    <div class="container">
+      <div class="classifieds-header">
+        <span class="tag tag--special">Classified Section</span>
+        <h2 id="classifieds-headline">Skills &amp; Capabilities</h2>
+        <p class="byline">Verified by independent code audit &bull; All claims substantiated by production systems</p>
+      </div>
+
+      <div class="classifieds-grid animate-in">
+        <div class="classified-ad">
+          <span class="stamp">Verified</span>
+          <h3>Frontend Engineering</h3>
+          <ul class="skills-list">
+            <li>React / Next.js</li>
+            <li>TypeScript</li>
+            <li>Tailwind CSS</li>
+            <li>Framer Motion</li>
+            <li>Performance Optimization</li>
+            <li>Core Web Vitals</li>
+            <li>Responsive Design</li>
+            <li>Accessibility / WCAG</li>
+          </ul>
+        </div>
+
+        <div class="classified-ad">
+          <span class="stamp">Confirmed</span>
+          <h3>Backend &amp; APIs</h3>
+          <ul class="skills-list">
+            <li>Node.js / Express</li>
+            <li>RESTful API Design</li>
+            <li>GraphQL</li>
+            <li>Python</li>
+            <li>PostgreSQL / MongoDB</li>
+            <li>Redis Caching</li>
+            <li>Microservices Architecture</li>
+            <li>System Design</li>
+          </ul>
+        </div>
+
+        <div class="classified-ad">
+          <span class="stamp">Proven</span>
+          <h3>DevOps &amp; Tooling</h3>
+          <ul class="skills-list">
+            <li>Docker / Kubernetes</li>
+            <li>CI/CD Pipelines</li>
+            <li>GitHub Actions</li>
+            <li>AWS / GCP</li>
+            <li>Monitoring &amp; Observability</li>
+            <li>Infrastructure as Code</li>
+          </ul>
+        </div>
+
+        <div class="classified-ad">
+          <span class="stamp">Endorsed</span>
+          <h3>Practices &amp; Principles</h3>
+          <ul class="skills-list">
+            <li>Test-Driven Development</li>
+            <li>Jest / Cypress / Playwright</li>
+            <li>Agile / Scrum</li>
+            <li>Code Review Culture</li>
+            <li>Clean Architecture</li>
+            <li>SOLID Principles</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       PROJECTS -- FEATURE STORIES
+       ============================================= -->
+  <section class="features" id="projects" aria-labelledby="features-headline">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="features-headline">Feature Stories &mdash; Selected Works</h2>
+      </div>
+
+      <!-- PROJECT 1 -->
+      <article class="feature-story animate-in">
+        <div class="photo-block">
+          <span class="icon" aria-hidden="true">&#128722;</span>
+          <span>Project Screenshot</span>
+          <span style="font-size:0.6rem;opacity:0.5;">Enterprise E-Commerce Platform</span>
+        </div>
+        <div class="feature-text">
+          <span class="tag tag--breaking">Lead Story</span>
+          <h3>Enterprise E-Commerce Platform: The System That Serves Millions!</h3>
+          <p class="byline">Feature Report &bull; Walmart Global Tech</p>
+          <hr class="rule">
+          <p>Our lead feature story examines the crown jewel of Garg's engineering portfolio: a production-grade e-commerce platform powering digital transactions for the Fortune #1 company. Built with React and Node.js, the system handles enterprise-scale traffic with what one analyst called "deeply unreasonable reliability."</p>
+          <p>Key engineering decisions include aggressive code splitting for sub-second load times, optimistic UI updates for seamless user interactions, and a caching architecture that reduced API calls by an estimated 60%. "The system just doesn't go down," said one on-call engineer, sounding almost disappointed.</p>
+          <div class="feature-meta">
+            <span>React</span>
+            <span>Node.js</span>
+            <span>TypeScript</span>
+            <span>Redis</span>
+            <span>Microservices</span>
+            <span>CI/CD</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- PROJECT 2 -->
+      <article class="feature-story animate-in">
+        <div class="photo-block">
+          <span class="icon" aria-hidden="true">&#9889;</span>
+          <span>Project Screenshot</span>
+          <span style="font-size:0.6rem;opacity:0.5;">Performance Optimization Suite</span>
+        </div>
+        <div class="feature-text">
+          <span class="tag tag--shocking">Shocking Results</span>
+          <h3>The 40% Latency Reduction That Defied Explanation!</h3>
+          <p class="byline">In-Depth Analysis &bull; Performance Engineering</p>
+          <hr class="rule">
+          <p>In what peer reviewers are calling "an unusually aggressive optimization effort," Garg systematically dismantled performance bottlenecks across a critical user-facing application, achieving a 40% reduction in page latency. The methodology involved comprehensive profiling, strategic lazy loading, bundle analysis, and what one observer described as "an almost supernatural understanding of the browser rendering pipeline."</p>
+          <p>The project's impact rippled across the organization, with improved Core Web Vitals scores, higher search engine rankings, and a measurable uplift in user engagement metrics. "We expected maybe 10-15%," said the product manager. "Forty percent was...not in the sprint planning estimate."</p>
+          <div class="feature-meta">
+            <span>Performance Profiling</span>
+            <span>Webpack</span>
+            <span>Lazy Loading</span>
+            <span>Code Splitting</span>
+            <span>Core Web Vitals</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- PROJECT 3 -->
+      <article class="feature-story animate-in">
+        <div class="photo-block">
+          <span class="icon" aria-hidden="true">&#128736;</span>
+          <span>Project Screenshot</span>
+          <span style="font-size:0.6rem;opacity:0.5;">Internal Developer Tooling</span>
+        </div>
+        <div class="feature-text">
+          <span class="tag tag--exclusive">Exclusive</span>
+          <h3>Internal Tooling Saves "Hundreds of Engineering Hours" -- Management Stunned!</h3>
+          <p class="byline">Enterprise Exclusive &bull; Developer Experience</p>
+          <hr class="rule">
+          <p>A confidential internal memo, obtained by this publication, reveals that developer tooling built by Garg has saved hundreds of engineering hours across multiple teams. The tooling suite, which includes automated code generation utilities, testing harnesses, and deployment pipelines, was described by one engineering manager as "the closest thing to magic I've seen in a sprint retrospective."</p>
+          <p>The tools were reportedly adopted organically across the organization after a single demo. "He showed it in a brown bag session," recalled one attendee. "By end of day, three other teams had integrated it into their workflow. Nobody asked them to. They just did."</p>
+          <div class="feature-meta">
+            <span>CLI Tools</span>
+            <span>Automation</span>
+            <span>GitHub Actions</span>
+            <span>Docker</span>
+            <span>Python</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- =============================================
+       BANNER: EXTRA! EXTRA!
+       ============================================= -->
+  <div class="banner animate-in" role="banner" aria-label="Extra edition headline">
+    <div class="container">
+      <span class="tag tag--exclusive">Extra! Extra!</span>
+      <h2>Sources Say Developer Also "A Great Teammate" -- Coworkers "Shocked and Grateful"!</h2>
+      <p>Soft skills confirmed to exist alongside hard skills. Engineering community divided.</p>
+    </div>
+  </div>
+
+  <!-- =============================================
+       TESTIMONIALS -- LETTERS TO THE EDITOR
+       ============================================= -->
+  <section class="letters" id="testimonials" aria-labelledby="letters-headline">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="letters-headline">Letters to the Editor</h2>
+      </div>
+      <p style="text-align:center;font-size:0.8rem;font-style:italic;color:var(--faded);margin-bottom:10px;">The following letters were received from verified colleagues and collaborators. Names withheld to protect the innocent.</p>
+
+      <div class="letters-grid animate-in">
+        <article class="letter">
+          <p>"I've worked with a lot of engineers. Anshull is the rare one who writes code that other people can actually read six months later. His PRs are practically educational documents. I've literally learned design patterns from his code reviews."</p>
+          <div class="letter-author">Senior Software Engineer</div>
+          <div class="letter-title">Walmart Global Tech &bull; Frontend Platform Team</div>
+        </article>
+
+        <article class="letter">
+          <p>"What sets him apart isn't just the technical skill -- it's the systems thinking. He doesn't just solve the ticket. He solves the class of problems the ticket represents. Our team's velocity measurably improved after he joined, and I don't think that's a coincidence."</p>
+          <div class="letter-author">Engineering Manager</div>
+          <div class="letter-title">Walmart Global Tech &bull; Digital Commerce</div>
+        </article>
+
+        <article class="letter">
+          <p>"Anshull's approach to performance optimization is borderline obsessive -- and I mean that as the highest compliment. He profiled, measured, and iterated until the numbers told the story he wanted. Our Lighthouse scores went from 'concerning' to 'exceptional' in one sprint."</p>
+          <div class="letter-author">Tech Lead</div>
+          <div class="letter-title">Walmart Global Tech &bull; Performance Engineering</div>
+        </article>
+
+        <article class="letter">
+          <p>"The rare engineer who is equally comfortable whiteboarding system architecture and debugging CSS specificity issues at 11 PM. He pair-programmed with me on a thorny state management problem and we solved in two hours what I'd been stuck on for two days."</p>
+          <div class="letter-author">Software Engineer II</div>
+          <div class="letter-title">Walmart Global Tech &bull; Checkout Team</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       CONTACT -- PERSONAL ADS
+       ============================================= -->
+  <section class="personal-ads" id="contact" aria-labelledby="contact-headline">
+    <div class="container">
+      <span class="tag tag--special">Urgent Classified</span>
+      <h2 id="contact-headline">Seeking: Ambitious Engineering Challenges!</h2>
+      <p class="ad-copy">
+        SWE, full-stack, Fortune-1 proven. Fluent in React, Node, TypeScript, and making monitoring dashboards turn green.
+        Seeking meaningful engineering problems, collaborative teams, and codebases that value readability.
+        References available. Code samples on request. Will relocate for the right architecture.
+      </p>
+
+      <div class="contact-links">
+        <a href="mailto:hello@anshullgarg.com" class="contact-link contact-link--primary" aria-label="Send email">
+          Send a Telegram
+        </a>
+        <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="View GitHub profile">
+          GitHub Archives
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="View LinkedIn profile">
+          LinkedIn Bureau
+        </a>
+        <a href="/resume.pdf" class="contact-link" aria-label="Download resume">
+          Download Dossier
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>The Daily Developer &bull; Special Portfolio Edition &bull; &copy; 2026 Anshull Garg</p>
+  <p>All stories verified by production metrics &bull; No senior engineers were permanently harmed in the making of this portfolio</p>
+  <p style="margin-top:8px;color:var(--yellow);">Printed on 100% recycled code &bull; This publication is best viewed at any resolution, because responsive design</p>
+</footer>
+
+<!-- =============================================
+     SCROLL ANIMATION SCRIPT
+     ============================================= -->
+<script>
+  (function() {
+    'use strict';
+
+    // Intersection Observer for scroll-triggered animations
+    var observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -60px 0px',
+      threshold: 0.1
+    };
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.animate-in').forEach(function(el) {
+      observer.observe(el);
+    });
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('.masthead-nav a[href^="#"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        }
+      });
+    });
+
+    // Keyboard navigation support for interactive elements
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.activeElement.blur();
+      }
+    });
+
+    // Add print date dynamically
+    var dateEl = document.querySelector('.masthead-date');
+    if (dateEl) {
+      var now = new Date();
+      var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      var formatted = now.toLocaleDateString('en-US', options);
+      dateEl.textContent = formatted + ' \u2022 Special Portfolio Edition \u2022 Price: One Job Offer';
+    }
+  })();
+</script>
+
+</body>
+</html>

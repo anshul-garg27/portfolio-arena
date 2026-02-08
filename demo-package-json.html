@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>package.json | Anshull Garg</title>
+<style>
+  /* ============================================
+     PACKAGE.JSON PORTFOLIO
+     Anshull Garg | VS Code Dark Theme
+  ============================================ */
+
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root {
+    /* VS Code One Dark Pro inspired */
+    --bg: #1e1e2e;
+    --bg-sidebar: #181825;
+    --bg-tab: #1e1e2e;
+    --bg-tab-inactive: #151521;
+    --bg-titlebar: #11111b;
+    --bg-statusbar: #007acc;
+    --bg-line-active: rgba(255,255,255,0.04);
+    --bg-selection: rgba(98,114,164,0.4);
+    --bg-minimap: rgba(255,255,255,0.03);
+    --bg-tooltip: #1a1a2e;
+    --bg-hover: rgba(255,255,255,0.05);
+    --bg-scrollbar: rgba(255,255,255,0.08);
+
+    --border: #2a2a3c;
+    --border-active: #3a3a5c;
+
+    --text: #cdd6f4;
+    --text-dim: #6c7086;
+    --text-muted: #45475a;
+    --text-bright: #f5f5ff;
+
+    /* Syntax colors - Catppuccin Mocha inspired */
+    --syn-key: #89b4fa;        /* keys - blue */
+    --syn-string: #a6e3a1;     /* strings - green */
+    --syn-string-url: #94e2d5; /* urls - teal */
+    --syn-number: #fab387;     /* numbers - peach */
+    --syn-bool: #cba6f7;       /* booleans - mauve */
+    --syn-null: #f38ba8;       /* null - red */
+    --syn-bracket: #f9e2af;    /* brackets - yellow */
+    --syn-colon: #cdd6f4;      /* colons */
+    --syn-comma: #6c7086;      /* commas */
+    --syn-comment: #585b70;    /* comments */
+    --syn-section: #f5c2e7;    /* section brackets - pink */
+
+    --gutter: #45475a;
+    --gutter-active: #bac2de;
+
+    --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+    --font-size: 13.5px;
+    --line-height: 22px;
+    --gutter-width: 60px;
+    --indent: 24px;
+
+    --tooltip-delay: 0.4s;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: #11111b;
+    color: var(--text);
+    font-family: var(--mono);
+    line-height: var(--line-height);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: var(--bg-selection);
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg-scrollbar); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+  ::-webkit-scrollbar-corner { background: transparent; }
+
+  /* ---- EDITOR CHROME ---- */
+  .editor-shell {
+    max-width: 1080px;
+    margin: 30px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 25px 80px rgba(0,0,0,0.55),
+      0 8px 30px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    min-height: 700px;
+  }
+
+  /* ---- TITLE BAR ---- */
+  .titlebar {
+    display: flex;
+    align-items: center;
+    background: var(--bg-titlebar);
+    padding: 0 16px;
+    height: 38px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+    -webkit-app-region: drag;
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+  }
+
+  .traffic-light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .traffic-light.red { background: #ff5f57; }
+  .traffic-light.yellow { background: #febc2e; }
+  .traffic-light.green { background: #28c840; }
+
+  .titlebar-text {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+    user-select: none;
+  }
+
+  .titlebar-spacer {
+    width: 56px;
+  }
+
+  /* ---- TAB BAR ---- */
+  .tab-bar {
+    display: flex;
+    background: var(--bg-tab-inactive);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 36px;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+    user-select: none;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .tab:hover {
+    background: var(--bg-hover);
+  }
+
+  .tab.active {
+    background: var(--bg-tab);
+    color: var(--text);
+    border-top: 2px solid var(--syn-key);
+    padding-top: 0;
+  }
+
+  .tab-icon {
+    font-size: 14px;
+  }
+
+  .tab-close {
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px;
+    border-radius: 3px;
+  }
+  .tab:hover .tab-close,
+  .tab.active .tab-close { opacity: 0.5; }
+  .tab-close:hover { opacity: 1 !important; background: rgba(255,255,255,0.1); }
+
+  /* ---- BREADCRUMB ---- */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 16px 4px calc(var(--gutter-width) + 16px);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .breadcrumb span { opacity: 0.5; }
+  .breadcrumb .bc-active { opacity: 1; color: var(--text); }
+  .breadcrumb .bc-sep { opacity: 0.3; }
+
+  /* ---- EDITOR BODY ---- */
+  .editor-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ---- MINIMAP ---- */
+  .minimap {
+    width: 60px;
+    flex-shrink: 0;
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+  }
+
+  .minimap-content {
+    transform: scaleX(0.4) scaleY(0.18);
+    transform-origin: top right;
+    position: absolute;
+    right: 6px;
+    top: 10px;
+    width: 140px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .minimap-line {
+    height: 3px;
+    margin-bottom: 1px;
+    border-radius: 1px;
+    opacity: 0.6;
+  }
+
+  .minimap-viewport {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 120px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: top 0.1s;
+    pointer-events: none;
+  }
+
+  /* ---- CODE AREA ---- */
+  .code-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--bg);
+    padding-bottom: 300px;
+    scroll-behavior: smooth;
+    position: relative;
+  }
+
+  .code-area:focus { outline: none; }
+
+  /* ---- LINE ---- */
+  .line {
+    display: flex;
+    min-height: var(--line-height);
+    padding-right: 30px;
+    position: relative;
+    cursor: text;
+  }
+
+  .line:hover {
+    background: var(--bg-line-active);
+  }
+
+  .line-gutter {
+    width: var(--gutter-width);
+    flex-shrink: 0;
+    text-align: right;
+    padding-right: 16px;
+    color: var(--gutter);
+    font-size: var(--font-size);
+    user-select: none;
+    line-height: var(--line-height);
+    transition: color 0.1s;
+  }
+
+  .line:hover .line-gutter {
+    color: var(--gutter-active);
+  }
+
+  .line-content {
+    flex: 1;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    white-space: pre;
+    font-variant-ligatures: contextual;
+  }
+
+  /* ---- COLLAPSIBLE SECTIONS ---- */
+  .section-header {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--gutter-width) + 1px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid var(--text-dim);
+    border-top: 3.5px solid transparent;
+    border-bottom: 3.5px solid transparent;
+    transition: transform 0.2s;
+    z-index: 2;
+  }
+
+  .section-header.collapsed::before {
+    transform: translateY(-50%) rotate(-90deg);
+  }
+
+  .section-header:hover::before {
+    border-left-color: var(--text);
+  }
+
+  .section-body {
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+    max-height: 3000px;
+    opacity: 1;
+  }
+
+  .section-body.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
+  }
+
+  .collapsed-indicator {
+    display: none;
+    color: var(--text-muted);
+    font-size: var(--font-size);
+    font-style: italic;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    margin-left: 4px;
+    line-height: 18px;
+    vertical-align: middle;
+  }
+
+  .section-header.collapsed + .section-body + .collapsed-placeholder .collapsed-indicator {
+    display: inline;
+  }
+
+  /* ---- HOVER DEPENDENCY TOOLTIP ---- */
+  .dep-item {
+    position: relative;
+  }
+
+  .dep-item .tooltip {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    z-index: 1000;
+    background: var(--bg-tooltip);
+    border: 1px solid var(--border-active);
+    border-radius: 6px;
+    padding: 12px 16px;
+    min-width: 320px;
+    max-width: 440px;
+    box-shadow:
+      0 8px 30px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(255,255,255,0.05);
+    pointer-events: none;
+    animation: tooltipIn 0.15s ease-out;
+  }
+
+  @keyframes tooltipIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dep-item:hover .tooltip {
+    display: block;
+  }
+
+  .tooltip-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--syn-key);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tooltip-title .tt-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 1px 7px;
+    border-radius: 3px;
+    background: rgba(137,180,250,0.15);
+    color: var(--syn-key);
+  }
+
+  .tooltip-desc {
+    font-size: 11.5px;
+    color: var(--text);
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+
+  .tooltip-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 10.5px;
+    color: var(--text-dim);
+  }
+
+  .tooltip-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tooltip-bar {
+    margin-top: 8px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  .tooltip-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--syn-key), var(--syn-string));
+  }
+
+  /* ---- STATUS BAR ---- */
+  .statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-statusbar);
+    padding: 0 12px;
+    height: 24px;
+    font-size: 11px;
+    color: #fff;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .statusbar-left,
+  .statusbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .statusbar-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
+    opacity: 0.9;
+  }
+
+  /* ---- NPM INSTALL OVERLAY ---- */
+  .npm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .npm-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .npm-terminal {
+    width: 680px;
+    max-width: 95vw;
+    max-height: 85vh;
+    background: #0d0d14;
+    border-radius: 10px;
+    border: 1px solid #2a2a3c;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .npm-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #13131d;
+    border-bottom: 1px solid #222;
+  }
+
+  .npm-terminal-bar .traffic-light { width: 10px; height: 10px; }
+
+  .npm-terminal-title {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .npm-terminal-body {
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-y: auto;
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .npm-terminal-body .npm-cmd { color: #a6e3a1; }
+  .npm-terminal-body .npm-warn { color: #f9e2af; }
+  .npm-terminal-body .npm-err { color: #f38ba8; }
+  .npm-terminal-body .npm-info { color: #89b4fa; }
+  .npm-terminal-body .npm-dim { color: #585b70; }
+  .npm-terminal-body .npm-pkg { color: #cba6f7; }
+  .npm-terminal-body .npm-ok { color: #a6e3a1; }
+  .npm-terminal-body .npm-teal { color: #94e2d5; }
+
+  .npm-progress {
+    display: inline-block;
+    width: 220px;
+    height: 8px;
+    background: #222;
+    border-radius: 4px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin: 0 8px;
+  }
+
+  .npm-progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #a6e3a1, #89b4fa);
+    border-radius: 4px;
+    transition: width 0.08s linear;
+  }
+
+  .npm-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 15px;
+    background: #a6e3a1;
+    vertical-align: text-bottom;
+    animation: cursorBlink 1s step-end infinite;
+  }
+
+  @keyframes cursorBlink { 50% { opacity: 0; } }
+
+  /* ---- NPM INSTALL BUTTON ---- */
+  .npm-install-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #cb3837, #a32928);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow:
+      0 4px 20px rgba(203,56,55,0.35),
+      0 0 0 1px rgba(255,255,255,0.08) inset;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .npm-install-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 30px rgba(203,56,55,0.45),
+      0 0 0 1px rgba(255,255,255,0.12) inset;
+  }
+
+  .npm-install-btn:active {
+    transform: translateY(0);
+  }
+
+  .npm-install-btn .npm-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .editor-shell {
+      margin: 0;
+      border-radius: 0;
+      height: 100vh;
+      min-height: unset;
+    }
+
+    :root {
+      --font-size: 11.5px;
+      --line-height: 19px;
+      --gutter-width: 40px;
+      --indent: 16px;
+    }
+
+    .minimap { display: none; }
+
+    .breadcrumb { padding-left: calc(var(--gutter-width) + 8px); }
+
+    .dep-item .tooltip {
+      min-width: 260px;
+      max-width: 90vw;
+      left: -10px;
+    }
+
+    .npm-install-btn {
+      bottom: 16px;
+      right: 16px;
+      padding: 12px 20px;
+      font-size: 12px;
+    }
+
+    .titlebar-text { font-size: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    :root {
+      --font-size: 10.5px;
+      --line-height: 17px;
+      --gutter-width: 32px;
+      --indent: 12px;
+    }
+
+    .tab { padding: 0 12px; font-size: 11px; }
+
+    .npm-install-btn {
+      bottom: 12px;
+      right: 12px;
+      padding: 10px 16px;
+      font-size: 11px;
+      gap: 6px;
+    }
+  }
+
+  /* ---- ANIMATIONS ---- */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .editor-shell {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  /* ---- COMMENT LINES ---- */
+  .comment-text {
+    color: var(--syn-comment);
+    font-style: italic;
+  }
+
+  /* ---- INLINE HOVER HIGHLIGHT ---- */
+  .dep-item .line-content:hover {
+    background: rgba(255,255,255,0.03);
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NPM INSTALL BUTTON -->
+<button class="npm-install-btn" onclick="runNpmInstall()" aria-label="Run npm install animation">
+  <span class="npm-icon">></span>
+  <span>npm install</span>
+</button>
+
+<!-- NPM INSTALL OVERLAY -->
+<div class="npm-overlay" id="npmOverlay">
+  <div class="npm-terminal">
+    <div class="npm-terminal-bar">
+      <div class="traffic-light red"></div>
+      <div class="traffic-light yellow"></div>
+      <div class="traffic-light green"></div>
+      <div class="npm-terminal-title">npm -- anshull-garg@2.0.26</div>
+    </div>
+    <div class="npm-terminal-body" id="npmOutput"></div>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div class="editor-shell">
+  <!-- Title Bar -->
+  <div class="titlebar">
+    <div class="traffic-lights">
+      <div class="traffic-light red"></div>
+      <div class="traffic-light yellow"></div>
+      <div class="traffic-light green"></div>
+    </div>
+    <div class="titlebar-text">package.json -- anshull-garg -- Visual Studio Code</div>
+    <div class="titlebar-spacer"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div class="tab active">
+      <span class="tab-icon">{}</span>
+      <span>package.json</span>
+      <span class="tab-close">x</span>
+    </div>
+    <div class="tab">
+      <span class="tab-icon">M</span>
+      <span>README.md</span>
+      <span class="tab-close">x</span>
+    </div>
+    <div class="tab">
+      <span class="tab-icon">T</span>
+      <span>.env.career</span>
+      <span class="tab-close">x</span>
+    </div>
+  </div>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <span>anshull-garg</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-active">package.json</span>
+  </div>
+
+  <!-- Editor Body -->
+  <div class="editor-body">
+    <div class="code-area" id="codeArea" tabindex="0">
+      <!-- Lines generated by JavaScript -->
+    </div>
+    <div class="minimap" id="minimap" aria-hidden="true">
+      <div class="minimap-viewport" id="minimapViewport"></div>
+      <div class="minimap-content" id="minimapContent"></div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="statusbar">
+    <div class="statusbar-left">
+      <div class="statusbar-item">main</div>
+      <div class="statusbar-item">0 errors</div>
+      <div class="statusbar-item">0 warnings</div>
+    </div>
+    <div class="statusbar-right">
+      <div class="statusbar-item">Ln 1, Col 1</div>
+      <div class="statusbar-item">UTF-8</div>
+      <div class="statusbar-item">JSON</div>
+      <div class="statusbar-item">Prettier</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+  /* ================================================================
+     DATA: The entire package.json structure
+  ================================================================ */
+
+  const PKG = {
+    name: "anshull-garg",
+    version: "2.0.26",
+    description: "Software Engineer who builds systems that serve millions. Currently shipping at Walmart Global Tech -- Fortune #1 scale, zero excuses.",
+    main: "career.js",
+    type: "engineer",
+    private: false,
+
+    // ------- AUTHOR -------
+    author: {
+      name: "Anshull Garg",
+      role: "Software Engineer",
+      company: "Walmart Global Tech",
+      email: "connect@anshullgarg.dev",
+      url: "https://anshullgarg.dev"
+    },
+
+    // ------- SCRIPTS (career actions) -------
+    scripts: {
+      "build": "architect-scalable-systems --prod",
+      "dev": "iterate-fast && ship-features --watch",
+      "deploy": "push-to-walmart --scale=240M-users",
+      "test": "prove-myself --coverage=100%",
+      "lint": "enforce-clean-code --strict --no-shortcuts",
+      "start": "coffee && open-vscode && enter-flow-state",
+      "debug": "console.log('here') && read-stack-trace --carefully",
+      "review": "read-pr-description-first && check-edge-cases",
+      "optimize": "reduce-bundle-size && boost-core-web-vitals",
+      "mentor": "share-knowledge --patience=infinite",
+      "learn": "explore-new-tech && build-side-projects --weekends",
+      "interview": "whiteboard-algorithms && system-design --confidence"
+    },
+
+    // ------- DEPENDENCIES (core skills) -------
+    dependencies: {
+      "react": {
+        ver: "^18.3.0",
+        tip: "React",
+        desc: "Component architecture, hooks, context, concurrent features. Production experience building complex UIs at enterprise scale.",
+        exp: "3+ years",
+        prof: 95,
+        tag: "core"
+      },
+      "next.js": {
+        ver: "^14.2.0",
+        tip: "Next.js",
+        desc: "Server-side rendering, static generation, app router, API routes. Full-stack React framework for performance-critical applications.",
+        exp: "2+ years",
+        prof: 88,
+        tag: "framework"
+      },
+      "typescript": {
+        ver: "^5.4.0",
+        tip: "TypeScript",
+        desc: "Type-safe development across the entire stack. Generics, utility types, discriminated unions. Zero tolerance for 'any'.",
+        exp: "3+ years",
+        prof: 92,
+        tag: "core"
+      },
+      "node.js": {
+        ver: "^20.11.0",
+        tip: "Node.js",
+        desc: "RESTful APIs, microservices architecture, Express/Fastify, real-time systems with WebSockets. Production servers handling high throughput.",
+        exp: "3+ years",
+        prof: 90,
+        tag: "runtime"
+      },
+      "javascript": {
+        ver: "ES2024",
+        tip: "JavaScript",
+        desc: "Deep knowledge of the language -- closures, prototypes, event loop, async patterns, WeakMaps, Proxies. The foundation of everything.",
+        exp: "4+ years",
+        prof: 95,
+        tag: "core"
+      },
+      "tailwind-css": {
+        ver: "^3.4.0",
+        tip: "Tailwind CSS",
+        desc: "Utility-first styling, responsive design systems, custom themes, dark mode. Rapid UI development without sacrificing consistency.",
+        exp: "2+ years",
+        prof: 90,
+        tag: "styling"
+      },
+      "redux-toolkit": {
+        ver: "^2.2.0",
+        tip: "Redux Toolkit",
+        desc: "Global state management for complex applications. RTK Query for API caching. Middleware, thunks, normalized state.",
+        exp: "2+ years",
+        prof: 85,
+        tag: "state"
+      },
+      "graphql": {
+        ver: "^16.8.0",
+        tip: "GraphQL",
+        desc: "Schema design, resolvers, Apollo Client/Server. Efficient data fetching with exactly the fields you need.",
+        exp: "1+ years",
+        prof: 78,
+        tag: "api"
+      },
+      "postgresql": {
+        ver: "^16.0",
+        tip: "PostgreSQL",
+        desc: "Relational database design, complex queries, indexing strategies, migrations. Data integrity at enterprise scale.",
+        exp: "2+ years",
+        prof: 82,
+        tag: "database"
+      },
+      "mongodb": {
+        ver: "^7.0",
+        tip: "MongoDB",
+        desc: "Document-oriented data modeling, aggregation pipelines, Atlas search. Flexible schemas for rapid iteration.",
+        exp: "2+ years",
+        prof: 80,
+        tag: "database"
+      },
+      "docker": {
+        ver: "^25.0",
+        tip: "Docker",
+        desc: "Containerized development and deployment. Multi-stage builds, compose orchestration, optimized production images.",
+        exp: "2+ years",
+        prof: 82,
+        tag: "devops"
+      },
+      "python": {
+        ver: "^3.12",
+        tip: "Python",
+        desc: "Scripting, automation, data processing, API development with Flask/FastAPI. The Swiss army knife in the toolbox.",
+        exp: "2+ years",
+        prof: 75,
+        tag: "language"
+      },
+      "aws": {
+        ver: "cloud",
+        tip: "Amazon Web Services",
+        desc: "EC2, S3, Lambda, CloudFront, RDS, SQS. Cloud infrastructure for scalable, resilient applications.",
+        exp: "2+ years",
+        prof: 78,
+        tag: "cloud"
+      },
+      "git": {
+        ver: "^2.44",
+        tip: "Git",
+        desc: "Version control mastery -- rebasing, cherry-picking, bisecting. Clean commit history is not optional, it is documentation.",
+        exp: "4+ years",
+        prof: 92,
+        tag: "tooling"
+      }
+    },
+
+    // ------- DEV DEPENDENCIES (tools & testing) -------
+    devDependencies: {
+      "jest": {
+        ver: "^29.7.0",
+        tip: "Jest",
+        desc: "Unit and integration testing framework. Snapshot tests, mocking, coverage reports. Tests are not optional.",
+        exp: "3+ years",
+        prof: 88,
+        tag: "testing"
+      },
+      "cypress": {
+        ver: "^13.6.0",
+        tip: "Cypress",
+        desc: "End-to-end testing for critical user flows. Visual regression, network stubbing, CI integration.",
+        exp: "2+ years",
+        prof: 80,
+        tag: "testing"
+      },
+      "eslint": {
+        ver: "^8.57.0",
+        tip: "ESLint",
+        desc: "Code quality enforcement. Custom rule configurations, auto-fix pipelines, consistent team standards.",
+        exp: "3+ years",
+        prof: 88,
+        tag: "quality"
+      },
+      "webpack": {
+        ver: "^5.90.0",
+        tip: "Webpack",
+        desc: "Module bundling, code splitting, tree shaking, custom loaders. Understanding the build pipeline inside and out.",
+        exp: "2+ years",
+        prof: 80,
+        tag: "build"
+      },
+      "github-actions": {
+        ver: "latest",
+        tip: "GitHub Actions",
+        desc: "CI/CD pipeline automation. Build, test, lint, deploy on every push. Automated quality gates.",
+        exp: "2+ years",
+        prof: 82,
+        tag: "ci-cd"
+      },
+      "storybook": {
+        ver: "^8.0.0",
+        tip: "Storybook",
+        desc: "Component-driven development and documentation. Visual testing, design system showcase, isolated development.",
+        exp: "1+ years",
+        prof: 75,
+        tag: "docs"
+      },
+      "figma-to-code": {
+        ver: "collab",
+        tip: "Figma",
+        desc: "Design-to-development handoff. Interpreting design systems, maintaining pixel-perfect implementations.",
+        exp: "2+ years",
+        prof: 80,
+        tag: "design"
+      }
+    },
+
+    // ------- HOBBIES (as extra devDeps) -------
+    hobbyDependencies: {
+      "photography": {
+        ver: "dslr",
+        tip: "Photography",
+        desc: "Capturing moments and perspectives. Street photography, landscapes, and the occasional perfect golden hour shot.",
+        icon: "camera"
+      },
+      "music-production": {
+        ver: "ableton",
+        tip: "Music Production",
+        desc: "Beats, melodies, and mixing sessions. Music is just debugging with better error sounds.",
+        icon: "headphones"
+      },
+      "gaming": {
+        ver: "competitive",
+        tip: "Gaming",
+        desc: "Strategy games, RPGs, and the occasional rage-quit. Problem-solving with better graphics.",
+        icon: "controller"
+      },
+      "fitness": {
+        ver: "daily",
+        tip: "Fitness",
+        desc: "Lifting heavy things, putting them back down. The only deploy that builds real muscle.",
+        icon: "gym"
+      },
+      "reading": {
+        ver: "non-fiction",
+        tip: "Reading",
+        desc: "System design books, biographies, psychology. Every book is a mental framework update.",
+        icon: "book"
+      },
+      "cooking": {
+        ver: "experimental",
+        tip: "Cooking",
+        desc: "Following recipes is like following docs. Sometimes you deviate and it's either genius or a 500 error.",
+        icon: "cooking"
+      }
+    },
+
+    // ------- PEER DEPENDENCIES (teamwork) -------
+    peerDependencies: {
+      "clear-communication": {
+        ver: ">=1.0.0",
+        tip: "Clear Communication",
+        desc: "Translating complex technical decisions into plain language. Writing docs that people actually read. Async-first communication."
+      },
+      "code-review-culture": {
+        ver: ">=1.0.0",
+        tip: "Code Review Culture",
+        desc: "Constructive feedback, thorough PR reviews, knowledge sharing. I read the PR description before the code diff."
+      },
+      "agile-collaboration": {
+        ver: ">=1.0.0",
+        tip: "Agile Collaboration",
+        desc: "Sprint planning, standups, retrospectives, cross-functional teamwork. Shipping in increments, not big bangs."
+      },
+      "mentorship": {
+        ver: ">=1.0.0",
+        tip: "Mentorship",
+        desc: "Sharing knowledge, pair programming, patient guidance. The team grows stronger when everyone levels up."
+      },
+      "ownership-mindset": {
+        ver: ">=1.0.0",
+        tip: "Ownership Mindset",
+        desc: "End-to-end accountability. From design review to production monitoring. 'Not my code' is not in my vocabulary."
+      },
+      "empathy": {
+        ver: ">=1.0.0",
+        tip: "Empathy",
+        desc: "Understanding users, respecting teammates, considering the human impact of technical decisions."
+      }
+    },
+
+    // ------- ENGINES (requirements) -------
+    engines: {
+      "curiosity": "always-running",
+      "growth-mindset": ">=infinite",
+      "attention-to-detail": "pixel-perfect",
+      "problem-solving": "first-principles",
+      "coffee": ">=3-cups-daily",
+      "work-ethic": "relentless"
+    },
+
+    // ------- REPOSITORY -------
+    repository: {
+      type: "git",
+      url: "https://github.com/anshullgarg"
+    },
+
+    homepage: "https://anshullgarg.dev",
+    bugs: { url: "https://github.com/anshullgarg/issues" },
+
+    // ------- KEYWORDS -------
+    keywords: [
+      "software-engineer",
+      "full-stack",
+      "react",
+      "node.js",
+      "typescript",
+      "walmart",
+      "enterprise-scale",
+      "clean-architecture",
+      "system-design",
+      "performance-optimization"
+    ],
+
+    license: "Open to Opportunities",
+
+    // ------- FUNDING -------
+    funding: {
+      type: "salary",
+      url: "https://linkedin.com/in/anshullgarg"
+    },
+
+    // ------- CONFIG -------
+    config: {
+      "location": "Open to Remote / Hybrid / On-site",
+      "availability": "Actively exploring opportunities",
+      "response-time": "<24 hours",
+      "preferred-stack": "React + TypeScript + Node.js",
+      "superpower": "Turning ambiguous requirements into shipped features"
+    }
+  };
+
+  /* ================================================================
+     RENDER ENGINE
+  ================================================================ */
+
+  const codeArea = document.getElementById('codeArea');
+  let lineNumber = 0;
+  const allLines = [];
+  const sectionMap = {};
+
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function makeLine(content, opts = {}) {
+    lineNumber++;
+    const div = document.createElement('div');
+    div.className = 'line' + (opts.className ? ' ' + opts.className : '');
+    if (opts.sectionId) div.dataset.sectionId = opts.sectionId;
+    div.innerHTML =
+      '<span class="line-gutter">' + lineNumber + '</span>' +
+      '<span class="line-content">' + content + '</span>';
+    allLines.push({ num: lineNumber, el: div, content: content });
+    return div;
+  }
+
+  function indent(level) {
+    return ' '.repeat(level * 2);
+  }
+
+  // Syntax coloring helpers
+  function synKey(k) { return '<span style="color:var(--syn-key)">"' + esc(k) + '"</span>'; }
+  function synStr(v) { return '<span style="color:var(--syn-string)">"' + esc(v) + '"</span>'; }
+  function synUrl(v) { return '<span style="color:var(--syn-string-url)">"' + esc(v) + '"</span>'; }
+  function synNum(v) { return '<span style="color:var(--syn-number)">' + esc(String(v)) + '</span>'; }
+  function synBool(v) { return '<span style="color:var(--syn-bool)">' + esc(String(v)) + '</span>'; }
+  function synNull() { return '<span style="color:var(--syn-null)">null</span>'; }
+  function synBracket(v) { return '<span style="color:var(--syn-bracket)">' + esc(v) + '</span>'; }
+  function synSection(v) { return '<span style="color:var(--syn-section)">' + esc(v) + '</span>'; }
+  function synComma() { return '<span style="color:var(--syn-comma)">,</span>'; }
+  function synColon() { return '<span style="color:var(--syn-colon)">: </span>'; }
+  function synComment(v) { return '<span class="comment-text">// ' + esc(v) + '</span>'; }
+
+  function isUrl(str) {
+    return typeof str === 'string' && (str.startsWith('http') || str.startsWith('mailto:'));
+  }
+
+  function renderValue(val, lvl, trailingComma) {
+    const comma = trailingComma ? synComma() : '';
+    if (val === null) return synNull() + comma;
+    if (typeof val === 'boolean') return synBool(val) + comma;
+    if (typeof val === 'number') return synNum(val) + comma;
+    if (typeof val === 'string') {
+      return (isUrl(val) ? synUrl(val) : synStr(val)) + comma;
+    }
+    return synStr(String(val)) + comma;
+  }
+
+  /* ---- TOOLTIP HTML BUILDER ---- */
+  function buildTooltip(data) {
+    const profWidth = data.prof ? data.prof + '%' : '70%';
+    const expText = data.exp || '';
+    const tagText = data.tag || '';
+    let html = '<div class="tooltip">';
+    html += '<div class="tooltip-title">' + esc(data.tip || data.name || '');
+    if (tagText) html += ' <span class="tt-badge">' + esc(tagText) + '</span>';
+    html += '</div>';
+    if (data.desc) html += '<div class="tooltip-desc">' + esc(data.desc) + '</div>';
+    html += '<div class="tooltip-meta">';
+    if (expText) html += '<span>&#9200; ' + esc(expText) + '</span>';
+    if (data.prof) html += '<span>&#9733; ' + data.prof + '% proficiency</span>';
+    if (data.icon) html += '<span>&#10024; ' + esc(data.icon) + '</span>';
+    html += '</div>';
+    if (data.prof) {
+      html += '<div class="tooltip-bar"><div class="tooltip-bar-fill" style="width:' + profWidth + '"></div></div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  /* ---- SECTION RENDERER ---- */
+  function renderSection(sectionId, label, commentText, lvl, renderBody, trailingComma) {
+    // Comment line
+    if (commentText) {
+      codeArea.appendChild(makeLine(indent(lvl) + synComment(commentText)));
+    }
+
+    // Section header line: "key": {
+    const headerLine = makeLine(
+      indent(lvl) + synKey(label) + synColon() + synSection('{'),
+      { className: 'section-header', sectionId: sectionId }
+    );
+    codeArea.appendChild(headerLine);
+
+    // Section body wrapper
+    const bodyWrapper = document.createElement('div');
+    bodyWrapper.className = 'section-body';
+    bodyWrapper.id = 'section-' + sectionId;
+
+    sectionMap[sectionId] = { header: headerLine, body: bodyWrapper };
+
+    // Render body lines into wrapper
+    const tempArea = codeArea;
+    // Temporarily redirect line additions
+    const oldAppend = codeArea.appendChild.bind(codeArea);
+    const bodyAppend = bodyWrapper.appendChild.bind(bodyWrapper);
+
+    // We use a fragment pattern
+    renderBody(bodyAppend, lvl + 1);
+
+    codeArea.appendChild(bodyWrapper);
+
+    // Closing brace
+    const comma = trailingComma ? synComma() : '';
+    codeArea.appendChild(makeLine(indent(lvl) + synSection('}') + comma));
+
+    // Click handler for collapse
+    headerLine.addEventListener('click', function() {
+      headerLine.classList.toggle('collapsed');
+      bodyWrapper.classList.toggle('collapsed');
+    });
+  }
+
+  function renderArraySection(sectionId, label, commentText, items, lvl, trailingComma) {
+    if (commentText) {
+      codeArea.appendChild(makeLine(indent(lvl) + synComment(commentText)));
+    }
+
+    const headerLine = makeLine(
+      indent(lvl) + synKey(label) + synColon() + synBracket('['),
+      { className: 'section-header', sectionId: sectionId }
+    );
+    codeArea.appendChild(headerLine);
+
+    const bodyWrapper = document.createElement('div');
+    bodyWrapper.className = 'section-body';
+    bodyWrapper.id = 'section-' + sectionId;
+    sectionMap[sectionId] = { header: headerLine, body: bodyWrapper };
+
+    items.forEach((item, i) => {
+      const isLast = i === items.length - 1;
+      const comma = isLast ? '' : synComma();
+      const line = makeLine(indent(lvl + 1) + synStr(item) + comma);
+      bodyWrapper.appendChild(line);
+    });
+
+    codeArea.appendChild(bodyWrapper);
+
+    const comma = trailingComma ? synComma() : '';
+    codeArea.appendChild(makeLine(indent(lvl) + synBracket(']') + comma));
+
+    headerLine.addEventListener('click', function() {
+      headerLine.classList.toggle('collapsed');
+      bodyWrapper.classList.toggle('collapsed');
+    });
+  }
+
+  function renderDependencySection(sectionId, label, commentText, deps, lvl, trailingComma) {
+    if (commentText) {
+      codeArea.appendChild(makeLine(indent(lvl) + synComment(commentText)));
+    }
+
+    const headerLine = makeLine(
+      indent(lvl) + synKey(label) + synColon() + synSection('{'),
+      { className: 'section-header', sectionId: sectionId }
+    );
+    codeArea.appendChild(headerLine);
+
+    const bodyWrapper = document.createElement('div');
+    bodyWrapper.className = 'section-body';
+    bodyWrapper.id = 'section-' + sectionId;
+    sectionMap[sectionId] = { header: headerLine, body: bodyWrapper };
+
+    const keys = Object.keys(deps);
+    keys.forEach((key, i) => {
+      const isLast = i === keys.length - 1;
+      const comma = isLast ? '' : synComma();
+      const data = deps[key];
+      const ver = typeof data === 'object' ? data.ver : data;
+
+      const line = makeLine(
+        indent(lvl + 1) + synKey(key) + synColon() + synStr(ver) + comma,
+        { className: 'dep-item' }
+      );
+
+      // Add tooltip
+      if (typeof data === 'object' && data.tip) {
+        const tooltipDiv = document.createElement('div');
+        tooltipDiv.innerHTML = buildTooltip(data);
+        const tooltipEl = tooltipDiv.firstChild;
+        line.appendChild(tooltipEl);
+      }
+
+      bodyWrapper.appendChild(line);
+    });
+
+    codeArea.appendChild(bodyWrapper);
+
+    const comma = trailingComma ? synComma() : '';
+    codeArea.appendChild(makeLine(indent(lvl) + synSection('}') + comma));
+
+    headerLine.addEventListener('click', function() {
+      headerLine.classList.toggle('collapsed');
+      bodyWrapper.classList.toggle('collapsed');
+    });
+  }
+
+  function renderSimpleObjectSection(sectionId, label, commentText, obj, lvl, trailingComma) {
+    if (commentText) {
+      codeArea.appendChild(makeLine(indent(lvl) + synComment(commentText)));
+    }
+
+    const headerLine = makeLine(
+      indent(lvl) + synKey(label) + synColon() + synSection('{'),
+      { className: 'section-header', sectionId: sectionId }
+    );
+    codeArea.appendChild(headerLine);
+
+    const bodyWrapper = document.createElement('div');
+    bodyWrapper.className = 'section-body';
+    bodyWrapper.id = 'section-' + sectionId;
+    sectionMap[sectionId] = { header: headerLine, body: bodyWrapper };
+
+    const keys = Object.keys(obj);
+    keys.forEach((key, i) => {
+      const isLast = i === keys.length - 1;
+      const val = obj[key];
+      const comma = isLast ? '' : synComma();
+      const line = makeLine(indent(lvl + 1) + synKey(key) + synColon() + renderValue(val, lvl + 1, false) + comma);
+      bodyWrapper.appendChild(line);
+    });
+
+    codeArea.appendChild(bodyWrapper);
+
+    const comma = trailingComma ? synComma() : '';
+    codeArea.appendChild(makeLine(indent(lvl) + synSection('}') + comma));
+
+    headerLine.addEventListener('click', function() {
+      headerLine.classList.toggle('collapsed');
+      bodyWrapper.classList.toggle('collapsed');
+    });
+  }
+
+
+  /* ================================================================
+     BUILD THE DOCUMENT
+  ================================================================ */
+
+  // Opening brace
+  codeArea.appendChild(makeLine(synSection('{')));
+
+  // --- Simple top-level fields ---
+  const topFields = [
+    { key: 'name', val: PKG.name, comment: 'Who am I?' },
+    { key: 'version', val: PKG.version },
+    { key: 'description', val: PKG.description },
+    { key: 'main', val: PKG.main },
+    { key: 'type', val: PKG.type },
+    { key: 'private', val: PKG.private }
+  ];
+
+  topFields.forEach((f, i) => {
+    if (f.comment) {
+      codeArea.appendChild(makeLine(''));
+      codeArea.appendChild(makeLine(indent(1) + synComment(f.comment)));
+    }
+    const comma = synComma();
+    if (typeof f.val === 'boolean') {
+      codeArea.appendChild(makeLine(indent(1) + synKey(f.key) + synColon() + synBool(f.val) + comma));
+    } else {
+      codeArea.appendChild(makeLine(indent(1) + synKey(f.key) + synColon() + synStr(f.val) + comma));
+    }
+  });
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Author ---
+  renderSimpleObjectSection('author', 'author', 'The human behind the code', PKG.author, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Scripts ---
+  renderSimpleObjectSection('scripts', 'scripts', 'Career actions -- npm run <career>', PKG.scripts, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Dependencies ---
+  renderDependencySection('deps', 'dependencies', 'Core skills -- the production stack', PKG.dependencies, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Dev Dependencies ---
+  renderDependencySection('devdeps', 'devDependencies', 'Tools, testing, and quality infrastructure', PKG.devDependencies, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Hobby Dependencies ---
+  renderDependencySection('hobbydeps', 'hobbyDependencies', 'What keeps the human alive outside of code', PKG.hobbyDependencies, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Peer Dependencies ---
+  renderDependencySection('peerdeps', 'peerDependencies', 'Teamwork -- because software is a team sport', PKG.peerDependencies, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Engines ---
+  renderSimpleObjectSection('engines', 'engines', 'Non-negotiable requirements', PKG.engines, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Repository ---
+  renderSimpleObjectSection('repo', 'repository', 'Where the code lives', PKG.repository, 1, true);
+
+  // --- Homepage ---
+  codeArea.appendChild(makeLine(indent(1) + synKey('homepage') + synColon() + synUrl(PKG.homepage) + synComma()));
+
+  // --- Bugs ---
+  codeArea.appendChild(makeLine(''));
+  renderSimpleObjectSection('bugs', 'bugs', 'Found an issue? Open a PR on my life', PKG.bugs, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Keywords ---
+  renderArraySection('keywords', 'keywords', 'Things recruiters search for', PKG.keywords, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- License ---
+  codeArea.appendChild(makeLine(indent(1) + synComment('The most important field')));
+  codeArea.appendChild(makeLine(indent(1) + synKey('license') + synColon() + synStr(PKG.license) + synComma()));
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Funding ---
+  renderSimpleObjectSection('funding', 'funding', 'How to support this developer', PKG.funding, 1, true);
+
+  codeArea.appendChild(makeLine(''));
+
+  // --- Config ---
+  renderSimpleObjectSection('config', 'config', 'Current status and preferences', PKG.config, 1, false);
+
+  // Closing brace
+  codeArea.appendChild(makeLine(synSection('}')));
+
+  // Empty final line
+  codeArea.appendChild(makeLine(''));
+
+
+  /* ================================================================
+     MINIMAP
+  ================================================================ */
+
+  function buildMinimap() {
+    const minimapContent = document.getElementById('minimapContent');
+    const colors = ['var(--syn-key)', 'var(--syn-string)', 'var(--syn-number)', 'var(--syn-comment)', 'var(--text-dim)'];
+    let html = '';
+    for (let i = 0; i < Math.min(allLines.length, 400); i++) {
+      const line = allLines[i];
+      const content = line.content.replace(/<[^>]*>/g, '').trim();
+      const len = Math.min(content.length, 60);
+      if (len === 0) {
+        html += '<div class="minimap-line" style="width:0"></div>';
+      } else {
+        const color = colors[i % colors.length];
+        html += '<div class="minimap-line" style="width:' + (len * 2) + 'px;background:' + color + '"></div>';
+      }
+    }
+    minimapContent.innerHTML = html;
+  }
+
+  buildMinimap();
+
+  // Minimap viewport tracking
+  const codeAreaEl = document.getElementById('codeArea');
+  const minimapViewport = document.getElementById('minimapViewport');
+  const minimapEl = document.getElementById('minimap');
+
+  codeAreaEl.addEventListener('scroll', function() {
+    const scrollRatio = codeAreaEl.scrollTop / (codeAreaEl.scrollHeight - codeAreaEl.clientHeight || 1);
+    const vpHeight = (codeAreaEl.clientHeight / codeAreaEl.scrollHeight) * minimapEl.clientHeight;
+    const vpTop = scrollRatio * (minimapEl.clientHeight - vpHeight);
+    minimapViewport.style.top = Math.max(0, vpTop) + 'px';
+    minimapViewport.style.height = Math.max(20, vpHeight) + 'px';
+  });
+
+
+  /* ================================================================
+     LINE / COL TRACKING IN STATUS BAR
+  ================================================================ */
+
+  const lnColDisplay = document.querySelector('.statusbar-right .statusbar-item');
+
+  codeAreaEl.addEventListener('mousemove', function(e) {
+    const rect = codeAreaEl.getBoundingClientRect();
+    const y = e.clientY - rect.top + codeAreaEl.scrollTop;
+    const lineH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--line-height'));
+    const ln = Math.max(1, Math.min(allLines.length, Math.ceil(y / lineH)));
+    lnColDisplay.textContent = 'Ln ' + ln + ', Col 1';
+  });
+
+
+  /* ================================================================
+     NPM INSTALL ANIMATION
+  ================================================================ */
+
+  const npmOverlay = document.getElementById('npmOverlay');
+  const npmOutput = document.getElementById('npmOutput');
+  let npmRunning = false;
+
+  // Close overlay on background click
+  npmOverlay.addEventListener('click', function(e) {
+    if (e.target === npmOverlay && !npmRunning) {
+      npmOverlay.classList.remove('active');
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && npmOverlay.classList.contains('active') && !npmRunning) {
+      npmOverlay.classList.remove('active');
+    }
+  });
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function appendNpm(html) {
+    npmOutput.innerHTML += html + '\n';
+    npmOutput.scrollTop = npmOutput.scrollHeight;
+  }
+
+  window.runNpmInstall = async function() {
+    if (npmRunning) return;
+    npmRunning = true;
+    npmOutput.innerHTML = '';
+    npmOverlay.classList.add('active');
+
+    const allDeps = Object.keys(PKG.dependencies);
+    const allDevDeps = Object.keys(PKG.devDependencies);
+    const allHobbyDeps = Object.keys(PKG.hobbyDependencies);
+    const allPeerDeps = Object.keys(PKG.peerDependencies);
+    const totalPkgs = allDeps.length + allDevDeps.length + allHobbyDeps.length + allPeerDeps.length;
+
+    // Command
+    appendNpm('<span class="npm-dim">$</span> <span class="npm-cmd">npm install anshull-garg@2.0.26</span>');
+    await sleep(600);
+
+    appendNpm('');
+    appendNpm('<span class="npm-info">npm</span> <span class="npm-dim">WARN</span> <span class="npm-warn">This developer writes code that ships.</span>');
+    await sleep(400);
+    appendNpm('<span class="npm-info">npm</span> <span class="npm-dim">WARN</span> <span class="npm-warn">Side effects include: clean PRs, shipped features, and strong opinions about tabs vs spaces.</span>');
+    await sleep(600);
+
+    appendNpm('');
+    appendNpm('<span class="npm-teal">Resolving dependencies...</span>');
+    await sleep(500);
+
+    // Install each dependency with a progress bar
+    let installed = 0;
+
+    async function installPkg(name, ver, category) {
+      installed++;
+      const pct = Math.round((installed / totalPkgs) * 100);
+      const barId = 'npm-bar-' + installed;
+
+      appendNpm(
+        '<span class="npm-dim">[' + String(installed).padStart(2,' ') + '/' + totalPkgs + ']</span> ' +
+        '<span class="npm-pkg">' + name + '</span>' +
+        '<span class="npm-dim">@' + ver + '</span>' +
+        ' <span class="npm-dim">(' + category + ')</span>'
+      );
+
+      await sleep(80 + Math.random() * 120);
+    }
+
+    // Dependencies
+    appendNpm('');
+    appendNpm('<span class="npm-info">Installing dependencies (core skills)...</span>');
+    await sleep(300);
+
+    for (const key of allDeps) {
+      const dep = PKG.dependencies[key];
+      await installPkg(key, dep.ver, dep.tag || 'core');
+    }
+
+    // DevDependencies
+    appendNpm('');
+    appendNpm('<span class="npm-info">Installing devDependencies (tools & testing)...</span>');
+    await sleep(300);
+
+    for (const key of allDevDeps) {
+      const dep = PKG.devDependencies[key];
+      await installPkg(key, dep.ver, dep.tag || 'tools');
+    }
+
+    // Hobby Dependencies
+    appendNpm('');
+    appendNpm('<span class="npm-info">Installing hobbyDependencies (life outside code)...</span>');
+    await sleep(300);
+
+    for (const key of allHobbyDeps) {
+      const dep = PKG.hobbyDependencies[key];
+      await installPkg(key, dep.ver, dep.icon || 'hobby');
+    }
+
+    // Peer Dependencies
+    appendNpm('');
+    appendNpm('<span class="npm-info">Installing peerDependencies (teamwork skills)...</span>');
+    await sleep(300);
+
+    for (const key of allPeerDeps) {
+      const dep = PKG.peerDependencies[key];
+      await installPkg(key, dep.ver, 'teamwork');
+    }
+
+    // Progress bar simulation
+    await sleep(300);
+    appendNpm('');
+    const barLine = '<span class="npm-teal">Building talent graph... </span><span class="npm-progress" id="mainProgressBar"><span class="npm-progress-fill" id="mainProgressFill"></span></span> <span id="mainProgressPct" class="npm-dim">0%</span>';
+    appendNpm(barLine);
+
+    const fill = document.getElementById('mainProgressFill');
+    const pctEl = document.getElementById('mainProgressPct');
+
+    for (let p = 0; p <= 100; p += 2) {
+      fill.style.width = p + '%';
+      pctEl.textContent = p + '%';
+      await sleep(20);
+    }
+
+    await sleep(400);
+
+    // Summary
+    appendNpm('');
+    appendNpm('<span class="npm-ok">added ' + totalPkgs + ' packages in 4.2s</span>');
+    appendNpm('');
+    appendNpm('<span class="npm-dim">  ' + allDeps.length + ' core skills</span>');
+    appendNpm('<span class="npm-dim">  ' + allDevDeps.length + ' dev tools</span>');
+    appendNpm('<span class="npm-dim">  ' + allHobbyDeps.length + ' hobbies (for work-life balance)</span>');
+    appendNpm('<span class="npm-dim">  ' + allPeerDeps.length + ' teamwork skills (peer required)</span>');
+    appendNpm('');
+    appendNpm('<span class="npm-ok">0 vulnerabilities</span> <span class="npm-dim">(this developer is battle-tested)</span>');
+    appendNpm('');
+    appendNpm('<span class="npm-dim">Run</span> <span class="npm-cmd">npm run deploy</span> <span class="npm-dim">to hire Anshull Garg</span>');
+    appendNpm('<span class="npm-dim">Run</span> <span class="npm-cmd">npm audit career</span> <span class="npm-dim">for a full background check</span>');
+    appendNpm('');
+    appendNpm('<span class="npm-dim">$</span> <span class="npm-cursor"></span>');
+
+    npmRunning = false;
+  };
+
+
+  /* ================================================================
+     KEYBOARD: Ctrl+` to trigger npm install
+  ================================================================ */
+
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === '`') {
+      e.preventDefault();
+      runNpmInstall();
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

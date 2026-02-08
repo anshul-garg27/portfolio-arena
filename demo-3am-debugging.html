@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3:17 AM - Anshull Garg is debugging...</title>
+<meta name="description" content="Anshull Garg - Software Engineer at Walmart. A 3AM debugging session portfolio experience.">
+<style>
+/*============================================================
+  BASE RESET & ROOT
+============================================================*/
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06060a;
+  --room:#08080e;
+  --glow:#1a3a5c;
+  --glow-bright:#3388cc;
+  --screen-light:rgba(51,136,204,.06);
+  --text:#b8c4d0;
+  --text-dim:#4a5568;
+  --text-ghost:#1e2a38;
+  --green:#22c55e;
+  --green-dim:#166534;
+  --red:#ef4444;
+  --red-dim:#7f1d1d;
+  --yellow:#eab308;
+  --yellow-dim:#713f12;
+  --orange:#f97316;
+  --cyan:#06b6d4;
+  --blue:#3b82f6;
+  --purple:#a855f7;
+  --coffee:#c4813a;
+  --coffee-dark:#8b5e2b;
+  --mono:'SF Mono','Fira Code','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  line-height:1.6;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+::selection{background:var(--glow);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#1a2030;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#2a3040}
+
+/*============================================================
+  AMBIENT ROOM LIGHTING
+============================================================*/
+#room-ambiance{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%,rgba(51,136,204,.07) 0%,transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 50%,rgba(51,136,204,.03) 0%,transparent 80%),
+    radial-gradient(circle at 50% 100%,rgba(0,0,0,.8) 0%,transparent 50%);
+  transition:opacity 1s;
+}
+#room-ambiance.triumph{
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%,rgba(34,197,94,.1) 0%,transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 50%,rgba(34,197,94,.05) 0%,transparent 80%),
+    radial-gradient(circle at 50% 100%,rgba(0,0,0,.8) 0%,transparent 50%);
+}
+
+/* Scanlines */
+#scanlines{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,transparent,transparent 2px,rgba(51,136,204,.008) 2px,rgba(51,136,204,.008) 4px
+  );
+}
+
+/* Vignette - dark edges like a dark room */
+#vignette{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.7) 100%);
+}
+
+/*============================================================
+  TOP BAR - CLOCK & COFFEE
+============================================================*/
+#top-bar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 24px;
+  background:linear-gradient(180deg,rgba(6,6,10,.95) 0%,rgba(6,6,10,.7) 80%,transparent 100%);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(51,136,204,.08);
+  font-size:.75rem;
+}
+.clock-area{
+  display:flex;align-items:center;gap:12px;
+}
+#clock{
+  font-size:1.4rem;font-weight:700;
+  color:var(--glow-bright);
+  text-shadow:0 0 20px rgba(51,136,204,.4);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:1px;
+}
+.clock-label{color:var(--text-dim);font-size:.65rem;text-transform:uppercase;letter-spacing:1px}
+.am-indicator{
+  color:var(--red);font-weight:700;font-size:.7rem;
+  animation:amPulse 3s ease-in-out infinite;
+}
+@keyframes amPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+.coffee-area{
+  display:flex;align-items:center;gap:10px;
+}
+.coffee-counter{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(196,129,58,.08);
+  border:1px solid rgba(196,129,58,.15);
+  padding:4px 12px;border-radius:20px;
+  cursor:pointer;transition:all .3s;
+}
+.coffee-counter:hover{background:rgba(196,129,58,.15);border-color:rgba(196,129,58,.3)}
+.coffee-icon{font-size:1rem}
+.coffee-count{color:var(--coffee);font-weight:700;font-size:.85rem}
+.coffee-label{color:var(--text-dim);font-size:.65rem}
+.session-timer{color:var(--text-dim);font-size:.7rem;font-variant-numeric:tabular-nums}
+
+.status-pills{display:flex;gap:8px;align-items:center}
+.pill{
+  padding:3px 10px;border-radius:12px;font-size:.65rem;
+  font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+}
+.pill-debug{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);animation:pillPulse 2s infinite}
+.pill-debug.resolved{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.2);animation:none}
+@keyframes pillPulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+/*============================================================
+  MAIN LAYOUT
+============================================================*/
+#main{
+  position:relative;z-index:2;
+  max-width:1000px;margin:0 auto;
+  padding:70px 24px 120px;
+}
+
+/*============================================================
+  LAPTOP FRAME
+============================================================*/
+.laptop-frame{
+  background:#0c0c14;
+  border:1px solid rgba(51,136,204,.12);
+  border-radius:12px 12px 0 0;
+  box-shadow:
+    0 0 60px rgba(51,136,204,.06),
+    0 0 120px rgba(51,136,204,.03),
+    inset 0 1px 0 rgba(255,255,255,.03);
+  overflow:hidden;
+  margin-bottom:0;
+}
+.laptop-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;
+  background:#111118;
+  border-bottom:1px solid rgba(51,136,204,.08);
+}
+.laptop-dot{width:10px;height:10px;border-radius:50%}
+.laptop-dot.r{background:#ff5f57;opacity:.7}
+.laptop-dot.y{background:#febc2e;opacity:.7}
+.laptop-dot.g{background:#28c840;opacity:.7}
+.laptop-bar-title{
+  flex:1;text-align:center;color:var(--text-dim);
+  font-size:.7rem;letter-spacing:.5px;
+}
+
+.laptop-base{
+  height:8px;
+  background:linear-gradient(180deg,#0e0e16,#0a0a12);
+  border:1px solid rgba(51,136,204,.08);
+  border-top:none;
+  border-radius:0 0 4px 4px;
+  margin:0 40px;
+}
+
+.laptop-content{
+  padding:0;
+  max-height:70vh;
+  overflow-y:auto;
+}
+.laptop-content::-webkit-scrollbar{width:5px}
+.laptop-content::-webkit-scrollbar-track{background:transparent}
+.laptop-content::-webkit-scrollbar-thumb{background:#1a2030;border-radius:3px}
+
+/*============================================================
+  CONSOLE OUTPUT
+============================================================*/
+#console{
+  padding:20px 24px;
+  font-size:.82rem;
+  min-height:300px;
+}
+.console-line{
+  padding:2px 0;
+  opacity:0;
+  transform:translateY(4px);
+  animation:lineAppear .3s forwards;
+  line-height:1.7;
+}
+@keyframes lineAppear{to{opacity:1;transform:translateY(0)}}
+
+.console-line.dim{color:var(--text-dim)}
+.console-line.green{color:var(--green)}
+.console-line.red{color:var(--red)}
+.console-line.yellow{color:var(--yellow)}
+.console-line.cyan{color:var(--cyan)}
+.console-line.blue{color:var(--blue)}
+.console-line.orange{color:var(--orange)}
+.console-line.purple{color:var(--purple)}
+.console-line.coffee-color{color:var(--coffee)}
+.console-line.bright{color:#e8ecf0;font-weight:600}
+.console-line.glow-text{
+  color:var(--glow-bright);
+  text-shadow:0 0 10px rgba(51,136,204,.3);
+}
+
+.prompt-char{color:var(--green);margin-right:4px}
+.timestamp{color:var(--text-dim);font-size:.7rem;margin-right:8px;opacity:.5}
+
+/* Stack trace styles */
+.stack-trace{
+  margin:8px 0;padding:12px 16px;
+  background:rgba(239,68,68,.04);
+  border-left:3px solid var(--red);
+  border-radius:0 6px 6px 0;
+  font-size:.78rem;
+}
+.stack-trace.resolved{
+  background:rgba(34,197,94,.04);
+  border-left-color:var(--green);
+}
+.stack-line{color:var(--text-dim);padding:1px 0}
+.stack-line .file{color:var(--cyan)}
+.stack-line .func{color:var(--yellow)}
+.stack-line .line-num{color:var(--text-dim);opacity:.6}
+
+/* Separator */
+.console-separator{
+  border:none;border-top:1px solid rgba(51,136,204,.06);
+  margin:16px 0;
+}
+
+/* Typing cursor */
+.cursor{
+  display:inline-block;width:7px;height:1em;
+  background:var(--glow-bright);vertical-align:text-bottom;
+  animation:cursorBlink 1s step-end infinite;
+}
+@keyframes cursorBlink{50%{opacity:0}}
+
+/*============================================================
+  PROJECT CARDS (revealed from stack traces)
+============================================================*/
+.project-reveal{
+  display:none;
+  margin:12px 0;
+  padding:20px;
+  background:rgba(51,136,204,.03);
+  border:1px solid rgba(51,136,204,.1);
+  border-radius:8px;
+  animation:revealSlide .5s ease-out;
+}
+.project-reveal.visible{display:block}
+@keyframes revealSlide{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.project-reveal h3{
+  color:var(--green);font-size:.95rem;margin-bottom:4px;
+  display:flex;align-items:center;gap:8px;
+}
+.project-reveal .bug-label{
+  font-size:.6rem;padding:2px 8px;border-radius:10px;
+  background:rgba(34,197,94,.1);color:var(--green);
+  border:1px solid rgba(34,197,94,.2);font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.project-reveal p{color:var(--text);font-size:.8rem;margin:6px 0;font-family:var(--sans);line-height:1.6}
+.project-reveal .tech-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.project-reveal .tech-tag{
+  font-size:.65rem;padding:2px 8px;border-radius:4px;
+  background:rgba(51,136,204,.08);color:var(--glow-bright);
+  border:1px solid rgba(51,136,204,.12);
+}
+.project-reveal .links{display:flex;gap:10px;margin-top:12px}
+.project-reveal .links a{
+  font-size:.72rem;color:var(--cyan);text-decoration:none;
+  border-bottom:1px dashed var(--cyan);padding-bottom:1px;
+  transition:color .2s;
+}
+.project-reveal .links a:hover{color:var(--green)}
+
+/*============================================================
+  BUG CARDS - interactive stack traces
+============================================================*/
+.bug-card{
+  margin:12px 0;
+  background:rgba(239,68,68,.03);
+  border:1px solid rgba(239,68,68,.12);
+  border-radius:8px;
+  overflow:hidden;
+  transition:all .5s;
+}
+.bug-card.resolved{
+  background:rgba(34,197,94,.03);
+  border-color:rgba(34,197,94,.12);
+}
+.bug-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;
+  cursor:pointer;
+  transition:background .2s;
+}
+.bug-header:hover{background:rgba(255,255,255,.02)}
+.bug-title{
+  display:flex;align-items:center;gap:8px;
+  font-size:.8rem;font-weight:600;
+}
+.bug-icon{font-size:.9rem}
+.bug-status{
+  font-size:.6rem;padding:2px 8px;border-radius:10px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+}
+.bug-status.open{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.bug-status.investigating{background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.bug-status.resolved{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.bug-body{
+  display:none;padding:0 16px 16px;
+  font-size:.78rem;
+}
+.bug-body.open{display:block}
+.resolve-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:10px;padding:6px 14px;
+  background:rgba(51,136,204,.08);
+  border:1px solid rgba(51,136,204,.15);
+  border-radius:6px;
+  color:var(--glow-bright);font-family:var(--mono);font-size:.72rem;
+  cursor:pointer;transition:all .3s;
+}
+.resolve-btn:hover{background:rgba(51,136,204,.15);border-color:rgba(51,136,204,.3)}
+.resolve-btn.done{
+  background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.15);
+  color:var(--green);cursor:default;
+}
+
+/*============================================================
+  SECTION HEADERS
+============================================================*/
+.section-header{
+  display:flex;align-items:center;gap:10px;
+  margin:40px 0 16px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(51,136,204,.06);
+}
+.section-header .hash{color:var(--text-dim);font-size:.9rem}
+.section-header h2{
+  font-size:1rem;font-weight:600;
+  color:var(--glow-bright);
+  text-shadow:0 0 20px rgba(51,136,204,.2);
+}
+.section-header .line-info{
+  margin-left:auto;color:var(--text-dim);font-size:.65rem;
+}
+
+/*============================================================
+  SKILLS AS ENV VARIABLES
+============================================================*/
+.env-block{
+  margin:12px 0;padding:16px 20px;
+  background:rgba(6,6,10,.6);
+  border:1px solid rgba(51,136,204,.06);
+  border-radius:6px;font-size:.78rem;
+}
+.env-line{padding:2px 0;display:flex;flex-wrap:wrap}
+.env-key{color:var(--cyan);min-width:200px}
+.env-val{color:var(--orange)}
+.env-comment{color:var(--text-dim);font-style:italic;width:100%;margin-top:2px;font-size:.72rem}
+
+/*============================================================
+  EXPERIENCE AS GIT LOG
+============================================================*/
+.git-log-entry{
+  margin:12px 0;padding:16px 20px;
+  background:rgba(6,6,10,.6);
+  border-left:3px solid var(--yellow);
+  border-radius:0 6px 6px 0;
+  transition:border-color .3s;
+}
+.git-log-entry:hover{border-left-color:var(--green)}
+.git-hash{color:var(--yellow);font-size:.78rem;font-weight:600}
+.git-author{color:var(--green);font-size:.75rem;margin:2px 0}
+.git-date{color:var(--text-dim);font-size:.7rem}
+.git-message{color:var(--text);font-family:var(--sans);font-size:.82rem;margin-top:8px;line-height:1.6}
+.git-diff{
+  margin-top:8px;padding:8px 12px;
+  background:rgba(0,0,0,.3);border-radius:4px;font-size:.72rem;
+}
+.git-diff .added{color:var(--green)}
+.git-diff .removed{color:var(--red)}
+
+/*============================================================
+  THE TRIUMPH MOMENT
+============================================================*/
+#triumph-section{
+  display:none;
+  margin:30px 0;
+  padding:30px;
+  background:
+    radial-gradient(ellipse at center,rgba(34,197,94,.06) 0%,transparent 70%),
+    rgba(6,6,10,.8);
+  border:2px solid rgba(34,197,94,.2);
+  border-radius:12px;
+  text-align:center;
+  animation:triumphAppear .8s ease-out;
+}
+#triumph-section.visible{display:block}
+@keyframes triumphAppear{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+.triumph-time{
+  font-size:3rem;font-weight:800;
+  color:var(--green);
+  text-shadow:0 0 40px rgba(34,197,94,.3);
+  margin-bottom:4px;
+}
+.triumph-subtitle{
+  color:var(--text);font-family:var(--sans);
+  font-size:1rem;margin-bottom:16px;
+}
+.triumph-achievement{
+  display:inline-block;
+  margin:12px 0;padding:12px 24px;
+  background:rgba(34,197,94,.08);
+  border:1px solid rgba(34,197,94,.2);
+  border-radius:8px;
+  font-size:.85rem;color:var(--green);
+  font-weight:600;
+}
+.triumph-detail{
+  color:var(--text-dim);font-size:.78rem;
+  font-family:var(--sans);line-height:1.7;
+  max-width:600px;margin:12px auto 0;
+}
+
+/*============================================================
+  CONTACT - THE "STILL AWAKE" CTA
+============================================================*/
+#contact-section{
+  margin:40px 0 20px;
+  padding:24px;
+  background:rgba(51,136,204,.02);
+  border:1px solid rgba(51,136,204,.08);
+  border-radius:8px;
+}
+.contact-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px;margin-top:12px;
+}
+.contact-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  background:rgba(6,6,10,.5);
+  border:1px solid rgba(51,136,204,.06);
+  border-radius:6px;
+  text-decoration:none;color:var(--text);
+  font-size:.78rem;
+  transition:all .3s;
+}
+.contact-link:hover{
+  border-color:rgba(51,136,204,.2);
+  background:rgba(51,136,204,.05);
+  color:var(--glow-bright);
+}
+.contact-link .c-icon{font-size:1rem;width:24px;text-align:center}
+.contact-link .c-label{color:var(--text-dim);font-size:.65rem}
+.contact-link .c-value{font-size:.78rem}
+
+/*============================================================
+  COFFEE STEAM ANIMATION
+============================================================*/
+.steam-container{
+  position:fixed;bottom:20px;left:24px;z-index:50;
+  display:flex;flex-direction:column;align-items:center;
+  pointer-events:none;
+}
+.coffee-cup-visual{
+  font-size:2.4rem;
+  filter:drop-shadow(0 0 10px rgba(196,129,58,.3));
+  pointer-events:auto;
+  cursor:pointer;
+}
+.steam{
+  position:relative;width:40px;height:50px;
+}
+.steam span{
+  position:absolute;bottom:0;
+  width:6px;border-radius:50%;
+  background:rgba(200,200,200,.06);
+  animation:steamRise 3s ease-out infinite;
+}
+.steam span:nth-child(1){left:8px;height:20px;animation-delay:0s}
+.steam span:nth-child(2){left:18px;height:24px;animation-delay:.5s}
+.steam span:nth-child(3){left:28px;height:18px;animation-delay:1s}
+@keyframes steamRise{
+  0%{transform:translateY(0) scaleX(1);opacity:.4}
+  50%{transform:translateY(-20px) scaleX(1.5);opacity:.2}
+  100%{transform:translateY(-40px) scaleX(2);opacity:0}
+}
+
+/*============================================================
+  PROGRESS BAR
+============================================================*/
+#debug-progress-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  height:3px;background:rgba(51,136,204,.05);
+}
+#debug-progress-fill{
+  height:100%;width:0;
+  background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
+  transition:width .5s ease;
+  box-shadow:0 0 10px rgba(51,136,204,.3);
+}
+
+/*============================================================
+  COFFEE REFILL TOAST
+============================================================*/
+.toast{
+  position:fixed;top:60px;right:24px;z-index:200;
+  padding:10px 16px;
+  background:rgba(196,129,58,.1);
+  border:1px solid rgba(196,129,58,.2);
+  border-radius:8px;
+  font-size:.75rem;color:var(--coffee);
+  transform:translateX(120%);
+  transition:transform .4s ease;
+}
+.toast.show{transform:translateX(0)}
+
+/*============================================================
+  RESPONSIVE
+============================================================*/
+@media(max-width:768px){
+  html{font-size:13px}
+  #top-bar{padding:8px 12px;flex-wrap:wrap;gap:6px}
+  #clock{font-size:1.1rem}
+  .status-pills{display:none}
+  #main{padding:60px 12px 100px}
+  .laptop-content{max-height:60vh}
+  #console{padding:14px 16px}
+  .env-key{min-width:140px}
+  .laptop-base{margin:0 20px}
+  .steam-container{left:12px;bottom:12px}
+  .coffee-cup-visual{font-size:1.8rem}
+  .triumph-time{font-size:2rem}
+  .section-header .line-info{display:none}
+}
+@media(max-width:480px){
+  .coffee-area .session-timer{display:none}
+  .coffee-label{display:none}
+  .contact-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient layers -->
+<div id="room-ambiance"></div>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+<!-- Top bar -->
+<div id="top-bar">
+  <div class="clock-area">
+    <div>
+      <div id="clock">3:17</div>
+      <div class="clock-label"><span class="am-indicator">AM</span></div>
+    </div>
+  </div>
+  <div class="status-pills">
+    <span class="pill pill-debug" id="debug-pill">DEBUGGING</span>
+  </div>
+  <div class="coffee-area">
+    <div class="session-timer" id="session-timer">session: 04h 32m</div>
+    <div class="coffee-counter" id="coffee-btn" title="Refill coffee" role="button" tabindex="0" aria-label="Refill coffee. Current count: 4">
+      <span class="coffee-icon" aria-hidden="true">&#9749;</span>
+      <span class="coffee-count" id="coffee-num">4</span>
+      <span class="coffee-label">cups</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div id="main">
+
+  <!-- Laptop frame -->
+  <div class="laptop-frame">
+    <div class="laptop-bar">
+      <div class="laptop-dot r"></div>
+      <div class="laptop-dot y"></div>
+      <div class="laptop-dot g"></div>
+      <div class="laptop-bar-title">anshull@macbook ~ /portfolio/debug-session</div>
+    </div>
+    <div class="laptop-content" id="laptop-scroll">
+      <div id="console">
+        <!-- Console output will be built here -->
+      </div>
+    </div>
+  </div>
+  <div class="laptop-base"></div>
+
+</div>
+
+<!-- Coffee steam -->
+<div class="steam-container" aria-hidden="true">
+  <div class="steam">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="coffee-cup-visual">&#9749;</div>
+</div>
+
+<!-- Progress bar -->
+<div id="debug-progress-bar">
+  <div id="debug-progress-fill"></div>
+</div>
+
+<!-- Coffee toast -->
+<div class="toast" id="coffee-toast">&#9749; Refilling... cups++</div>
+
+<script>
+(function(){
+'use strict';
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  coffee: 4,
+  bugsResolved: 0,
+  totalBugs: 5,
+  triumphShown: false,
+  currentLine: 0,
+  clockMinute: 17,
+  clockHour: 3,
+  sessionMinutes: 272
+};
+
+// ============================================================
+// ELEMENTS
+// ============================================================
+const $ = s => document.querySelector(s);
+const consoleEl = $('#console');
+const laptopScroll = $('#laptop-scroll');
+const coffeeBtnEl = $('#coffee-btn');
+const coffeeNumEl = $('#coffee-num');
+const coffeeToast = $('#coffee-toast');
+const progressFill = $('#debug-progress-fill');
+const clockEl = $('#clock');
+const debugPill = $('#debug-pill');
+const sessionTimerEl = $('#session-timer');
+const roomAmbiance = $('#room-ambiance');
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function scrollToBottom(){
+  requestAnimationFrame(() => {
+    laptopScroll.scrollTop = laptopScroll.scrollHeight;
+  });
+}
+
+function updateProgress(){
+  const pct = (state.bugsResolved / state.totalBugs) * 100;
+  progressFill.style.width = pct + '%';
+}
+
+function advanceClock(minutes){
+  state.clockMinute += minutes;
+  while(state.clockMinute >= 60){
+    state.clockMinute -= 60;
+    state.clockHour++;
+  }
+  state.sessionMinutes += minutes;
+  const h = String(state.clockHour).padStart(1,'0');
+  const m = String(state.clockMinute).padStart(2,'0');
+  clockEl.textContent = h + ':' + m;
+  const sh = Math.floor(state.sessionMinutes / 60);
+  const sm = state.sessionMinutes % 60;
+  sessionTimerEl.textContent = 'session: ' + String(sh).padStart(2,'0') + 'h ' + String(sm).padStart(2,'0') + 'm';
+}
+
+function addLine(html, cls, delay){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = 'console-line' + (cls ? ' ' + cls : '');
+      div.innerHTML = html;
+      div.style.animationDelay = '0s';
+      consoleEl.appendChild(div);
+      scrollToBottom();
+      resolve();
+    }, delay || 0);
+  });
+}
+
+function addSeparator(delay){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const hr = document.createElement('hr');
+      hr.className = 'console-separator';
+      consoleEl.appendChild(hr);
+      scrollToBottom();
+      resolve();
+    }, delay || 0);
+  });
+}
+
+function addHTML(html, delay){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      consoleEl.appendChild(div.firstElementChild || div);
+      scrollToBottom();
+      resolve();
+    }, delay || 0);
+  });
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+// ============================================================
+// COFFEE MECHANIC
+// ============================================================
+function refillCoffee(){
+  state.coffee++;
+  coffeeNumEl.textContent = state.coffee;
+  coffeeBtnEl.setAttribute('aria-label', 'Refill coffee. Current count: ' + state.coffee);
+  coffeeToast.classList.add('show');
+  setTimeout(() => coffeeToast.classList.remove('show'), 2000);
+}
+coffeeBtnEl.addEventListener('click', refillCoffee);
+coffeeBtnEl.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); refillCoffee(); }});
+
+// ============================================================
+// BUG RESOLUTION SYSTEM
+// ============================================================
+function resolveBug(bugId, projectHTML){
+  return function(e){
+    const btn = e.currentTarget;
+    if(btn.classList.contains('done')) return;
+
+    const card = btn.closest('.bug-card');
+    const statusEl = card.querySelector('.bug-status');
+    const projectContainer = card.querySelector('.project-reveal');
+
+    // Animate resolution
+    btn.classList.add('done');
+    btn.innerHTML = '&#10003; Resolved';
+    card.classList.add('resolved');
+    statusEl.className = 'bug-status resolved';
+    statusEl.textContent = 'RESOLVED';
+
+    // Show project
+    if(projectContainer){
+      projectContainer.classList.add('visible');
+    }
+
+    state.bugsResolved++;
+    updateProgress();
+    advanceClock(Math.floor(Math.random() * 8) + 3);
+
+    // Check for triumph
+    if(state.bugsResolved >= state.totalBugs && !state.triumphShown){
+      state.triumphShown = true;
+      setTimeout(showTriumph, 800);
+    }
+  };
+}
+
+// ============================================================
+// TRIUMPH MOMENT
+// ============================================================
+function showTriumph(){
+  debugPill.classList.add('resolved');
+  debugPill.textContent = 'ALL CLEAR';
+  roomAmbiance.classList.add('triumph');
+
+  const triumphHTML = `
+<div id="triumph-section" class="visible">
+  <div class="triumph-time">${state.clockHour}:${String(state.clockMinute).padStart(2,'0')} AM</div>
+  <div class="triumph-subtitle">Finally figured it out.</div>
+  <div class="triumph-achievement">The Bug: Building systems at Fortune #1 scale is supposed to be hard.<br>The Fix: It is. And I do it every day.</div>
+  <div class="triumph-detail">
+    After ${state.coffee} cups of coffee and ${Math.floor(state.sessionMinutes/60)}+ hours of debugging,
+    every stack trace resolved into a story about building software that serves millions.
+    That is the real achievement -- not just finding the bug, but understanding the system deeply enough to know where to look.
+    <br><br>
+    Software Engineer at Walmart Global Tech. Still debugging. Still shipping. Still caffeinated.
+  </div>
+</div>`;
+
+  addSeparator(200).then(() => {
+    addLine('<span class="prompt-char">$</span> echo "All bugs resolved. Session complete."', 'green', 400);
+    return sleep(600);
+  }).then(() => {
+    addLine('&#10003; All 5 stack traces resolved successfully.', 'green', 0);
+    return sleep(400);
+  }).then(() => {
+    addLine('&#10003; Portfolio debugging session complete.', 'green', 0);
+    return sleep(400);
+  }).then(() => {
+    addLine('&#10003; Coffee consumed: ' + state.coffee + ' cups. Worth it.', 'coffee-color', 0);
+    return sleep(600);
+  }).then(() => {
+    addHTML(triumphHTML, 0);
+    return sleep(400);
+  }).then(() => {
+    addSeparator(200);
+    return sleep(300);
+  }).then(() => {
+    buildContactSection();
+  });
+}
+
+// ============================================================
+// CONTACT SECTION
+// ============================================================
+function buildContactSection(){
+  const html = `
+<div id="contact-section">
+  <div class="console-line dim">// still awake? me too. let's talk.</div>
+  <div class="console-line bright" style="margin:8px 0 12px">
+    <span class="prompt-char">$</span> cat ./contact-info.json
+  </div>
+  <div class="contact-grid">
+    <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+      <span class="c-icon" aria-hidden="true">&#9993;</span>
+      <div>
+        <div class="c-label">EMAIL</div>
+        <div class="c-value">anshullgarg@gmail.com</div>
+      </div>
+    </a>
+    <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+      <span class="c-icon" aria-hidden="true">&#128187;</span>
+      <div>
+        <div class="c-label">GITHUB</div>
+        <div class="c-value">github.com/anshullgarg</div>
+      </div>
+    </a>
+    <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+      <span class="c-icon" aria-hidden="true">&#128101;</span>
+      <div>
+        <div class="c-label">LINKEDIN</div>
+        <div class="c-value">linkedin.com/in/anshullgarg</div>
+      </div>
+    </a>
+    <a href="https://twitter.com/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+      <span class="c-icon" aria-hidden="true">&#128172;</span>
+      <div>
+        <div class="c-label">TWITTER</div>
+        <div class="c-value">@anshullgarg</div>
+      </div>
+    </a>
+  </div>
+  <div class="console-line dim" style="margin-top:16px;font-size:.7rem">
+    // I typically respond within 24 hours. Unless I'm debugging. Then maybe 48.
+  </div>
+</div>`;
+  addHTML(html, 200);
+}
+
+// ============================================================
+// MAIN SEQUENCE - Build the debugging narrative
+// ============================================================
+async function runSession(){
+
+  // --- INTRO ---
+  await addLine('<span class="timestamp">[03:17:04]</span> <span class="prompt-char">$</span> <span style="color:var(--text)">node debug-portfolio.js --verbose</span>', '', 300);
+  await sleep(400);
+  await addLine('<span class="timestamp">[03:17:05]</span> Initializing debugging session...', 'dim', 200);
+  await addLine('<span class="timestamp">[03:17:05]</span> Loading developer profile: <span style="color:var(--green)">Anshull Garg</span>', 'dim', 300);
+  await addLine('<span class="timestamp">[03:17:06]</span> Environment: <span style="color:var(--cyan)">Walmart Global Tech</span> | Role: <span style="color:var(--cyan)">Software Engineer</span>', 'dim', 300);
+  await addLine('<span class="timestamp">[03:17:06]</span> Coffee level: <span style="color:var(--coffee)">' + state.coffee + ' cups</span> | Determination: <span style="color:var(--green)">maximum</span>', 'dim', 300);
+  await sleep(300);
+  await addLine('', '', 100);
+  await addLine('<span style="color:var(--yellow)">&#9888;</span>  Warning: 5 unresolved stack traces detected in production portfolio', 'yellow', 400);
+  await addLine('<span style="color:var(--yellow)">&#9888;</span>  Each trace points to a critical project module. Resolution required.', 'yellow', 300);
+  await sleep(300);
+  await addLine('', '', 100);
+  await addLine('<span class="prompt-char">$</span> <span style="color:var(--text)">cat ./debug-log.md</span>', '', 300);
+  await sleep(200);
+
+  // --- ABOUT / DEVELOPER PROFILE ---
+  await addSeparator(200);
+  await addLine('<span style="color:var(--glow-bright);font-weight:700">## Developer Profile Dump</span>', '', 300);
+  await addLine('', '', 50);
+  await addLine('<span style="color:var(--text-dim)">// Who is behind this debug session at 3AM?</span>', '', 200);
+  await addLine('<span style="color:var(--purple)">const</span> <span style="color:var(--cyan)">developer</span> = {', '', 200);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">name</span>: <span style="color:var(--orange)">"Anshull Garg"</span>,', '', 150);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">role</span>: <span style="color:var(--orange)">"Software Engineer"</span>,', '', 150);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">company</span>: <span style="color:var(--orange)">"Walmart Global Tech"</span>,', '', 150);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">scale</span>: <span style="color:var(--orange)">"Fortune #1 -- serving millions daily"</span>,', '', 150);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">philosophy</span>: <span style="color:var(--orange)">"Ship it, measure it, improve it"</span>,', '', 150);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">currentStatus</span>: <span style="color:var(--orange)">"debugging at 3AM because the code won\'t debug itself"</span>,', '', 150);
+  await addLine('&nbsp;&nbsp;<span style="color:#9cdcfe">coffeeDependency</span>: <span style="color:var(--green)">true</span>', '', 150);
+  await addLine('};', '', 100);
+  await sleep(200);
+
+  await addLine('', '', 50);
+  await addLine('<span style="color:var(--text-dim)">/* I build systems that serve millions at enterprise scale.</span>', 'dim', 200);
+  await addLine('<span style="color:var(--text-dim)">&nbsp;* Full-stack engineer obsessed with clean architecture, performance,</span>', 'dim', 150);
+  await addLine('<span style="color:var(--text-dim)">&nbsp;* and code that survives its second reader. I believe every PR should</span>', 'dim', 150);
+  await addLine('<span style="color:var(--text-dim)">&nbsp;* leave the codebase better than you found it. */</span>', 'dim', 150);
+
+  // --- SKILLS AS ENV ---
+  await addSeparator(300);
+  await addLine('<span class="prompt-char">$</span> <span style="color:var(--text)">printenv | grep SKILL</span>', '', 400);
+  await sleep(300);
+
+  const envHTML = `
+<div class="env-block">
+  <div class="env-line"><span class="env-key">FRONTEND_STACK</span><span class="env-val">=React, Next.js, TypeScript, Tailwind, Framer Motion</span></div>
+  <div class="env-line"><span class="env-key">BACKEND_STACK</span><span class="env-val">=Node.js, Express, Python, Java, GraphQL</span></div>
+  <div class="env-line"><span class="env-key">DATA_LAYER</span><span class="env-val">=PostgreSQL, MongoDB, Redis, Elasticsearch</span></div>
+  <div class="env-line"><span class="env-key">DEVOPS_TOOLS</span><span class="env-val">=Docker, Kubernetes, AWS, CI/CD, GitHub Actions</span></div>
+  <div class="env-line"><span class="env-key">TESTING_SUITE</span><span class="env-val">=Jest, Cypress, Playwright, React Testing Library</span></div>
+  <div class="env-line"><span class="env-key">PRACTICES</span><span class="env-val">=TDD, Code Review Culture, Agile/Scrum, System Design</span></div>
+  <div class="env-line" style="margin-top:8px"><span class="env-key" style="color:var(--text-dim)"># CAFFEINE_TOLERANCE</span><span class="env-val" style="color:var(--text-dim)">=dangerously_high</span></div>
+</div>`;
+  await addHTML(envHTML, 200);
+
+  // --- EXPERIENCE AS GIT LOG ---
+  await addSeparator(400);
+  await addLine('<span class="prompt-char">$</span> <span style="color:var(--text)">git log --oneline --author="anshull" --since="career-start"</span>', '', 400);
+  await sleep(400);
+
+  const exp1 = `
+<div class="git-log-entry">
+  <div class="git-hash">commit a3f8c2d (HEAD -> main, origin/main)</div>
+  <div class="git-author">Author: Anshull Garg &lt;anshull@walmart.com&gt;</div>
+  <div class="git-date">Date: 2023 - Present</div>
+  <div class="git-message">
+    <strong style="color:var(--glow-bright)">Software Engineer @ Walmart Global Tech</strong><br>
+    Building and scaling applications that power one of the world's largest digital retail platforms.
+    Architecting full-stack features across React frontends and Node.js microservices
+    serving millions of daily active users.
+  </div>
+  <div class="git-diff">
+    <div class="added">+ Optimized critical rendering paths, improving Core Web Vitals scores</div>
+    <div class="added">+ Architected microservice gateway reducing API latency across downstream services</div>
+    <div class="added">+ Led code reviews and engineering best practices for cross-functional teams</div>
+    <div class="added">+ Shipped features impacting millions of daily transactions</div>
+  </div>
+</div>`;
+  await addHTML(exp1, 300);
+
+  const exp2 = `
+<div class="git-log-entry">
+  <div class="git-hash">commit 7b2e91f</div>
+  <div class="git-author">Author: Anshull Garg</div>
+  <div class="git-date">Date: Education</div>
+  <div class="git-message">
+    <strong style="color:var(--glow-bright)">Computer Science Foundation</strong><br>
+    Built the foundation in data structures, algorithms, system design, and software engineering principles
+    that powers everything I build today. Where I learned that "it works on my machine" is not a deployment strategy.
+  </div>
+  <div class="git-diff">
+    <div class="added">+ Mastered DSA, OS fundamentals, and distributed systems concepts</div>
+    <div class="added">+ Built full-stack projects from scratch -- learning by shipping</div>
+    <div class="added">+ Discovered that 3AM debugging is a lifestyle, not a phase</div>
+  </div>
+</div>`;
+  await addHTML(exp2, 300);
+
+  // --- STACK TRACE BUGS ---
+  await addSeparator(400);
+  await addLine('', '', 100);
+  await addLine('<span style="color:var(--red);font-weight:700">&#10060; UNRESOLVED STACK TRACES DETECTED</span>', '', 400);
+  await addLine('<span style="color:var(--text-dim)">// Click each bug to investigate. Hit "Resolve" to trace it back to its project.</span>', '', 300);
+  await addLine('<span style="color:var(--text-dim)">// Resolve all 5 to complete the debugging session.</span>', '', 200);
+  await sleep(200);
+  advanceClock(5);
+
+  // BUG 1
+  const bug1 = `
+<div class="bug-card" id="bug-1">
+  <div class="bug-header" onclick="this.nextElementSibling.classList.toggle('open')" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle bug details: Scalable E-Commerce Platform">
+    <div class="bug-title">
+      <span class="bug-icon" aria-hidden="true">&#128027;</span>
+      <span style="color:var(--red)">TypeError: Cannot read property 'scale' of undefined</span>
+    </div>
+    <span class="bug-status open">OPEN</span>
+  </div>
+  <div class="bug-body">
+    <div class="stack-trace">
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">buildForMillions</span> (<span class="file">enterprise-commerce/core.ts</span>:<span class="line-num">247</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">handleTrafficSpike</span> (<span class="file">load-balancer/router.ts</span>:<span class="line-num">89</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">serveMillionsOfUsers</span> (<span class="file">walmart-scale/platform.ts</span>:<span class="line-num">12</span>)</div>
+    </div>
+    <div style="color:var(--text-dim);font-size:.75rem;margin:8px 0">
+      // The bug: 'scale' was undefined because the system had never been tested at Fortune #1 levels.
+      <br>// The fix: Architect it from scratch for enterprise scale.
+    </div>
+    <button class="resolve-btn" id="resolve-1">&#9654; Resolve Stack Trace</button>
+    <div class="project-reveal" id="project-1">
+      <h3>Enterprise E-Commerce Platform <span class="bug-label">Resolved</span></h3>
+      <p>Architected and built critical frontend modules for Walmart's digital commerce platform, handling millions of daily transactions. Implemented performance-critical rendering optimizations, server-side rendering strategies, and real-time inventory displays that perform under extreme traffic spikes like Black Friday.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">React</span>
+        <span class="tech-tag">Next.js</span>
+        <span class="tech-tag">TypeScript</span>
+        <span class="tech-tag">Node.js</span>
+        <span class="tech-tag">GraphQL</span>
+        <span class="tech-tag">Kubernetes</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+  await addHTML(bug1, 400);
+
+  // BUG 2
+  const bug2 = `
+<div class="bug-card" id="bug-2">
+  <div class="bug-header" onclick="this.nextElementSibling.classList.toggle('open')" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle bug details: Performance Optimization Engine">
+    <div class="bug-title">
+      <span class="bug-icon" aria-hidden="true">&#128027;</span>
+      <span style="color:var(--red)">PerformanceError: Render cycle exceeds 16ms budget</span>
+    </div>
+    <span class="bug-status open">OPEN</span>
+  </div>
+  <div class="bug-body">
+    <div class="stack-trace">
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">optimizeRenderPipeline</span> (<span class="file">performance/critical-path.ts</span>:<span class="line-num">156</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">measureCoreWebVitals</span> (<span class="file">metrics/lighthouse.ts</span>:<span class="line-num">43</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">reduceTimeToInteractive</span> (<span class="file">ux/first-paint.ts</span>:<span class="line-num">201</span>)</div>
+    </div>
+    <div style="color:var(--text-dim);font-size:.75rem;margin:8px 0">
+      // The bug: Unnecessary re-renders were cascading through deeply nested component trees.
+      <br>// The fix: Surgical memoization, code splitting, and lazy loading.
+    </div>
+    <button class="resolve-btn" id="resolve-2">&#9654; Resolve Stack Trace</button>
+    <div class="project-reveal" id="project-2">
+      <h3>Performance Optimization Engine <span class="bug-label">Resolved</span></h3>
+      <p>Spearheaded a performance overhaul across critical user-facing pages, implementing advanced code-splitting strategies, intelligent prefetching, and component-level memoization. Reduced Largest Contentful Paint by significant margins and achieved consistent sub-3s page load times across mobile and desktop.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">React.memo</span>
+        <span class="tech-tag">Webpack</span>
+        <span class="tech-tag">Lighthouse</span>
+        <span class="tech-tag">Core Web Vitals</span>
+        <span class="tech-tag">Code Splitting</span>
+        <span class="tech-tag">Lazy Loading</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+  await addHTML(bug2, 300);
+
+  // BUG 3
+  const bug3 = `
+<div class="bug-card" id="bug-3">
+  <div class="bug-header" onclick="this.nextElementSibling.classList.toggle('open')" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle bug details: Microservice API Gateway">
+    <div class="bug-title">
+      <span class="bug-icon" aria-hidden="true">&#128027;</span>
+      <span style="color:var(--red)">NetworkError: Request timeout after 30000ms on /api/gateway</span>
+    </div>
+    <span class="bug-status open">OPEN</span>
+  </div>
+  <div class="bug-body">
+    <div class="stack-trace">
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">routeToMicroservice</span> (<span class="file">gateway/router.ts</span>:<span class="line-num">78</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">handleCircuitBreaker</span> (<span class="file">resilience/circuit.ts</span>:<span class="line-num">134</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">aggregateDownstreamResponses</span> (<span class="file">orchestrator/compose.ts</span>:<span class="line-num">56</span>)</div>
+    </div>
+    <div style="color:var(--text-dim);font-size:.75rem;margin:8px 0">
+      // The bug: Downstream services were timing out under load without circuit breakers.
+      <br>// The fix: Build a resilient API gateway with intelligent failover.
+    </div>
+    <button class="resolve-btn" id="resolve-3">&#9654; Resolve Stack Trace</button>
+    <div class="project-reveal" id="project-3">
+      <h3>Microservice API Gateway <span class="bug-label">Resolved</span></h3>
+      <p>Designed and built a resilient API gateway layer that orchestrates communication between dozens of microservices. Implemented circuit breaker patterns, request coalescing, intelligent caching, and graceful degradation strategies that reduced API latency across downstream services and improved system reliability during peak traffic.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">Node.js</span>
+        <span class="tech-tag">Express</span>
+        <span class="tech-tag">Redis</span>
+        <span class="tech-tag">Docker</span>
+        <span class="tech-tag">Circuit Breakers</span>
+        <span class="tech-tag">Load Balancing</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+  await addHTML(bug3, 300);
+
+  // BUG 4
+  const bug4 = `
+<div class="bug-card" id="bug-4">
+  <div class="bug-header" onclick="this.nextElementSibling.classList.toggle('open')" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle bug details: Real-Time Data Dashboard">
+    <div class="bug-title">
+      <span class="bug-icon" aria-hidden="true">&#128027;</span>
+      <span style="color:var(--red)">StateError: WebSocket connection dropped -- data stream stale</span>
+    </div>
+    <span class="bug-status open">OPEN</span>
+  </div>
+  <div class="bug-body">
+    <div class="stack-trace">
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">subscribeToDataStream</span> (<span class="file">realtime/websocket.ts</span>:<span class="line-num">92</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">renderLiveMetrics</span> (<span class="file">dashboard/charts.tsx</span>:<span class="line-num">188</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">handleReconnection</span> (<span class="file">socket/resilience.ts</span>:<span class="line-num">34</span>)</div>
+    </div>
+    <div style="color:var(--text-dim);font-size:.75rem;margin:8px 0">
+      // The bug: WebSocket reconnection logic wasn't exponentially backing off.
+      <br>// The fix: Build a production-grade real-time data pipeline.
+    </div>
+    <button class="resolve-btn" id="resolve-4">&#9654; Resolve Stack Trace</button>
+    <div class="project-reveal" id="project-4">
+      <h3>Real-Time Analytics Dashboard <span class="bug-label">Resolved</span></h3>
+      <p>Built a real-time data visualization dashboard that streams live metrics from multiple data sources via WebSocket connections. Features optimistic UI updates, automatic reconnection with exponential backoff, and interactive charts rendering thousands of data points at 60fps. Used by engineering teams for monitoring production health.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">React</span>
+        <span class="tech-tag">WebSockets</span>
+        <span class="tech-tag">D3.js</span>
+        <span class="tech-tag">TypeScript</span>
+        <span class="tech-tag">Elasticsearch</span>
+        <span class="tech-tag">Kafka</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+  await addHTML(bug4, 300);
+
+  // BUG 5 - The Big One
+  const bug5 = `
+<div class="bug-card" id="bug-5">
+  <div class="bug-header" onclick="this.nextElementSibling.classList.toggle('open')" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle bug details: Developer Tooling Platform">
+    <div class="bug-title">
+      <span class="bug-icon" aria-hidden="true">&#128027;</span>
+      <span style="color:var(--red)">FatalError: Developer productivity bottleneck detected in CI/CD pipeline</span>
+    </div>
+    <span class="bug-status open">OPEN</span>
+  </div>
+  <div class="bug-body">
+    <div class="stack-trace">
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">runPipeline</span> (<span class="file">ci-cd/deploy.yml</span>:<span class="line-num">1</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">automateBoilerplate</span> (<span class="file">dx-tools/scaffolder.ts</span>:<span class="line-num">45</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">standardizeCodeReviews</span> (<span class="file">quality/lint-rules.ts</span>:<span class="line-num">112</span>)</div>
+      <div class="stack-line">&nbsp;&nbsp;at <span class="func">empowerEngineeringTeams</span> (<span class="file">culture/best-practices.ts</span>:<span class="line-num">1</span>)</div>
+    </div>
+    <div style="color:var(--text-dim);font-size:.75rem;margin:8px 0">
+      // The bug: Manual processes were eating engineering hours across teams.
+      <br>// The fix: Build internal tooling that gives engineers their time back.
+    </div>
+    <button class="resolve-btn" id="resolve-5">&#9654; Resolve Stack Trace</button>
+    <div class="project-reveal" id="project-5">
+      <h3>Internal Developer Tooling Platform <span class="bug-label">Resolved</span></h3>
+      <p>Designed and shipped an internal developer experience platform that automated repetitive workflows, standardized CI/CD pipelines, and established code review best practices across multiple teams. Reduced deployment times, cut boilerplate setup, and introduced tooling adopted by engineers across the organization. This is the one that made the 3AM sessions worth it.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">GitHub Actions</span>
+        <span class="tech-tag">Docker</span>
+        <span class="tech-tag">Kubernetes</span>
+        <span class="tech-tag">Node.js</span>
+        <span class="tech-tag">CLI Tooling</span>
+        <span class="tech-tag">Jenkins</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+  await addHTML(bug5, 300);
+
+  await sleep(300);
+  await addLine('', '', 50);
+  await addLine('<span style="color:var(--text-dim)">// &#8593; Click each bug header to expand, then hit "Resolve" to trace it to its project.</span>', '', 300);
+  await addLine('<span style="color:var(--text-dim)">// Resolve all 5 to complete the debugging session and uncover the final achievement.</span>', '', 200);
+
+  // --- WIRE UP RESOLVE BUTTONS ---
+  for(let i = 1; i <= 5; i++){
+    const btn = document.getElementById('resolve-' + i);
+    if(btn) btn.addEventListener('click', resolveBug(i));
+  }
+
+  // Also handle keyboard for bug headers
+  document.querySelectorAll('.bug-header').forEach(header => {
+    header.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        header.click();
+      }
+    });
+  });
+
+} // end runSession
+
+// ============================================================
+// CLOCK TICK - slow real-time drift
+// ============================================================
+let tickCount = 0;
+setInterval(() => {
+  tickCount++;
+  // Every 30 seconds real time = 1 minute in debug world
+  if(tickCount % 30 === 0){
+    advanceClock(1);
+  }
+}, 1000);
+
+// ============================================================
+// INIT
+// ============================================================
+updateProgress();
+runSession();
+
+})();
+</script>
+</body>
+</html>

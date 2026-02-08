@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>// Anshull Garg - Code Comments Portfolio</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0a0e17;
+    --bg-card:#0f1420;
+    --bg-gutter:#0c1019;
+    --border:#1a2035;
+    --line-nr:#2a3555;
+    --code-blur:#3a4a6a;
+    --comment-green:#6adf7c;
+    --comment-gray:#6a7a8a;
+    --keyword:#c678dd;
+    --string:#98c379;
+    --function:#61afef;
+    --variable:#e5c07b;
+    --operator:#56b6c2;
+    --number:#d19a66;
+    --type:#e06c75;
+    --bracket:#abb2bf;
+    --comment-block:#5c9960;
+    --todo:#e5c07b;
+    --fixme:#e06c75;
+    --hack:#d19a66;
+    --note:#61afef;
+    --warning:#d19a66;
+    --glow-green:rgba(106,223,124,0.08);
+    --glow-blue:rgba(97,175,239,0.06);
+  }
+
+  html{
+    font-size:15px;
+    scroll-behavior:smooth;
+  }
+  body{
+    background:var(--bg);
+    color:#c8d0e0;
+    font-family:'JetBrains Mono','SF Mono','Cascadia Code','Fira Code',Consolas,'Courier New',monospace;
+    line-height:1.75;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#1a2540;border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:#253055}
+
+  /* TAB BAR */
+  .tab-bar{
+    position:sticky;top:0;z-index:100;
+    background:#080c14;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:stretch;
+    font-size:12px;
+    user-select:none;
+  }
+  .tab{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 20px;
+    color:var(--comment-gray);
+    border-right:1px solid var(--border);
+    cursor:pointer;
+    transition:all .2s;
+    position:relative;
+  }
+  .tab.active{
+    color:#c8d0e0;
+    background:var(--bg);
+  }
+  .tab.active::after{
+    content:'';position:absolute;bottom:-1px;left:0;right:0;
+    height:2px;background:var(--function);
+  }
+  .tab:hover:not(.active){background:#0d1220}
+  .tab .icon{font-size:14px;opacity:.7}
+  .tab .close{
+    opacity:0;margin-left:6px;font-size:10px;
+    transition:opacity .15s;
+  }
+  .tab:hover .close{opacity:.5}
+  .tab .close:hover{opacity:1}
+
+  /* MINIMAP */
+  .minimap{
+    position:fixed;right:0;top:40px;bottom:0;
+    width:80px;
+    background:var(--bg);
+    border-left:1px solid var(--border);
+    overflow:hidden;
+    z-index:50;
+    opacity:.5;
+    transition:opacity .3s;
+  }
+  .minimap:hover{opacity:.8}
+  .minimap-content{
+    transform:scaleX(0.3) scaleY(0.15);
+    transform-origin:top right;
+    width:266px;
+    pointer-events:none;
+    font-size:4px;
+    line-height:1;
+    color:#1a2540;
+    padding:5px;
+    white-space:pre;
+    font-family:inherit;
+  }
+  .minimap-viewport{
+    position:absolute;top:0;left:8px;right:8px;
+    background:rgba(97,175,239,0.08);
+    border:1px solid rgba(97,175,239,0.15);
+    border-radius:2px;
+    pointer-events:none;
+    transition:top .1s ease-out;
+  }
+
+  /* EDITOR CONTAINER */
+  .editor{
+    display:flex;
+    min-height:calc(100vh - 40px);
+    margin-right:80px;
+  }
+
+  /* GUTTER */
+  .gutter{
+    position:sticky;left:0;
+    width:60px;
+    min-width:60px;
+    background:var(--bg-gutter);
+    border-right:1px solid var(--border);
+    text-align:right;
+    padding:24px 12px 24px 0;
+    color:var(--line-nr);
+    font-size:12px;
+    line-height:1.75;
+    user-select:none;
+    z-index:10;
+  }
+  .gutter .ln{
+    display:block;
+    height:calc(1.75 * 1rem);
+    transition:color .15s;
+  }
+  .gutter .ln.highlight{color:var(--comment-green);opacity:.6}
+  .gutter .ln.highlight-block{color:var(--comment-block);opacity:.6}
+
+  /* CODE AREA */
+  .code-area{
+    flex:1;
+    padding:24px 32px 120px 24px;
+    overflow-x:auto;
+  }
+
+  /* CODE LINES */
+  .line{
+    display:block;
+    min-height:calc(1.75 * 1rem);
+    white-space:pre;
+    position:relative;
+    transition:background .2s;
+    padding:0 8px;
+    border-radius:3px;
+  }
+  .line:hover{background:rgba(255,255,255,0.015)}
+
+  /* BLURRED CODE */
+  .blurred{
+    filter:blur(2.5px);
+    opacity:.25;
+    transition:filter .4s, opacity .4s;
+    pointer-events:none;
+    user-select:none;
+  }
+  .blurred:hover{
+    filter:blur(1.8px);
+    opacity:.3;
+  }
+  .blurred .kw{color:var(--keyword)}
+  .blurred .fn{color:var(--function)}
+  .blurred .str{color:var(--string)}
+  .blurred .var{color:var(--variable)}
+  .blurred .op{color:var(--operator)}
+  .blurred .nr{color:var(--number)}
+  .blurred .tp{color:var(--type)}
+  .blurred .br{color:var(--bracket)}
+
+  /* COMMENTS - THE STAR OF THE SHOW */
+  .comment{
+    color:var(--comment-green);
+    filter:none !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    user-select:text !important;
+    position:relative;
+  }
+  .comment-line{
+    background:var(--glow-green);
+    border-radius:3px;
+    padding:0 8px;
+    position:relative;
+  }
+  .comment-line::before{
+    content:'';
+    position:absolute;
+    left:0;top:0;bottom:0;
+    width:2px;
+    background:var(--comment-green);
+    opacity:.3;
+    border-radius:1px;
+  }
+
+  /* BLOCK COMMENTS */
+  .block-comment{
+    background:rgba(92,153,96,0.06);
+    border-radius:6px;
+    padding:4px 8px;
+    margin:4px 0;
+    border-left:2px solid rgba(92,153,96,0.25);
+  }
+  .block-comment .comment{color:var(--comment-block)}
+
+  /* SPECIAL COMMENT TAGS */
+  .tag-todo{color:var(--todo);font-weight:600}
+  .tag-fixme{color:var(--fixme);font-weight:600}
+  .tag-hack{color:var(--hack);font-weight:600}
+  .tag-note{color:var(--note);font-weight:600}
+  .tag-warning{color:var(--warning);font-weight:600}
+  .tag-bug{color:var(--fixme);font-weight:600}
+  .tag-review{color:var(--keyword);font-weight:600}
+
+  /* SECTION DIVIDERS */
+  .section-break{
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .section-break::before{
+    content:'';position:absolute;left:0;right:0;top:50%;
+    border-top:1px dashed var(--border);
+  }
+
+  /* CURSOR BLINK */
+  .cursor{
+    display:inline-block;
+    width:2px;
+    height:1.2em;
+    background:var(--function);
+    vertical-align:text-bottom;
+    animation:blink 1s step-end infinite;
+    margin-left:2px;
+  }
+  @keyframes blink{
+    0%,100%{opacity:1}
+    50%{opacity:0}
+  }
+
+  /* TYPING ANIMATION FOR HERO */
+  .typing-wrapper{
+    overflow:hidden;
+    display:inline;
+  }
+  .typing-text{
+    display:inline;
+    animation:typeIn 1.2s steps(40) 0.5s both;
+  }
+  @keyframes typeIn{
+    from{max-width:0;opacity:0}
+    to{max-width:100%;opacity:1}
+  }
+
+  /* FOLD INDICATORS */
+  .fold-indicator{
+    display:inline-block;
+    color:var(--line-nr);
+    cursor:pointer;
+    padding:0 4px;
+    border-radius:3px;
+    font-size:11px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);
+    transition:all .2s;
+    margin-left:8px;
+    vertical-align:middle;
+  }
+  .fold-indicator:hover{
+    background:rgba(255,255,255,0.06);
+    color:var(--comment-green);
+  }
+
+  /* ANNOTATION POPUPS */
+  .annotation{
+    display:none;
+    position:absolute;
+    left:100%;
+    top:-4px;
+    margin-left:16px;
+    background:#151c2c;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:12px;
+    color:var(--comment-gray);
+    min-width:260px;
+    max-width:340px;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+    z-index:200;
+    white-space:normal;
+    line-height:1.5;
+  }
+  .annotation-trigger{position:relative;display:inline}
+  .annotation-trigger:hover .annotation{display:block}
+
+  /* STATUS BAR */
+  .status-bar{
+    position:fixed;bottom:0;left:0;right:0;
+    background:#080c14;
+    border-top:1px solid var(--border);
+    display:flex;align-items:center;
+    font-size:11px;
+    color:var(--comment-gray);
+    z-index:100;
+    height:24px;
+  }
+  .status-item{
+    padding:2px 12px;
+    border-right:1px solid var(--border);
+    display:flex;align-items:center;gap:5px;
+  }
+  .status-item.remote{
+    background:#1f6feb22;
+    color:var(--function);
+  }
+  .status-right{
+    margin-left:auto;
+    display:flex;align-items:center;
+  }
+
+  /* FADE IN ANIMATION */
+  .fade-section{
+    opacity:0;
+    transform:translateY(12px);
+    transition:opacity .6s ease-out, transform .6s ease-out;
+  }
+  .fade-section.visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* BREADCRUMB */
+  .breadcrumb{
+    padding:8px 24px 8px 84px;
+    font-size:11px;
+    color:var(--line-nr);
+    background:var(--bg);
+    border-bottom:1px solid rgba(26,32,53,0.5);
+    display:flex;align-items:center;gap:6px;
+  }
+  .breadcrumb span{transition:color .15s}
+  .breadcrumb span:hover{color:var(--comment-gray)}
+  .breadcrumb .sep{opacity:.3}
+
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    .minimap{display:none}
+    .editor{margin-right:0}
+    .gutter{width:40px;min-width:40px;font-size:10px}
+    .code-area{padding:16px 12px 120px 12px}
+    .breadcrumb{padding-left:52px}
+  }
+  @media(max-width:600px){
+    html{font-size:12px}
+    .tab{padding:8px 12px;font-size:11px}
+    .gutter{width:32px;min-width:32px;font-size:9px}
+    .code-area{padding:12px 8px 100px 8px}
+    .status-bar{font-size:10px}
+    .breadcrumb{padding-left:44px;font-size:10px}
+  }
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<nav class="tab-bar" role="tablist">
+  <div class="tab active" role="tab" aria-selected="true">
+    <span class="icon">{ }</span>
+    <span>anshull_garg.ts</span>
+    <span class="close">x</span>
+  </div>
+  <div class="tab" role="tab">
+    <span class="icon">#</span>
+    <span>README.md</span>
+    <span class="close">x</span>
+  </div>
+  <div class="tab" role="tab">
+    <span class="icon">{ }</span>
+    <span>career.config.ts</span>
+    <span class="close">x</span>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb" aria-label="File path">
+  <span>src</span><span class="sep">/</span>
+  <span>portfolio</span><span class="sep">/</span>
+  <span>developers</span><span class="sep">/</span>
+  <span style="color:var(--comment-gray)">anshull_garg.ts</span>
+</div>
+
+<!-- MAIN EDITOR -->
+<div class="editor" role="main">
+
+  <!-- LINE NUMBERS -->
+  <div class="gutter" aria-hidden="true" id="gutter"></div>
+
+  <!-- CODE CONTENT -->
+  <div class="code-area" id="code-area">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: IMPORTS / HERO -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s1">
+<span class="line blurred"><span class="kw">import</span> <span class="br">{</span> <span class="var">Developer</span><span class="br">,</span> <span class="var">Engineer</span><span class="br">,</span> <span class="var">Human</span> <span class="br">}</span> <span class="kw">from</span> <span class="str">'@life/roles'</span><span class="br">;</span></span>
+<span class="line blurred"><span class="kw">import</span> <span class="br">{</span> <span class="var">ambition</span><span class="br">,</span> <span class="var">curiosity</span><span class="br">,</span> <span class="var">grit</span> <span class="br">}</span> <span class="kw">from</span> <span class="str">'@core/traits'</span><span class="br">;</span></span>
+<span class="line blurred"><span class="kw">import</span> <span class="var">coffee</span> <span class="kw">from</span> <span class="str">'unlimited-supply'</span><span class="br">;</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">// =========================================================</span></span>
+<span class="line comment-line"><span class="comment">//  Hi. I'm Anshull Garg.</span></span>
+<span class="line comment-line"><span class="comment">//  Software Engineer. System thinker. Builder.</span></span>
+<span class="line comment-line"><span class="comment">//</span></span>
+<span class="line comment-line"><span class="comment">//  I write code that ships to millions of users.</span></span>
+<span class="line comment-line"><span class="comment">//  Currently building at Walmart Global Tech (Fortune #1).</span></span>
+<span class="line comment-line"><span class="comment">//</span></span>
+<span class="line comment-line"><span class="comment">//  This file IS my portfolio. The blurred code is real.</span></span>
+<span class="line comment-line"><span class="comment">//  The comments tell my story. Keep scrolling.</span></span>
+<span class="line comment-line"><span class="comment">// =========================================================</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: ABOUT / CONSTRUCTOR -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s2">
+<span class="line blurred"><span class="kw">class</span> <span class="tp">AnshullGarg</span> <span class="kw">extends</span> <span class="tp">Developer</span> <span class="kw">implements</span> <span class="tp">Engineer</span><span class="br">,</span> <span class="tp">Human</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">readonly</span> <span class="var">name</span> <span class="op">=</span> <span class="str">'Anshull Garg'</span><span class="br">;</span></span>
+<span class="line blurred">  <span class="kw">readonly</span> <span class="var">title</span> <span class="op">=</span> <span class="str">'Software Engineer'</span><span class="br">;</span></span>
+<span class="line blurred">  <span class="kw">readonly</span> <span class="var">location</span> <span class="op">=</span> <span class="str">'Bentonville, AR'</span><span class="br">;</span></span>
+<span class="line blurred">  <span class="kw">private</span> <span class="var">coffeeCount</span><span class="op">:</span> <span class="tp">number</span> <span class="op">=</span> <span class="nr">0</span><span class="br">;</span></span>
+<span class="line blurred">  <span class="kw">private</span> <span class="var">imposterSyndrome</span><span class="op">:</span> <span class="tp">boolean</span> <span class="op">=</span> <span class="kw">true</span><span class="br">;</span></span>
+<span class="line"> </span>
+<span class="line"> </span>
+<div class="block-comment">
+<span class="line"><span class="comment">  /*</span></span>
+<span class="line"><span class="comment">   * About me, in the only format developers actually read:</span></span>
+<span class="line"><span class="comment">   *</span></span>
+<span class="line"><span class="comment">   * I didn't start in tech -- I started with curiosity.</span></span>
+<span class="line"><span class="comment">   * Somewhere between "Hello World" and a production deployment</span></span>
+<span class="line"><span class="comment">   * serving millions, I realized this is what I want to do forever.</span></span>
+<span class="line"><span class="comment">   *</span></span>
+<span class="line"><span class="comment">   * Today I architect scalable, high-performance applications at</span></span>
+<span class="line"><span class="comment">   * Walmart Global Tech -- the Fortune #1 company. My work powers</span></span>
+<span class="line"><span class="comment">   * digital commerce for hundreds of millions of customers.</span></span>
+<span class="line"><span class="comment">   *</span></span>
+<span class="line"><span class="comment">   * I think in systems. I ship in sprints. I refactor on weekends</span></span>
+<span class="line"><span class="comment">   * (don't tell my manager).</span></span>
+<span class="line"><span class="comment">   */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">constructor</span><span class="br">()</span> <span class="br">{</span></span>
+<span class="line blurred">    <span class="fn">super</span><span class="br">(</span><span class="str">'curious_kid'</span><span class="br">,</span> <span class="str">'builds_things'</span><span class="br">);</span></span>
+<span class="line blurred">    <span class="kw">this</span><span class="br">.</span><span class="fn">init</span><span class="br">(</span><span class="var">ambition</span><span class="br">,</span> <span class="var">curiosity</span><span class="br">,</span> <span class="var">grit</span><span class="br">);</span></span>
+<span class="line comment-line"><span class="comment">    // <span class="tag-fixme">FIXME:</span> imposter syndrome persists despite evidence to the contrary</span></span>
+<span class="line blurred">    <span class="kw">this</span><span class="br">.</span><span class="var">imposterSyndrome</span> <span class="op">=</span> <span class="kw">true</span><span class="br">;</span> </span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: EXPERIENCE -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s3">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  EXPERIENCE</span></span>
+<span class="line comment-line"><span class="comment">  //  (the part recruiters actually scroll to)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">async</span> <span class="fn">getCurrentRole</span><span class="br">():</span> <span class="tp">Promise</span><span class="op">&lt;</span><span class="tp">Role</span><span class="op">&gt;</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * WALMART GLOBAL TECH  |  Software Engineer</span></span>
+<span class="line"><span class="comment">     * The Fortune #1 company. Not a typo.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * I build the systems behind one of the world's largest</span></span>
+<span class="line"><span class="comment">     * digital retail platforms. My code handles traffic that</span></span>
+<span class="line"><span class="comment">     * would make most servers cry during Black Friday.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * Key contributions:</span></span>
+<span class="line"><span class="comment">     *  - Architected scalable frontend systems with React/Next.js</span></span>
+<span class="line"><span class="comment">     *  - Engineered APIs serving millions of requests daily</span></span>
+<span class="line"><span class="comment">     *  - Optimized page load times and Core Web Vitals</span></span>
+<span class="line"><span class="comment">     *  - Collaborated across teams to ship features at scale</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line blurred">    <span class="kw">const</span> <span class="var">role</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">buildCareer</span><span class="br">({</span></span>
+<span class="line blurred">      <span class="var">company</span><span class="op">:</span> <span class="str">'Walmart Global Tech'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">title</span><span class="op">:</span> <span class="str">'Software Engineer'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">impact</span><span class="op">:</span> <span class="str">'enterprise-scale'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">users</span><span class="op">:</span> <span class="nr">240_000_000</span><span class="br">,</span></span>
+<span class="line comment-line"><span class="comment">      // <span class="tag-hack">HACK:</span> this somehow serves 240M users and I helped build it</span></span>
+<span class="line blurred">    <span class="br">});</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // I spent 3 hours debugging a CSS z-index issue here.</span></span>
+<span class="line comment-line"><span class="comment">    // It was set to 9999. The fix was setting it to 10000.</span></span>
+<span class="line comment-line"><span class="comment">    // I am not proud. But it works.</span></span>
+<span class="line"> </span>
+<span class="line blurred">    <span class="kw">return</span> <span class="var">role</span><span class="br">;</span></span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SKILLS / TECH STACK -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s4">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  TECH STACK</span></span>
+<span class="line comment-line"><span class="comment">  //  (listed in order of mass consumed knowledge)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">private</span> <span class="var">skills</span><span class="op">:</span> <span class="tp">SkillMatrix</span> <span class="op">=</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Frontend -- where I live</span></span>
+<span class="line comment-line"><span class="comment">    // React, Next.js, TypeScript, Tailwind CSS, Framer Motion</span></span>
+<span class="line comment-line"><span class="comment">    // I dream in JSX. This is not a metaphor.</span></span>
+<span class="line blurred">    <span class="var">frontend</span><span class="op">:</span> <span class="br">[</span><span class="str">'React'</span><span class="br">,</span> <span class="str">'Next.js'</span><span class="br">,</span> <span class="str">'TypeScript'</span><span class="br">,</span> <span class="str">'Tailwind'</span><span class="br">,</span> <span class="str">'Framer Motion'</span><span class="br">],</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Backend -- where I think</span></span>
+<span class="line comment-line"><span class="comment">    // Node.js, Express, Python, GraphQL, REST APIs</span></span>
+<span class="line comment-line"><span class="comment">    // Designed APIs that handle more requests per second</span></span>
+<span class="line comment-line"><span class="comment">    // than my brain handles thoughts per minute</span></span>
+<span class="line blurred">    <span class="var">backend</span><span class="op">:</span> <span class="br">[</span><span class="str">'Node.js'</span><span class="br">,</span> <span class="str">'Express'</span><span class="br">,</span> <span class="str">'Python'</span><span class="br">,</span> <span class="str">'GraphQL'</span><span class="br">,</span> <span class="str">'REST'</span><span class="br">],</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Data -- where truth lives</span></span>
+<span class="line comment-line"><span class="comment">    // PostgreSQL, MongoDB, Redis</span></span>
+<span class="line blurred">    <span class="var">data</span><span class="op">:</span> <span class="br">[</span><span class="str">'PostgreSQL'</span><span class="br">,</span> <span class="str">'MongoDB'</span><span class="br">,</span> <span class="str">'Redis'</span><span class="br">],</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // DevOps -- where I deploy (and pray)</span></span>
+<span class="line comment-line"><span class="comment">    // Docker, Kubernetes, AWS, CI/CD, GitHub Actions</span></span>
+<span class="line blurred">    <span class="var">devops</span><span class="op">:</span> <span class="br">[</span><span class="str">'Docker'</span><span class="br">,</span> <span class="str">'Kubernetes'</span><span class="br">,</span> <span class="str">'AWS'</span><span class="br">,</span> <span class="str">'CI/CD'</span><span class="br">,</span> <span class="str">'GitHub Actions'</span><span class="br">],</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Testing -- where I sleep well at night</span></span>
+<span class="line comment-line"><span class="comment">    // Jest, Cypress, Playwright, TDD</span></span>
+<span class="line blurred">    <span class="var">testing</span><span class="op">:</span> <span class="br">[</span><span class="str">'Jest'</span><span class="br">,</span> <span class="str">'Cypress'</span><span class="br">,</span> <span class="str">'Playwright'</span><span class="br">,</span> <span class="str">'TDD'</span><span class="br">],</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="br">};</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">  // <span class="tag-warning">WARNING:</span> may cause excessive code quality in your codebase</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PROJECTS -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s5">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  PROJECTS</span></span>
+<span class="line comment-line"><span class="comment">  //  (things I built instead of sleeping)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">async</span> <span class="fn">getProjects</span><span class="br">():</span> <span class="tp">Promise</span><span class="op">&lt;</span><span class="tp">Project</span><span class="br">[]</span><span class="op">&gt;</span> <span class="br">{</span></span>
+<span class="line blurred">    <span class="kw">const</span> <span class="var">projects</span> <span class="op">=</span> <span class="br">[];</span></span>
+<span class="line"> </span>
+
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * PROJECT 1: Enterprise E-Commerce Platform</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * Full-stack e-commerce system built with React, Node.js,</span></span>
+<span class="line"><span class="comment">     * and PostgreSQL. Features real-time inventory management,</span></span>
+<span class="line"><span class="comment">     * optimistic UI updates, and sub-200ms time-to-interactive.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * The hardest part? Caching. The answer is always caching.</span></span>
+<span class="line"><span class="comment">     * And cache invalidation. Those are the two hard things.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * Stack: React + Next.js + Node.js + PostgreSQL + Redis</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line blurred">    <span class="var">projects</span><span class="br">.</span><span class="fn">push</span><span class="br">(</span><span class="kw">new</span> <span class="tp">Project</span><span class="br">({</span></span>
+<span class="line blurred">      <span class="var">name</span><span class="op">:</span> <span class="str">'enterprise-commerce-platform'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">stack</span><span class="op">:</span> <span class="br">[</span><span class="str">'React'</span><span class="br">,</span> <span class="str">'Next.js'</span><span class="br">,</span> <span class="str">'Node.js'</span><span class="br">,</span> <span class="str">'PostgreSQL'</span><span class="br">,</span> <span class="str">'Redis'</span><span class="br">],</span></span>
+<span class="line blurred">      <span class="var">status</span><span class="op">:</span> <span class="str">'production'</span><span class="br">,</span></span>
+<span class="line blurred">    <span class="br">}));</span></span>
+<span class="line"> </span>
+
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * PROJECT 2: Real-Time Analytics Dashboard</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * A performance monitoring dashboard that visualizes</span></span>
+<span class="line"><span class="comment">     * millions of data points in real-time using WebSockets</span></span>
+<span class="line"><span class="comment">     * and D3.js. Built with React and a custom virtual</span></span>
+<span class="line"><span class="comment">     * scrolling engine for buttery-smooth 60fps rendering.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * I wrote this during a hackathon on 6 hours of sleep.</span></span>
+<span class="line"><span class="comment">     * It won. I slept for 14 hours after.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * Stack: React + TypeScript + D3.js + WebSockets + Node.js</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line blurred">    <span class="var">projects</span><span class="br">.</span><span class="fn">push</span><span class="br">(</span><span class="kw">new</span> <span class="tp">Project</span><span class="br">({</span></span>
+<span class="line blurred">      <span class="var">name</span><span class="op">:</span> <span class="str">'realtime-analytics-dashboard'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">stack</span><span class="op">:</span> <span class="br">[</span><span class="str">'React'</span><span class="br">,</span> <span class="str">'TypeScript'</span><span class="br">,</span> <span class="str">'D3.js'</span><span class="br">,</span> <span class="str">'WebSockets'</span><span class="br">],</span></span>
+<span class="line blurred">      <span class="var">status</span><span class="op">:</span> <span class="str">'production'</span><span class="br">,</span></span>
+<span class="line blurred">    <span class="br">}));</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // <span class="tag-note">NOTE:</span> there are more projects on my GitHub</span></span>
+<span class="line comment-line"><span class="comment">    // I just can't stop building things</span></span>
+<span class="line"> </span>
+
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * PROJECT 3: Developer Portfolio (you're looking at it)</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * A portfolio disguised as a code editor where the comments</span></span>
+<span class="line"><span class="comment">     * tell my story and the code is blurred in the background.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * Yes, this IS the portfolio. Very meta. I know.</span></span>
+<span class="line"><span class="comment">     *</span></span>
+<span class="line"><span class="comment">     * Stack: HTML + CSS + Vanilla JS + Questionable life choices</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line blurred">    <span class="var">projects</span><span class="br">.</span><span class="fn">push</span><span class="br">(</span><span class="kw">new</span> <span class="tp">Project</span><span class="br">({</span></span>
+<span class="line blurred">      <span class="var">name</span><span class="op">:</span> <span class="str">'this-very-portfolio'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">meta</span><span class="op">:</span> <span class="kw">true</span><span class="br">,</span></span>
+<span class="line blurred">    <span class="br">}));</span></span>
+<span class="line"> </span>
+<span class="line blurred">    <span class="kw">return</span> <span class="var">projects</span><span class="br">;</span></span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: THE 2AM FUNCTION -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s6">
+<div class="block-comment">
+<span class="line"><span class="comment">  /*</span></span>
+<span class="line"><span class="comment">   * The following function was written at 2AM</span></span>
+<span class="line"><span class="comment">   * after 4 cups of coffee.</span></span>
+<span class="line"><span class="comment">   *</span></span>
+<span class="line"><span class="comment">   * It has been running in production for 2 years.</span></span>
+<span class="line"><span class="comment">   * Nobody dares touch it.</span></span>
+<span class="line"><span class="comment">   * It handles payment processing for a Fortune 1 company.</span></span>
+<span class="line"><span class="comment">   *</span></span>
+<span class="line"><span class="comment">   * If you understand it, please explain it to me.</span></span>
+<span class="line"><span class="comment">   */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">private</span> <span class="fn">mysteryFunction</span><span class="br">(</span><span class="var">data</span><span class="op">:</span> <span class="tp">unknown</span><span class="br">):</span> <span class="tp">void</span> <span class="br">{</span></span>
+<span class="line blurred">    <span class="kw">const</span> <span class="var">result</span> <span class="op">=</span> <span class="var">data</span></span>
+<span class="line blurred">      <span class="br">?.</span><span class="fn">reduce</span><span class="br">((</span><span class="var">acc</span><span class="br">,</span> <span class="var">val</span><span class="br">)</span> <span class="kw">=&gt;</span> <span class="var">acc</span> <span class="op">^</span> <span class="br">(</span><span class="var">val</span> <span class="op">&lt;&lt;</span> <span class="nr">3</span><span class="br">)</span> <span class="op">|</span> <span class="br">(</span><span class="var">val</span> <span class="op">&gt;&gt;&gt;</span> <span class="nr">29</span><span class="br">),</span> <span class="nr">0x5F3759DF</span><span class="br">)</span></span>
+<span class="line blurred">      <span class="br">?.</span><span class="fn">toString</span><span class="br">(</span><span class="nr">16</span><span class="br">)</span></span>
+<span class="line blurred">      <span class="br">?.</span><span class="fn">split</span><span class="br">(</span><span class="str">''</span><span class="br">)</span></span>
+<span class="line blurred">      <span class="br">?.</span><span class="fn">reverse</span><span class="br">()</span></span>
+<span class="line blurred">      <span class="br">?.</span><span class="fn">join</span><span class="br">(</span><span class="str">''</span><span class="br">);</span></span>
+<span class="line comment-line"><span class="comment">    // don't ask. just don't.</span></span>
+<span class="line blurred">    <span class="kw">return</span> <span class="var">result</span> <span class="op">??</span> <span class="fn">panic</span><span class="br">();</span></span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: ENGINEERING PHILOSOPHY -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s7">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  HOW I WRITE CODE</span></span>
+<span class="line comment-line"><span class="comment">  //  (principles, not platitudes)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">readonly</span> <span class="var">principles</span><span class="op">:</span> <span class="tp">string</span><span class="br">[]</span> <span class="op">=</span> <span class="br">[</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // 1. Readability is not optional.</span></span>
+<span class="line comment-line"><span class="comment">    //    Code is read 10x more than it is written.</span></span>
+<span class="line comment-line"><span class="comment">    //    Future-you is your most important code reviewer.</span></span>
+<span class="line blurred">    <span class="str">'readability-first'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // 2. Tests are documentation that runs.</span></span>
+<span class="line comment-line"><span class="comment">    //    If your test suite passes but nobody understands</span></span>
+<span class="line comment-line"><span class="comment">    //    WHAT it's testing, you've automated confusion.</span></span>
+<span class="line blurred">    <span class="str">'tests-as-docs'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // 3. Ship, measure, iterate.</span></span>
+<span class="line comment-line"><span class="comment">    //    Perfection is the enemy of progress.</span></span>
+<span class="line comment-line"><span class="comment">    //    A good feature shipped today beats a perfect one</span></span>
+<span class="line comment-line"><span class="comment">    //    shipped never.</span></span>
+<span class="line blurred">    <span class="str">'ship-measure-iterate'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // 4. The best abstraction is the one you don't need yet.</span></span>
+<span class="line comment-line"><span class="comment">    //    I have mass-deleted more "clever" code than</span></span>
+<span class="line comment-line"><span class="comment">    //    I care to admit.</span></span>
+<span class="line blurred">    <span class="str">'yagni'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // 5. Every PR should leave the codebase better</span></span>
+<span class="line comment-line"><span class="comment">    //    than you found it. The Boy Scout rule, but for git.</span></span>
+<span class="line blurred">    <span class="str">'boy-scout-rule'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // 6. Accessibility is not a feature -- it is a baseline.</span></span>
+<span class="line comment-line"><span class="comment">    //    If someone can't use what you built, you haven't</span></span>
+<span class="line comment-line"><span class="comment">    //    finished building it.</span></span>
+<span class="line blurred">    <span class="str">'a11y-always'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="br">];</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: WHAT I'M DOING NOW -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s8">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  WHAT I'M UP TO RIGHT NOW</span></span>
+<span class="line comment-line"><span class="comment">  //  (last updated: February 2026)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="fn">getCurrentStatus</span><span class="br">():</span> <span class="tp">Status</span> <span class="br">{</span></span>
+<span class="line blurred">    <span class="kw">return</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">      // <span class="tag-todo">TODO:</span> update resume (it's been 6 months)</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">      // Currently building: exploring AI/ML integration patterns</span></span>
+<span class="line comment-line"><span class="comment">      // Currently learning: Rust (because apparently I hate free time)</span></span>
+<span class="line comment-line"><span class="comment">      // Currently reading: "Designing Data-Intensive Applications"</span></span>
+<span class="line comment-line"><span class="comment">      // Currently thinking about: distributed systems at edge</span></span>
+<span class="line"> </span>
+<span class="line blurred">      <span class="var">building</span><span class="op">:</span> <span class="str">'ai-integration-patterns'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">learning</span><span class="op">:</span> <span class="str">'rust-lang'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">reading</span><span class="op">:</span> <span class="str">'ddia-kleppmann'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">openTo</span><span class="op">:</span> <span class="str">'interesting-conversations'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line blurred">    <span class="br">};</span></span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: ERROR HANDLING / PERSONALITY -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s9">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  ERROR HANDLING</span></span>
+<span class="line comment-line"><span class="comment">  //  (a.k.a. things I've learned the hard way)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">try</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Lesson 1: "It works on my machine" is not a deployment strategy.</span></span>
+<span class="line comment-line"><span class="comment">    //           Docker exists for a reason.</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Lesson 2: The best error message is the one that tells you</span></span>
+<span class="line comment-line"><span class="comment">    //           exactly what went wrong AND how to fix it.</span></span>
+<span class="line comment-line"><span class="comment">    //           "Error: something went wrong" is a war crime.</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Lesson 3: Never deploy on Friday.</span></span>
+<span class="line comment-line"><span class="comment">    //           I deployed on a Friday once.</span></span>
+<span class="line comment-line"><span class="comment">    //           Once.</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Lesson 4: Read the PR description before the code diff.</span></span>
+<span class="line comment-line"><span class="comment">    //           Context is everything.</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // Lesson 5: The 10x engineer is the one who makes</span></span>
+<span class="line comment-line"><span class="comment">    //           the other 9 engineers more productive.</span></span>
+<span class="line"> </span>
+<span class="line blurred">    <span class="kw">await</span> <span class="kw">this</span><span class="br">.</span><span class="fn">applyLessons</span><span class="br">(</span><span class="var">hardKnocks</span><span class="br">);</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="br">}</span> <span class="kw">catch</span> <span class="br">(</span><span class="var">error</span><span class="op">:</span> <span class="tp">ImposterSyndrome</span><span class="br">)</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">    // <span class="tag-fixme">FIXME:</span> imposter syndrome</span></span>
+<span class="line comment-line"><span class="comment">    // Status: unresolved</span></span>
+<span class="line comment-line"><span class="comment">    // Priority: low (everyone has it, apparently)</span></span>
+<span class="line comment-line"><span class="comment">    // Workaround: ship more code, collect more evidence</span></span>
+<span class="line"> </span>
+<span class="line blurred">    <span class="fn">console</span><span class="br">.</span><span class="fn">log</span><span class="br">(</span><span class="str">'You belong here.'</span><span class="br">);</span></span>
+<span class="line blurred">    <span class="fn">keepGoing</span><span class="br">();</span></span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 10: TESTIMONIALS AS CODE REVIEW COMMENTS -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s10">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  CODE REVIEW COMMENTS FROM COLLEAGUES</span></span>
+<span class="line comment-line"><span class="comment">  //  (the closest thing to a testimonials section)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="kw">const</span> <span class="var">reviews</span><span class="op">:</span> <span class="tp">Review</span><span class="br">[]</span> <span class="op">=</span> <span class="br">[</span></span>
+<span class="line"> </span>
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * <span class="tag-review">@reviewer</span> -- Engineering Manager</span></span>
+<span class="line"><span class="comment">     * "Consistently delivers clean, well-tested code ahead of</span></span>
+<span class="line"><span class="comment">     *  schedule. His ability to break down complex problems and</span></span>
+<span class="line"><span class="comment">     *  communicate solutions to non-technical stakeholders is</span></span>
+<span class="line"><span class="comment">     *  exceptional."</span></span>
+<span class="line"><span class="comment">     *  Approved  +1</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * <span class="tag-review">@reviewer</span> -- Senior Engineer, Peer</span></span>
+<span class="line"><span class="comment">     * "One of the most thorough code reviewers I've worked</span></span>
+<span class="line"><span class="comment">     *  with. Doesn't just find bugs -- suggests better</span></span>
+<span class="line"><span class="comment">     *  patterns. Every PR he touches gets measurably better."</span></span>
+<span class="line"><span class="comment">     *  Approved  +1</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<div class="block-comment">
+<span class="line"><span class="comment">    /*</span></span>
+<span class="line"><span class="comment">     * <span class="tag-review">@reviewer</span> -- Tech Lead</span></span>
+<span class="line"><span class="comment">     * "Built an entire microservice gateway from scratch that</span></span>
+<span class="line"><span class="comment">     *  reduced API latency across 12 downstream services.</span></span>
+<span class="line"><span class="comment">     *  I've stopped worrying about what happens when</span></span>
+<span class="line"><span class="comment">     *  Anshull is on the project."</span></span>
+<span class="line"><span class="comment">     *  Approved  +1</span></span>
+<span class="line"><span class="comment">     */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line blurred">  <span class="br">];</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 11: CONTACT -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s11">
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line comment-line"><span class="comment">  //  CONTACT</span></span>
+<span class="line comment-line"><span class="comment">  //  (yes, I actually respond)</span></span>
+<span class="line comment-line"><span class="comment">  // -------------------------------------------------------</span></span>
+<span class="line"> </span>
+<span class="line blurred">  <span class="fn">getContactInfo</span><span class="br">():</span> <span class="tp">Contact</span> <span class="br">{</span></span>
+<span class="line blurred">    <span class="kw">return</span> <span class="br">{</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">      // <span class="tag-note">NOTE:</span> this developer is available for hire</span></span>
+<span class="line comment-line"><span class="comment">      //</span></span>
+<span class="line comment-line"><span class="comment">      // I'm open to:</span></span>
+<span class="line comment-line"><span class="comment">      //   - Full-time opportunities at companies that care about craft</span></span>
+<span class="line comment-line"><span class="comment">      //   - Collaborations on interesting technical problems</span></span>
+<span class="line comment-line"><span class="comment">      //   - Conversations about software, architecture, or life</span></span>
+<span class="line comment-line"><span class="comment">      //</span></span>
+<span class="line comment-line"><span class="comment">      // I typically respond within 24 hours.</span></span>
+<span class="line comment-line"><span class="comment">      // Unless I'm debugging. Then give me 48.</span></span>
+<span class="line"> </span>
+<span class="line blurred">      <span class="var">email</span><span class="op">:</span> <span class="str">'<a href="mailto:anshullgarg@gmail.com" style="color:var(--string);text-decoration:none;filter:none;opacity:1;pointer-events:auto" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">anshullgarg@gmail.com</a>'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">github</span><span class="op">:</span> <span class="str">'<a href="https://github.com/anshullgarg" target="_blank" rel="noopener" style="color:var(--string);text-decoration:none;filter:none;opacity:1;pointer-events:auto" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">github.com/anshullgarg</a>'</span><span class="br">,</span></span>
+<span class="line blurred">      <span class="var">linkedin</span><span class="op">:</span> <span class="str">'<a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" style="color:var(--string);text-decoration:none;filter:none;opacity:1;pointer-events:auto" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">linkedin.com/in/anshullgarg</a>'</span><span class="br">,</span></span>
+<span class="line"> </span>
+<span class="line blurred">    <span class="br">};</span></span>
+<span class="line blurred">  <span class="br">}</span></span>
+<span class="line"> </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 12: CLOSING -->
+<!-- ============================================================ -->
+<div class="fade-section" id="s12">
+<span class="line blurred"><span class="br">}</span></span>
+<span class="line"> </span>
+<span class="line"> </span>
+<div class="block-comment">
+<span class="line"><span class="comment">/*</span></span>
+<span class="line"><span class="comment"> * END OF FILE</span></span>
+<span class="line"><span class="comment"> *</span></span>
+<span class="line"><span class="comment"> * If you've read this far, you're either:</span></span>
+<span class="line"><span class="comment"> *   a) A recruiter who actually cares (rare, thank you)</span></span>
+<span class="line"><span class="comment"> *   b) A developer who appreciates the format (respect)</span></span>
+<span class="line"><span class="comment"> *   c) Me, checking for typos at 3AM (probable)</span></span>
+<span class="line"><span class="comment"> *</span></span>
+<span class="line"><span class="comment"> * Either way -- let's talk.</span></span>
+<span class="line"><span class="comment"> *</span></span>
+<span class="line"><span class="comment"> * git commit -m "life: open to new adventures"</span></span>
+<span class="line"><span class="comment"> * git push origin main --force</span></span>
+<span class="line"><span class="comment"> *</span></span>
+<span class="line"><span class="comment"> * (Just kidding. I would never force push to main.)</span></span>
+<span class="line"><span class="comment"> * (Okay, maybe once. We don't talk about that.)</span></span>
+<span class="line"><span class="comment"> */</span></span>
+</div>
+<span class="line"> </span>
+<span class="line"> </span>
+<span class="line blurred"><span class="kw">export</span> <span class="kw">default</span> <span class="tp">AnshullGarg</span><span class="br">;</span></span>
+<span class="line"> </span>
+<span class="line comment-line"><span class="comment">// <span class="tag-todo">TODO:</span> go outside. touch grass. remember what sunlight feels like.</span></span>
+<span class="line comment-line"><span class="comment">// <span class="tag-todo">TODO:</span> find someone who looks at you the way you look at clean code.</span></span>
+<span class="line comment-line"><span class="comment">// <span class="tag-hack">HACK:</span> entire career is just Stack Overflow + determination</span></span>
+<span class="line"> </span>
+<span class="line"> </span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+<span class="line" style="opacity:.25;color:var(--line-nr)">~</span>
+</div>
+
+  </div>
+</div>
+
+<!-- MINIMAP -->
+<div class="minimap" aria-hidden="true">
+  <div class="minimap-viewport" id="minimap-viewport"></div>
+  <div class="minimap-content" id="minimap-content"></div>
+</div>
+
+<!-- STATUS BAR -->
+<footer class="status-bar" role="contentinfo">
+  <div class="status-item remote">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 11.5a.5.5 0 01-1 0v-5a.5.5 0 011 0v5zm0-7a.5.5 0 01-1 0v-.01a.5.5 0 011 0V4.5z"/></svg>
+    main*
+  </div>
+  <div class="status-item" id="status-lines">Ln 1, Col 1</div>
+  <div class="status-item">Spaces: 2</div>
+  <div class="status-item">UTF-8</div>
+  <div class="status-right">
+    <div class="status-item">TypeScript React</div>
+    <div class="status-item" id="status-problems">0 problems</div>
+    <div class="status-item" style="color:var(--comment-green)">Prettier</div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // === LINE NUMBERS ===
+  const codeArea = document.getElementById('code-area');
+  const gutter = document.getElementById('gutter');
+
+  function generateLineNumbers() {
+    const lines = codeArea.querySelectorAll('.line');
+    gutter.innerHTML = '';
+    let lineNum = 1;
+    lines.forEach((line) => {
+      const ln = document.createElement('span');
+      ln.className = 'ln';
+      ln.textContent = lineNum;
+
+      // Highlight comment lines in the gutter
+      const parent = line.closest('.comment-line') || line.closest('.block-comment');
+      if (line.classList.contains('comment-line')) {
+        ln.classList.add('highlight');
+      } else if (line.closest('.block-comment')) {
+        ln.classList.add('highlight-block');
+      }
+
+      gutter.appendChild(ln);
+      lineNum++;
+    });
+
+    // Update status bar
+    document.getElementById('status-lines').textContent =
+      `${lineNum - 1} lines`;
+    document.getElementById('status-problems').textContent =
+      '0 errors, 2 warnings';
+  }
+
+  // === SCROLL-TRIGGERED FADE IN ===
+  function initFadeIn() {
+    const sections = document.querySelectorAll('.fade-section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.05,
+      rootMargin: '0px 0px -40px 0px'
+    });
+    sections.forEach((s) => observer.observe(s));
+  }
+
+  // === MINIMAP ===
+  function initMinimap() {
+    const minimapContent = document.getElementById('minimap-content');
+    const viewport = document.getElementById('minimap-viewport');
+    if (!minimapContent || !viewport) return;
+
+    // Build minimap representation
+    const lines = codeArea.querySelectorAll('.line');
+    let miniText = '';
+    lines.forEach((line) => {
+      const text = line.textContent || '';
+      const isComment = line.classList.contains('comment-line') ||
+                        line.closest('.comment-line') ||
+                        line.closest('.block-comment');
+      if (isComment) {
+        miniText += '<span style="color:#3a5a40">' +
+          text.substring(0, 80).replace(/</g, '&lt;') + '</span>\n';
+      } else {
+        miniText += '<span style="color:#1a2540">' +
+          text.substring(0, 80).replace(/</g, '&lt;') + '</span>\n';
+      }
+    });
+    minimapContent.innerHTML = miniText;
+
+    // Viewport tracking
+    function updateViewport() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight;
+      const winHeight = window.innerHeight;
+      const minimapHeight = document.querySelector('.minimap').clientHeight;
+
+      const scrollFraction = scrollTop / (docHeight - winHeight);
+      const vpHeight = (winHeight / docHeight) * minimapHeight;
+      const vpTop = scrollFraction * (minimapHeight - vpHeight);
+
+      viewport.style.top = Math.max(0, vpTop) + 'px';
+      viewport.style.height = Math.max(20, vpHeight) + 'px';
+    }
+
+    window.addEventListener('scroll', updateViewport, { passive: true });
+    updateViewport();
+  }
+
+  // === CURSOR POSITION IN STATUS BAR ===
+  function initStatusTracking() {
+    const statusLines = document.getElementById('status-lines');
+    const lines = codeArea.querySelectorAll('.line');
+    const totalLines = lines.length;
+
+    window.addEventListener('scroll', () => {
+      const scrollFraction = window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight);
+      const currentLine = Math.max(1, Math.round(scrollFraction * totalLines));
+      statusLines.textContent = `Ln ${currentLine}, Col 1`;
+    }, { passive: true });
+  }
+
+  // === SUBTLE GLOW PULSE ON COMMENT SECTIONS ===
+  function initCommentGlow() {
+    const commentLines = document.querySelectorAll('.comment-line');
+    commentLines.forEach((line, i) => {
+      line.style.animationDelay = (i * 0.02) + 's';
+    });
+  }
+
+  // === KEYBOARD NAVIGATION ===
+  function initKeyNav() {
+    document.addEventListener('keydown', (e) => {
+      const sections = document.querySelectorAll('.fade-section');
+      const scrollY = window.scrollY;
+      const winH = window.innerHeight;
+
+      if (e.key === 'j' || e.key === 'ArrowDown') {
+        // Find next section
+        for (const s of sections) {
+          if (s.getBoundingClientRect().top > 80) {
+            s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            e.preventDefault();
+            break;
+          }
+        }
+      }
+      if (e.key === 'k' || e.key === 'ArrowUp') {
+        // Find previous section
+        const arr = Array.from(sections).reverse();
+        for (const s of arr) {
+          if (s.getBoundingClientRect().top < -10) {
+            s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            e.preventDefault();
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  // === TAB INTERACTION ===
+  function initTabs() {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+  }
+
+  // === INIT ===
+  function init() {
+    generateLineNumbers();
+    initFadeIn();
+    initMinimap();
+    initStatusTracking();
+    initCommentGlow();
+    initKeyNav();
+    initTabs();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+</body>
+</html>

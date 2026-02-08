@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Infinite Craft Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. Combine elements to discover my story.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --border: #E5E7EB;
+  --border-hover: #D1D5DB;
+  --text: #111827;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --accent: #6366F1;
+  --accent-light: #EEF2FF;
+  --accent-glow: rgba(99,102,241,0.25);
+  --green: #10B981;
+  --green-light: #ECFDF5;
+  --orange: #F59E0B;
+  --orange-light: #FFFBEB;
+  --pink: #EC4899;
+  --pink-light: #FDF2F8;
+  --cyan: #06B6D4;
+  --cyan-light: #ECFEFF;
+  --red: #EF4444;
+  --red-light: #FEF2F2;
+  --purple: #8B5CF6;
+  --purple-light: #F5F3FF;
+  --sidebar-w: 300px;
+  --pill-h: 40px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+html { height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== LAYOUT ===== */
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.sidebar-count {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.sidebar-count span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sidebar-search {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font);
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+
+.sidebar-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.sidebar-search input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.sidebar-list::-webkit-scrollbar { width: 6px; }
+.sidebar-list::-webkit-scrollbar-track { background: transparent; }
+.sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.sidebar-element {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: grab;
+  transition: background 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sidebar-element:hover {
+  background: var(--bg);
+}
+
+.sidebar-element:active {
+  cursor: grabbing;
+}
+
+.sidebar-element .el-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-element .el-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-element.new-discovery {
+  animation: sidebarPulse 0.6s ease;
+}
+
+@keyframes sidebarPulse {
+  0% { background: var(--accent-light); transform: scale(1.02); }
+  100% { background: transparent; transform: scale(1); }
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-footer-text {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}
+
+.sidebar-footer-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ===== CANVAS AREA ===== */
+.canvas-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* ===== CANVAS HEADER ===== */
+.canvas-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+  pointer-events: none;
+}
+
+.canvas-header > * { pointer-events: auto; }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  background: var(--text);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.brand-text h1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.brand-text p {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.canvas-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-action:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.btn-action.primary {
+  background: var(--text);
+  color: white;
+  border-color: var(--text);
+}
+
+.btn-action.primary:hover {
+  opacity: 0.9;
+}
+
+/* ===== ONBOARDING HINT ===== */
+.onboarding {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.5s;
+}
+
+.onboarding.hidden { opacity: 0; }
+
+.onboarding-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.onboarding h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.onboarding p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+.onboarding .hint-keys {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.hint-key {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.hint-key kbd {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* ===== DRAGGABLE ELEMENT PILLS ===== */
+.element-pill {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: var(--pill-h);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 2;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.element-pill:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 3;
+}
+
+.element-pill:active, .element-pill.dragging {
+  cursor: grabbing;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border-color: var(--accent);
+  z-index: 100;
+}
+
+.element-pill .pill-icon {
+  font-size: 16px;
+}
+
+.element-pill .pill-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Color variants */
+.element-pill[data-tier="base"] {
+  border-color: #D1D5DB;
+  background: #F9FAFB;
+}
+
+.element-pill[data-tier="tier1"] {
+  border-color: #C7D2FE;
+  background: #EEF2FF;
+}
+
+.element-pill[data-tier="tier2"] {
+  border-color: #A5B4FC;
+  background: #E0E7FF;
+}
+
+.element-pill[data-tier="tier3"] {
+  border-color: #FDE68A;
+  background: #FFFBEB;
+}
+
+.element-pill[data-tier="tier4"] {
+  border-color: #F9A8D4;
+  background: #FDF2F8;
+}
+
+.element-pill[data-tier="special"] {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #EEF2FF, #FDF2F8);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+/* Combine proximity indicator */
+.element-pill.near-combine {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Spawn animation */
+.element-pill.spawning {
+  animation: pillSpawn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes pillSpawn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== COMBINE SPARKLE EFFECT ===== */
+.sparkle-container {
+  position: absolute;
+  pointer-events: none;
+  z-index: 200;
+}
+
+.sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: sparkleBurst 0.7s ease-out forwards;
+}
+
+@keyframes sparkleBurst {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+.sparkle-ring {
+  position: absolute;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  animation: ringExpand 0.6s ease-out forwards;
+}
+
+@keyframes ringExpand {
+  0% {
+    width: 0; height: 0;
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    width: 80px; height: 80px;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ===== DISCOVERY NOTIFICATION ===== */
+.discovery-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  z-index: 500;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 500px;
+}
+
+.discovery-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.discovery-toast .toast-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.discovery-toast .toast-content h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.discovery-toast .toast-content p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ===== DETAIL PANEL ===== */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 400;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+
+.detail-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.detail-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  background: var(--surface);
+  border-radius: 20px;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 401;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+}
+
+.detail-panel.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.detail-panel::-webkit-scrollbar { width: 6px; }
+.detail-panel::-webkit-scrollbar-track { background: transparent; }
+.detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.detail-header {
+  padding: 28px 28px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.detail-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.detail-icon {
+  font-size: 36px;
+}
+
+.detail-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.detail-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.detail-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.detail-close:hover {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.detail-body {
+  padding: 20px 28px 28px;
+}
+
+.detail-recipe {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-recipe .recipe-icon { font-size: 16px; }
+.detail-recipe .recipe-plus { color: var(--text-tertiary); font-weight: 700; }
+
+.detail-description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.detail-tag {
+  padding: 4px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+}
+
+.detail-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.detail-stat {
+  padding: 12px 14px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.detail-stat-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.detail-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.detail-links {
+  display: flex;
+  gap: 8px;
+}
+
+.detail-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.detail-link:hover {
+  border-color: var(--text);
+}
+
+.detail-link.primary-link {
+  background: var(--text);
+  color: white;
+  border-color: var(--text);
+}
+
+.detail-link.primary-link:hover {
+  opacity: 0.9;
+}
+
+/* ===== RECIPE HINT TOOLTIP ===== */
+.recipe-hint {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 300;
+}
+
+.recipe-hint-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.2s;
+}
+
+.recipe-hint-btn:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+
+.recipe-hint-panel {
+  position: absolute;
+  bottom: 56px;
+  right: 0;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.25s;
+}
+
+.recipe-hint-panel.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.recipe-hint-panel::-webkit-scrollbar { width: 4px; }
+.recipe-hint-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.hint-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hint-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.hint-item:last-child { border-bottom: none; }
+
+.hint-item .hint-a,
+.hint-item .hint-b {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hint-item .hint-plus {
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+
+.hint-item .hint-arrow {
+  color: var(--accent);
+}
+
+.hint-item .hint-result {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hint-item.discovered {
+  opacity: 0.4;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-section {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--pink));
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.progress-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* ===== CATEGORY DIVIDERS ===== */
+.sidebar-category {
+  padding: 8px 12px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* ===== MOBILE SIDEBAR TOGGLE ===== */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 15;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-toggle { display: flex; }
+  .canvas-header { left: 52px; }
+}
+
+/* ===== COMPLETED CELEBRATION ===== */
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s;
+}
+
+.celebration-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.celebration-card {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+  max-width: 480px;
+  width: 90vw;
+  transform: scale(0.9);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+}
+
+.celebration-overlay.show .celebration-card {
+  transform: scale(1);
+}
+
+.celebration-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.celebration-card h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.celebration-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.celebration-card .btn-action {
+  margin: 0 auto;
+}
+
+/* ===== CONFETTI ===== */
+.confetti {
+  position: fixed;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  z-index: 601;
+  pointer-events: none;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===== NOT FOUND SHAKE ===== */
+@keyframes nope {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.element-pill.nope {
+  animation: nope 0.4s ease;
+  border-color: var(--red) !important;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Discoveries</div>
+      <div class="sidebar-count"><span id="discoveredCount">4</span> / <span id="totalCount">28</span> elements</div>
+    </div>
+    <div class="progress-section">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width: 14%"></div>
+      </div>
+      <div class="progress-label" id="progressLabel">14% explored</div>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" placeholder="Search elements..." id="searchInput" autocomplete="off">
+    </div>
+    <div class="sidebar-list" id="sidebarList"></div>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">
+        Drag elements to the canvas.<br>
+        Combine them to discover Anshull's story.
+      </div>
+    </div>
+  </aside>
+
+  <!-- MOBILE TOGGLE -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+    <span>&#9776;</span>
+  </button>
+
+  <!-- CANVAS -->
+  <main class="canvas-area" id="canvas">
+    <!-- HEADER -->
+    <div class="canvas-header">
+      <div class="brand">
+        <div class="brand-logo">AG</div>
+        <div class="brand-text">
+          <h1>Infinite Craft</h1>
+          <p>Anshull Garg's Portfolio</p>
+        </div>
+      </div>
+      <div class="canvas-actions">
+        <button class="btn-action" id="btnClear">
+          <span>&#10005;</span> Clear Canvas
+        </button>
+        <button class="btn-action" id="btnReset">
+          <span>&#8635;</span> Reset All
+        </button>
+      </div>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div class="onboarding" id="onboarding">
+      <div class="onboarding-icon">&#9878;</div>
+      <h2>Combine to Discover</h2>
+      <p>Drag elements from the sidebar onto the canvas. Drop one element onto another to combine them and learn about Anshull Garg.</p>
+      <div class="hint-keys">
+        <div class="hint-key"><kbd>Drag</kbd> from sidebar</div>
+        <div class="hint-key"><kbd>Drop</kbd> onto another element</div>
+        <div class="hint-key"><kbd>Double-click</kbd> for details</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- DISCOVERY TOAST -->
+<div class="discovery-toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <div class="toast-content">
+    <h3 id="toastTitle"></h3>
+    <p id="toastDesc"></p>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <div class="detail-icon" id="detailIcon"></div>
+      <div>
+        <div class="detail-title" id="detailTitle"></div>
+        <div class="detail-subtitle" id="detailSubtitle"></div>
+      </div>
+    </div>
+    <button class="detail-close" id="detailClose">&#10005;</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- RECIPE HINTS -->
+<div class="recipe-hint">
+  <button class="recipe-hint-btn" id="hintBtn" title="View recipes">&#128161;</button>
+  <div class="recipe-hint-panel" id="hintPanel">
+    <div class="hint-panel-title">&#128214; Recipe Book</div>
+    <div id="hintList"></div>
+  </div>
+</div>
+
+<!-- CELEBRATION MODAL -->
+<div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celebration-card">
+    <div class="celebration-icon">&#127942;</div>
+    <h2>All Elements Discovered!</h2>
+    <p>You have fully explored Anshull Garg's portfolio. Every skill, every project, every piece of the story has been uncovered through crafting.</p>
+    <button class="btn-action primary" onclick="document.getElementById('celebrationOverlay').classList.remove('show')">
+      Keep Exploring
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ELEMENT DATABASE
+// ============================================================
+const ELEMENTS = {
+  // ---- BASE (4) ----
+  code:    { name: "Code",    icon: "\u{1F4BB}", tier: "base", category: "base",
+             desc: "The fundamental building block. Lines of logic that make machines do remarkable things.",
+             tags: ["JavaScript", "TypeScript", "Python", "Java"] },
+  design:  { name: "Design",  icon: "\u{1F3A8}", tier: "base", category: "base",
+             desc: "Visual thinking. The art of making complex systems feel intuitive and beautiful.",
+             tags: ["Figma", "UI/UX", "Responsive", "Accessibility"] },
+  data:    { name: "Data",    icon: "\u{1F4CA}", tier: "base", category: "base",
+             desc: "Raw information waiting to be structured, queried, and transformed into insight.",
+             tags: ["SQL", "MongoDB", "PostgreSQL", "Redis"] },
+  cloud:   { name: "Cloud",   icon: "\u2601\uFE0F",  tier: "base", category: "base",
+             desc: "Elastic infrastructure. Servers you never see but millions depend on every second.",
+             tags: ["AWS", "GCP", "Azure", "Docker"] },
+
+  // ---- TIER 1: base + base (6) ----
+  frontend: { name: "Frontend",  icon: "\u{1F310}", tier: "tier1", category: "skills",
+              desc: "Where code meets design. Anshull builds performant, accessible React applications with pixel-perfect attention to detail. He specializes in component architecture, state management, and buttery-smooth animations.",
+              tags: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+              stats: { experience: "3+ Years", focus: "React Ecosystem" } },
+  backend:  { name: "Backend",   icon: "\u2699\uFE0F",  tier: "tier1", category: "skills",
+              desc: "Where code meets data. Anshull architects RESTful APIs and microservices that handle enterprise-scale traffic. He designs database schemas, writes efficient queries, and builds systems that scale gracefully.",
+              tags: ["Node.js", "Express", "GraphQL", "PostgreSQL", "Redis"],
+              stats: { experience: "3+ Years", focus: "API Architecture" } },
+  database: { name: "Database",  icon: "\u{1F5C4}\uFE0F",  tier: "tier1", category: "skills",
+              desc: "Data at rest, structured for speed. Anshull designs normalized schemas, writes optimized queries, and implements caching layers that keep response times under 100ms.",
+              tags: ["PostgreSQL", "MongoDB", "Redis", "DynamoDB"],
+              stats: { queryTime: "<100ms", uptime: "99.9%" } },
+  devops:   { name: "DevOps",    icon: "\u{1F6E0}\uFE0F",  tier: "tier1", category: "skills",
+              desc: "Where code meets cloud. CI/CD pipelines, container orchestration, and infrastructure-as-code. Anshull automates the boring stuff so teams can ship faster and sleep better.",
+              tags: ["Docker", "Kubernetes", "GitHub Actions", "Terraform"],
+              stats: { deployFreq: "Multiple/day", pipelineTime: "<8 min" } },
+  uiux:     { name: "UI/UX",     icon: "\u270F\uFE0F",   tier: "tier1", category: "skills",
+              desc: "Design beyond aesthetics. Anshull focuses on user empathy, accessibility (WCAG AA), and design systems that scale across teams.",
+              tags: ["Figma", "Design Systems", "Accessibility", "User Research"],
+              stats: { accessibility: "WCAG AA", approach: "Mobile-first" } },
+  analytics:{ name: "Analytics",  icon: "\u{1F4C8}", tier: "tier1", category: "skills",
+              desc: "Data visualized. Dashboards and metrics that turn raw numbers into actionable decisions. Anshull builds monitoring solutions that catch problems before users do.",
+              tags: ["Datadog", "Grafana", "Lighthouse", "Core Web Vitals"],
+              stats: { monitoring: "Real-time", coverage: "Full-stack" } },
+
+  // ---- TIER 2: tier1 + tier1 or tier1 + base (6) ----
+  fullstack:  { name: "Full Stack",       icon: "\u{1F9D1}\u200D\u{1F4BB}", tier: "tier2", category: "role",
+                desc: "Frontend + Backend = Full Stack. Anshull owns features end-to-end: from database schema to pixel-perfect UI. He thinks in systems, not just components.",
+                tags: ["React", "Node.js", "PostgreSQL", "TypeScript", "Docker"],
+                stats: { scope: "End-to-End", methodology: "Agile/Scrum" } },
+  api:        { name: "API Design",       icon: "\u{1F517}", tier: "tier2", category: "skills",
+                desc: "RESTful architecture and GraphQL schemas that are intuitive, well-documented, and a joy for other developers to consume. Anshull treats APIs as products.",
+                tags: ["REST", "GraphQL", "OpenAPI", "Swagger", "gRPC"],
+                stats: { style: "REST + GraphQL", docs: "OpenAPI 3.0" } },
+  performance:{ name: "Performance",      icon: "\u26A1",  tier: "tier2", category: "skills",
+                desc: "Speed is a feature. Anshull obsesses over Core Web Vitals, bundle sizes, and time-to-interactive. He has reduced page load times by 40%+ through code splitting, lazy loading, and caching strategies.",
+                tags: ["Lighthouse", "Code Splitting", "Lazy Loading", "Caching"],
+                stats: { lcp: "<2.5s", fid: "<100ms" } },
+  scalable:   { name: "Scalable Systems", icon: "\u{1F3D7}\uFE0F",  tier: "tier2", category: "skills",
+                desc: "Architecture that grows. Anshull designs microservices, event-driven patterns, and distributed systems that handle millions of requests without breaking a sweat.",
+                tags: ["Microservices", "Event-Driven", "Load Balancing", "Caching"],
+                stats: { scale: "Millions/day", pattern: "Microservices" } },
+  testing:    { name: "Testing",          icon: "\u{1F9EA}", tier: "tier2", category: "skills",
+                desc: "Confidence in every deploy. Anshull writes unit, integration, and E2E tests. He believes tests are documentation that executes.",
+                tags: ["Jest", "Cypress", "Playwright", "React Testing Library"],
+                stats: { coverage: ">85%", philosophy: "TDD" } },
+  designsys:  { name: "Design System",    icon: "\u{1F3A8}", tier: "tier2", category: "skills",
+                desc: "Reusable, consistent, scalable UI. Anshull has built component libraries that accelerate development across teams. Tokens, variants, accessibility baked in.",
+                tags: ["Storybook", "Component Library", "Design Tokens", "Figma"],
+                stats: { components: "50+", teams: "Cross-org" } },
+
+  // ---- TIER 3: tier2 + tier1/tier2 (6) ----
+  walmart:    { name: "Walmart Engineer",  icon: "\u{1F3EA}", tier: "tier3", category: "experience",
+                desc: "Software Engineer at Walmart Global Tech -- the Fortune #1 company. Anshull builds the systems behind one of the world's largest digital retail platforms, serving hundreds of millions of customers.",
+                tags: ["Enterprise Scale", "E-Commerce", "Fortune 1", "Global Impact"],
+                stats: { company: "Walmart Global Tech", scale: "Fortune #1", users: "Hundreds of millions" },
+                links: [{ label: "LinkedIn", url: "#" }] },
+  ecommerce:  { name: "E-Commerce Platform", icon: "\u{1F6D2}", tier: "tier3", category: "projects",
+                desc: "Full-stack e-commerce with real-time inventory, cart management, payment processing, and recommendation engines. Anshull built features used by millions of shoppers daily.",
+                tags: ["React", "Node.js", "PostgreSQL", "Redis", "Stripe"],
+                stats: { type: "Full-Stack App", traffic: "Millions daily" } },
+  dashboards: { name: "Analytics Dashboard", icon: "\u{1F4CA}", tier: "tier3", category: "projects",
+                desc: "Real-time monitoring dashboards that transform raw data into actionable insights. Built with React, D3.js, and WebSocket connections for live updates.",
+                tags: ["React", "D3.js", "WebSockets", "Datadog"],
+                stats: { refresh: "Real-time", dataPoints: "1M+ daily" } },
+  cicd:       { name: "CI/CD Pipeline",    icon: "\u{1F680}", tier: "tier3", category: "projects",
+                desc: "Automated build, test, and deploy pipelines that reduced deployment time from hours to minutes. Zero-downtime deployments with rollback capabilities.",
+                tags: ["GitHub Actions", "Docker", "Kubernetes", "Terraform"],
+                stats: { deployTime: "<8 min", downtime: "Zero" } },
+  mentor:     { name: "Tech Mentor",       icon: "\u{1F393}", tier: "tier3", category: "role",
+                desc: "Anshull mentors junior engineers, leads code reviews, and champions best practices. He believes the best engineers lift others up.",
+                tags: ["Code Reviews", "Mentorship", "Knowledge Sharing", "Pair Programming"],
+                stats: { mentees: "5+", reviews: "Weekly" } },
+  opensource: { name: "Open Source",       icon: "\u{1F331}", tier: "tier3", category: "community",
+                desc: "Contributing back to the community. Anshull maintains open-source projects and contributes to the tools he uses daily. Code is better when it is shared.",
+                tags: ["GitHub", "npm packages", "Community", "Documentation"],
+                stats: { contributions: "Active", philosophy: "Give back" } },
+
+  // ---- TIER 4 / SPECIAL: final combinations (6) ----
+  anshull:    { name: "Anshull Garg",      icon: "\u{1F48E}", tier: "special", category: "identity",
+                desc: "Software Engineer at Walmart Global Tech. Full-stack builder. System thinker. Anshull architects scalable, high-performance applications that power enterprise e-commerce at Fortune 1 scale. He writes code that ships, mentors engineers who grow, and builds systems that last.",
+                tags: ["Full Stack", "React", "Node.js", "TypeScript", "AWS", "PostgreSQL"],
+                stats: { role: "Software Engineer", company: "Walmart Global Tech", focus: "Scalable Systems", philosophy: "Ship, measure, iterate" },
+                links: [{ label: "LinkedIn", url: "#" }, { label: "GitHub", url: "#" }, { label: "Resume", url: "#" }] },
+  portfolio:  { name: "This Portfolio",    icon: "\u{1F30F}", tier: "special", category: "meta",
+                desc: "You are looking at it. This crafting game IS the portfolio. Built with vanilla HTML, CSS, and JavaScript -- no frameworks, no build step, no dependencies. Proof that Anshull cares about craft, creativity, and user experience.",
+                tags: ["HTML", "CSS", "JavaScript", "Vanilla", "Zero Dependencies"],
+                stats: { framework: "None", buildStep: "None", lines: "~2000", creativity: "Maximum" } },
+  philosophy: { name: "Code Philosophy",   icon: "\u{1F4DC}", tier: "special", category: "values",
+                desc: "1. Readability is not optional -- code is read 10x more than written.\n2. Tests are documentation that executes.\n3. The best abstraction is the one you don't need yet.\n4. Performance matters, but premature optimization is the root of all evil.\n5. Every PR should leave the codebase better than you found it.\n6. Accessibility is a baseline, not a feature.\n7. Ship, measure, iterate.",
+                tags: ["Clean Code", "TDD", "YAGNI", "Pragmatism"],
+                stats: { principle: "Pragmatic", priority: "Maintainability" } },
+  architect:  { name: "System Architect",  icon: "\u{1F3DB}\uFE0F",  tier: "special", category: "role",
+                desc: "The big picture thinker. Anshull designs distributed systems, evaluates trade-offs between consistency and availability, and makes technical decisions that scale with the business.",
+                tags: ["System Design", "Distributed Systems", "Trade-offs", "Architecture"],
+                stats: { scope: "Org-wide", decisions: "Data-driven" } },
+  impact:     { name: "Real-World Impact", icon: "\u{1F30D}", tier: "special", category: "values",
+                desc: "Software that matters. Every feature Anshull ships reaches hundreds of millions of users. He does not write code for code's sake -- he solves real problems for real people at enormous scale.",
+                tags: ["Hundreds of millions of users", "Fortune 1", "Enterprise", "Global"],
+                stats: { users: "Hundreds of millions", reach: "Global", purpose: "Impact > Code" } },
+  connect:    { name: "Let's Connect",     icon: "\u{1F91D}", tier: "special", category: "contact",
+                desc: "Anshull is always open to discussing new opportunities, interesting projects, or just talking about technology. Whether you have a role in mind, a project idea, or want to connect -- reach out.",
+                tags: ["Open to opportunities", "Collaboration", "Coffee chats"],
+                stats: { response: "Within 24 hours", availability: "Open" },
+                links: [{ label: "Email", url: "mailto:anshull.garg@example.com" }, { label: "LinkedIn", url: "#" }, { label: "GitHub", url: "#" }] },
+};
+
+// ============================================================
+// RECIPE TABLE (28 recipes for 24 non-base elements)
+// ============================================================
+const RECIPES = [
+  // Tier 1 from base
+  { a: "code",    b: "design",  result: "frontend" },
+  { a: "code",    b: "data",    result: "backend" },
+  { a: "data",    b: "cloud",   result: "database" },
+  { a: "code",    b: "cloud",   result: "devops" },
+  { a: "design",  b: "data",    result: "uiux" },
+  { a: "design",  b: "cloud",   result: "analytics" },
+
+  // Tier 2 from tier1 combos
+  { a: "frontend",  b: "backend",   result: "fullstack" },
+  { a: "backend",   b: "frontend",  result: "api" },          // alternate path
+  { a: "frontend",  b: "data",      result: "performance" },
+  { a: "backend",   b: "cloud",     result: "scalable" },
+  { a: "code",      b: "testing",   result: "testing" },      // self-discovery
+  { a: "frontend",  b: "devops",    result: "testing" },
+  { a: "frontend",  b: "uiux",     result: "designsys" },
+  { a: "design",    b: "frontend",  result: "designsys" },    // alternate path
+  { a: "backend",   b: "data",      result: "api" },
+  { a: "code",      b: "frontend",  result: "performance" },  // alternate
+
+  // Tier 3
+  { a: "fullstack",  b: "cloud",       result: "walmart" },
+  { a: "fullstack",  b: "scalable",    result: "ecommerce" },
+  { a: "analytics",  b: "frontend",    result: "dashboards" },
+  { a: "devops",     b: "testing",     result: "cicd" },
+  { a: "devops",     b: "cloud",       result: "cicd" },       // alternate
+  { a: "fullstack",  b: "design",      result: "mentor" },
+  { a: "code",       b: "fullstack",   result: "opensource" },
+  { a: "backend",    b: "devops",      result: "scalable" },   // alternate
+
+  // Tier 4 / Special
+  { a: "walmart",     b: "fullstack",    result: "anshull" },
+  { a: "walmart",     b: "performance",  result: "anshull" },     // alternate
+  { a: "anshull",     b: "design",       result: "portfolio" },
+  { a: "anshull",     b: "frontend",     result: "portfolio" },   // alternate
+  { a: "anshull",     b: "code",         result: "philosophy" },
+  { a: "fullstack",   b: "scalable",     result: "architect" },
+  { a: "walmart",     b: "scalable",     result: "architect" },   // alternate
+  { a: "ecommerce",   b: "walmart",      result: "impact" },
+  { a: "walmart",     b: "analytics",    result: "impact" },      // alternate
+  { a: "anshull",     b: "mentor",       result: "connect" },
+  { a: "anshull",     b: "opensource",   result: "connect" },     // alternate
+  { a: "walmart",     b: "mentor",       result: "connect" },     // alternate
+  { a: "mentor",      b: "opensource",   result: "connect" },     // alternate
+  { a: "fullstack",   b: "devops",       result: "cicd" },        // alternate
+  { a: "performance", b: "backend",      result: "scalable" },    // alternate
+  { a: "database",    b: "backend",      result: "api" },         // alternate
+  { a: "testing",     b: "devops",       result: "cicd" },        // alternate
+  { a: "uiux",        b: "code",         result: "designsys" },   // alternate
+  { a: "analytics",   b: "data",         result: "dashboards" },  // alternate
+  { a: "scalable",    b: "cloud",        result: "architect" },   // alternate
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  discovered: new Set(["code", "design", "data", "cloud"]),
+  canvasPills: [],
+  pillIdCounter: 0,
+  dragging: null,
+  dragOffset: { x: 0, y: 0 },
+  toastTimeout: null,
+  hasInteracted: false,
+};
+
+const totalElements = Object.keys(ELEMENTS).length;
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+const canvas        = $("canvas");
+const sidebarList   = $("sidebarList");
+const searchInput   = $("searchInput");
+const progressFill  = $("progressFill");
+const progressLabel = $("progressLabel");
+const discoveredCountEl = $("discoveredCount");
+const totalCountEl  = $("totalCount");
+const toast         = $("toast");
+const toastIcon     = $("toastIcon");
+const toastTitle    = $("toastTitle");
+const toastDesc     = $("toastDesc");
+const detailOverlay = $("detailOverlay");
+const detailPanel   = $("detailPanel");
+const detailIcon    = $("detailIcon");
+const detailTitle   = $("detailTitle");
+const detailSubtitle= $("detailSubtitle");
+const detailBody    = $("detailBody");
+const detailClose   = $("detailClose");
+const hintBtn       = $("hintBtn");
+const hintPanel     = $("hintPanel");
+const hintList      = $("hintList");
+const onboarding    = $("onboarding");
+const sidebar       = $("sidebar");
+const sidebarToggle = $("sidebarToggle");
+const celebrationOverlay = $("celebrationOverlay");
+
+totalCountEl.textContent = totalElements;
+
+// ============================================================
+// SIDEBAR RENDERING
+// ============================================================
+function renderSidebar(filter = "") {
+  const lower = filter.toLowerCase();
+  const categories = {};
+
+  for (const id of state.discovered) {
+    const el = ELEMENTS[id];
+    if (lower && !el.name.toLowerCase().includes(lower) && !el.tags.some(t => t.toLowerCase().includes(lower))) continue;
+    if (!categories[el.category]) categories[el.category] = [];
+    categories[el.category].push({ id, ...el });
+  }
+
+  const catOrder = ["base", "skills", "role", "experience", "projects", "community", "values", "identity", "meta", "contact"];
+  const catLabels = {
+    base: "Base Elements",
+    skills: "Skills",
+    role: "Roles",
+    experience: "Experience",
+    projects: "Projects",
+    community: "Community",
+    values: "Values",
+    identity: "Identity",
+    meta: "Meta",
+    contact: "Contact",
+  };
+
+  let html = "";
+  for (const cat of catOrder) {
+    if (!categories[cat]) continue;
+    html += `<div class="sidebar-category">${catLabels[cat] || cat}</div>`;
+    for (const el of categories[cat]) {
+      html += `<div class="sidebar-element" data-id="${el.id}" draggable="true">
+        <span class="el-icon">${el.icon}</span>
+        <span class="el-name">${el.name}</span>
+      </div>`;
+    }
+  }
+  sidebarList.innerHTML = html;
+
+  // Update counts
+  discoveredCountEl.textContent = state.discovered.size;
+  const pct = Math.round((state.discovered.size / totalElements) * 100);
+  progressFill.style.width = pct + "%";
+  progressLabel.textContent = pct + "% explored";
+}
+
+searchInput.addEventListener("input", () => renderSidebar(searchInput.value));
+
+// ============================================================
+// CANVAS PILL CREATION
+// ============================================================
+function createPill(elementId, x, y, animate = true) {
+  const el = ELEMENTS[elementId];
+  if (!el) return null;
+
+  const pill = document.createElement("div");
+  pill.className = "element-pill" + (animate ? " spawning" : "");
+  pill.dataset.elementId = elementId;
+  pill.dataset.tier = el.tier;
+  pill.dataset.pillId = state.pillIdCounter++;
+  pill.style.left = x + "px";
+  pill.style.top = y + "px";
+  pill.innerHTML = `<span class="pill-icon">${el.icon}</span><span class="pill-name">${el.name}</span>`;
+
+  canvas.appendChild(pill);
+  state.canvasPills.push(pill);
+
+  // Double-click to view details
+  pill.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showDetail(elementId);
+  });
+
+  return pill;
+}
+
+// ============================================================
+// DRAG AND DROP - SIDEBAR TO CANVAS
+// ============================================================
+sidebarList.addEventListener("mousedown", handleSidebarDragStart);
+sidebarList.addEventListener("touchstart", handleSidebarDragStart, { passive: false });
+
+function handleSidebarDragStart(e) {
+  const target = e.target.closest(".sidebar-element");
+  if (!target) return;
+
+  e.preventDefault();
+  hideOnboarding();
+
+  const elementId = target.dataset.id;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const canvasRect = canvas.getBoundingClientRect();
+  const x = clientX - canvasRect.left - 60;
+  const y = clientY - canvasRect.top - 20;
+
+  const pill = createPill(elementId, x, y);
+  if (!pill) return;
+
+  pill.classList.add("dragging");
+  state.dragging = pill;
+  state.dragOffset = { x: 60, y: 20 };
+
+  document.addEventListener("mousemove", handleDragMove);
+  document.addEventListener("mouseup", handleDragEnd);
+  document.addEventListener("touchmove", handleDragMove, { passive: false });
+  document.addEventListener("touchend", handleDragEnd);
+
+  // Close mobile sidebar
+  sidebar.classList.remove("open");
+}
+
+// ============================================================
+// DRAG AND DROP - CANVAS PILLS
+// ============================================================
+canvas.addEventListener("mousedown", handleCanvasDragStart);
+canvas.addEventListener("touchstart", handleCanvasDragStart, { passive: false });
+
+function handleCanvasDragStart(e) {
+  const target = e.target.closest(".element-pill");
+  if (!target) return;
+
+  e.preventDefault();
+  hideOnboarding();
+
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const pillRect = target.getBoundingClientRect();
+  const canvasRect = canvas.getBoundingClientRect();
+
+  state.dragging = target;
+  state.dragOffset = {
+    x: clientX - pillRect.left,
+    y: clientY - pillRect.top,
+  };
+
+  target.classList.add("dragging");
+  // Move to top
+  target.style.zIndex = 100;
+
+  document.addEventListener("mousemove", handleDragMove);
+  document.addEventListener("mouseup", handleDragEnd);
+  document.addEventListener("touchmove", handleDragMove, { passive: false });
+  document.addEventListener("touchend", handleDragEnd);
+}
+
+function handleDragMove(e) {
+  if (!state.dragging) return;
+  e.preventDefault();
+
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const canvasRect = canvas.getBoundingClientRect();
+
+  const x = clientX - canvasRect.left - state.dragOffset.x;
+  const y = clientY - canvasRect.top - state.dragOffset.y;
+
+  state.dragging.style.left = x + "px";
+  state.dragging.style.top = y + "px";
+
+  // Check proximity to other pills
+  checkCombineProximity(state.dragging);
+}
+
+function handleDragEnd(e) {
+  if (!state.dragging) return;
+
+  state.dragging.classList.remove("dragging");
+
+  // Check for combine
+  const combined = tryCombine(state.dragging);
+  if (!combined) {
+    state.dragging.style.zIndex = 2;
+  }
+
+  // Remove proximity highlights
+  state.canvasPills.forEach(p => p.classList.remove("near-combine"));
+
+  state.dragging = null;
+
+  document.removeEventListener("mousemove", handleDragMove);
+  document.removeEventListener("mouseup", handleDragEnd);
+  document.removeEventListener("touchmove", handleDragMove);
+  document.removeEventListener("touchend", handleDragEnd);
+}
+
+// ============================================================
+// COMBINE LOGIC
+// ============================================================
+const COMBINE_DISTANCE = 60;
+
+function checkCombineProximity(dragPill) {
+  const dragRect = dragPill.getBoundingClientRect();
+  const dragCx = dragRect.left + dragRect.width / 2;
+  const dragCy = dragRect.top + dragRect.height / 2;
+
+  state.canvasPills.forEach(p => {
+    if (p === dragPill) { p.classList.remove("near-combine"); return; }
+    const pRect = p.getBoundingClientRect();
+    const pCx = pRect.left + pRect.width / 2;
+    const pCy = pRect.top + pRect.height / 2;
+    const dist = Math.hypot(dragCx - pCx, dragCy - pCy);
+
+    if (dist < COMBINE_DISTANCE) {
+      p.classList.add("near-combine");
+      dragPill.classList.add("near-combine");
+    } else {
+      p.classList.remove("near-combine");
+    }
+  });
+}
+
+function tryCombine(dragPill) {
+  const dragRect = dragPill.getBoundingClientRect();
+  const dragCx = dragRect.left + dragRect.width / 2;
+  const dragCy = dragRect.top + dragRect.height / 2;
+
+  let closest = null;
+  let closestDist = Infinity;
+
+  state.canvasPills.forEach(p => {
+    if (p === dragPill) return;
+    const pRect = p.getBoundingClientRect();
+    const pCx = pRect.left + pRect.width / 2;
+    const pCy = pRect.top + pRect.height / 2;
+    const dist = Math.hypot(dragCx - pCx, dragCy - pCy);
+    if (dist < COMBINE_DISTANCE && dist < closestDist) {
+      closest = p;
+      closestDist = dist;
+    }
+  });
+
+  if (!closest) return false;
+
+  const aId = dragPill.dataset.elementId;
+  const bId = closest.dataset.elementId;
+
+  // Look up recipe
+  const recipe = RECIPES.find(r =>
+    (r.a === aId && r.b === bId) || (r.a === bId && r.b === aId)
+  );
+
+  if (!recipe) {
+    // No recipe found -- shake both
+    dragPill.classList.add("nope");
+    closest.classList.add("nope");
+    setTimeout(() => {
+      dragPill.classList.remove("nope");
+      closest.classList.remove("nope");
+    }, 500);
+    return false;
+  }
+
+  // Combine!
+  const resultId = recipe.result;
+  const resultEl = ELEMENTS[resultId];
+
+  // Calculate midpoint in canvas coords
+  const canvasRect = canvas.getBoundingClientRect();
+  const closestRect = closest.getBoundingClientRect();
+  const midX = ((dragRect.left + dragRect.width/2 + closestRect.left + closestRect.width/2) / 2) - canvasRect.left - 60;
+  const midY = ((dragRect.top + dragRect.height/2 + closestRect.top + closestRect.height/2) / 2) - canvasRect.top - 20;
+
+  // Sparkle at midpoint
+  createSparkle(
+    (dragRect.left + dragRect.width/2 + closestRect.left + closestRect.width/2) / 2,
+    (dragRect.top + dragRect.height/2 + closestRect.top + closestRect.height/2) / 2
+  );
+
+  // Remove source pills
+  removePill(dragPill);
+  removePill(closest);
+
+  // Create result pill
+  setTimeout(() => {
+    createPill(resultId, midX, midY, true);
+  }, 150);
+
+  // Discover element
+  const isNew = !state.discovered.has(resultId);
+  state.discovered.add(resultId);
+  renderSidebar(searchInput.value);
+
+  if (isNew) {
+    showToast(resultEl.icon, `${resultEl.name} Discovered!`, resultEl.desc.substring(0, 80) + "...");
+
+    // Highlight in sidebar
+    setTimeout(() => {
+      const sidebarEl = sidebarList.querySelector(`[data-id="${resultId}"]`);
+      if (sidebarEl) {
+        sidebarEl.classList.add("new-discovery");
+        sidebarEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 200);
+
+    // Check completion
+    if (state.discovered.size === totalElements) {
+      setTimeout(() => {
+        celebrationOverlay.classList.add("show");
+        createConfetti();
+      }, 1000);
+    }
+  }
+
+  return true;
+}
+
+function removePill(pill) {
+  const idx = state.canvasPills.indexOf(pill);
+  if (idx > -1) state.canvasPills.splice(idx, 1);
+  pill.style.transition = "transform 0.2s, opacity 0.2s";
+  pill.style.transform = "scale(0)";
+  pill.style.opacity = "0";
+  setTimeout(() => pill.remove(), 200);
+}
+
+// ============================================================
+// SPARKLE EFFECT
+// ============================================================
+function createSparkle(x, y) {
+  const container = document.createElement("div");
+  container.className = "sparkle-container";
+  container.style.left = x + "px";
+  container.style.top = y + "px";
+  document.body.appendChild(container);
+
+  // Ring
+  const ring = document.createElement("div");
+  ring.className = "sparkle-ring";
+  container.appendChild(ring);
+
+  // Particles
+  const colors = ["#6366F1", "#EC4899", "#F59E0B", "#10B981", "#06B6D4", "#8B5CF6"];
+  for (let i = 0; i < 12; i++) {
+    const spark = document.createElement("div");
+    spark.className = "sparkle";
+    const angle = (i / 12) * Math.PI * 2;
+    const distance = 30 + Math.random() * 40;
+    spark.style.setProperty("--tx", Math.cos(angle) * distance + "px");
+    spark.style.setProperty("--ty", Math.sin(angle) * distance + "px");
+    spark.style.background = colors[i % colors.length];
+    spark.style.width = (3 + Math.random() * 5) + "px";
+    spark.style.height = spark.style.width;
+    container.appendChild(spark);
+  }
+
+  setTimeout(() => container.remove(), 800);
+}
+
+// ============================================================
+// TOAST NOTIFICATIONS
+// ============================================================
+function showToast(icon, title, desc) {
+  toastIcon.textContent = icon;
+  toastTitle.textContent = title;
+  toastDesc.textContent = desc;
+  toast.classList.add("show");
+
+  if (state.toastTimeout) clearTimeout(state.toastTimeout);
+  state.toastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3500);
+}
+
+// ============================================================
+// DETAIL PANEL
+// ============================================================
+function showDetail(elementId) {
+  const el = ELEMENTS[elementId];
+  if (!el) return;
+
+  detailIcon.textContent = el.icon;
+  detailTitle.textContent = el.name;
+  detailSubtitle.textContent = el.category.charAt(0).toUpperCase() + el.category.slice(1);
+
+  // Find the recipe that creates this element
+  const recipe = RECIPES.find(r => r.result === elementId);
+
+  let bodyHtml = "";
+
+  // Recipe line
+  if (recipe) {
+    const a = ELEMENTS[recipe.a];
+    const b = ELEMENTS[recipe.b];
+    bodyHtml += `<div class="detail-recipe">
+      <span class="recipe-icon">${a.icon}</span> ${a.name}
+      <span class="recipe-plus">+</span>
+      <span class="recipe-icon">${b.icon}</span> ${b.name}
+      <span style="margin-left:auto; color:var(--accent);">&#10132;</span>
+      <span class="recipe-icon">${el.icon}</span> ${el.name}
+    </div>`;
+  }
+
+  // Description (handle newlines for philosophy)
+  const descHtml = el.desc.replace(/\n/g, "<br>");
+  bodyHtml += `<div class="detail-description">${descHtml}</div>`;
+
+  // Tags
+  if (el.tags && el.tags.length) {
+    bodyHtml += `<div class="detail-tags">${el.tags.map(t => `<span class="detail-tag">${t}</span>`).join("")}</div>`;
+  }
+
+  // Stats
+  if (el.stats) {
+    bodyHtml += `<div class="detail-stats">`;
+    for (const [key, val] of Object.entries(el.stats)) {
+      const label = key.replace(/([A-Z])/g, " $1").trim();
+      bodyHtml += `<div class="detail-stat">
+        <div class="detail-stat-label">${label}</div>
+        <div class="detail-stat-value">${val}</div>
+      </div>`;
+    }
+    bodyHtml += `</div>`;
+  }
+
+  // Links
+  if (el.links && el.links.length) {
+    bodyHtml += `<div class="detail-links">`;
+    for (const link of el.links) {
+      bodyHtml += `<a class="detail-link primary-link" href="${link.url}" target="_blank">${link.label}</a>`;
+    }
+    bodyHtml += `</div>`;
+  }
+
+  detailBody.innerHTML = bodyHtml;
+
+  detailOverlay.classList.add("show");
+  detailPanel.classList.add("show");
+}
+
+function hideDetail() {
+  detailOverlay.classList.remove("show");
+  detailPanel.classList.remove("show");
+}
+
+detailClose.addEventListener("click", hideDetail);
+detailOverlay.addEventListener("click", hideDetail);
+
+// ============================================================
+// RECIPE HINT PANEL
+// ============================================================
+hintBtn.addEventListener("click", () => {
+  hintPanel.classList.toggle("show");
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".recipe-hint")) {
+    hintPanel.classList.remove("show");
+  }
+});
+
+function renderHints() {
+  // Show unique recipes (one per result)
+  const seen = new Set();
+  let html = "";
+
+  for (const r of RECIPES) {
+    if (seen.has(r.result)) continue;
+    seen.add(r.result);
+    const a = ELEMENTS[r.a];
+    const b = ELEMENTS[r.b];
+    const result = ELEMENTS[r.result];
+    const discovered = state.discovered.has(r.result);
+    const canAttempt = state.discovered.has(r.a) && state.discovered.has(r.b);
+
+    if (discovered) {
+      html += `<div class="hint-item discovered">
+        <span>${a.icon} <span class="hint-a">${a.name}</span></span>
+        <span class="hint-plus">+</span>
+        <span>${b.icon} <span class="hint-b">${b.name}</span></span>
+        <span class="hint-arrow">&#10132;</span>
+        <span>${result.icon} <span class="hint-result">${result.name}</span></span>
+      </div>`;
+    } else if (canAttempt) {
+      html += `<div class="hint-item">
+        <span>${a.icon} <span class="hint-a">${a.name}</span></span>
+        <span class="hint-plus">+</span>
+        <span>${b.icon} <span class="hint-b">${b.name}</span></span>
+        <span class="hint-arrow">&#10132;</span>
+        <span>&#10067; <span class="hint-result">???</span></span>
+      </div>`;
+    } else {
+      html += `<div class="hint-item" style="opacity:0.3;">
+        <span>&#10067; <span class="hint-a">???</span></span>
+        <span class="hint-plus">+</span>
+        <span>&#10067; <span class="hint-b">???</span></span>
+        <span class="hint-arrow">&#10132;</span>
+        <span>&#10067; <span class="hint-result">???</span></span>
+      </div>`;
+    }
+  }
+
+  hintList.innerHTML = html;
+}
+
+// ============================================================
+// ONBOARDING
+// ============================================================
+function hideOnboarding() {
+  if (!state.hasInteracted) {
+    state.hasInteracted = true;
+    onboarding.classList.add("hidden");
+  }
+}
+
+// ============================================================
+// CANVAS ACTIONS
+// ============================================================
+$("btnClear").addEventListener("click", () => {
+  state.canvasPills.forEach(p => {
+    p.style.transition = "transform 0.3s, opacity 0.3s";
+    p.style.transform = "scale(0)";
+    p.style.opacity = "0";
+    setTimeout(() => p.remove(), 300);
+  });
+  state.canvasPills = [];
+});
+
+$("btnReset").addEventListener("click", () => {
+  if (!confirm("Reset all discoveries? You will only have the 4 base elements.")) return;
+  state.discovered = new Set(["code", "design", "data", "cloud"]);
+  state.canvasPills.forEach(p => p.remove());
+  state.canvasPills = [];
+  renderSidebar();
+  renderHints();
+  onboarding.classList.remove("hidden");
+  state.hasInteracted = false;
+});
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function createConfetti() {
+  const colors = ["#6366F1", "#EC4899", "#F59E0B", "#10B981", "#06B6D4", "#8B5CF6", "#EF4444"];
+  for (let i = 0; i < 60; i++) {
+    const conf = document.createElement("div");
+    conf.className = "confetti";
+    conf.style.left = Math.random() * 100 + "vw";
+    conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+    conf.style.width = (6 + Math.random() * 8) + "px";
+    conf.style.height = (6 + Math.random() * 8) + "px";
+    conf.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+    conf.style.animationDuration = (2 + Math.random() * 3) + "s";
+    conf.style.animationDelay = Math.random() * 2 + "s";
+    document.body.appendChild(conf);
+    setTimeout(() => conf.remove(), 6000);
+  }
+}
+
+// ============================================================
+// MOBILE SIDEBAR TOGGLE
+// ============================================================
+sidebarToggle.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+});
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    hideDetail();
+    hintPanel.classList.remove("show");
+  }
+});
+
+// ============================================================
+// INITIAL RENDER
+// ============================================================
+function init() {
+  renderSidebar();
+  renderHints();
+
+  // Place base elements on canvas in a nice arrangement
+  const canvasRect = canvas.getBoundingClientRect();
+  const cx = canvasRect.width / 2;
+  const cy = canvasRect.height / 2;
+  const baseElements = ["code", "design", "data", "cloud"];
+  const positions = [
+    { x: cx - 180, y: cy - 40 },
+    { x: cx + 80, y: cy - 40 },
+    { x: cx - 180, y: cy + 40 },
+    { x: cx + 80, y: cy + 40 },
+  ];
+
+  baseElements.forEach((id, i) => {
+    setTimeout(() => {
+      createPill(id, positions[i].x, positions[i].y, true);
+    }, 200 + i * 120);
+  });
+}
+
+// Update hints when discoveries change
+const originalDiscover = state.discovered.add.bind(state.discovered);
+state.discovered.add = function(val) {
+  const result = originalDiscover(val);
+  renderHints();
+  return result;
+};
+
+// Wait for fonts
+document.fonts.ready.then(init);
+</script>
+
+</body>
+</html>

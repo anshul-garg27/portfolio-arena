@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG | We See You</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart Global Tech. A portfolio that watches you watching it.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================ */
+:root {
+  --green: #00FF41;
+  --green-dim: #00AA2A;
+  --green-ghost: #004D13;
+  --green-glow: rgba(0, 255, 65, 0.15);
+  --green-faint: rgba(0, 255, 65, 0.06);
+  --amber: #FFB000;
+  --red: #FF3333;
+  --bg: #000000;
+  --bg-elevated: #060606;
+  --bg-card: #0A0A0A;
+  --border: #111;
+  --border-bright: #1A1A1A;
+  --font: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+::selection {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--green-ghost) var(--bg);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--green);
+  overflow-x: hidden;
+  line-height: 1.6;
+  cursor: crosshair;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green-ghost); }
+
+/* ============================================================
+   SCANLINE OVERLAY
+   ============================================================ */
+#scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 99999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+}
+
+#scan-sweep {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(180deg, transparent, rgba(0, 255, 65, 0.08), transparent);
+  pointer-events: none;
+  z-index: 99998;
+  animation: sweepDown 5s linear infinite;
+}
+
+@keyframes sweepDown {
+  0% { top: -2px; }
+  100% { top: 100vh; }
+}
+
+/* ============================================================
+   MOUSE TRACKER DOT
+   ============================================================ */
+#mouse-tracker {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99997;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px var(--green), 0 0 20px var(--green-glow);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+body.tracking #mouse-tracker {
+  opacity: 1;
+}
+
+#mouse-trail {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 99996;
+}
+
+/* ============================================================
+   SURVEILLANCE HEADER BAR
+   ============================================================ */
+#header-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.95);
+  border-bottom: 1px solid var(--green-ghost);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 9999;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--green-dim);
+  backdrop-filter: blur(4px);
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 4px var(--green);
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+#session-timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--green);
+}
+
+/* ============================================================
+   NARRATION PHASE - FULL SCREEN
+   ============================================================ */
+#narration-phase {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 24px 60px;
+}
+
+#narration-container {
+  max-width: 720px;
+  width: 100%;
+}
+
+.narration-line {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--green);
+  margin-bottom: 6px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  text-shadow: 0 0 6px var(--green-glow);
+}
+
+.narration-line.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.narration-line.dimmed {
+  opacity: 0.35;
+  color: var(--green-dim);
+  text-shadow: none;
+}
+
+.narration-line .dynamic {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.narration-line .amber {
+  color: var(--amber);
+  text-shadow: 0 0 6px rgba(255, 176, 0, 0.3);
+}
+
+.narration-line .red {
+  color: var(--red);
+  text-shadow: 0 0 6px rgba(255, 51, 51, 0.3);
+}
+
+.narration-line .ghost {
+  color: var(--green-ghost);
+}
+
+.narration-cursor::after {
+  content: '\2588';
+  animation: cursorBlink 0.7s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ============================================================
+   LIVE DATA PANEL (bottom-left during narration)
+   ============================================================ */
+#live-data-panel {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: var(--green-ghost);
+  line-height: 1.9;
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 1s ease;
+  max-width: 300px;
+}
+
+#live-data-panel.visible {
+  opacity: 1;
+}
+
+#live-data-panel .label {
+  color: var(--green-dim);
+}
+
+#live-data-panel .value {
+  color: var(--green-ghost);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   MOUSE HEAT INDICATOR (bottom-right)
+   ============================================================ */
+#mouse-viz {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 120px;
+  height: 80px;
+  border: 1px solid var(--green-ghost);
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 1s ease;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#mouse-viz.visible { opacity: 1; }
+
+#mouse-viz canvas {
+  width: 100%; height: 100%;
+}
+
+#mouse-viz-label {
+  position: absolute;
+  top: 2px; left: 4px;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--green-ghost);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   TRANSITION - THE REVEAL
+   ============================================================ */
+#reveal-transition {
+  display: none;
+  position: relative;
+  text-align: center;
+  padding: 80px 24px;
+  min-height: 60vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#reveal-transition.active {
+  display: flex;
+}
+
+.reveal-text {
+  font-size: 14px;
+  color: var(--green-dim);
+  margin-bottom: 12px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.reveal-text.visible { opacity: 1; }
+
+.reveal-text.main {
+  font-size: 20px;
+  color: var(--green);
+  text-shadow: 0 0 15px var(--green-glow);
+  margin-top: 24px;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+}
+
+.reveal-line {
+  width: 0;
+  height: 1px;
+  background: var(--green-ghost);
+  margin: 40px auto;
+  transition: width 2s ease;
+}
+
+.reveal-line.active {
+  width: min(600px, 80vw);
+}
+
+/* ============================================================
+   PORTFOLIO CONTENT
+   ============================================================ */
+#portfolio {
+  display: none;
+  padding: 0 24px 80px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#portfolio.active {
+  display: block;
+  animation: fadeUp 1s ease forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* -- Section Titles -- */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 60px 0 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--green-ghost);
+}
+
+.section-number {
+  font-size: 10px;
+  color: var(--green-ghost);
+  letter-spacing: 2px;
+}
+
+.section-title {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--green);
+  text-transform: uppercase;
+}
+
+/* -- About / Identity -- */
+.identity-block {
+  margin-top: 16px;
+}
+
+.identity-row {
+  display: flex;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.04);
+  font-size: 12px;
+}
+
+.identity-label {
+  width: 180px;
+  flex-shrink: 0;
+  color: var(--green-dim);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.identity-value {
+  color: var(--green);
+  flex: 1;
+}
+
+.identity-value.highlight {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+/* -- Project Cards -- */
+.project-card {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-card);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+}
+
+.project-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-card:hover {
+  border-color: var(--green-ghost);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--green-ghost);
+  transition: background 0.3s;
+}
+
+.project-card:hover::before {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+}
+
+.project-tag {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--green-ghost);
+  margin-bottom: 8px;
+}
+
+.project-title {
+  font-size: 14px;
+  color: var(--green);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.project-desc {
+  font-size: 11px;
+  color: var(--green-dim);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.project-impact {
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 2px solid rgba(255, 176, 0, 0.2);
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tech-tag {
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border: 1px solid var(--green-ghost);
+  color: var(--green-dim);
+  transition: all 0.2s;
+}
+
+.tech-tag:hover {
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 6px var(--green-glow);
+}
+
+/* -- Skills Grid -- */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.skill-block {
+  padding: 16px;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-card);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s;
+}
+
+.skill-block.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.skill-block:hover {
+  border-color: var(--green-ghost);
+}
+
+.skill-channel {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--green-ghost);
+  margin-bottom: 8px;
+}
+
+.skill-name {
+  font-size: 11px;
+  color: var(--green);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.skill-items {
+  font-size: 10px;
+  color: var(--green-dim);
+  line-height: 1.8;
+}
+
+.skill-items span {
+  display: block;
+}
+
+.skill-items span::before {
+  content: '> ';
+  color: var(--green-ghost);
+}
+
+/* -- Experience Timeline -- */
+.exp-entry {
+  padding: 20px;
+  margin: 16px 0;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-card);
+  position: relative;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.exp-entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exp-org {
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.exp-role {
+  font-size: 11px;
+  color: var(--green-dim);
+  margin-top: 2px;
+}
+
+.exp-date {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--green-ghost);
+  text-align: right;
+}
+
+.exp-details {
+  list-style: none;
+  font-size: 10px;
+  color: var(--green-dim);
+  line-height: 1.9;
+}
+
+.exp-details li::before {
+  content: '[LOG] ';
+  color: var(--green-ghost);
+}
+
+/* -- Contact -- */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-card);
+  text-decoration: none;
+  color: var(--green-dim);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.contact-link:hover {
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 12px var(--green-faint);
+}
+
+.contact-link .link-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--green-ghost);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.contact-link .link-value {
+  flex: 1;
+}
+
+/* -- Footer -- */
+.portfolio-footer {
+  margin-top: 80px;
+  padding-top: 20px;
+  border-top: 1px solid var(--green-ghost);
+  font-size: 9px;
+  color: var(--green-ghost);
+  letter-spacing: 1px;
+  text-align: center;
+  line-height: 2;
+}
+
+.portfolio-footer .name {
+  color: var(--green-dim);
+}
+
+/* ============================================================
+   SCROLL DEPTH INDICATOR
+   ============================================================ */
+#scroll-depth {
+  position: fixed;
+  top: 32px;
+  right: 0;
+  width: 2px;
+  height: 0%;
+  background: var(--green);
+  z-index: 9998;
+  transition: height 0.1s linear;
+  box-shadow: 0 0 4px var(--green-glow);
+}
+
+/* ============================================================
+   BEHAVIORAL LOG (top-right corner)
+   ============================================================ */
+#behavior-log {
+  position: fixed;
+  top: 44px;
+  right: 12px;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  color: var(--green-ghost);
+  line-height: 1.8;
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  text-align: right;
+  max-width: 220px;
+}
+
+#behavior-log.visible { opacity: 1; }
+
+.log-entry {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.log-entry.visible { opacity: 1; }
+.log-entry.faded { opacity: 0.3; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .narration-line { font-size: 13px; }
+  .identity-row { flex-direction: column; gap: 2px; }
+  .identity-label { width: auto; }
+  .skills-grid { grid-template-columns: 1fr; }
+  #live-data-panel { display: none; }
+  #mouse-viz { display: none; }
+  #behavior-log { display: none; }
+  .exp-header { flex-direction: column; }
+  .exp-date { text-align: left; }
+}
+
+/* ============================================================
+   ACCESSIBILITY - REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  #scan-sweep { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- SCANLINE OVERLAY -->
+<div id="scanlines" aria-hidden="true"></div>
+<div id="scan-sweep" aria-hidden="true"></div>
+
+<!-- MOUSE TRACKER -->
+<div id="mouse-tracker" aria-hidden="true"></div>
+
+<!-- SCROLL DEPTH INDICATOR -->
+<div id="scroll-depth" aria-hidden="true"></div>
+
+<!-- HEADER BAR -->
+<div id="header-bar" role="banner">
+  <div class="header-left">
+    <div class="header-dot" aria-hidden="true"></div>
+    <span>SESSION ACTIVE</span>
+    <span id="session-timer">00:00:00</span>
+  </div>
+  <div class="header-right">
+    <span id="header-status">OBSERVING</span>
+  </div>
+</div>
+
+<!-- BEHAVIOR LOG (top-right) -->
+<div id="behavior-log" aria-hidden="true"></div>
+
+<!-- LIVE DATA PANEL (bottom-left) -->
+<div id="live-data-panel" aria-hidden="true"></div>
+
+<!-- MOUSE VISUALIZATION (bottom-right) -->
+<div id="mouse-viz" aria-hidden="true">
+  <span id="mouse-viz-label">MOUSE PATTERN</span>
+  <canvas id="mouse-canvas" width="120" height="80"></canvas>
+</div>
+
+<!-- ============================================================
+     PHASE 1: NARRATION
+     ============================================================ -->
+<main id="narration-phase" role="main" aria-label="Surveillance narration">
+  <div id="narration-container" aria-live="polite"></div>
+</main>
+
+<!-- ============================================================
+     PHASE 2: REVEAL TRANSITION
+     ============================================================ -->
+<div id="reveal-transition" aria-label="Portfolio reveal">
+  <div class="reveal-text" id="reveal-1">[ surveillance session terminated ]</div>
+  <div class="reveal-text" id="reveal-2">Data collection complete.</div>
+  <div class="reveal-text main" id="reveal-3">Now that I have your attention...</div>
+  <div class="reveal-line" id="reveal-line"></div>
+  <div class="reveal-text" id="reveal-4" style="font-size: 11px; letter-spacing: 3px;">here is the portfolio</div>
+</div>
+
+<!-- ============================================================
+     PHASE 3: PORTFOLIO CONTENT
+     ============================================================ -->
+<div id="portfolio" aria-label="Portfolio of Anshull Garg">
+
+  <!-- IDENTITY -->
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <span class="section-title">Identity</span>
+  </div>
+
+  <div class="identity-block">
+    <div class="identity-row">
+      <span class="identity-label">Name</span>
+      <span class="identity-value highlight">Anshull Garg</span>
+    </div>
+    <div class="identity-row">
+      <span class="identity-label">Current Role</span>
+      <span class="identity-value">Software Developer</span>
+    </div>
+    <div class="identity-row">
+      <span class="identity-label">Organization</span>
+      <span class="identity-value highlight">Walmart Global Tech</span>
+    </div>
+    <div class="identity-row">
+      <span class="identity-label">Classification</span>
+      <span class="identity-value">Fortune #1 -- Full Stack Access</span>
+    </div>
+    <div class="identity-row">
+      <span class="identity-label">Reach</span>
+      <span class="identity-value">Code deployed to 240M+ weekly users</span>
+    </div>
+    <div class="identity-row">
+      <span class="identity-label">Specialty</span>
+      <span class="identity-value">Scalable, high-performance enterprise applications</span>
+    </div>
+    <div class="identity-row">
+      <span class="identity-label">Assessment</span>
+      <span class="identity-value" style="color: var(--amber);">Recommend immediate recruitment</span>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <span class="section-title">Projects</span>
+  </div>
+
+  <div class="project-card" data-reveal>
+    <div class="project-tag">EXHIBIT A</div>
+    <div class="project-title">Enterprise E-Commerce Platform</div>
+    <div class="project-desc">
+      Architected and shipped production-grade features for one of the world's largest digital retail platforms. The system handles peak-season traffic spikes serving hundreds of millions of sessions. Demonstrated mastery of performance optimization and scalable frontend architecture under extreme load.
+    </div>
+    <div class="project-impact">
+      Code deployed to production serving 240M+ weekly customers. Performance optimizations contributed to measurable improvements in Core Web Vitals across high-traffic pages.
+    </div>
+    <div class="tech-tags">
+      <span class="tech-tag">REACT</span>
+      <span class="tech-tag">NEXT.JS</span>
+      <span class="tech-tag">TYPESCRIPT</span>
+      <span class="tech-tag">NODE.JS</span>
+      <span class="tech-tag">GRAPHQL</span>
+      <span class="tech-tag">MICRO-FRONTENDS</span>
+    </div>
+  </div>
+
+  <div class="project-card" data-reveal>
+    <div class="project-tag">EXHIBIT B</div>
+    <div class="project-title">Internal Developer Tooling Platform</div>
+    <div class="project-desc">
+      Designed and built internal tooling used by 500+ engineers across the organization. The platform automated previously manual workflows, standardized development practices, and reduced onboarding friction for new team members.
+    </div>
+    <div class="project-impact">
+      Automated manual processes saving estimated 200+ engineering hours per quarter. Adoption across multiple teams confirmed.
+    </div>
+    <div class="tech-tags">
+      <span class="tech-tag">REACT</span>
+      <span class="tech-tag">NODE.JS</span>
+      <span class="tech-tag">EXPRESS</span>
+      <span class="tech-tag">POSTGRESQL</span>
+      <span class="tech-tag">DOCKER</span>
+      <span class="tech-tag">CI/CD</span>
+    </div>
+  </div>
+
+  <div class="project-card" data-reveal>
+    <div class="project-tag">EXHIBIT C</div>
+    <div class="project-title">Performance Optimization Initiative</div>
+    <div class="project-desc">
+      Spearheaded a performance optimization initiative targeting key user-facing pages. Implemented code splitting, lazy loading, and bundle size reduction strategies. Conducted deep-dive analysis of rendering pipelines and strategically eliminated bottlenecks in critical paths.
+    </div>
+    <div class="project-impact">
+      Reduced page load times by an estimated 35%. Achieved measurable improvements in Lighthouse scores. Patterns adopted as team standard.
+    </div>
+    <div class="tech-tags">
+      <span class="tech-tag">WEBPACK</span>
+      <span class="tech-tag">LIGHTHOUSE</span>
+      <span class="tech-tag">REACT PROFILER</span>
+      <span class="tech-tag">CODE SPLITTING</span>
+      <span class="tech-tag">LAZY LOADING</span>
+      <span class="tech-tag">CDN OPTIMIZATION</span>
+    </div>
+  </div>
+
+  <div class="project-card" data-reveal>
+    <div class="project-tag">EXHIBIT D</div>
+    <div class="project-title">Scalable API Gateway Architecture</div>
+    <div class="project-desc">
+      Played a key role in designing a microservice gateway that serves as a critical integration layer between frontend applications and backend services. Implemented robust error handling, intelligent caching strategies, and graceful degradation patterns.
+    </div>
+    <div class="project-impact">
+      Reduced API latency across downstream services. Improved system reliability during high-traffic events. Architecture adopted as reference implementation.
+    </div>
+    <div class="tech-tags">
+      <span class="tech-tag">NODE.JS</span>
+      <span class="tech-tag">GRAPHQL</span>
+      <span class="tech-tag">REST</span>
+      <span class="tech-tag">REDIS</span>
+      <span class="tech-tag">KUBERNETES</span>
+      <span class="tech-tag">MONITORING</span>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <span class="section-title">Capabilities</span>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-block" data-reveal>
+      <div class="skill-channel">CH-01</div>
+      <div class="skill-name">Frontend Engineering</div>
+      <div class="skill-items">
+        <span>React, Next.js, TypeScript</span>
+        <span>Redux, Zustand, Context API</span>
+        <span>Tailwind CSS, Styled Components</span>
+        <span>Performance optimization</span>
+        <span>Jest, Cypress, Playwright</span>
+      </div>
+    </div>
+    <div class="skill-block" data-reveal>
+      <div class="skill-channel">CH-02</div>
+      <div class="skill-name">Backend & APIs</div>
+      <div class="skill-items">
+        <span>Node.js, Express</span>
+        <span>REST and GraphQL APIs</span>
+        <span>PostgreSQL, MongoDB, Redis</span>
+        <span>Python scripting</span>
+        <span>Microservice architecture</span>
+      </div>
+    </div>
+    <div class="skill-block" data-reveal>
+      <div class="skill-channel">CH-03</div>
+      <div class="skill-name">DevOps & Infrastructure</div>
+      <div class="skill-items">
+        <span>Docker, Kubernetes</span>
+        <span>CI/CD: GitHub Actions, Jenkins</span>
+        <span>AWS, GCP cloud platforms</span>
+        <span>Datadog, Grafana monitoring</span>
+      </div>
+    </div>
+    <div class="skill-block" data-reveal>
+      <div class="skill-channel">CH-04</div>
+      <div class="skill-name">Practices & Principles</div>
+      <div class="skill-items">
+        <span>Agile/Scrum methodology</span>
+        <span>Thorough code review culture</span>
+        <span>WCAG accessibility standards</span>
+        <span>Test-driven development</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="section-header">
+    <span class="section-number">04</span>
+    <span class="section-title">Experience</span>
+  </div>
+
+  <div class="exp-entry" data-reveal>
+    <div class="exp-header">
+      <div>
+        <div class="exp-org">Walmart Global Tech</div>
+        <div class="exp-role">Software Developer</div>
+      </div>
+      <div class="exp-date">2023 - PRESENT</div>
+    </div>
+    <ul class="exp-details">
+      <li>Engineers production-grade applications serving 240M+ weekly customers across the digital retail platform</li>
+      <li>Architects scalable frontend solutions using React, Next.js, and TypeScript in a micro-frontend ecosystem</li>
+      <li>Leads performance optimization efforts, contributing to measurable improvements in Core Web Vitals</li>
+      <li>Collaborates cross-functionally with product, design, and backend teams to ship high-impact features</li>
+      <li>Conducts thorough code reviews and mentors junior engineers on best practices</li>
+    </ul>
+  </div>
+
+  <div class="exp-entry" data-reveal>
+    <div class="exp-header">
+      <div>
+        <div class="exp-org">Previous Engagements</div>
+        <div class="exp-role">Software Engineering Roles</div>
+      </div>
+      <div class="exp-date">Prior to 2023</div>
+    </div>
+    <ul class="exp-details">
+      <li>Documented history of software development across multiple organizations</li>
+      <li>Progressive growth in technical complexity and scope of responsibility</li>
+      <li>Built foundational expertise in JavaScript ecosystems and modern web development</li>
+      <li>Contributed to projects sharpening skills in system design and scalable architecture</li>
+    </ul>
+  </div>
+
+  <div class="exp-entry" data-reveal>
+    <div class="exp-header">
+      <div>
+        <div class="exp-org">Academic Background</div>
+        <div class="exp-role">Education & Training</div>
+      </div>
+      <div class="exp-date">COMPLETED</div>
+    </div>
+    <ul class="exp-details">
+      <li>Formal education in Computer Science / Engineering</li>
+      <li>Foundation in algorithms, data structures, and system design principles</li>
+      <li>Active participation in technical communities, hackathons, and open-source</li>
+    </ul>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section-header">
+    <span class="section-number">05</span>
+    <span class="section-title">Make Contact</span>
+  </div>
+
+  <div class="contact-links">
+    <a href="mailto:anshullgarg@gmail.com" class="contact-link" data-reveal>
+      <span class="link-label">EMAIL</span>
+      <span class="link-value">anshullgarg@gmail.com</span>
+    </a>
+    <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="contact-link" data-reveal>
+      <span class="link-label">LNKDN</span>
+      <span class="link-value">linkedin.com/in/anshullgarg</span>
+    </a>
+    <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="contact-link" data-reveal>
+      <span class="link-label">GITHUB</span>
+      <span class="link-value">github.com/anshullgarg</span>
+    </a>
+    <a href="https://twitter.com/anshullgarg" target="_blank" rel="noopener" class="contact-link" data-reveal>
+      <span class="link-label">X</span>
+      <span class="link-value">x.com/anshullgarg</span>
+    </a>
+  </div>
+
+  <!-- SURVEILLANCE SUMMARY (final easter egg) -->
+  <div id="session-summary" style="margin-top: 60px; padding: 20px; border: 1px solid var(--green-ghost); background: var(--bg-card); font-size: 10px; color: var(--green-ghost); line-height: 2; letter-spacing: 0.5px;">
+    <div style="font-size: 8px; letter-spacing: 2px; color: var(--green-dim); margin-bottom: 8px;">SESSION REPORT</div>
+    <div id="summary-content">Generating report...</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="portfolio-footer">
+    <span class="name">Anshull Garg</span> // 2026 // All rights reserved<br>
+    We were watching. You were watching. Now you know.<br>
+    <span style="color: var(--green-ghost);">This page collected zero personal data. Everything shown was computed locally in your browser.</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  /* ==========================================================
+     STATE & TRACKING
+     ========================================================== */
+  const startTime = Date.now();
+  let mouseX = 0, mouseY = 0;
+  let mouseMoves = 0;
+  let mouseClicks = 0;
+  let totalScroll = 0;
+  let keyPresses = 0;
+  let lastMouseTime = 0;
+  let mouseSpeed = 0;
+  let maxMouseSpeed = 0;
+  let lastMouseX = 0, lastMouseY = 0;
+  let tabSwitches = 0;
+  let scrollDirection = 'none';
+  let lastScrollY = 0;
+  let idleTime = 0;
+  let lastActivity = Date.now();
+  let mousePositions = []; // for mini-map
+  let narrationPhase = 0;
+  let narrationComplete = false;
+  let portfolioRevealed = false;
+
+  /* ==========================================================
+     DEVICE & ENVIRONMENT DETECTION
+     ========================================================== */
+  function detectBrowser() {
+    const ua = navigator.userAgent;
+    if (ua.indexOf('Firefox') > -1) return 'Firefox';
+    if (ua.indexOf('Edg') > -1) return 'Edge';
+    if (ua.indexOf('OPR') > -1 || ua.indexOf('Opera') > -1) return 'Opera';
+    if (ua.indexOf('Chrome') > -1) return 'Chrome';
+    if (ua.indexOf('Safari') > -1) return 'Safari';
+    return 'an unknown browser';
+  }
+
+  function detectOS() {
+    const ua = navigator.userAgent;
+    if (ua.indexOf('Win') > -1) return 'Windows';
+    if (ua.indexOf('Mac') > -1) return 'macOS';
+    if (ua.indexOf('Linux') > -1) return 'Linux';
+    if (ua.indexOf('Android') > -1) return 'Android';
+    if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) return 'iOS';
+    if (ua.indexOf('CrOS') > -1) return 'ChromeOS';
+    return 'an unknown OS';
+  }
+
+  function getTimezone() {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch(e) {
+      return 'Unknown';
+    }
+  }
+
+  function getLanguage() {
+    return navigator.language || navigator.userLanguage || 'Unknown';
+  }
+
+  function getScreenInfo() {
+    return {
+      width: screen.width,
+      height: screen.height,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      pixelRatio: window.devicePixelRatio || 1,
+      colorDepth: screen.colorDepth
+    };
+  }
+
+  function getPlatform() {
+    return navigator.platform || 'Unknown';
+  }
+
+  function isOnline() {
+    return navigator.onLine;
+  }
+
+  function getCoreCount() {
+    return navigator.hardwareConcurrency || 'unknown';
+  }
+
+  function getConnectionInfo() {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return null;
+    return {
+      type: conn.effectiveType || conn.type || 'unknown',
+      downlink: conn.downlink ? conn.downlink + ' Mbps' : 'unknown',
+      rtt: conn.rtt ? conn.rtt + 'ms' : 'unknown',
+      saveData: conn.saveData || false
+    };
+  }
+
+  async function getBatteryInfo() {
+    try {
+      if (navigator.getBattery) {
+        const battery = await navigator.getBattery();
+        return {
+          level: Math.round(battery.level * 100),
+          charging: battery.charging
+        };
+      }
+    } catch(e) {}
+    return null;
+  }
+
+  function isTouchDevice() {
+    return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  }
+
+  function getLocalTime() {
+    return new Date().toLocaleTimeString('en-US', { hour12: true });
+  }
+
+  /* ==========================================================
+     MOUSE / INPUT TRACKING
+     ========================================================== */
+  document.addEventListener('mousemove', function(e) {
+    const now = Date.now();
+    const dx = e.clientX - lastMouseX;
+    const dy = e.clientY - lastMouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const dt = now - lastMouseTime;
+
+    if (dt > 0) {
+      mouseSpeed = Math.round((dist / dt) * 1000); // pixels per second
+      if (mouseSpeed > maxMouseSpeed) maxMouseSpeed = mouseSpeed;
+    }
+
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    mouseMoves++;
+    lastMouseTime = now;
+    lastActivity = now;
+
+    // Mouse tracker dot
+    const tracker = document.getElementById('mouse-tracker');
+    if (tracker) {
+      tracker.style.left = mouseX + 'px';
+      tracker.style.top = mouseY + 'px';
+    }
+
+    // Store positions for mini-map (sampled)
+    if (mouseMoves % 5 === 0) {
+      mousePositions.push({
+        x: mouseX / window.innerWidth,
+        y: mouseY / window.innerHeight
+      });
+      if (mousePositions.length > 200) mousePositions.shift();
+      drawMouseMap();
+    }
+  });
+
+  document.addEventListener('click', function() {
+    mouseClicks++;
+    lastActivity = Date.now();
+  });
+
+  document.addEventListener('keydown', function() {
+    keyPresses++;
+    lastActivity = Date.now();
+  });
+
+  window.addEventListener('scroll', function() {
+    const currentY = window.scrollY;
+    const delta = Math.abs(currentY - lastScrollY);
+    totalScroll += delta;
+    scrollDirection = currentY > lastScrollY ? 'down' : 'up';
+    lastScrollY = currentY;
+    lastActivity = Date.now();
+
+    // Scroll depth indicator
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (currentY / docHeight) * 100 : 0;
+    const depthEl = document.getElementById('scroll-depth');
+    if (depthEl) depthEl.style.height = progress + '%';
+  }, { passive: true });
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) tabSwitches++;
+  });
+
+  /* ==========================================================
+     MOUSE MINI-MAP
+     ========================================================== */
+  function drawMouseMap() {
+    const canvas = document.getElementById('mouse-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 120, 80);
+
+    // Draw trail
+    if (mousePositions.length < 2) return;
+    ctx.strokeStyle = 'rgba(0, 255, 65, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    mousePositions.forEach(function(pos, i) {
+      const x = pos.x * 120;
+      const y = pos.y * 80;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Draw current position dot
+    const last = mousePositions[mousePositions.length - 1];
+    ctx.fillStyle = 'rgba(0, 255, 65, 0.8)';
+    ctx.beginPath();
+    ctx.arc(last.x * 120, last.y * 80, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  /* ==========================================================
+     SESSION TIMER
+     ========================================================== */
+  function updateTimer() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+    const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    const timerEl = document.getElementById('session-timer');
+    if (timerEl) timerEl.textContent = h + ':' + m + ':' + s;
+  }
+  setInterval(updateTimer, 1000);
+
+  /* ==========================================================
+     IDLE DETECTION
+     ========================================================== */
+  setInterval(function() {
+    idleTime = Math.floor((Date.now() - lastActivity) / 1000);
+  }, 1000);
+
+  /* ==========================================================
+     LIVE DATA PANEL UPDATE
+     ========================================================== */
+  function updateLiveData() {
+    const panel = document.getElementById('live-data-panel');
+    if (!panel) return;
+
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const scr = getScreenInfo();
+    const conn = getConnectionInfo();
+
+    let html = '';
+    html += '<span class="label">MOUSE_POS:</span> <span class="value">' + mouseX + ',' + mouseY + '</span><br>';
+    html += '<span class="label">MOUSE_SPEED:</span> <span class="value">' + mouseSpeed + ' px/s</span><br>';
+    html += '<span class="label">MOVES:</span> <span class="value">' + mouseMoves + '</span><br>';
+    html += '<span class="label">CLICKS:</span> <span class="value">' + mouseClicks + '</span><br>';
+    html += '<span class="label">KEYS:</span> <span class="value">' + keyPresses + '</span><br>';
+    html += '<span class="label">SCROLL:</span> <span class="value">' + totalScroll + 'px ' + scrollDirection + '</span><br>';
+    html += '<span class="label">IDLE:</span> <span class="value">' + idleTime + 's</span><br>';
+    html += '<span class="label">VIEWPORT:</span> <span class="value">' + scr.windowWidth + 'x' + scr.windowHeight + '</span><br>';
+    if (conn) {
+      html += '<span class="label">NET:</span> <span class="value">' + conn.type + ' / ' + conn.downlink + '</span><br>';
+    }
+    html += '<span class="label">ONLINE:</span> <span class="value">' + (isOnline() ? 'YES' : 'NO') + '</span>';
+
+    panel.innerHTML = html;
+  }
+  setInterval(updateLiveData, 200);
+
+  /* ==========================================================
+     BEHAVIOR LOG (top-right)
+     ========================================================== */
+  const logEntries = [];
+  const MAX_LOG = 8;
+
+  function addLogEntry(text) {
+    const now = new Date();
+    const ts = String(now.getHours()).padStart(2,'0') + ':' +
+               String(now.getMinutes()).padStart(2,'0') + ':' +
+               String(now.getSeconds()).padStart(2,'0');
+    logEntries.push({ time: ts, text: text });
+    if (logEntries.length > MAX_LOG) logEntries.shift();
+    renderLog();
+  }
+
+  function renderLog() {
+    const logEl = document.getElementById('behavior-log');
+    if (!logEl) return;
+    let html = '';
+    logEntries.forEach(function(entry, i) {
+      const faded = i < logEntries.length - 3 ? ' faded' : '';
+      html += '<div class="log-entry visible' + faded + '">[' + entry.time + '] ' + entry.text + '</div>';
+    });
+    logEl.innerHTML = html;
+  }
+
+  // Log behavioral events
+  let loggedClicks = 0;
+  let loggedMoves = 0;
+
+  setInterval(function() {
+    if (mouseClicks > loggedClicks) {
+      addLogEntry('CLICK detected at (' + mouseX + ',' + mouseY + ')');
+      loggedClicks = mouseClicks;
+    }
+    if (mouseMoves > loggedMoves + 50) {
+      addLogEntry('MOUSE movement burst: ' + mouseSpeed + ' px/s');
+      loggedMoves = mouseMoves;
+    }
+    if (idleTime > 5 && idleTime % 10 === 0) {
+      addLogEntry('IDLE for ' + idleTime + 's -- still watching?');
+    }
+  }, 2000);
+
+  /* ==========================================================
+     NARRATION ENGINE
+     ============================================================
+     This is the heart of the experience. Lines appear one by one,
+     each "narrating" what the viewer is doing or revealing what
+     we know about them.
+     ========================================================== */
+
+  const narrationContainer = document.getElementById('narration-container');
+  let narrationIndex = 0;
+  let narrationLines = [];
+  let narrationTimer = null;
+
+  function getElapsed() {
+    return Math.floor((Date.now() - startTime) / 1000);
+  }
+
+  function buildNarration() {
+    const browser = detectBrowser();
+    const os = detectOS();
+    const scr = getScreenInfo();
+    const tz = getTimezone();
+    const lang = getLanguage();
+    const cores = getCoreCount();
+    const touch = isTouchDevice();
+    const platform = getPlatform();
+    const online = isOnline();
+    const localTime = getLocalTime();
+    const conn = getConnectionInfo();
+
+    const lines = [];
+
+    // Phase 1: Opening -- they realize they're being watched
+    lines.push({ text: 'Hello.', delay: 800 });
+    lines.push({ text: 'Yes, you.', delay: 1200 });
+    lines.push({ text: '', delay: 600 }); // blank beat
+    lines.push({ text: 'I know a few things about you already.', delay: 1800 });
+    lines.push({ text: '', delay: 500 });
+
+    // Phase 2: Device fingerprinting narration
+    lines.push({
+      text: 'You\'re using <span class="dynamic">' + browser + '</span> on <span class="dynamic">' + os + '</span>.',
+      delay: 1400
+    });
+    lines.push({
+      text: 'Your screen is <span class="dynamic">' + scr.width + 'x' + scr.height + '</span> pixels.',
+      delay: 1200
+    });
+    lines.push({
+      text: 'But your browser window is only <span class="dynamic">' + scr.windowWidth + 'x' + scr.windowHeight + '</span>.',
+      delay: 1200
+    });
+    if (scr.pixelRatio > 1) {
+      lines.push({
+        text: 'Your display runs at <span class="dynamic">' + scr.pixelRatio + 'x</span> pixel density. Nice screen.',
+        delay: 1300
+      });
+    }
+    lines.push({
+      text: 'Color depth: <span class="dynamic">' + scr.colorDepth + '-bit</span>. Platform: <span class="dynamic">' + platform + '</span>.',
+      delay: 1200
+    });
+    lines.push({ text: '', delay: 400 });
+
+    // Phase 3: Location/locale awareness
+    lines.push({
+      text: 'Your timezone is <span class="dynamic">' + tz + '</span>.',
+      delay: 1200
+    });
+    lines.push({
+      text: 'It\'s <span class="dynamic">' + localTime + '</span> where you are right now.',
+      delay: 1300
+    });
+    lines.push({
+      text: 'Your preferred language is <span class="dynamic">' + lang + '</span>.',
+      delay: 1100
+    });
+    if (cores !== 'unknown') {
+      lines.push({
+        text: 'Your device has <span class="dynamic">' + cores + ' CPU cores</span>.',
+        delay: 1100
+      });
+    }
+    lines.push({ text: '', delay: 400 });
+
+    // Phase 4: Connectivity
+    if (conn) {
+      lines.push({
+        text: 'Your connection type: <span class="dynamic">' + conn.type + '</span>.',
+        delay: 1100
+      });
+      if (conn.downlink !== 'unknown') {
+        lines.push({
+          text: 'Downlink speed: <span class="dynamic">' + conn.downlink + '</span>. Latency: <span class="dynamic">' + conn.rtt + '</span>.',
+          delay: 1200
+        });
+      }
+      if (conn.saveData) {
+        lines.push({
+          text: 'You have <span class="amber">data saver</span> enabled. Noted.',
+          delay: 1000
+        });
+      }
+    }
+    lines.push({
+      text: 'You are currently <span class="dynamic">' + (online ? 'online' : 'offline') + '</span>.',
+      delay: 1000
+    });
+    if (touch) {
+      lines.push({
+        text: 'Your device supports <span class="dynamic">touch input</span>.',
+        delay: 1000
+      });
+    }
+    lines.push({ text: '', delay: 500 });
+
+    // Phase 5: Behavioral narration (dynamic -- uses live values)
+    lines.push({
+      text: function() {
+        return 'You\'ve been here for <span class="dynamic">' + getElapsed() + ' seconds</span>.';
+      },
+      delay: 1400
+    });
+    lines.push({
+      text: function() {
+        return 'You\'ve moved your mouse <span class="dynamic">' + mouseMoves + ' times</span>.';
+      },
+      delay: 1200
+    });
+    lines.push({
+      text: function() {
+        return 'You\'ve scrolled <span class="dynamic">' + totalScroll + ' pixels</span>.';
+      },
+      delay: 1200
+    });
+    lines.push({
+      text: function() {
+        return 'You\'ve clicked <span class="dynamic">' + mouseClicks + ' times</span>. Pressed <span class="dynamic">' + keyPresses + ' keys</span>.';
+      },
+      delay: 1200
+    });
+    if (tabSwitches > 0) {
+      lines.push({
+        text: function() {
+          return 'You switched away from this tab <span class="amber">' + tabSwitches + ' times</span>. We noticed.';
+        },
+        delay: 1300
+      });
+    }
+    lines.push({ text: '', delay: 400 });
+
+    // Phase 6: The uncomfortable part
+    lines.push({
+      text: 'I can see your mouse position right now: <span class="dynamic" id="live-pos">' + mouseX + ', ' + mouseY + '</span>.',
+      delay: 1500
+    });
+    lines.push({
+      text: function() {
+        return 'Your peak mouse speed was <span class="dynamic">' + maxMouseSpeed + ' pixels/second</span>.';
+      },
+      delay: 1200
+    });
+    lines.push({ text: '', delay: 600 });
+    lines.push({
+      text: '<span class="amber">None of this required your permission.</span>',
+      delay: 2000
+    });
+    lines.push({
+      text: 'Every website you visit can see all of this.',
+      delay: 1800
+    });
+    lines.push({
+      text: 'Every. Single. One.',
+      delay: 1500
+    });
+    lines.push({ text: '', delay: 800 });
+
+    // Phase 7: Battery (async, added if available -- handled separately)
+    // We'll insert battery info dynamically before the reveal
+
+    // Phase 8: The turn
+    lines.push({
+      text: '<span class="ghost">...</span>',
+      delay: 1500
+    });
+    lines.push({
+      text: 'But don\'t worry. I\'m not keeping any of it.',
+      delay: 1800
+    });
+    lines.push({
+      text: 'This all runs locally in your browser. Nothing leaves.',
+      delay: 1500
+    });
+    lines.push({ text: '', delay: 600 });
+    lines.push({
+      text: 'I just wanted your attention.',
+      delay: 1800
+    });
+    lines.push({ text: '', delay: 600 });
+    lines.push({
+      text: '<span class="dynamic" style="font-size: 17px;">And now that I have it...</span>',
+      delay: 2200
+    });
+    lines.push({ text: '', delay: 400 });
+    lines.push({
+      text: 'NARRATION_END',
+      delay: 0
+    });
+
+    return lines;
+  }
+
+  /* ==========================================================
+     NARRATION RENDERER
+     ========================================================== */
+  function startNarration() {
+    // Enable tracking visuals
+    document.body.classList.add('tracking');
+    document.getElementById('live-data-panel').classList.add('visible');
+    document.getElementById('mouse-viz').classList.add('visible');
+    document.getElementById('behavior-log').classList.add('visible');
+
+    narrationLines = buildNarration();
+
+    // Check battery and inject if available
+    getBatteryInfo().then(function(battery) {
+      if (battery) {
+        // Find the "..." line and insert battery info before it
+        const ghostIdx = narrationLines.findIndex(function(l) {
+          return typeof l.text === 'string' && l.text.indexOf('ghost') > -1 && l.text.indexOf('...') > -1;
+        });
+        if (ghostIdx > -1) {
+          const batteryLines = [
+            {
+              text: 'Your battery is at <span class="dynamic">' + battery.level + '%</span>' +
+                    (battery.charging ? ' and <span class="dynamic">charging</span>.' : '.') +
+                    (battery.level < 20 ? ' <span class="red">You should probably plug in.</span>' : ''),
+              delay: 1300
+            },
+            { text: '', delay: 400 }
+          ];
+          narrationLines.splice(ghostIdx, 0, ...batteryLines);
+        }
+      }
+      // Begin playback
+      playNextLine();
+    });
+  }
+
+  function playNextLine() {
+    if (narrationIndex >= narrationLines.length) return;
+
+    const lineData = narrationLines[narrationIndex];
+    const textContent = typeof lineData.text === 'function' ? lineData.text() : lineData.text;
+
+    // Check for end signal
+    if (textContent === 'NARRATION_END') {
+      narrationComplete = true;
+      triggerReveal();
+      return;
+    }
+
+    // Dim previous lines (keep last 6 visible, dim older)
+    const allLines = narrationContainer.querySelectorAll('.narration-line');
+    allLines.forEach(function(line, i) {
+      if (i < allLines.length - 5) {
+        line.classList.add('dimmed');
+      }
+    });
+
+    // Create and insert line
+    const lineEl = document.createElement('div');
+    lineEl.className = 'narration-line';
+    if (textContent === '') {
+      lineEl.innerHTML = '&nbsp;';
+    } else {
+      lineEl.innerHTML = textContent;
+    }
+    narrationContainer.appendChild(lineEl);
+
+    // Make visible after a brief moment
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        lineEl.classList.add('visible');
+        // Add cursor to latest non-empty line
+        const prevCursor = narrationContainer.querySelector('.narration-cursor');
+        if (prevCursor) prevCursor.classList.remove('narration-cursor');
+        if (textContent !== '') lineEl.classList.add('narration-cursor');
+      });
+    });
+
+    // Auto-scroll narration into view
+    lineEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+    narrationIndex++;
+
+    // Schedule next line
+    const nextDelay = narrationLines[narrationIndex] ? narrationLines[narrationIndex - 1].delay : 1000;
+    narrationTimer = setTimeout(playNextLine, nextDelay);
+  }
+
+  // Update live mouse position in narration if the element exists
+  setInterval(function() {
+    const livePosEl = document.getElementById('live-pos');
+    if (livePosEl) {
+      livePosEl.textContent = mouseX + ', ' + mouseY;
+    }
+  }, 100);
+
+  /* ==========================================================
+     REVEAL TRANSITION
+     ========================================================== */
+  function triggerReveal() {
+    // Remove cursor from last narration line
+    const lastCursor = narrationContainer.querySelector('.narration-cursor');
+    if (lastCursor) lastCursor.classList.remove('narration-cursor');
+
+    // Update header status
+    const headerStatus = document.getElementById('header-status');
+    if (headerStatus) headerStatus.textContent = 'PORTFOLIO MODE';
+
+    // Show reveal transition
+    const reveal = document.getElementById('reveal-transition');
+    reveal.classList.add('active');
+
+    setTimeout(function() {
+      reveal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 200);
+
+    setTimeout(function() {
+      document.getElementById('reveal-1').classList.add('visible');
+    }, 800);
+
+    setTimeout(function() {
+      document.getElementById('reveal-2').classList.add('visible');
+    }, 2000);
+
+    setTimeout(function() {
+      document.getElementById('reveal-3').classList.add('visible');
+    }, 3500);
+
+    setTimeout(function() {
+      document.getElementById('reveal-line').classList.add('active');
+    }, 4500);
+
+    setTimeout(function() {
+      document.getElementById('reveal-4').classList.add('visible');
+    }, 5500);
+
+    setTimeout(function() {
+      showPortfolio();
+    }, 7000);
+  }
+
+  /* ==========================================================
+     PORTFOLIO REVEAL
+     ========================================================== */
+  function showPortfolio() {
+    portfolioRevealed = true;
+    const portfolio = document.getElementById('portfolio');
+    portfolio.classList.add('active');
+
+    setTimeout(function() {
+      portfolio.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+
+    // Staggered reveal of cards
+    const revealEls = portfolio.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+    revealEls.forEach(function(el) {
+      observer.observe(el);
+    });
+
+    // Generate session summary
+    generateSummary();
+  }
+
+  /* ==========================================================
+     SESSION SUMMARY (updates at end)
+     ========================================================== */
+  function generateSummary() {
+    const summaryEl = document.getElementById('summary-content');
+    if (!summaryEl) return;
+
+    function updateSummary() {
+      const elapsed = getElapsed();
+      const scr = getScreenInfo();
+      const browser = detectBrowser();
+      const os = detectOS();
+      const tz = getTimezone();
+
+      summaryEl.innerHTML =
+        'SUBJECT_BROWSER: ' + browser + ' on ' + os + '<br>' +
+        'SUBJECT_SCREEN: ' + scr.width + 'x' + scr.height + ' @ ' + scr.pixelRatio + 'x<br>' +
+        'SUBJECT_VIEWPORT: ' + scr.windowWidth + 'x' + scr.windowHeight + '<br>' +
+        'SUBJECT_TIMEZONE: ' + tz + '<br>' +
+        'SESSION_DURATION: ' + elapsed + 's<br>' +
+        'MOUSE_EVENTS: ' + mouseMoves + ' moves, ' + mouseClicks + ' clicks<br>' +
+        'SCROLL_TOTAL: ' + totalScroll + 'px<br>' +
+        'KEY_EVENTS: ' + keyPresses + '<br>' +
+        'TAB_SWITCHES: ' + tabSwitches + '<br>' +
+        'PEAK_MOUSE_SPEED: ' + maxMouseSpeed + ' px/s<br>' +
+        '<br>' +
+        '<span style="color:var(--green-dim);">// All data computed locally. Nothing transmitted. Zero cookies.</span>';
+    }
+
+    updateSummary();
+    setInterval(updateSummary, 2000);
+  }
+
+  /* ==========================================================
+     SKIP BUTTON -- If user gets impatient
+     ========================================================== */
+  // Pressing Escape or double-clicking skips to portfolio
+  let escCount = 0;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !portfolioRevealed) {
+      escCount++;
+      if (escCount === 1) {
+        addLogEntry('ESC pressed. Trying to leave?');
+        // Add a narration line acknowledging the escape
+        const lineEl = document.createElement('div');
+        lineEl.className = 'narration-line visible';
+        lineEl.innerHTML = '<span class="amber">You pressed Escape. Impatient? Press again to skip.</span>';
+        narrationContainer.appendChild(lineEl);
+      }
+      if (escCount >= 2) {
+        clearTimeout(narrationTimer);
+        narrationComplete = true;
+        triggerReveal();
+      }
+    }
+  });
+
+  // Triple-click to skip
+  let rapidClicks = 0;
+  let rapidClickTimer = null;
+  document.addEventListener('click', function() {
+    if (portfolioRevealed) return;
+    rapidClicks++;
+    clearTimeout(rapidClickTimer);
+    rapidClickTimer = setTimeout(function() { rapidClicks = 0; }, 800);
+    if (rapidClicks >= 3) {
+      clearTimeout(narrationTimer);
+      narrationComplete = true;
+      triggerReveal();
+    }
+  });
+
+  /* ==========================================================
+     ONLINE/OFFLINE DETECTION
+     ========================================================== */
+  window.addEventListener('offline', function() {
+    addLogEntry('CONNECTION LOST. Subject went offline.');
+  });
+  window.addEventListener('online', function() {
+    addLogEntry('CONNECTION RESTORED. Subject back online.');
+  });
+
+  /* ==========================================================
+     VISIBILITY CHANGE LOG
+     ========================================================== */
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      addLogEntry('TAB SWITCH -- Subject looked away.');
+    } else {
+      addLogEntry('TAB RETURN -- Subject came back.');
+    }
+  });
+
+  /* ==========================================================
+     WINDOW RESIZE TRACKING
+     ========================================================== */
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      addLogEntry('RESIZE to ' + window.innerWidth + 'x' + window.innerHeight);
+    }, 500);
+  });
+
+  /* ==========================================================
+     INIT
+     ========================================================== */
+  // Small delay before starting narration to let the page settle
+  setTimeout(startNarration, 600);
+
+})();
+</script>
+
+</body>
+</html>

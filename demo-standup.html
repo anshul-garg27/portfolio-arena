@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Standup Meeting | Anshull Garg | Software Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/*──────────────────────────────────────────────────────────────
+  RESET & FOUNDATION
+──────────────────────────────────────────────────────────────*/
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-app:#0f1117;
+  --bg-surface:#181b24;
+  --bg-card:#1e2230;
+  --bg-card-hover:#252a3a;
+  --bg-kanban-col:#161921;
+  --bg-modal:#1a1e2b;
+  --bg-input:#12141c;
+  --border:#2a2f3e;
+  --border-light:#353b4e;
+  --text-primary:#e8eaf0;
+  --text-secondary:#8b92a8;
+  --text-muted:#5a6178;
+  --accent:#6366f1;
+  --accent-light:#818cf8;
+  --accent-dark:#4f46e5;
+  --accent-glow:rgba(99,102,241,.15);
+  --green:#22c55e;
+  --green-bg:rgba(34,197,94,.1);
+  --green-border:rgba(34,197,94,.25);
+  --yellow:#f59e0b;
+  --yellow-bg:rgba(245,158,11,.1);
+  --yellow-border:rgba(245,158,11,.25);
+  --red:#ef4444;
+  --red-bg:rgba(239,68,68,.1);
+  --red-border:rgba(239,68,68,.25);
+  --blue:#3b82f6;
+  --blue-bg:rgba(59,130,246,.1);
+  --blue-border:rgba(59,130,246,.25);
+  --orange:#f97316;
+  --orange-bg:rgba(249,115,22,.1);
+  --cyan:#06b6d4;
+  --cyan-bg:rgba(6,182,212,.1);
+  --purple:#a855f7;
+  --purple-bg:rgba(168,85,247,.1);
+  --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:14px;
+  --radius-xl:20px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
+  --shadow-md:0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.5);
+  --transition:0.2s ease;
+}
+
+html{font-size:15px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-app);
+  color:var(--text-primary);
+  min-height:100vh;
+  overflow-x:hidden;
+  line-height:1.55;
+}
+a{color:var(--accent-light);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
+
+/*──────────────────────────────────────────────────────────────
+  LAYOUT
+──────────────────────────────────────────────────────────────*/
+.app-layout{
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-rows:auto 1fr;
+  height:100vh;
+  width:100vw;
+  overflow:hidden;
+}
+
+/*──────────────────────────────────────────────────────────────
+  TOP BAR
+──────────────────────────────────────────────────────────────*/
+.topbar{
+  background:var(--bg-surface);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  z-index:50;
+}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.app-logo{
+  display:flex;align-items:center;gap:8px;
+  font-weight:800;font-size:1rem;
+  color:var(--text-primary);
+  letter-spacing:-.3px;
+}
+.app-logo svg{width:24px;height:24px;color:var(--accent)}
+.sprint-badge{
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  color:#fff;font-size:.65rem;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.8px;
+}
+.topbar-center{
+  display:flex;align-items:center;gap:12px;
+}
+.day-tabs{
+  display:flex;gap:2px;
+  background:var(--bg-app);
+  border-radius:var(--radius-md);
+  padding:3px;
+}
+.day-tab{
+  padding:6px 14px;
+  border-radius:var(--radius-sm);
+  font-size:.75rem;font-weight:600;
+  color:var(--text-muted);
+  transition:all var(--transition);
+  white-space:nowrap;
+  position:relative;
+}
+.day-tab:hover{color:var(--text-secondary);background:var(--bg-card)}
+.day-tab.active{
+  background:var(--accent);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(99,102,241,.3);
+}
+.day-tab .tab-label{display:block;font-size:.6rem;font-weight:400;opacity:.7;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+
+/*──────────────────────────────────────────────────────────────
+  TIMER
+──────────────────────────────────────────────────────────────*/
+.timer-widget{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg-app);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:4px 12px 4px 10px;
+  cursor:pointer;
+  transition:all var(--transition);
+  user-select:none;
+}
+.timer-widget:hover{border-color:var(--accent)}
+.timer-widget.running{border-color:var(--green);background:var(--green-bg)}
+.timer-widget.warning{border-color:var(--yellow);background:var(--yellow-bg)}
+.timer-widget.expired{border-color:var(--red);background:var(--red-bg);animation:timer-pulse 1s infinite}
+@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.timer-icon{width:16px;height:16px;color:var(--text-muted)}
+.timer-widget.running .timer-icon{color:var(--green)}
+.timer-widget.warning .timer-icon{color:var(--yellow)}
+.timer-widget.expired .timer-icon{color:var(--red)}
+.timer-label{font-size:.6rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.timer-value{
+  font-family:var(--font-mono);
+  font-size:1.05rem;font-weight:700;
+  color:var(--text-primary);
+  min-width:50px;
+  text-align:right;
+}
+.timer-widget.running .timer-value{color:var(--green)}
+.timer-widget.warning .timer-value{color:var(--yellow)}
+.timer-widget.expired .timer-value{color:var(--red)}
+
+.skip-btn{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:7px 14px;
+  font-size:.75rem;font-weight:600;
+  color:var(--text-secondary);
+  display:flex;align-items:center;gap:6px;
+  transition:all var(--transition);
+}
+.skip-btn:hover{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(99,102,241,.25);
+}
+.skip-btn svg{width:14px;height:14px}
+
+/*──────────────────────────────────────────────────────────────
+  MAIN CONTENT AREA
+──────────────────────────────────────────────────────────────*/
+.main-area{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  overflow:hidden;
+}
+
+/*──────────────────────────────────────────────────────────────
+  KANBAN BOARD (BACKGROUND)
+──────────────────────────────────────────────────────────────*/
+.kanban-section{
+  overflow-y:auto;
+  overflow-x:auto;
+  padding:20px;
+  background:var(--bg-app);
+  position:relative;
+}
+.kanban-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+  padding:0 4px;
+}
+.kanban-title{font-size:.85rem;font-weight:700;color:var(--text-secondary);display:flex;align-items:center;gap:8px}
+.kanban-title svg{width:16px;height:16px;color:var(--accent)}
+.board-stats{display:flex;gap:12px}
+.board-stat{
+  font-size:.65rem;font-weight:600;color:var(--text-muted);
+  display:flex;align-items:center;gap:4px;
+}
+.board-stat .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.kanban-board{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(200px,1fr));
+  gap:12px;
+  min-height:calc(100vh - 160px);
+}
+.kanban-col{
+  background:var(--bg-kanban-col);
+  border-radius:var(--radius-lg);
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  border:1px solid var(--border);
+}
+.col-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 4px 8px;
+  border-bottom:2px solid var(--border);
+  margin-bottom:4px;
+}
+.col-name{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted)}
+.col-count{
+  font-size:.6rem;font-weight:700;
+  background:var(--bg-card);
+  padding:2px 8px;border-radius:10px;
+  color:var(--text-muted);
+}
+.col-header.backlog .col-name{color:var(--text-muted)}
+.col-header.backlog{border-bottom-color:var(--text-muted)}
+.col-header.todo .col-name{color:var(--blue)}
+.col-header.todo{border-bottom-color:var(--blue)}
+.col-header.progress .col-name{color:var(--yellow)}
+.col-header.progress{border-bottom-color:var(--yellow)}
+.col-header.done .col-name{color:var(--green)}
+.col-header.done{border-bottom-color:var(--green)}
+
+.kanban-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:10px 12px;
+  cursor:pointer;
+  transition:all var(--transition);
+  position:relative;
+}
+.kanban-card:hover{
+  background:var(--bg-card-hover);
+  border-color:var(--border-light);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-sm);
+}
+.kanban-card.highlight{
+  border-color:var(--accent);
+  background:var(--accent-glow);
+}
+.card-type{
+  font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  padding:2px 6px;border-radius:3px;
+  display:inline-block;margin-bottom:6px;
+}
+.card-type.story{background:var(--green-bg);color:var(--green)}
+.card-type.task{background:var(--blue-bg);color:var(--blue)}
+.card-type.bug{background:var(--red-bg);color:var(--red)}
+.card-type.feature{background:var(--purple-bg);color:var(--purple)}
+.card-type.epic{background:var(--orange-bg);color:var(--orange)}
+.card-title{font-size:.75rem;font-weight:600;line-height:1.4;color:var(--text-primary);margin-bottom:6px}
+.card-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.card-id{font-family:var(--font-mono);font-size:.6rem;color:var(--text-muted)}
+.card-points{
+  font-size:.55rem;font-weight:700;
+  background:var(--bg-app);
+  padding:1px 6px;border-radius:8px;
+  color:var(--text-muted);
+}
+.card-avatar{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.5rem;font-weight:700;color:#fff;
+}
+
+/*──────────────────────────────────────────────────────────────
+  STANDUP PANEL (RIGHT SIDE)
+──────────────────────────────────────────────────────────────*/
+.standup-panel{
+  background:var(--bg-surface);
+  border-left:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.panel-header{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.meeting-info{
+  display:flex;align-items:center;gap:10px;
+}
+.meeting-icon{
+  width:40px;height:40px;border-radius:var(--radius-md);
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.meeting-icon svg{width:20px;height:20px;color:#fff}
+.meeting-details h2{font-size:.9rem;font-weight:700;line-height:1.3}
+.meeting-details p{font-size:.65rem;color:var(--text-muted);margin-top:1px}
+
+/* Participants row */
+.participants-row{
+  display:flex;align-items:center;gap:8px;
+}
+.participant{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 10px 4px 4px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-xl);
+  font-size:.7rem;font-weight:500;
+  transition:all var(--transition);
+  cursor:pointer;
+}
+.participant:hover{border-color:var(--accent)}
+.participant.active{
+  border-color:var(--accent);
+  background:var(--accent-glow);
+  box-shadow:0 0 0 2px var(--accent-glow);
+}
+.participant.speaking{
+  border-color:var(--green);
+  background:var(--green-bg);
+  box-shadow:0 0 0 2px var(--green-bg);
+}
+.participant.done-speaking{
+  opacity:.5;
+}
+.participant .p-avatar{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.55rem;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.participant .p-status{
+  width:7px;height:7px;border-radius:50%;
+  flex-shrink:0;
+}
+.p-status.online{background:var(--green)}
+.p-status.away{background:var(--yellow)}
+
+/*──────────────────────────────────────────────────────────────
+  STANDUP CONTENT
+──────────────────────────────────────────────────────────────*/
+.standup-content{
+  flex:1;
+  overflow-y:auto;
+  padding:20px;
+}
+
+/* Scrum master intro */
+.scrum-master-bubble{
+  display:flex;gap:10px;
+  margin-bottom:20px;
+  animation:fadeSlideUp .5s ease;
+}
+.sm-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#f59e0b,#ef4444);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;color:#fff;
+  flex-shrink:0;
+  position:relative;
+}
+.sm-avatar::after{
+  content:'';
+  position:absolute;
+  bottom:-1px;right:-1px;
+  width:10px;height:10px;
+  background:var(--green);
+  border-radius:50%;
+  border:2px solid var(--bg-surface);
+}
+.sm-bubble{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  border-top-left-radius:2px;
+  padding:10px 14px;
+  font-size:.8rem;
+  color:var(--text-secondary);
+  line-height:1.5;
+  max-width:320px;
+}
+.sm-bubble strong{color:var(--text-primary);font-weight:600}
+.sm-bubble .sm-name{font-size:.65rem;font-weight:700;color:var(--yellow);margin-bottom:4px;display:block}
+
+/* Standup update card */
+.standup-update{
+  margin-bottom:16px;
+  opacity:0;
+  transform:translateY(12px);
+  transition:all .4s ease;
+}
+.standup-update.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+.update-speaker{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:8px;
+}
+.speaker-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:800;color:#fff;
+  flex-shrink:0;
+}
+.speaker-name{font-size:.8rem;font-weight:700;color:var(--text-primary)}
+.speaker-role{font-size:.6rem;color:var(--text-muted);margin-top:1px}
+.speaker-time{font-size:.6rem;color:var(--text-muted);margin-left:auto;font-family:var(--font-mono)}
+
+.update-sections{
+  margin-left:40px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.update-section{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:12px 14px;
+  opacity:0;
+  transform:translateX(-8px);
+  transition:all .4s ease;
+}
+.update-section.visible{
+  opacity:1;
+  transform:translateX(0);
+}
+.section-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  margin-bottom:8px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.section-label svg{width:14px;height:14px}
+.section-label.yesterday{color:var(--green)}
+.section-label.today{color:var(--blue)}
+.section-label.blockers{color:var(--red)}
+
+.section-items{display:flex;flex-direction:column;gap:6px}
+.section-item{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:.78rem;
+  line-height:1.5;
+  color:var(--text-secondary);
+}
+.section-item .bullet{
+  width:6px;height:6px;border-radius:50%;
+  margin-top:6px;flex-shrink:0;
+}
+.section-label.yesterday + .section-items .bullet{background:var(--green)}
+.section-label.today + .section-items .bullet{background:var(--blue)}
+.section-label.blockers + .section-items .bullet{background:var(--red)}
+
+.section-item .item-tag{
+  font-size:.55rem;font-weight:700;
+  padding:1px 6px;border-radius:4px;
+  flex-shrink:0;margin-top:2px;
+}
+.tag-shipped{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.tag-learning{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.tag-collab{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(168,85,247,.25)}
+.tag-impact{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}
+.tag-none{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+
+/* No blockers special */
+.no-blockers{
+  display:flex;align-items:center;gap:8px;
+  font-size:.78rem;color:var(--green);
+  font-weight:500;
+}
+.no-blockers svg{width:16px;height:16px}
+
+/* Blocker item */
+.blocker-item{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:.78rem;color:var(--text-secondary);
+}
+.blocker-item .bullet{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--red);
+  margin-top:6px;flex-shrink:0;
+}
+
+/* Contact links in Day 5 */
+.contact-links{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:6px;
+}
+.contact-link{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;
+  background:var(--bg-app);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  font-size:.7rem;font-weight:600;
+  color:var(--text-secondary);
+  transition:all var(--transition);
+  text-decoration:none;
+}
+.contact-link:hover{
+  border-color:var(--accent);
+  color:var(--accent-light);
+  transform:translateY(-1px);
+  text-decoration:none;
+}
+.contact-link svg{width:14px;height:14px}
+
+/*──────────────────────────────────────────────────────────────
+  PANEL FOOTER
+──────────────────────────────────────────────────────────────*/
+.panel-footer{
+  padding:12px 20px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.footer-btn{
+  flex:1;
+  padding:8px;
+  border-radius:var(--radius-md);
+  font-size:.75rem;font-weight:600;
+  text-align:center;
+  transition:all var(--transition);
+  border:1px solid var(--border);
+  background:var(--bg-card);
+  color:var(--text-secondary);
+}
+.footer-btn:hover{border-color:var(--accent);color:var(--accent-light)}
+.footer-btn.primary{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+.footer-btn.primary:hover{
+  background:var(--accent-dark);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(99,102,241,.3);
+}
+
+/*──────────────────────────────────────────────────────────────
+  TYPING INDICATOR
+──────────────────────────────────────────────────────────────*/
+.typing-indicator{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 12px;
+  font-size:.7rem;color:var(--text-muted);
+}
+.typing-dots{display:flex;gap:3px}
+.typing-dots span{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--text-muted);
+  animation:typingBounce 1.2s infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{
+  0%,60%,100%{transform:translateY(0);opacity:.3}
+  30%{transform:translateY(-4px);opacity:1}
+}
+
+/*──────────────────────────────────────────────────────────────
+  ANIMATIONS
+──────────────────────────────────────────────────────────────*/
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeSlideRight{
+  from{opacity:0;transform:translateX(-12px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes cardHighlight{
+  0%{box-shadow:0 0 0 0 rgba(99,102,241,.4)}
+  70%{box-shadow:0 0 0 8px rgba(99,102,241,0)}
+  100%{box-shadow:0 0 0 0 rgba(99,102,241,0)}
+}
+.kanban-card.highlight{animation:cardHighlight 1.5s ease-out}
+
+/*──────────────────────────────────────────────────────────────
+  PROGRESS BAR (sprint progress at top)
+──────────────────────────────────────────────────────────────*/
+.sprint-progress{
+  display:flex;align-items:center;gap:8px;
+  padding:0 4px;
+}
+.progress-bar-bg{
+  flex:1;height:4px;
+  background:var(--bg-app);
+  border-radius:2px;
+  overflow:hidden;
+}
+.progress-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--green));
+  border-radius:2px;
+  transition:width .6s ease;
+}
+.progress-label{
+  font-size:.6rem;font-weight:600;color:var(--text-muted);
+  white-space:nowrap;
+}
+
+/*──────────────────────────────────────────────────────────────
+  SKILL BADGES (Day 2)
+──────────────────────────────────────────────────────────────*/
+.skill-grid{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:4px;
+}
+.skill-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;
+  background:var(--bg-app);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:.65rem;font-weight:600;
+  color:var(--text-secondary);
+  transition:all var(--transition);
+}
+.skill-badge:hover{
+  border-color:var(--accent);
+  color:var(--accent-light);
+}
+.skill-badge .proficiency{
+  width:6px;height:6px;border-radius:50%;
+}
+.proficiency.expert{background:var(--green)}
+.proficiency.advanced{background:var(--blue)}
+.proficiency.intermediate{background:var(--yellow)}
+
+/*──────────────────────────────────────────────────────────────
+  RESPONSIVE
+──────────────────────────────────────────────────────────────*/
+@media(max-width:1024px){
+  .main-area{grid-template-columns:1fr}
+  .kanban-section{display:none}
+  .standup-panel{border-left:none}
+}
+@media(max-width:768px){
+  .topbar{padding:0 12px;gap:8px;height:auto;min-height:56px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+  .day-tabs{overflow-x:auto;max-width:100%}
+  .day-tab{padding:5px 10px;font-size:.65rem}
+  .topbar-center{order:3;width:100%;justify-content:center}
+  .timer-label{display:none}
+  .standup-content{padding:14px}
+  .update-sections{margin-left:0}
+  .panel-header{padding:12px 14px}
+}
+@media(max-width:480px){
+  .participants-row{display:none}
+  .meeting-details h2{font-size:.8rem}
+  .skip-btn span{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- ═══════ TOP BAR ═══════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="app-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Daily Standup
+      </div>
+      <span class="sprint-badge">Sprint 2026-Q1</span>
+    </div>
+
+    <div class="topbar-center">
+      <div class="day-tabs" id="dayTabs">
+        <button class="day-tab active" data-day="1" onclick="switchDay(1)">Day 1<span class="tab-label">About</span></button>
+        <button class="day-tab" data-day="2" onclick="switchDay(2)">Day 2<span class="tab-label">Skills</span></button>
+        <button class="day-tab" data-day="3" onclick="switchDay(3)">Day 3<span class="tab-label">Projects</span></button>
+        <button class="day-tab" data-day="4" onclick="switchDay(4)">Day 4<span class="tab-label">Experience</span></button>
+        <button class="day-tab" data-day="5" onclick="switchDay(5)">Day 5<span class="tab-label">Contact</span></button>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="timer-widget" id="timerWidget" onclick="toggleTimer()" title="Click to start/pause timer">
+        <svg class="timer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div>
+          <div class="timer-label">Standup</div>
+          <div class="timer-value" id="timerValue">2:00</div>
+        </div>
+      </div>
+      <button class="skip-btn" onclick="skipToNext()" title="Skip to next person">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+        <span>Skip to next</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════ MAIN CONTENT ═══════ -->
+  <div class="main-area">
+
+    <!-- ─── KANBAN BOARD ─── -->
+    <div class="kanban-section">
+      <div class="kanban-header">
+        <div class="kanban-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Sprint Board -- AG-2026
+        </div>
+        <div class="board-stats">
+          <div class="board-stat"><div class="dot" style="background:var(--text-muted)"></div> Backlog 3</div>
+          <div class="board-stat"><div class="dot" style="background:var(--blue)"></div> To Do 4</div>
+          <div class="board-stat"><div class="dot" style="background:var(--yellow)"></div> In Progress 3</div>
+          <div class="board-stat"><div class="dot" style="background:var(--green)"></div> Done 6</div>
+        </div>
+      </div>
+
+      <div class="kanban-board" id="kanbanBoard">
+        <!-- Backlog Column -->
+        <div class="kanban-col">
+          <div class="col-header backlog"><span class="col-name">Backlog</span><span class="col-count">3</span></div>
+          <div class="kanban-card" data-card="backlog-1">
+            <span class="card-type epic">Epic</span>
+            <div class="card-title">Open Source Contributions</div>
+            <div class="card-meta"><span class="card-id">AG-201</span><span class="card-points">13</span></div>
+          </div>
+          <div class="kanban-card" data-card="backlog-2">
+            <span class="card-type feature">Feature</span>
+            <div class="card-title">Build AI-powered Dev Tools</div>
+            <div class="card-meta"><span class="card-id">AG-202</span><span class="card-points">8</span></div>
+          </div>
+          <div class="kanban-card" data-card="backlog-3">
+            <span class="card-type story">Story</span>
+            <div class="card-title">Write Technical Blog Posts</div>
+            <div class="card-meta"><span class="card-id">AG-203</span><span class="card-points">5</span></div>
+          </div>
+        </div>
+
+        <!-- To Do Column -->
+        <div class="kanban-col">
+          <div class="col-header todo"><span class="col-name">To Do</span><span class="col-count">4</span></div>
+          <div class="kanban-card" data-card="todo-1">
+            <span class="card-type task">Task</span>
+            <div class="card-title">Implement CI/CD Pipeline</div>
+            <div class="card-meta"><span class="card-id">AG-104</span><span class="card-points">5</span></div>
+          </div>
+          <div class="kanban-card" data-card="todo-2">
+            <span class="card-type story">Story</span>
+            <div class="card-title">Design System Components</div>
+            <div class="card-meta"><span class="card-id">AG-105</span><span class="card-points">8</span></div>
+          </div>
+          <div class="kanban-card" data-card="todo-3">
+            <span class="card-type feature">Feature</span>
+            <div class="card-title">Real-time Dashboard MVP</div>
+            <div class="card-meta"><span class="card-id">AG-106</span><span class="card-points">13</span></div>
+          </div>
+          <div class="kanban-card" data-card="todo-4">
+            <span class="card-type task">Task</span>
+            <div class="card-title">Performance Optimization Sprint</div>
+            <div class="card-meta"><span class="card-id">AG-107</span><span class="card-points">5</span></div>
+          </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="kanban-col">
+          <div class="col-header progress"><span class="col-name">In Progress</span><span class="col-count">3</span></div>
+          <div class="kanban-card highlight" data-card="progress-1">
+            <span class="card-type feature">Feature</span>
+            <div class="card-title">Interactive Portfolio Website</div>
+            <div class="card-meta"><span class="card-id">AG-042</span><div class="card-avatar">AG</div></div>
+          </div>
+          <div class="kanban-card" data-card="progress-2">
+            <span class="card-type task">Task</span>
+            <div class="card-title">Cloud Architecture Migration</div>
+            <div class="card-meta"><span class="card-id">AG-043</span><div class="card-avatar">AG</div></div>
+          </div>
+          <div class="kanban-card" data-card="progress-3">
+            <span class="card-type story">Story</span>
+            <div class="card-title">Full-Stack Mastery Path</div>
+            <div class="card-meta"><span class="card-id">AG-044</span><div class="card-avatar">AG</div></div>
+          </div>
+        </div>
+
+        <!-- Done Column -->
+        <div class="kanban-col">
+          <div class="col-header done"><span class="col-name">Done</span><span class="col-count">6</span></div>
+          <div class="kanban-card" data-card="done-1">
+            <span class="card-type story">Story</span>
+            <div class="card-title">Master React & Component Architecture</div>
+            <div class="card-meta"><span class="card-id">AG-001</span><span class="card-points">8</span></div>
+          </div>
+          <div class="kanban-card" data-card="done-2">
+            <span class="card-type task">Task</span>
+            <div class="card-title">Node.js Backend Proficiency</div>
+            <div class="card-meta"><span class="card-id">AG-002</span><span class="card-points">8</span></div>
+          </div>
+          <div class="kanban-card" data-card="done-3">
+            <span class="card-type feature">Feature</span>
+            <div class="card-title">E-commerce Platform Build</div>
+            <div class="card-meta"><span class="card-id">AG-003</span><span class="card-points">13</span></div>
+          </div>
+          <div class="kanban-card" data-card="done-4">
+            <span class="card-type task">Task</span>
+            <div class="card-title">Database Design & Optimization</div>
+            <div class="card-meta"><span class="card-id">AG-004</span><span class="card-points">5</span></div>
+          </div>
+          <div class="kanban-card" data-card="done-5">
+            <span class="card-type story">Story</span>
+            <div class="card-title">REST & GraphQL API Development</div>
+            <div class="card-meta"><span class="card-id">AG-005</span><span class="card-points">8</span></div>
+          </div>
+          <div class="kanban-card" data-card="done-6">
+            <span class="card-type bug">Bug</span>
+            <div class="card-title">Squash 200+ Production Bugs</div>
+            <div class="card-meta"><span class="card-id">AG-006</span><span class="card-points">21</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sprint Progress -->
+      <div style="margin-top:16px">
+        <div class="sprint-progress">
+          <span class="progress-label">Sprint Progress</span>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="sprintProgress" style="width:62%"></div></div>
+          <span class="progress-label" id="progressPercent">62%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STANDUP PANEL ─── -->
+    <div class="standup-panel">
+      <div class="panel-header">
+        <div class="meeting-info">
+          <div class="meeting-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="meeting-details">
+            <h2 id="meetingTitle">Daily Standup -- Day 1: About</h2>
+            <p>Sprint 2026-Q1 &middot; Team Portfolio &middot; <span id="currentDate"></span></p>
+          </div>
+        </div>
+        <div class="participants-row">
+          <div class="participant speaking" id="pAnshull">
+            <div class="p-avatar" style="background:linear-gradient(135deg,var(--accent),var(--cyan))">AG</div>
+            Anshull G.
+            <div class="p-status online"></div>
+          </div>
+          <div class="participant" id="pScrumMaster">
+            <div class="p-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">SM</div>
+            Scrum Master
+            <div class="p-status online"></div>
+          </div>
+          <div class="participant" id="pViewer">
+            <div class="p-avatar" style="background:linear-gradient(135deg,var(--green),#06b6d4)">U</div>
+            You (Viewer)
+            <div class="p-status online"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="standup-content" id="standupContent">
+        <!-- Content injected by JS -->
+      </div>
+
+      <div class="panel-footer">
+        <button class="footer-btn" onclick="prevDay()">Previous Day</button>
+        <button class="footer-btn primary" onclick="nextDay()">Next Day</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  STANDUP DATA -- 5 DAYS
+// ════════════════════════════════════════════════════════════
+const standupData = {
+  1: {
+    title: "Daily Standup -- Day 1: About",
+    scrumMasterIntro: "Good morning team! Let's keep it crisp. <strong>Anshull</strong>, you're up first. Tell us about yourself and what brought you here.",
+    speaker: { name: "Anshull Garg", role: "Full-Stack Software Developer" },
+    yesterday: {
+      label: "What did you do yesterday?",
+      items: [
+        { text: "Graduated with a strong foundation in Computer Science and Software Engineering", tag: "MILESTONE", tagClass: "tag-shipped" },
+        { text: "Built a deep understanding of data structures, algorithms, and system design principles", tag: "FOUNDATION", tagClass: "tag-learning" },
+        { text: "Developed a passion for crafting clean, scalable, and user-centric applications", tag: "VISION", tagClass: "tag-impact" },
+      ]
+    },
+    today: {
+      label: "What will you do today?",
+      items: [
+        { text: "Continue shipping production-grade full-stack applications with modern tech stacks" },
+        { text: "Actively seeking opportunities to contribute to high-impact engineering teams" },
+        { text: "Exploring the intersection of AI/ML and practical software development" },
+      ]
+    },
+    blockers: {
+      label: "Any blockers?",
+      items: [],
+      noBlockerMsg: "No blockers! Motivated and ready to build."
+    }
+  },
+  2: {
+    title: "Daily Standup -- Day 2: Skills Learned",
+    scrumMasterIntro: "Day 2! <strong>Anshull</strong>, walk us through the skills and technologies you've picked up. What's in your toolkit?",
+    speaker: { name: "Anshull Garg", role: "Full-Stack Software Developer" },
+    yesterday: {
+      label: "What did you learn?",
+      items: [
+        { text: "Frontend: React, Next.js, TypeScript, Tailwind CSS, Redux, HTML5/CSS3, responsive design patterns", tag: "FRONTEND", tagClass: "tag-shipped" },
+        { text: "Backend: Node.js, Express, Python, REST APIs, GraphQL, authentication & authorization", tag: "BACKEND", tagClass: "tag-learning" },
+        { text: "Databases: PostgreSQL, MongoDB, Redis, Prisma ORM, query optimization", tag: "DATA", tagClass: "tag-collab" },
+        { text: "DevOps & Tools: Docker, AWS, Git, CI/CD, Linux, Nginx, GitHub Actions", tag: "INFRA", tagClass: "tag-impact" },
+      ]
+    },
+    today: {
+      label: "What are you leveling up?",
+      items: [
+        { text: "Cloud-native architectures -- Kubernetes, serverless, microservices patterns" },
+        { text: "AI/ML integration -- building intelligent features into web applications" },
+        { text: "System design -- distributed systems, event-driven architecture, scalability" },
+      ]
+    },
+    blockers: {
+      label: "Any blockers?",
+      items: [],
+      noBlockerMsg: "Zero blockers. Always learning, always shipping."
+    },
+    skills: [
+      { name: "React", level: "expert" },
+      { name: "TypeScript", level: "expert" },
+      { name: "Node.js", level: "expert" },
+      { name: "Python", level: "advanced" },
+      { name: "Next.js", level: "expert" },
+      { name: "PostgreSQL", level: "advanced" },
+      { name: "MongoDB", level: "advanced" },
+      { name: "Docker", level: "advanced" },
+      { name: "AWS", level: "intermediate" },
+      { name: "GraphQL", level: "advanced" },
+      { name: "Tailwind", level: "expert" },
+      { name: "Redux", level: "expert" },
+      { name: "Git", level: "expert" },
+      { name: "REST APIs", level: "expert" },
+      { name: "CI/CD", level: "advanced" },
+      { name: "Redis", level: "intermediate" },
+    ]
+  },
+  3: {
+    title: "Daily Standup -- Day 3: Projects Shipped",
+    scrumMasterIntro: "Alright <strong>Anshull</strong>, show-and-tell time! What have you shipped? Give us the demo highlights.",
+    speaker: { name: "Anshull Garg", role: "Full-Stack Software Developer" },
+    yesterday: {
+      label: "What did you ship?",
+      items: [
+        { text: "E-Commerce Platform -- Full-stack marketplace with Stripe payments, real-time inventory management, and admin dashboard. React + Node.js + PostgreSQL.", tag: "SHIPPED", tagClass: "tag-shipped" },
+        { text: "Real-Time Chat Application -- WebSocket-powered messaging with channels, direct messages, file sharing, and read receipts. Socket.io + Express + MongoDB.", tag: "SHIPPED", tagClass: "tag-shipped" },
+        { text: "AI Content Dashboard -- Smart content management system with AI-powered suggestions, analytics visualizations, and collaborative editing. Next.js + Python + OpenAI API.", tag: "SHIPPED", tagClass: "tag-shipped" },
+        { text: "Developer Portfolio (this!) -- Standup-themed interactive portfolio. Vanilla JS, zero dependencies, responsive design.", tag: "SHIPPED", tagClass: "tag-shipped" },
+      ]
+    },
+    today: {
+      label: "What are you building next?",
+      items: [
+        { text: "Open-source component library focused on accessibility and performance" },
+        { text: "SaaS boilerplate with multi-tenancy, billing, and role-based access control" },
+        { text: "Contributions to established open-source projects in the React ecosystem" },
+      ]
+    },
+    blockers: {
+      label: "Any blockers?",
+      items: [
+        { text: "Need more hours in the day -- too many ideas, not enough time!" }
+      ]
+    }
+  },
+  4: {
+    title: "Daily Standup -- Day 4: Experience",
+    scrumMasterIntro: "Day 4 -- career update. <strong>Anshull</strong>, walk us through your professional journey and key contributions.",
+    speaker: { name: "Anshull Garg", role: "Full-Stack Software Developer" },
+    yesterday: {
+      label: "What have you accomplished?",
+      items: [
+        { text: "Led frontend development for customer-facing applications, reducing load times by 40% through code splitting and lazy loading strategies", tag: "IMPACT", tagClass: "tag-impact" },
+        { text: "Architected and deployed RESTful microservices handling 10K+ daily requests with 99.9% uptime", tag: "SCALE", tagClass: "tag-shipped" },
+        { text: "Mentored junior developers through code reviews, pair programming, and internal tech talks on React patterns", tag: "LEADERSHIP", tagClass: "tag-collab" },
+        { text: "Implemented automated testing pipelines that increased code coverage from 45% to 90%, reducing production bugs by 60%", tag: "QUALITY", tagClass: "tag-learning" },
+      ]
+    },
+    today: {
+      label: "What are you working toward?",
+      items: [
+        { text: "Growing into a senior/lead engineering role with broader architectural responsibilities" },
+        { text: "Deepening expertise in distributed systems and cloud-native development" },
+        { text: "Building and leading high-performing engineering teams that ship with velocity and quality" },
+      ]
+    },
+    blockers: {
+      label: "Any blockers?",
+      items: [],
+      noBlockerMsg: "Clear runway. Career velocity is strong."
+    }
+  },
+  5: {
+    title: "Daily Standup -- Day 5: Contact & Future",
+    scrumMasterIntro: "Last day of the sprint standup! <strong>Anshull</strong>, share your future plans and how people can connect with you.",
+    speaker: { name: "Anshull Garg", role: "Full-Stack Software Developer" },
+    yesterday: {
+      label: "What is your roadmap?",
+      items: [
+        { text: "Seeking full-time software engineering roles at innovative companies building products that matter", tag: "GOAL", tagClass: "tag-impact" },
+        { text: "Open to remote and hybrid opportunities -- flexible on location, focused on impact", tag: "FLEXIBLE", tagClass: "tag-collab" },
+        { text: "Passionate about startups, developer tools, AI products, and platforms that scale", tag: "VISION", tagClass: "tag-shipped" },
+      ]
+    },
+    today: {
+      label: "What's next?",
+      items: [
+        { text: "Let's connect! I'd love to discuss engineering challenges, opportunities, or just talk tech." },
+        { text: "Available for interviews, technical discussions, and pair programming sessions." },
+        { text: "Always interested in open-source collaboration and side project partnerships." },
+      ]
+    },
+    blockers: {
+      label: "Any blockers?",
+      items: [],
+      noBlockerMsg: "Only blocker: not having connected with you yet!"
+    },
+    contacts: [
+      { label: "Email", href: "mailto:anshullgarg@gmail.com", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' },
+      { label: "LinkedIn", href: "https://linkedin.com/in/anshullgarg", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>' },
+      { label: "GitHub", href: "https://github.com/anshullgarg", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>' },
+      { label: "Portfolio", href: "#", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' },
+    ]
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════
+let currentDay = 1;
+let timerInterval = null;
+let timerSeconds = 120;
+let timerRunning = false;
+let animationQueue = [];
+let isAnimating = false;
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const now = new Date();
+  document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric', year:'numeric' });
+  renderDay(1);
+  startTimerAuto();
+});
+
+// ════════════════════════════════════════════════════════════
+//  TIMER
+// ════════════════════════════════════════════════════════════
+function startTimerAuto() {
+  timerSeconds = 120;
+  timerRunning = true;
+  updateTimerDisplay();
+  const widget = document.getElementById('timerWidget');
+  widget.classList.add('running');
+  widget.classList.remove('warning','expired');
+  timerInterval = setInterval(() => {
+    if (!timerRunning) return;
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 30 && timerSeconds > 0) {
+      widget.classList.remove('running');
+      widget.classList.add('warning');
+      widget.classList.remove('expired');
+    }
+    if (timerSeconds <= 0) {
+      widget.classList.remove('running','warning');
+      widget.classList.add('expired');
+      clearInterval(timerInterval);
+      timerRunning = false;
+    }
+  }, 1000);
+}
+
+function toggleTimer() {
+  if (timerSeconds <= 0) {
+    resetTimer();
+    return;
+  }
+  timerRunning = !timerRunning;
+  const widget = document.getElementById('timerWidget');
+  if (timerRunning) {
+    widget.classList.add('running');
+    widget.classList.remove('expired');
+  } else {
+    widget.classList.remove('running');
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerSeconds = 120;
+  timerRunning = false;
+  const widget = document.getElementById('timerWidget');
+  widget.classList.remove('running','warning','expired');
+  updateTimerDisplay();
+  startTimerAuto();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(Math.max(0, timerSeconds) / 60);
+  const s = Math.max(0, timerSeconds) % 60;
+  document.getElementById('timerValue').textContent = m + ':' + String(s).padStart(2, '0');
+}
+
+// ════════════════════════════════════════════════════════════
+//  DAY SWITCHING
+// ════════════════════════════════════════════════════════════
+function switchDay(day) {
+  if (day === currentDay) return;
+  currentDay = day;
+
+  // Update tabs
+  document.querySelectorAll('.day-tab').forEach(tab => {
+    tab.classList.toggle('active', parseInt(tab.dataset.day) === day);
+  });
+
+  // Reset timer
+  resetTimer();
+
+  // Update sprint progress
+  const progressMap = { 1: 20, 2: 40, 3: 60, 4: 80, 5: 100 };
+  document.getElementById('sprintProgress').style.width = progressMap[day] + '%';
+  document.getElementById('progressPercent').textContent = progressMap[day] + '%';
+
+  // Render
+  renderDay(day);
+
+  // Highlight relevant kanban cards
+  highlightKanbanCards(day);
+}
+
+function nextDay() {
+  if (currentDay < 5) switchDay(currentDay + 1);
+}
+
+function prevDay() {
+  if (currentDay > 1) switchDay(currentDay - 1);
+}
+
+function skipToNext() {
+  nextDay();
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER DAY
+// ════════════════════════════════════════════════════════════
+function renderDay(day) {
+  const data = standupData[day];
+  const container = document.getElementById('standupContent');
+  document.getElementById('meetingTitle').textContent = data.title;
+
+  let html = '';
+
+  // Scrum Master bubble
+  html += `
+    <div class="scrum-master-bubble">
+      <div class="sm-avatar">SM</div>
+      <div class="sm-bubble">
+        <span class="sm-name">Scrum Master (Bot)</span>
+        ${data.scrumMasterIntro}
+      </div>
+    </div>
+  `;
+
+  // Typing indicator (shown briefly)
+  html += `
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+      Anshull is typing...
+    </div>
+  `;
+
+  // Standup update
+  html += `<div class="standup-update" id="standupUpdate">`;
+  html += `
+    <div class="update-speaker">
+      <div class="speaker-avatar">AG</div>
+      <div>
+        <div class="speaker-name">${data.speaker.name}</div>
+        <div class="speaker-role">${data.speaker.role}</div>
+      </div>
+      <div class="speaker-time">Day ${day}/5</div>
+    </div>
+    <div class="update-sections">
+  `;
+
+  // Yesterday section
+  html += `<div class="update-section" id="section-yesterday">`;
+  html += `<div class="section-label yesterday">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    ${data.yesterday.label}
+  </div>`;
+  html += `<div class="section-items">`;
+  data.yesterday.items.forEach(item => {
+    html += `<div class="section-item">
+      <div class="bullet" style="background:var(--green)"></div>
+      <span>${item.text}</span>
+      ${item.tag ? `<span class="item-tag ${item.tagClass}">${item.tag}</span>` : ''}
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Skills grid if day 2
+  if (data.skills) {
+    html += `<div class="skill-grid" style="margin-top:10px">`;
+    data.skills.forEach(skill => {
+      html += `<span class="skill-badge"><span class="proficiency ${skill.level}"></span>${skill.name}</span>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+
+  // Today section
+  html += `<div class="update-section" id="section-today">`;
+  html += `<div class="section-label today">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    ${data.today.label}
+  </div>`;
+  html += `<div class="section-items">`;
+  data.today.items.forEach(item => {
+    html += `<div class="section-item">
+      <div class="bullet" style="background:var(--blue)"></div>
+      <span>${item.text}</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Contact links if day 5
+  if (data.contacts) {
+    html += `<div class="contact-links">`;
+    data.contacts.forEach(c => {
+      html += `<a class="contact-link" href="${c.href}" target="_blank" rel="noopener">${c.icon} ${c.label}</a>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+
+  // Blockers section
+  html += `<div class="update-section" id="section-blockers">`;
+  html += `<div class="section-label blockers">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    ${data.blockers.label}
+  </div>`;
+  if (data.blockers.items.length === 0) {
+    html += `<div class="no-blockers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      ${data.blockers.noBlockerMsg}
+    </div>`;
+  } else {
+    html += `<div class="section-items">`;
+    data.blockers.items.forEach(item => {
+      html += `<div class="blocker-item">
+        <div class="bullet"></div>
+        <span>${item.text}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  html += `</div></div>`; // close update-sections, standup-update
+
+  // Scrum master closing
+  const closingMessages = {
+    1: "Great intro! The team is excited to have you. Let's move on.",
+    2: "Solid toolkit, Anshull. That's a well-rounded stack.",
+    3: "Impressive ships! Love the variety across the stack.",
+    4: "Strong trajectory. The metrics speak for themselves.",
+    5: "Wrapping up the sprint! Thanks for sharing, Anshull. Good luck out there."
+  };
+
+  html += `
+    <div class="scrum-master-bubble" id="closingBubble" style="margin-top:16px;display:none">
+      <div class="sm-avatar">SM</div>
+      <div class="sm-bubble">
+        <span class="sm-name">Scrum Master (Bot)</span>
+        ${closingMessages[day]}
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+
+  // Animate in sequence
+  animateStandupEntry();
+}
+
+// ════════════════════════════════════════════════════════════
+//  ANIMATION SEQUENCE
+// ════════════════════════════════════════════════════════════
+function animateStandupEntry() {
+  const typing = document.getElementById('typingIndicator');
+  const update = document.getElementById('standupUpdate');
+  const sectionYesterday = document.getElementById('section-yesterday');
+  const sectionToday = document.getElementById('section-today');
+  const sectionBlockers = document.getElementById('section-blockers');
+  const closing = document.getElementById('closingBubble');
+
+  // Show typing for 800ms, then reveal update
+  setTimeout(() => {
+    if (typing) typing.style.display = 'none';
+    if (update) update.classList.add('visible');
+
+    // Stagger sections
+    setTimeout(() => { if (sectionYesterday) sectionYesterday.classList.add('visible'); }, 200);
+    setTimeout(() => { if (sectionToday) sectionToday.classList.add('visible'); }, 600);
+    setTimeout(() => { if (sectionBlockers) sectionBlockers.classList.add('visible'); }, 1000);
+
+    // Show closing bubble
+    setTimeout(() => {
+      if (closing) {
+        closing.style.display = 'flex';
+        closing.style.animation = 'fadeSlideUp .4s ease';
+      }
+    }, 1500);
+
+  }, 800);
+}
+
+// ════════════════════════════════════════════════════════════
+//  KANBAN HIGHLIGHTS
+// ════════════════════════════════════════════════════════════
+function highlightKanbanCards(day) {
+  // Remove all highlights
+  document.querySelectorAll('.kanban-card').forEach(c => c.classList.remove('highlight'));
+
+  // Map days to relevant cards
+  const cardMap = {
+    1: ['progress-1'],
+    2: ['done-1','done-2','done-4','done-5'],
+    3: ['done-3','done-6','progress-1'],
+    4: ['progress-2','progress-3'],
+    5: ['backlog-1','backlog-2','backlog-3','todo-1','todo-2','todo-3','todo-4']
+  };
+
+  const cards = cardMap[day] || [];
+  cards.forEach((id, i) => {
+    setTimeout(() => {
+      const card = document.querySelector(`[data-card="${id}"]`);
+      if (card) {
+        card.classList.add('highlight');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, i * 150);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  KEYBOARD NAVIGATION
+// ════════════════════════════════════════════════════════════
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    nextDay();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    prevDay();
+  } else if (e.key === ' ') {
+    e.preventDefault();
+    toggleTimer();
+  } else if (e.key === 'r' || e.key === 'R') {
+    resetTimer();
+  }
+});
+</script>
+
+</body>
+</html>
