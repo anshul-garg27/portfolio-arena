@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JIRA Board - Anshull Garg | Sprint 2026-Q1</title>
+<style>
+  /* ── Reset & Base ────────────────────────────────── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --jira-bg: #FFFFFF;
+    --jira-sidebar: #F4F5F7;
+    --jira-blue: #0052CC;
+    --jira-blue-light: #DEEBFF;
+    --jira-green: #36B37E;
+    --jira-green-light: #E3FCEF;
+    --jira-red: #FF5630;
+    --jira-red-light: #FFEBE6;
+    --jira-yellow: #FFAB00;
+    --jira-yellow-light: #FFFAE6;
+    --jira-purple: #6554C0;
+    --jira-purple-light: #EAE6FF;
+    --jira-text: #172B4D;
+    --jira-text-secondary: #5E6C84;
+    --jira-border: #DFE1E6;
+    --jira-hover: #EBECF0;
+    --jira-column-bg: #F4F5F7;
+    --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    --shadow-card: 0 1px 2px rgba(9,30,66,0.25);
+    --shadow-modal: 0 8px 16px rgba(9,30,66,0.25);
+    --radius: 3px;
+    --transition: 0.2s ease;
+  }
+
+  html { font-size: 14px; }
+  body {
+    font-family: var(--font-main);
+    background: var(--jira-bg);
+    color: var(--jira-text);
+    line-height: 1.5;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  a { color: var(--jira-blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Top Navigation ──────────────────────────────── */
+  .topnav {
+    height: 56px;
+    background: var(--jira-blue);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .topnav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+  .topnav-logo svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .topnav-links {
+    display: flex;
+    gap: 4px;
+  }
+  .topnav-links button {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.85);
+    font: inherit;
+    font-size: 0.93rem;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+  .topnav-links button:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .topnav-search {
+    margin-left: auto;
+    position: relative;
+  }
+  .topnav-search input {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid transparent;
+    color: #fff;
+    font: inherit;
+    padding: 6px 12px 6px 32px;
+    border-radius: var(--radius);
+    width: 220px;
+    transition: all var(--transition);
+    outline: none;
+  }
+  .topnav-search input::placeholder { color: rgba(255,255,255,0.6); }
+  .topnav-search input:focus {
+    background: #fff;
+    color: var(--jira-text);
+    border-color: var(--jira-blue);
+    width: 300px;
+  }
+  .topnav-search input:focus::placeholder { color: var(--jira-text-secondary); }
+  .topnav-search svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    fill: rgba(255,255,255,0.6);
+    pointer-events: none;
+  }
+  .topnav-search input:focus ~ svg { fill: var(--jira-text-secondary); }
+  .topnav-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #FF8B00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  /* ── Layout Shell ────────────────────────────────── */
+  .app-shell {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ── Sidebar ─────────────────────────────────────── */
+  .sidebar {
+    width: 240px;
+    background: var(--jira-sidebar);
+    border-right: 1px solid var(--jira-border);
+    padding: 20px 0;
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: width var(--transition);
+  }
+  .sidebar-project {
+    padding: 0 16px 16px;
+    border-bottom: 1px solid var(--jira-border);
+    margin-bottom: 8px;
+  }
+  .sidebar-project-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--jira-blue), var(--jira-purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .sidebar-project h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--jira-text);
+    margin-bottom: 2px;
+  }
+  .sidebar-project p {
+    font-size: 0.78rem;
+    color: var(--jira-text-secondary);
+  }
+  .sidebar-nav { list-style: none; }
+  .sidebar-nav li a,
+  .sidebar-nav li button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 16px;
+    font: inherit;
+    font-size: 0.93rem;
+    color: var(--jira-text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background var(--transition), color var(--transition);
+    border-left: 3px solid transparent;
+  }
+  .sidebar-nav li a:hover,
+  .sidebar-nav li button:hover,
+  .sidebar-nav li.active a,
+  .sidebar-nav li.active button {
+    background: var(--jira-hover);
+    color: var(--jira-blue);
+    text-decoration: none;
+    border-left-color: var(--jira-blue);
+  }
+  .sidebar-nav li svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+  .sidebar-label {
+    padding: 16px 16px 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--jira-text-secondary);
+  }
+  .sidebar-stats {
+    padding: 16px;
+    border-top: 1px solid var(--jira-border);
+    margin-top: 12px;
+  }
+  .sidebar-stats h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--jira-text-secondary);
+    margin-bottom: 10px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 0.85rem;
+  }
+  .stat-row .val { font-weight: 700; color: var(--jira-blue); }
+
+  /* ── Main Content ────────────────────────────────── */
+  .main-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: var(--jira-bg);
+  }
+
+  /* Sprint Header */
+  .sprint-header {
+    margin-bottom: 24px;
+  }
+  .sprint-header h1 {
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--jira-text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .sprint-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sprint-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .sprint-badge.active {
+    background: var(--jira-green-light);
+    color: #006644;
+  }
+  .sprint-badge.info {
+    background: var(--jira-blue-light);
+    color: #0747A6;
+  }
+  .sprint-badge.warning {
+    background: var(--jira-yellow-light);
+    color: #7A5F00;
+  }
+  .sprint-dates {
+    font-size: 0.85rem;
+    color: var(--jira-text-secondary);
+  }
+
+  /* ── View Toggle ─────────────────────────────────── */
+  .view-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .view-toggle {
+    display: inline-flex;
+    border: 1px solid var(--jira-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .view-toggle button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font: inherit;
+    font-size: 0.85rem;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    color: var(--jira-text-secondary);
+    transition: all var(--transition);
+  }
+  .view-toggle button + button { border-left: 1px solid var(--jira-border); }
+  .view-toggle button.active {
+    background: var(--jira-blue);
+    color: #fff;
+  }
+  .view-toggle button svg { width: 16px; height: 16px; }
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .filter-group label { font-size: 0.85rem; color: var(--jira-text-secondary); }
+  .filter-group select {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 5px 8px;
+    border: 1px solid var(--jira-border);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--jira-text);
+    outline: none;
+  }
+  .filter-group select:focus { border-color: var(--jira-blue); }
+
+  /* ── Progress Bar ────────────────────────────────── */
+  .progress-container {
+    margin-bottom: 24px;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+    color: var(--jira-text-secondary);
+  }
+  .progress-bar {
+    height: 8px;
+    background: var(--jira-hover);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+  }
+  .progress-done {
+    background: var(--jira-green);
+    transition: width 0.6s ease;
+  }
+  .progress-inprogress {
+    background: var(--jira-blue);
+    transition: width 0.6s ease;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     BOARD VIEW (Kanban)
+     ═══════════════════════════════════════════════════ */
+  .board-view {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+  }
+  .board-column {
+    min-width: 300px;
+    flex: 1;
+    background: var(--jira-column-bg);
+    border-radius: var(--radius);
+    padding: 0 0 8px;
+    max-width: 400px;
+  }
+  .board-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px 8px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .board-column-header h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--jira-text-secondary);
+  }
+  .board-column-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--jira-hover);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: var(--jira-text-secondary);
+  }
+  .board-column-cards {
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* ── Ticket Card ─────────────────────────────────── */
+  .ticket-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 12px;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: box-shadow var(--transition), transform var(--transition);
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+  .ticket-card:hover {
+    box-shadow: 0 4px 8px rgba(9,30,66,0.2);
+    transform: translateY(-1px);
+  }
+  .ticket-card.type-bug { border-left-color: var(--jira-red); }
+  .ticket-card.type-story { border-left-color: var(--jira-purple); }
+  .ticket-card.type-task { border-left-color: var(--jira-blue); }
+  .ticket-card.type-epic { border-left-color: var(--jira-purple); }
+
+  .ticket-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .ticket-type-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .ticket-type-icon.bug { background: var(--jira-red); }
+  .ticket-type-icon.story { background: var(--jira-purple); }
+  .ticket-type-icon.task { background: var(--jira-blue); }
+  .ticket-type-icon.epic { background: var(--jira-purple); }
+
+  .ticket-key {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--jira-blue);
+    margin-left: 6px;
+  }
+  .ticket-priority {
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+  .ticket-card-title {
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: var(--jira-text);
+    margin-bottom: 10px;
+    line-height: 1.35;
+  }
+  .ticket-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ticket-card-labels {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .ticket-label {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .label-red { background: var(--jira-red-light); color: #BF2600; }
+  .label-green { background: var(--jira-green-light); color: #006644; }
+  .label-blue { background: var(--jira-blue-light); color: #0747A6; }
+  .label-yellow { background: var(--jira-yellow-light); color: #7A5F00; }
+  .label-purple { background: var(--jira-purple-light); color: #403294; }
+
+  .ticket-card-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #FF8B00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .ticket-card-points {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--jira-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--jira-text-secondary);
+    flex-shrink: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     LIST VIEW
+     ═══════════════════════════════════════════════════ */
+  .list-view { display: none; }
+  .list-view.active { display: block; }
+  .board-view.active { display: flex; }
+  .board-view { display: none; }
+
+  .list-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.93rem;
+  }
+  .list-table thead th {
+    background: var(--jira-sidebar);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--jira-text-secondary);
+    border-bottom: 2px solid var(--jira-border);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .list-table tbody tr {
+    cursor: pointer;
+    transition: background var(--transition);
+    border-bottom: 1px solid var(--jira-border);
+  }
+  .list-table tbody tr:hover { background: var(--jira-blue-light); }
+  .list-table td {
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+  .list-type-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-lozenge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .lozenge-done { background: var(--jira-green); color: #fff; }
+  .lozenge-inprogress { background: var(--jira-blue); color: #fff; }
+  .lozenge-open { background: var(--jira-blue-light); color: #0747A6; }
+  .lozenge-wontfix { background: var(--jira-text-secondary); color: #fff; }
+
+  /* ═══════════════════════════════════════════════════
+     MODAL (Ticket Detail)
+     ═══════════════════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(9,30,66,0.54);
+    z-index: 200;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-modal);
+    width: 100%;
+    max-width: 820px;
+    animation: modalIn 0.25s ease;
+    position: relative;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--jira-text-secondary);
+    font-size: 1.3rem;
+    transition: background var(--transition);
+    z-index: 5;
+  }
+  .modal-close:hover { background: var(--jira-hover); }
+
+  /* Modal Header */
+  .modal-header {
+    padding: 20px 24px 0;
+    border-bottom: none;
+  }
+  .modal-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--jira-text-secondary);
+    margin-bottom: 8px;
+  }
+  .modal-breadcrumb a { color: var(--jira-blue); font-weight: 500; }
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--jira-text);
+    line-height: 1.3;
+    padding-right: 40px;
+  }
+
+  /* Modal Body */
+  .modal-body {
+    display: flex;
+    gap: 0;
+  }
+  .modal-main {
+    flex: 1;
+    padding: 20px 24px 24px;
+    min-width: 0;
+  }
+  .modal-sidebar {
+    width: 260px;
+    padding: 20px;
+    border-left: 1px solid var(--jira-border);
+    background: var(--jira-sidebar);
+    flex-shrink: 0;
+  }
+
+  /* Modal: Description */
+  .section-heading {
+    font-size: 0.93rem;
+    font-weight: 700;
+    color: var(--jira-text);
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+  .section-heading:first-child { margin-top: 0; }
+  .desc-content {
+    font-size: 0.93rem;
+    color: var(--jira-text);
+    line-height: 1.7;
+  }
+  .desc-content p { margin-bottom: 10px; }
+  .desc-content code {
+    background: var(--jira-hover);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 0.85em;
+    color: var(--jira-red);
+  }
+  .desc-content ul, .desc-content ol {
+    padding-left: 24px;
+    margin-bottom: 10px;
+  }
+  .desc-content li { margin-bottom: 4px; }
+  .desc-content blockquote {
+    border-left: 3px solid var(--jira-border);
+    padding: 8px 16px;
+    margin: 10px 0;
+    background: var(--jira-sidebar);
+    color: var(--jira-text-secondary);
+    font-style: italic;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  /* Steps to Reproduce / Acceptance Criteria */
+  .steps-list {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+  }
+  .steps-list li {
+    counter-increment: step;
+    padding: 6px 0 6px 32px;
+    position: relative;
+    font-size: 0.93rem;
+  }
+  .steps-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 22px;
+    height: 22px;
+    background: var(--jira-blue-light);
+    color: var(--jira-blue);
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Skill Tags in modal */
+  .skill-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .skill-tag {
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--jira-sidebar);
+    border: 1px solid var(--jira-border);
+    color: var(--jira-text);
+    transition: all var(--transition);
+  }
+  .skill-tag:hover { background: var(--jira-blue-light); border-color: var(--jira-blue); color: var(--jira-blue); }
+  .skill-tag.cat-lang { border-left: 3px solid var(--jira-red); }
+  .skill-tag.cat-framework { border-left: 3px solid var(--jira-blue); }
+  .skill-tag.cat-tool { border-left: 3px solid var(--jira-green); }
+  .skill-tag.cat-cloud { border-left: 3px solid var(--jira-yellow); }
+  .skill-tag.cat-other { border-left: 3px solid var(--jira-purple); }
+
+  /* Timeline in modal */
+  .timeline { padding: 0; list-style: none; }
+  .timeline-item {
+    position: relative;
+    padding: 0 0 28px 30px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    bottom: 0;
+    width: 2px;
+    background: var(--jira-border);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-item::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--jira-blue);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--jira-blue);
+  }
+  .timeline-role {
+    font-weight: 700;
+    color: var(--jira-text);
+    font-size: 0.93rem;
+  }
+  .timeline-company {
+    color: var(--jira-blue);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .timeline-dates {
+    font-size: 0.78rem;
+    color: var(--jira-text-secondary);
+    margin-bottom: 4px;
+  }
+  .timeline-desc {
+    font-size: 0.85rem;
+    color: var(--jira-text);
+    line-height: 1.6;
+  }
+  .timeline-desc li { margin-bottom: 3px; }
+
+  /* Modal Sidebar Details */
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--jira-border);
+    font-size: 0.85rem;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key {
+    color: var(--jira-text-secondary);
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .detail-value {
+    color: var(--jira-text);
+    text-align: right;
+    max-width: 60%;
+  }
+  .detail-value .status-lozenge { font-size: 0.68rem; }
+
+  /* Comments */
+  .comment {
+    padding: 12px 0;
+    border-top: 1px solid var(--jira-border);
+  }
+  .comment:first-of-type { border-top: none; }
+  .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .comment-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .comment-author { font-weight: 600; font-size: 0.85rem; }
+  .comment-date { font-size: 0.72rem; color: var(--jira-text-secondary); }
+  .comment-body {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--jira-text);
+    padding-left: 36px;
+  }
+  .comment-body em { color: var(--jira-text-secondary); }
+
+  /* Contact form in modal */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .contact-grid .full { grid-column: 1 / -1; }
+  .contact-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--jira-text-secondary);
+    margin-bottom: 4px;
+  }
+  .contact-field input,
+  .contact-field textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    border: 2px solid var(--jira-border);
+    border-radius: var(--radius);
+    background: var(--jira-sidebar);
+    color: var(--jira-text);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+  .contact-field input:focus,
+  .contact-field textarea:focus { border-color: var(--jira-blue); }
+  .contact-field textarea { resize: vertical; min-height: 80px; }
+  .contact-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--jira-blue);
+    color: #fff;
+    padding: 8px 20px;
+    border: none;
+    border-radius: var(--radius);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition);
+    margin-top: 8px;
+  }
+  .contact-submit:hover { background: #0065FF; }
+
+  .contact-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--jira-border);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    color: var(--jira-text);
+    text-decoration: none;
+    transition: all var(--transition);
+  }
+  .contact-link:hover {
+    background: var(--jira-blue-light);
+    border-color: var(--jira-blue);
+    color: var(--jira-blue);
+    text-decoration: none;
+  }
+
+  /* Project cards in modal */
+  .project-cards {
+    display: grid;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .project-card {
+    border: 1px solid var(--jira-border);
+    border-radius: var(--radius);
+    padding: 14px;
+    transition: all var(--transition);
+  }
+  .project-card:hover { border-color: var(--jira-blue); box-shadow: var(--shadow-card); }
+  .project-card h4 {
+    font-size: 0.93rem;
+    color: var(--jira-text);
+    margin-bottom: 4px;
+  }
+  .project-card p {
+    font-size: 0.78rem;
+    color: var(--jira-text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .project-card-tech {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .project-card-tech span {
+    padding: 1px 6px;
+    background: var(--jira-sidebar);
+    border-radius: 3px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--jira-text-secondary);
+  }
+  .project-card-stats {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--jira-text-secondary);
+  }
+  .project-card-stats span { display: inline-flex; align-items: center; gap: 3px; }
+
+  /* ── Responsive ──────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .modal-body { flex-direction: column; }
+    .modal-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--jira-border); }
+    .board-column { min-width: 260px; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .topnav-search { display: none; }
+    .topnav-links { display: none; }
+    .main-content { padding: 16px; }
+    .board-view { flex-direction: column; }
+    .board-column { max-width: 100%; min-width: 0; }
+    .modal { margin: 10px; }
+    .modal-title { font-size: 1.2rem; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .sprint-header h1 { font-size: 1.3rem; }
+    .list-table { font-size: 0.78rem; }
+    .list-table td, .list-table th { padding: 8px 6px; }
+  }
+  @media (max-width: 480px) {
+    .topnav { padding: 0 12px; gap: 12px; }
+    .topnav-logo span { display: none; }
+  }
+
+  /* ── Animations ──────────────────────────────────── */
+  .ticket-card { animation: cardIn 0.3s ease both; }
+  .board-column:nth-child(1) .ticket-card { animation-delay: 0.05s; }
+  .board-column:nth-child(2) .ticket-card:nth-child(1) { animation-delay: 0.1s; }
+  .board-column:nth-child(2) .ticket-card:nth-child(2) { animation-delay: 0.15s; }
+  .board-column:nth-child(3) .ticket-card:nth-child(1) { animation-delay: 0.2s; }
+  .board-column:nth-child(3) .ticket-card:nth-child(2) { animation-delay: 0.25s; }
+  .board-column:nth-child(3) .ticket-card:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--jira-border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--jira-text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     TOP NAVIGATION
+     ════════════════════════════════════════════════════ -->
+<nav class="topnav" role="navigation" aria-label="Primary navigation">
+  <div class="topnav-logo">
+    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M15.52 1.44a.78.78 0 0 1 .96 0l14 11.2a.78.78 0 0 1-.48 1.36H17.56L22 25.12a.78.78 0 0 1-1.2.84L2 13.96a.78.78 0 0 1 .48-1.36H14.44L10 1.48a.78.78 0 0 1 1.2-.84l4.32 3.44V1.44Z" fill="#fff"/>
+    </svg>
+    <span>AG Board</span>
+  </div>
+  <div class="topnav-links">
+    <button onclick="switchView('board')" aria-label="Switch to board view">Board</button>
+    <button onclick="switchView('list')" aria-label="Switch to list view">Backlog</button>
+  </div>
+  <div class="topnav-search" role="search">
+    <input type="text" placeholder="Search tickets..." id="searchInput" aria-label="Search tickets" onkeyup="filterTickets(this.value)">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.5 7a4.5 4.5 0 1 0-1.73 3.55l3.59 3.59a.5.5 0 0 0 .71-.71l-3.59-3.59A4.5 4.5 0 0 0 11.5 7ZM7 10.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>
+  </div>
+  <div class="topnav-avatar" title="Anshull Garg" aria-label="User avatar">AG</div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════
+     APP SHELL
+     ════════════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" role="complementary" aria-label="Project sidebar">
+    <div class="sidebar-project">
+      <div class="sidebar-project-icon" aria-hidden="true">AG</div>
+      <h2>Anshull Garg</h2>
+      <p>Software Engineer Portfolio</p>
+    </div>
+
+    <div class="sidebar-label">Planning</div>
+    <ul class="sidebar-nav">
+      <li class="active">
+        <button onclick="switchView('board')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Board
+        </button>
+      </li>
+      <li>
+        <button onclick="switchView('list')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+          Backlog
+        </button>
+      </li>
+      <li>
+        <button onclick="openTicket('EPIC-005')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Timeline
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-label">Quick Access</div>
+    <ul class="sidebar-nav">
+      <li>
+        <button onclick="openTicket('BUG-001')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+          About Me
+        </button>
+      </li>
+      <li>
+        <button onclick="openTicket('TASK-004')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg>
+          Skills
+        </button>
+      </li>
+      <li>
+        <button onclick="openTicket('BUG-006')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2Z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Contact
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-stats">
+      <h4>Sprint Stats</h4>
+      <div class="stat-row"><span>Total Issues</span><span class="val">6</span></div>
+      <div class="stat-row"><span>Story Points</span><span class="val">21</span></div>
+      <div class="stat-row"><span>Completed</span><span class="val">3</span></div>
+      <div class="stat-row"><span>In Progress</span><span class="val">2</span></div>
+      <div class="stat-row"><span>To Do</span><span class="val">1</span></div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" role="main">
+
+    <!-- Sprint Header -->
+    <div class="sprint-header">
+      <h1>AG Sprint 2026-Q1</h1>
+      <div class="sprint-meta">
+        <span class="sprint-badge active">Active Sprint</span>
+        <span class="sprint-badge info">6 issues</span>
+        <span class="sprint-badge warning">2 Story Points remaining</span>
+        <span class="sprint-dates">Jan 6, 2026 - Mar 27, 2026</span>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-info">
+        <span>Sprint Progress</span>
+        <span>4 of 6 issues done (67%)</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-done" style="width: 50%"></div>
+        <div class="progress-inprogress" style="width: 33%"></div>
+      </div>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="view-controls">
+      <div class="view-toggle" role="tablist" aria-label="View toggle">
+        <button id="btn-board" class="active" role="tab" aria-selected="true" onclick="switchView('board')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="4" height="6" rx="0.5"/><rect x="6" y="1" width="4" height="9" rx="0.5"/><rect x="11" y="1" width="4" height="4" rx="0.5"/></svg>
+          Board
+        </button>
+        <button id="btn-list" role="tab" aria-selected="false" onclick="switchView('list')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="2" rx="0.5"/><rect x="1" y="7" width="14" height="2" rx="0.5"/><rect x="1" y="12" width="14" height="2" rx="0.5"/></svg>
+          List
+        </button>
+      </div>
+      <div class="filter-group">
+        <label for="type-filter">Type:</label>
+        <select id="type-filter" onchange="filterByType(this.value)">
+          <option value="all">All Types</option>
+          <option value="bug">Bug</option>
+          <option value="story">Story</option>
+          <option value="task">Task</option>
+          <option value="epic">Epic</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ═══════ BOARD VIEW (Kanban) ═══════ -->
+    <div class="board-view active" id="boardView" role="region" aria-label="Kanban board">
+
+      <!-- TO DO Column -->
+      <div class="board-column" data-column="todo">
+        <div class="board-column-header">
+          <h3>To Do</h3>
+          <span class="board-column-count">1</span>
+        </div>
+        <div class="board-column-cards">
+          <!-- BUG-006 -->
+          <div class="ticket-card type-bug" data-ticket="BUG-006" data-type="bug" onclick="openTicket('BUG-006')" tabindex="0" role="button" aria-label="Open ticket BUG-006">
+            <div class="ticket-card-top">
+              <div style="display:flex;align-items:center;">
+                <span class="ticket-type-icon bug" aria-label="Bug">B</span>
+                <span class="ticket-key">BUG-006</span>
+              </div>
+              <span class="ticket-priority" title="Highest">&#x2B06;</span>
+            </div>
+            <div class="ticket-card-title">Inbox overflow from recruiter messages</div>
+            <div class="ticket-card-bottom">
+              <div class="ticket-card-labels">
+                <span class="ticket-label label-red">Bug</span>
+                <span class="ticket-label label-blue">Contact</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="ticket-card-points">3</span>
+                <span class="ticket-card-avatar">AG</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IN PROGRESS Column -->
+      <div class="board-column" data-column="inprogress">
+        <div class="board-column-header">
+          <h3>In Progress</h3>
+          <span class="board-column-count">2</span>
+        </div>
+        <div class="board-column-cards">
+          <!-- BUG-002 -->
+          <div class="ticket-card type-bug" data-ticket="BUG-002" data-type="bug" onclick="openTicket('BUG-002')" tabindex="0" role="button" aria-label="Open ticket BUG-002">
+            <div class="ticket-card-top">
+              <div style="display:flex;align-items:center;">
+                <span class="ticket-type-icon bug" aria-label="Bug">B</span>
+                <span class="ticket-key">BUG-002</span>
+              </div>
+              <span class="ticket-priority" title="Highest">&#x2B06;</span>
+            </div>
+            <div class="ticket-card-title">Cannot stop shipping features to production</div>
+            <div class="ticket-card-bottom">
+              <div class="ticket-card-labels">
+                <span class="ticket-label label-red">Critical</span>
+                <span class="ticket-label label-yellow">Ongoing</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="ticket-card-points">5</span>
+                <span class="ticket-card-avatar">AG</span>
+              </div>
+            </div>
+          </div>
+          <!-- EPIC-005 -->
+          <div class="ticket-card type-epic" data-ticket="EPIC-005" data-type="epic" onclick="openTicket('EPIC-005')" tabindex="0" role="button" aria-label="Open ticket EPIC-005">
+            <div class="ticket-card-top">
+              <div style="display:flex;align-items:center;">
+                <span class="ticket-type-icon epic" aria-label="Epic">E</span>
+                <span class="ticket-key">EPIC-005</span>
+              </div>
+              <span class="ticket-priority" title="High">&#x2B06;</span>
+            </div>
+            <div class="ticket-card-title">The Career Saga - still writing new chapters</div>
+            <div class="ticket-card-bottom">
+              <div class="ticket-card-labels">
+                <span class="ticket-label label-purple">Epic</span>
+                <span class="ticket-label label-yellow">In Progress</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="ticket-card-points">8</span>
+                <span class="ticket-card-avatar">AG</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONE Column -->
+      <div class="board-column" data-column="done">
+        <div class="board-column-header">
+          <h3>Done</h3>
+          <span class="board-column-count">3</span>
+        </div>
+        <div class="board-column-cards">
+          <!-- BUG-001 -->
+          <div class="ticket-card type-bug" data-ticket="BUG-001" data-type="bug" onclick="openTicket('BUG-001')" tabindex="0" role="button" aria-label="Open ticket BUG-001">
+            <div class="ticket-card-top">
+              <div style="display:flex;align-items:center;">
+                <span class="ticket-type-icon bug" aria-label="Bug">B</span>
+                <span class="ticket-key">BUG-001</span>
+              </div>
+              <span class="ticket-priority" title="Critical">&#x2B06;</span>
+            </div>
+            <div class="ticket-card-title">Developer is too passionate about clean code</div>
+            <div class="ticket-card-bottom">
+              <div class="ticket-card-labels">
+                <span class="ticket-label label-red">Bug</span>
+                <span class="ticket-label label-green">Won't Fix</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="ticket-card-points">3</span>
+                <span class="ticket-card-avatar">AG</span>
+              </div>
+            </div>
+          </div>
+          <!-- STORY-003 -->
+          <div class="ticket-card type-story" data-ticket="STORY-003" data-type="story" onclick="openTicket('STORY-003')" tabindex="0" role="button" aria-label="Open ticket STORY-003">
+            <div class="ticket-card-top">
+              <div style="display:flex;align-items:center;">
+                <span class="ticket-type-icon story" aria-label="Story">S</span>
+                <span class="ticket-key">STORY-003</span>
+              </div>
+              <span class="ticket-priority" title="Medium">&#x25B6;</span>
+            </div>
+            <div class="ticket-card-title">The Origin Story - how this developer was compiled</div>
+            <div class="ticket-card-bottom">
+              <div class="ticket-card-labels">
+                <span class="ticket-label label-purple">Story</span>
+                <span class="ticket-label label-green">Done</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="ticket-card-points">2</span>
+                <span class="ticket-card-avatar">AG</span>
+              </div>
+            </div>
+          </div>
+          <!-- TASK-004 -->
+          <div class="ticket-card type-task" data-ticket="TASK-004" data-type="task" onclick="openTicket('TASK-004')" tabindex="0" role="button" aria-label="Open ticket TASK-004">
+            <div class="ticket-card-top">
+              <div style="display:flex;align-items:center;">
+                <span class="ticket-type-icon task" aria-label="Task">T</span>
+                <span class="ticket-key">TASK-004</span>
+              </div>
+              <span class="ticket-priority" title="High">&#x2B06;</span>
+            </div>
+            <div class="ticket-card-title">Inventory of Developer Arsenal (skills audit)</div>
+            <div class="ticket-card-bottom">
+              <div class="ticket-card-labels">
+                <span class="ticket-label label-blue">Task</span>
+                <span class="ticket-label label-green">Done</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="ticket-card-points">2</span>
+                <span class="ticket-card-avatar">AG</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ LIST VIEW ═══════ -->
+    <div class="list-view" id="listView" role="region" aria-label="List view">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Key</th>
+            <th>Summary</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="openTicket('BUG-001')" data-type="bug" data-ticket-row="BUG-001" tabindex="0">
+            <td><div class="list-type-cell"><span class="ticket-type-icon bug">B</span></div></td>
+            <td><a href="#" onclick="event.preventDefault()">BUG-001</a></td>
+            <td>Developer is too passionate about clean code</td>
+            <td><span class="status-lozenge lozenge-wontfix">Won't Fix</span></td>
+            <td>Critical</td>
+            <td>3</td>
+          </tr>
+          <tr onclick="openTicket('BUG-002')" data-type="bug" data-ticket-row="BUG-002" tabindex="0">
+            <td><div class="list-type-cell"><span class="ticket-type-icon bug">B</span></div></td>
+            <td><a href="#" onclick="event.preventDefault()">BUG-002</a></td>
+            <td>Cannot stop shipping features to production</td>
+            <td><span class="status-lozenge lozenge-inprogress">Ongoing</span></td>
+            <td>Highest</td>
+            <td>5</td>
+          </tr>
+          <tr onclick="openTicket('STORY-003')" data-type="story" data-ticket-row="STORY-003" tabindex="0">
+            <td><div class="list-type-cell"><span class="ticket-type-icon story">S</span></div></td>
+            <td><a href="#" onclick="event.preventDefault()">STORY-003</a></td>
+            <td>The Origin Story - how this developer was compiled</td>
+            <td><span class="status-lozenge lozenge-done">Done</span></td>
+            <td>Medium</td>
+            <td>2</td>
+          </tr>
+          <tr onclick="openTicket('TASK-004')" data-type="task" data-ticket-row="TASK-004" tabindex="0">
+            <td><div class="list-type-cell"><span class="ticket-type-icon task">T</span></div></td>
+            <td><a href="#" onclick="event.preventDefault()">TASK-004</a></td>
+            <td>Inventory of Developer Arsenal (skills audit)</td>
+            <td><span class="status-lozenge lozenge-done">Done</span></td>
+            <td>High</td>
+            <td>2</td>
+          </tr>
+          <tr onclick="openTicket('EPIC-005')" data-type="epic" data-ticket-row="EPIC-005" tabindex="0">
+            <td><div class="list-type-cell"><span class="ticket-type-icon epic">E</span></div></td>
+            <td><a href="#" onclick="event.preventDefault()">EPIC-005</a></td>
+            <td>The Career Saga - still writing new chapters</td>
+            <td><span class="status-lozenge lozenge-inprogress">In Progress</span></td>
+            <td>High</td>
+            <td>8</td>
+          </tr>
+          <tr onclick="openTicket('BUG-006')" data-type="bug" data-ticket-row="BUG-006" tabindex="0">
+            <td><div class="list-type-cell"><span class="ticket-type-icon bug">B</span></div></td>
+            <td><a href="#" onclick="event.preventDefault()">BUG-006</a></td>
+            <td>Inbox overflow from recruiter messages</td>
+            <td><span class="status-lozenge lozenge-open">Open</span></td>
+            <td>Highest</td>
+            <td>3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     MODAL OVERLAY
+     ════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close ticket detail">&times;</button>
+    <div class="modal-header">
+      <div class="modal-breadcrumb" id="modalBreadcrumb"></div>
+      <h2 class="modal-title" id="modalTitle"></h2>
+    </div>
+    <div class="modal-body">
+      <div class="modal-main" id="modalMain"></div>
+      <div class="modal-sidebar" id="modalSidebar"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// TICKET DATA
+// ════════════════════════════════════════════════════
+const tickets = {
+  'BUG-001': {
+    key: 'BUG-001',
+    type: 'Bug',
+    typeClass: 'bug',
+    typeIcon: 'B',
+    title: 'Developer is too passionate about clean code',
+    status: "Won't Fix",
+    statusClass: 'lozenge-wontfix',
+    priority: 'Critical',
+    priorityIcon: '\u2B06',
+    points: 3,
+    reporter: 'Engineering Manager',
+    reporterAvatar: 'EM',
+    reporterColor: '#00875A',
+    assignee: 'Anshull Garg',
+    created: 'Jan 15, 2026',
+    updated: 'Jan 28, 2026',
+    labels: ['clean-code', 'refactoring', 'quality'],
+    description: `
+      <p><strong>Summary:</strong> When given any codebase, this developer compulsively refactors it until it's readable, tested, and maintainable. Multiple attempts to introduce spaghetti code have been thwarted.</p>
+      <p><strong>Impact:</strong> This behavior has resulted in a <code>40% reduction in production bugs</code>, a <code>60% improvement in code review turnaround time</code>, and three separate engineers asking "why is this codebase so clean?" in Slack.</p>
+      <h3 class="section-heading">Steps to Reproduce</h3>
+      <ol class="steps-list">
+        <li>Assign any legacy codebase to this developer</li>
+        <li>Wait approximately 2 sprints</li>
+        <li>Observe that the codebase now has 90%+ test coverage</li>
+        <li>Notice meaningful variable names where <code>x</code>, <code>temp</code>, and <code>data2</code> used to live</li>
+        <li>Realize there are now actual comments explaining <em>why</em>, not just <em>what</em></li>
+      </ol>
+      <h3 class="section-heading">Expected Behavior</h3>
+      <p>Developer should leave code in whatever state it was found in, like a normal person.</p>
+      <h3 class="section-heading">Actual Behavior</h3>
+      <p>Developer leaves every codebase significantly better than they found it. Has been overheard saying "code is read more often than it's written" with alarming conviction.</p>
+      <blockquote>"I've seen this developer alphabetize import statements at 2 AM. There is no cure." -- Senior Staff Engineer</blockquote>
+    `,
+    comments: [
+      {
+        author: 'Tech Lead',
+        avatar: 'TL',
+        color: '#0052CC',
+        date: 'Jan 20, 2026',
+        body: 'Closing as <strong>Won\'t Fix</strong>. After extensive review, we have determined this is actually a <em>feature</em>, not a bug. Recommending we clone this developer if the technology becomes available.'
+      },
+      {
+        author: 'Product Manager',
+        avatar: 'PM',
+        color: '#6554C0',
+        date: 'Jan 22, 2026',
+        body: 'Can confirm. Our bug count dropped 40% since this developer joined. The dashboards look suspiciously green. QA is getting bored.'
+      },
+      {
+        author: 'Junior Developer',
+        avatar: 'JD',
+        color: '#FF8B00',
+        date: 'Jan 25, 2026',
+        body: 'I pushed code with a <code>console.log("here")</code> and received a very polite but firm code review comment within 4 minutes. On a Saturday. I have since reformed.'
+      }
+    ]
+  },
+
+  'BUG-002': {
+    key: 'BUG-002',
+    type: 'Bug',
+    typeClass: 'bug',
+    typeIcon: 'B',
+    title: 'Cannot stop shipping features to production',
+    status: 'Ongoing',
+    statusClass: 'lozenge-inprogress',
+    priority: 'Highest',
+    priorityIcon: '\u2B06',
+    points: 5,
+    reporter: 'Product Owner',
+    reporterAvatar: 'PO',
+    reporterColor: '#FF5630',
+    assignee: 'Anshull Garg',
+    created: 'Dec 3, 2025',
+    updated: 'Feb 5, 2026',
+    labels: ['feature-factory', 'unstoppable', 'production'],
+    description: `
+      <p><strong>Summary:</strong> This developer has an uncontrollable urge to build and ship production-ready features at an alarming velocity. All attempts to slow down output have failed.</p>
+      <h3 class="section-heading">Affected Systems (Projects)</h3>
+      <div class="project-cards">
+        <div class="project-card">
+          <h4>Walmart Inventory Optimization Platform</h4>
+          <p>Built a real-time inventory tracking system processing millions of SKU updates daily. Reduced out-of-stock incidents by 23% across 4,700+ stores. The system now handles peak traffic during Black Friday without breaking a sweat.</p>
+          <div class="project-card-tech">
+            <span>Java</span><span>Spring Boot</span><span>Kafka</span><span>Redis</span><span>GCP</span>
+          </div>
+          <div class="project-card-stats">
+            <span>4.7M daily events</span>
+            <span>99.97% uptime</span>
+            <span>23% fewer stockouts</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h4>Checkout Microservices Migration</h4>
+          <p>Led the decomposition of a monolithic checkout service into 12 independent microservices. Reduced deployment times from 4 hours to 8 minutes. Team velocity increased by 3x.</p>
+          <div class="project-card-tech">
+            <span>React</span><span>Node.js</span><span>TypeScript</span><span>Kubernetes</span><span>GraphQL</span>
+          </div>
+          <div class="project-card-stats">
+            <span>12 microservices</span>
+            <span>8min deploys</span>
+            <span>3x velocity</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h4>Customer Analytics Dashboard</h4>
+          <p>Designed and built an internal analytics platform used by 200+ product managers. Real-time visualization of customer behavior funnels, A/B test results, and revenue metrics.</p>
+          <div class="project-card-tech">
+            <span>React</span><span>D3.js</span><span>Python</span><span>BigQuery</span><span>Looker</span>
+          </div>
+          <div class="project-card-stats">
+            <span>200+ users</span>
+            <span>50+ dashboards</span>
+            <span>Real-time data</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <h4>Automated Testing Framework</h4>
+          <p>Built a comprehensive E2E testing framework that reduced QA cycle from 3 days to 4 hours. Integrated with CI/CD pipeline for automatic regression testing on every PR.</p>
+          <div class="project-card-tech">
+            <span>Playwright</span><span>Jest</span><span>GitHub Actions</span><span>Docker</span>
+          </div>
+          <div class="project-card-stats">
+            <span>2,400+ test cases</span>
+            <span>94% coverage</span>
+            <span>18x faster QA</span>
+          </div>
+        </div>
+      </div>
+    `,
+    comments: [
+      {
+        author: 'Engineering Director',
+        avatar: 'ED',
+        color: '#00875A',
+        date: 'Jan 10, 2026',
+        body: 'We tried assigning this developer to a "cooldown sprint" with no feature work. They automated our entire deployment pipeline instead. We give up.'
+      },
+      {
+        author: 'Scrum Master',
+        avatar: 'SM',
+        color: '#0052CC',
+        date: 'Feb 1, 2026',
+        body: 'Velocity chart is basically a vertical line at this point. I\'ve had to rescale the Y-axis twice this quarter.'
+      }
+    ]
+  },
+
+  'STORY-003': {
+    key: 'STORY-003',
+    type: 'Story',
+    typeClass: 'story',
+    typeIcon: 'S',
+    title: 'The Origin Story - how this developer was compiled',
+    status: 'Done',
+    statusClass: 'lozenge-done',
+    priority: 'Medium',
+    priorityIcon: '\u25B6',
+    points: 2,
+    reporter: 'Anshull Garg',
+    reporterAvatar: 'AG',
+    reporterColor: '#FF8B00',
+    assignee: 'Anshull Garg',
+    created: 'Jan 1, 2026',
+    updated: 'Jan 5, 2026',
+    labels: ['bio', 'origin-story', 'about'],
+    description: `
+      <p><strong>As a</strong> visitor to this portfolio, <strong>I want to</strong> understand who Anshull Garg is, <strong>so that</strong> I can determine if this is the developer my team desperately needs.</p>
+      <h3 class="section-heading">Acceptance Criteria</h3>
+      <ol class="steps-list">
+        <li><strong>Background:</strong> Software Developer at <strong>Walmart Global Tech</strong>, building systems that serve millions of customers daily</li>
+        <li><strong>Education:</strong> Computer Science degree with a focus on distributed systems and software engineering</li>
+        <li><strong>Philosophy:</strong> Believes that great software is built at the intersection of clean architecture, user empathy, and relentless iteration</li>
+        <li><strong>Approach:</strong> Full-stack engineer who moves fluidly between frontend finesse and backend robustness</li>
+        <li><strong>Passion:</strong> Obsessed with developer experience, automated testing, and making complex systems feel simple</li>
+      </ol>
+      <h3 class="section-heading">Additional Context</h3>
+      <p>When not writing code, Anshull can be found reviewing pull requests (even on weekends), debating the merits of tabs vs. spaces (spaces, obviously), or explaining to non-technical friends why "it works on my machine" is not an acceptable deployment strategy.</p>
+      <blockquote>"I don't just write code that works. I write code that the next developer will <em>thank me</em> for writing." -- Anshull Garg, in a completely unprompted Slack message</blockquote>
+      <p>Core values: <strong>Ownership</strong> (if it shipped, it's my responsibility), <strong>Craft</strong> (good enough is not good enough), and <strong>Collaboration</strong> (the best code is written by teams, not individuals).</p>
+    `,
+    comments: [
+      {
+        author: 'Hiring Manager',
+        avatar: 'HM',
+        color: '#36B37E',
+        date: 'Jan 3, 2026',
+        body: 'Story approved. This developer clearly passed the <code>instanceof GoodEngineer</code> check. Moving to Done.'
+      }
+    ]
+  },
+
+  'TASK-004': {
+    key: 'TASK-004',
+    type: 'Task',
+    typeClass: 'task',
+    typeIcon: 'T',
+    title: 'Inventory of Developer Arsenal (skills audit)',
+    status: 'Done',
+    statusClass: 'lozenge-done',
+    priority: 'High',
+    priorityIcon: '\u2B06',
+    points: 2,
+    reporter: 'Tech Lead',
+    reporterAvatar: 'TL',
+    reporterColor: '#0052CC',
+    assignee: 'Anshull Garg',
+    created: 'Jan 8, 2026',
+    updated: 'Jan 12, 2026',
+    labels: ['skills', 'inventory', 'audit'],
+    description: `
+      <p><strong>Task:</strong> Perform a comprehensive audit of all technologies, frameworks, and tools in this developer's arsenal. <strong>WARNING:</strong> List is unreasonably long.</p>
+      <h3 class="section-heading">Languages</h3>
+      <div class="skill-grid">
+        <span class="skill-tag cat-lang">Java</span>
+        <span class="skill-tag cat-lang">JavaScript</span>
+        <span class="skill-tag cat-lang">TypeScript</span>
+        <span class="skill-tag cat-lang">Python</span>
+        <span class="skill-tag cat-lang">SQL</span>
+        <span class="skill-tag cat-lang">HTML/CSS</span>
+        <span class="skill-tag cat-lang">Go</span>
+        <span class="skill-tag cat-lang">Kotlin</span>
+      </div>
+      <h3 class="section-heading">Frameworks & Libraries</h3>
+      <div class="skill-grid">
+        <span class="skill-tag cat-framework">React</span>
+        <span class="skill-tag cat-framework">Next.js</span>
+        <span class="skill-tag cat-framework">Node.js</span>
+        <span class="skill-tag cat-framework">Spring Boot</span>
+        <span class="skill-tag cat-framework">Express</span>
+        <span class="skill-tag cat-framework">GraphQL</span>
+        <span class="skill-tag cat-framework">Tailwind CSS</span>
+        <span class="skill-tag cat-framework">Redux</span>
+        <span class="skill-tag cat-framework">Django</span>
+      </div>
+      <h3 class="section-heading">Cloud & Infrastructure</h3>
+      <div class="skill-grid">
+        <span class="skill-tag cat-cloud">Google Cloud (GCP)</span>
+        <span class="skill-tag cat-cloud">AWS</span>
+        <span class="skill-tag cat-cloud">Azure</span>
+        <span class="skill-tag cat-cloud">Kubernetes</span>
+        <span class="skill-tag cat-cloud">Docker</span>
+        <span class="skill-tag cat-cloud">Terraform</span>
+        <span class="skill-tag cat-cloud">CI/CD Pipelines</span>
+      </div>
+      <h3 class="section-heading">Databases & Data</h3>
+      <div class="skill-grid">
+        <span class="skill-tag cat-tool">PostgreSQL</span>
+        <span class="skill-tag cat-tool">MongoDB</span>
+        <span class="skill-tag cat-tool">Redis</span>
+        <span class="skill-tag cat-tool">Elasticsearch</span>
+        <span class="skill-tag cat-tool">BigQuery</span>
+        <span class="skill-tag cat-tool">Kafka</span>
+        <span class="skill-tag cat-tool">DynamoDB</span>
+      </div>
+      <h3 class="section-heading">Tools & Practices</h3>
+      <div class="skill-grid">
+        <span class="skill-tag cat-other">Git</span>
+        <span class="skill-tag cat-other">GitHub Actions</span>
+        <span class="skill-tag cat-other">Jest / Playwright</span>
+        <span class="skill-tag cat-other">Agile / Scrum</span>
+        <span class="skill-tag cat-other">System Design</span>
+        <span class="skill-tag cat-other">Microservices</span>
+        <span class="skill-tag cat-other">REST APIs</span>
+        <span class="skill-tag cat-other">Observability (Datadog, Grafana)</span>
+      </div>
+    `,
+    comments: [
+      {
+        author: 'Tech Lead',
+        avatar: 'TL',
+        color: '#0052CC',
+        date: 'Jan 12, 2026',
+        body: 'Audit complete. The skill list is so long, it caused a horizontal scroll issue in our internal wiki. Filing a separate bug for that.'
+      },
+      {
+        author: 'Recruiter',
+        avatar: 'RC',
+        color: '#FF5630',
+        date: 'Jan 14, 2026',
+        body: 'I tried to match this candidate against our requirements. The keyword match score broke 100%. Our ATS is confused.'
+      }
+    ]
+  },
+
+  'EPIC-005': {
+    key: 'EPIC-005',
+    type: 'Epic',
+    typeClass: 'epic',
+    typeIcon: 'E',
+    title: 'The Career Saga - still writing new chapters',
+    status: 'In Progress',
+    statusClass: 'lozenge-inprogress',
+    priority: 'High',
+    priorityIcon: '\u2B06',
+    points: 8,
+    reporter: 'Career Trajectory Algorithm',
+    reporterAvatar: 'CT',
+    reporterColor: '#6554C0',
+    assignee: 'Anshull Garg',
+    created: 'Jan 1, 2024',
+    updated: 'Feb 5, 2026',
+    labels: ['experience', 'career', 'epic'],
+    description: `
+      <p><strong>Epic Summary:</strong> A chronological account of career progression that, frankly, reads like a speedrun. Each role has been carefully optimized for maximum impact per sprint.</p>
+      <h3 class="section-heading">Career Timeline</h3>
+      <ul class="timeline">
+        <li class="timeline-item">
+          <div class="timeline-role">Software Engineer III</div>
+          <div class="timeline-company">Walmart Global Tech</div>
+          <div class="timeline-dates">2023 - Present</div>
+          <div class="timeline-desc">
+            <ul>
+              <li>Building and scaling backend systems serving 200M+ weekly customers</li>
+              <li>Led migration of legacy monolith to microservices architecture (Java, Spring Boot, Kafka)</li>
+              <li>Reduced API response times by 65% through caching strategies and query optimization</li>
+              <li>Mentoring junior developers and driving engineering best practices across the org</li>
+              <li>On-call hero: resolved 15 P1 incidents with average MTTR of 12 minutes</li>
+            </ul>
+          </div>
+        </li>
+        <li class="timeline-item">
+          <div class="timeline-role">Software Engineer II</div>
+          <div class="timeline-company">Walmart Global Tech</div>
+          <div class="timeline-dates">2021 - 2023</div>
+          <div class="timeline-desc">
+            <ul>
+              <li>Developed real-time inventory management features used across 4,700+ stores</li>
+              <li>Built customer-facing React applications with 99.9% uptime SLA</li>
+              <li>Implemented comprehensive E2E testing framework, reducing QA cycle by 85%</li>
+              <li>Drove adoption of TypeScript across 3 frontend repositories</li>
+            </ul>
+          </div>
+        </li>
+        <li class="timeline-item">
+          <div class="timeline-role">Software Engineer I</div>
+          <div class="timeline-company">Walmart Global Tech</div>
+          <div class="timeline-dates">2020 - 2021</div>
+          <div class="timeline-desc">
+            <ul>
+              <li>Joined as new grad and ramped up to full productivity within 3 weeks (team average: 8 weeks)</li>
+              <li>Shipped first production feature in week 2: an automated report generation tool saving 15 hours/week</li>
+              <li>Received "Rising Star" recognition in first performance review</li>
+            </ul>
+          </div>
+        </li>
+        <li class="timeline-item">
+          <div class="timeline-role">Software Engineering Intern</div>
+          <div class="timeline-company">Walmart Global Tech</div>
+          <div class="timeline-dates">Summer 2019</div>
+          <div class="timeline-desc">
+            <ul>
+              <li>Built a proof-of-concept recommendation engine that was later adopted by the team</li>
+              <li>Received a return offer within the first 6 weeks of a 12-week internship</li>
+              <li>The intern project is still running in production. Yes, really.</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    `,
+    comments: [
+      {
+        author: 'Engineering Director',
+        avatar: 'ED',
+        color: '#00875A',
+        date: 'Dec 15, 2025',
+        body: 'Promoted ahead of schedule. Again. We may need to add more levels to our career ladder just for this person.'
+      },
+      {
+        author: 'Skip-Level Manager',
+        avatar: 'SL',
+        color: '#6554C0',
+        date: 'Jan 30, 2026',
+        body: 'Note to self: the intern project from 2019 just processed its billionth request. The ROI on that hire is... incalculable.'
+      }
+    ]
+  },
+
+  'BUG-006': {
+    key: 'BUG-006',
+    type: 'Bug',
+    typeClass: 'bug',
+    typeIcon: 'B',
+    title: 'Inbox overflow from recruiter messages',
+    status: 'Open',
+    statusClass: 'lozenge-open',
+    priority: 'Highest',
+    priorityIcon: '\u2B06',
+    points: 3,
+    reporter: 'LinkedIn Algorithm',
+    reporterAvatar: 'LI',
+    reporterColor: '#0077B5',
+    assignee: 'Anshull Garg',
+    created: 'Feb 1, 2026',
+    updated: 'Feb 8, 2026',
+    labels: ['contact', 'networking', 'urgent'],
+    description: `
+      <p><strong>Summary:</strong> After viewing this portfolio, recruiters and hiring managers experience an uncontrollable urge to reach out immediately. This has caused an inbox capacity issue that we are actively monitoring.</p>
+      <h3 class="section-heading">Steps to Reproduce</h3>
+      <ol class="steps-list">
+        <li>View this portfolio</li>
+        <li>Read through the ticket descriptions</li>
+        <li>Realize you need this developer on your team</li>
+        <li>Experience an overwhelming urge to send a message</li>
+        <li>Contact immediately using the form below</li>
+      </ol>
+      <h3 class="section-heading">Expected Resolution</h3>
+      <p>Anshull will respond within 24 hours. Unless it's a weekend, in which case he's probably still coding anyway.</p>
+      <h3 class="section-heading">Report This Bug (a.k.a. Get In Touch)</h3>
+      <div class="contact-grid">
+        <div class="contact-field">
+          <label for="contact-name">Your Name</label>
+          <input type="text" id="contact-name" placeholder="Jane Smith">
+        </div>
+        <div class="contact-field">
+          <label for="contact-email">Email</label>
+          <input type="email" id="contact-email" placeholder="jane@company.com">
+        </div>
+        <div class="contact-field full">
+          <label for="contact-subject">Subject (Bug Title)</label>
+          <input type="text" id="contact-subject" placeholder="We need you on our team immediately">
+        </div>
+        <div class="contact-field full">
+          <label for="contact-msg">Description (Why you're reaching out)</label>
+          <textarea id="contact-msg" placeholder="Describe the opportunity, your team, and why this is urgent..."></textarea>
+        </div>
+      </div>
+      <button class="contact-submit" onclick="submitContact()">Submit Bug Report</button>
+      <h3 class="section-heading" style="margin-top:24px;">Alternative Contact Channels</h3>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:anshullgarg@gmail.com">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2Z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+          LinkedIn
+        </a>
+        <a class="contact-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    `,
+    comments: [
+      {
+        author: 'LinkedIn Algorithm',
+        avatar: 'LI',
+        color: '#0077B5',
+        date: 'Feb 3, 2026',
+        body: '<em>Auto-generated alert:</em> Profile views increased by 847% after portfolio link was shared. Connection request queue is at capacity. This is not a drill.'
+      },
+      {
+        author: 'Anshull Garg',
+        avatar: 'AG',
+        color: '#FF8B00',
+        date: 'Feb 5, 2026',
+        body: 'I appreciate the interest! I\'m always open to conversations about exciting engineering challenges, great teams, and interesting technical problems. Don\'t be a stranger -- the worst I can say is "let\'s stay in touch."'
+      }
+    ]
+  }
+};
+
+// ════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ════════════════════════════════════════════════════
+function switchView(view) {
+  const board = document.getElementById('boardView');
+  const list = document.getElementById('listView');
+  const btnBoard = document.getElementById('btn-board');
+  const btnList = document.getElementById('btn-list');
+
+  if (view === 'board') {
+    board.classList.add('active');
+    list.classList.remove('active');
+    btnBoard.classList.add('active');
+    btnBoard.setAttribute('aria-selected', 'true');
+    btnList.classList.remove('active');
+    btnList.setAttribute('aria-selected', 'false');
+  } else {
+    board.classList.remove('active');
+    list.classList.add('active');
+    btnBoard.classList.remove('active');
+    btnBoard.setAttribute('aria-selected', 'false');
+    btnList.classList.add('active');
+    btnList.setAttribute('aria-selected', 'true');
+  }
+
+  // Update sidebar active state
+  const sidebarItems = document.querySelectorAll('.sidebar-nav li');
+  sidebarItems[0].classList.toggle('active', view === 'board');
+  sidebarItems[1].classList.toggle('active', view === 'list');
+}
+
+// ════════════════════════════════════════════════════
+// FILTERING
+// ════════════════════════════════════════════════════
+function filterByType(type) {
+  const boardCards = document.querySelectorAll('.ticket-card');
+  const listRows = document.querySelectorAll('.list-table tbody tr');
+
+  boardCards.forEach(card => {
+    if (type === 'all' || card.dataset.type === type) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  listRows.forEach(row => {
+    if (type === 'all' || row.dataset.type === type) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  updateColumnCounts();
+}
+
+function filterTickets(query) {
+  const q = query.toLowerCase();
+  const boardCards = document.querySelectorAll('.ticket-card');
+  const listRows = document.querySelectorAll('.list-table tbody tr');
+
+  boardCards.forEach(card => {
+    const title = card.querySelector('.ticket-card-title').textContent.toLowerCase();
+    const key = card.dataset.ticket.toLowerCase();
+    card.style.display = (title.includes(q) || key.includes(q)) ? '' : 'none';
+  });
+
+  listRows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+
+  updateColumnCounts();
+}
+
+function updateColumnCounts() {
+  document.querySelectorAll('.board-column').forEach(col => {
+    const visible = col.querySelectorAll('.ticket-card:not([style*="display: none"])').length;
+    col.querySelector('.board-column-count').textContent = visible;
+  });
+}
+
+// ════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════
+function openTicket(key) {
+  const ticket = tickets[key];
+  if (!ticket) return;
+
+  const overlay = document.getElementById('modalOverlay');
+  const breadcrumb = document.getElementById('modalBreadcrumb');
+  const title = document.getElementById('modalTitle');
+  const main = document.getElementById('modalMain');
+  const sidebar = document.getElementById('modalSidebar');
+
+  // Breadcrumb
+  breadcrumb.innerHTML = `
+    <a href="#" onclick="event.preventDefault();closeModal();">AG Board</a>
+    <span>/</span>
+    <span class="ticket-type-icon ${ticket.typeClass}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;">${ticket.typeIcon}</span>
+    <strong>${ticket.key}</strong>
+  `;
+
+  // Title
+  title.textContent = ticket.title;
+
+  // Main content
+  let mainHTML = `
+    <h3 class="section-heading">Description</h3>
+    <div class="desc-content">${ticket.description}</div>
+  `;
+
+  // Comments
+  if (ticket.comments && ticket.comments.length > 0) {
+    mainHTML += `<h3 class="section-heading" style="margin-top:28px;">Activity</h3>`;
+    ticket.comments.forEach(c => {
+      mainHTML += `
+        <div class="comment">
+          <div class="comment-header">
+            <div class="comment-avatar" style="background:${c.color};">${c.avatar}</div>
+            <span class="comment-author">${c.author}</span>
+            <span class="comment-date">${c.date}</span>
+          </div>
+          <div class="comment-body">${c.body}</div>
+        </div>
+      `;
+    });
+  }
+
+  main.innerHTML = mainHTML;
+
+  // Sidebar details
+  const labelsHTML = ticket.labels.map(l => `<span class="ticket-label label-blue" style="margin:2px;">${l}</span>`).join('');
+
+  sidebar.innerHTML = `
+    <div class="detail-row">
+      <span class="detail-key">Status</span>
+      <span class="detail-value"><span class="status-lozenge ${ticket.statusClass}">${ticket.status}</span></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Type</span>
+      <span class="detail-value" style="display:flex;align-items:center;gap:5px;justify-content:flex-end;">
+        <span class="ticket-type-icon ${ticket.typeClass}" style="width:16px;height:16px;font-size:0.6rem;">${ticket.typeIcon}</span>
+        ${ticket.type}
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Priority</span>
+      <span class="detail-value">${ticket.priorityIcon} ${ticket.priority}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Story Points</span>
+      <span class="detail-value">${ticket.points}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Assignee</span>
+      <span class="detail-value" style="display:flex;align-items:center;gap:5px;justify-content:flex-end;">
+        <span class="ticket-card-avatar" style="width:20px;height:20px;font-size:0.55rem;">AG</span>
+        ${ticket.assignee}
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Reporter</span>
+      <span class="detail-value" style="display:flex;align-items:center;gap:5px;justify-content:flex-end;">
+        <span class="comment-avatar" style="width:20px;height:20px;font-size:0.55rem;background:${ticket.reporterColor};">${ticket.reporterAvatar}</span>
+        ${ticket.reporter}
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Labels</span>
+      <span class="detail-value" style="max-width:100%;display:flex;flex-wrap:wrap;justify-content:flex-end;">${labelsHTML}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Created</span>
+      <span class="detail-value">${ticket.created}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Updated</span>
+      <span class="detail-value">${ticket.updated}</span>
+    </div>
+    <div class="detail-row" style="border-bottom:none;padding-top:12px;">
+      <span class="detail-key">Sprint</span>
+      <span class="detail-value">AG Sprint 2026-Q1</span>
+    </div>
+  `;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Trap focus
+  setTimeout(() => {
+    const closeBtn = document.querySelector('.modal-close');
+    if (closeBtn) closeBtn.focus();
+  }, 100);
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(event) {
+  if (event.target === document.getElementById('modalOverlay')) {
+    closeModal();
+  }
+}
+
+// Keyboard support
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+  // Enter on ticket cards
+  if (e.key === 'Enter' && e.target.classList.contains('ticket-card')) {
+    const key = e.target.dataset.ticket;
+    if (key) openTicket(key);
+  }
+  if (e.key === 'Enter' && e.target.tagName === 'TR' && e.target.dataset.ticketRow) {
+    openTicket(e.target.dataset.ticketRow);
+  }
+});
+
+// ════════════════════════════════════════════════════
+// CONTACT FORM
+// ════════════════════════════════════════════════════
+function submitContact() {
+  const name = document.getElementById('contact-name');
+  const email = document.getElementById('contact-email');
+  const subject = document.getElementById('contact-subject');
+  const msg = document.getElementById('contact-msg');
+
+  if (!name || !name.value.trim()) {
+    alert('Please enter your name to file this bug report.');
+    return;
+  }
+  if (!email || !email.value.trim()) {
+    alert('Please enter your email so Anshull can respond.');
+    return;
+  }
+
+  // Simulated submission
+  const btn = document.querySelector('.contact-submit');
+  const originalText = btn.textContent;
+  btn.textContent = 'Bug Report Filed!';
+  btn.style.background = '#36B37E';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.style.background = '';
+    btn.disabled = false;
+    if (name) name.value = '';
+    if (email) email.value = '';
+    if (subject) subject.value = '';
+    if (msg) msg.value = '';
+    alert('Bug report filed successfully! Anshull will investigate within 24 hours. (In a real deployment, this would send an email.)');
+  }, 2000);
+}
+
+// ════════════════════════════════════════════════════
+// ANIMATE PROGRESS BAR ON LOAD
+// ════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  const done = document.querySelector('.progress-done');
+  const inprog = document.querySelector('.progress-inprogress');
+  // Start at 0 then animate
+  done.style.width = '0%';
+  inprog.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      done.style.width = '50%';
+      inprog.style.width = '33%';
+    });
+  });
+});
+</script>
+</body>
+</html>

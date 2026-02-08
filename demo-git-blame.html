@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>git blame ~/portfolio/README.md - Anshull Garg</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --bg:#0D1117;
+    --bg-secondary:#161B22;
+    --border:#30363D;
+    --line-nr:#6E7681;
+    --hash:#58A6FF;
+    --date:#8B949E;
+    --author:#C9D1D9;
+    --content:#C9D1D9;
+    --highlight:#1F2937;
+    --commit-bg:#1C2128;
+    --green:#3FB950;
+    --red:#F85149;
+    --yellow:#D29922;
+    --purple:#BC8CFF;
+    --orange:#F0883E;
+  }
+
+  html{font-size:14px;scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--content);
+    font-family:'SF Mono','Cascadia Code','Fira Code','JetBrains Mono',Consolas,'Courier New',monospace;
+    line-height:1.6;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  /* TOOLBAR */
+  .toolbar{
+    position:sticky;top:0;z-index:100;
+    background:var(--bg-secondary);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:12px;
+    padding:8px 16px;
+    font-size:13px;
+  }
+  .toolbar .file-path{
+    color:var(--author);
+    display:flex;align-items:center;gap:6px;
+  }
+  .toolbar .file-path .icon{color:var(--hash);font-size:15px}
+  .toolbar .branch{
+    background:#1F6FEB22;
+    color:var(--hash);
+    padding:2px 10px;
+    border-radius:12px;
+    font-size:12px;
+    border:1px solid #1F6FEB44;
+    display:flex;align-items:center;gap:4px;
+  }
+  .toolbar .branch svg{width:14px;height:14px;fill:var(--hash)}
+  .toolbar .separator{
+    width:1px;height:20px;background:var(--border);
+  }
+  .view-tabs{display:flex;gap:2px}
+  .view-tab{
+    background:none;border:none;color:var(--date);
+    padding:4px 12px;border-radius:6px;cursor:pointer;
+    font-family:inherit;font-size:13px;
+    transition:all .15s;
+  }
+  .view-tab:hover{color:var(--author);background:#ffffff08}
+  .view-tab.active{color:var(--author);background:var(--highlight)}
+
+  .search-box{
+    margin-left:auto;
+    position:relative;
+  }
+  .search-box input{
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--content);
+    padding:4px 10px 4px 28px;
+    border-radius:6px;
+    font-family:inherit;font-size:12px;
+    width:220px;
+    outline:none;
+    transition:border-color .2s;
+  }
+  .search-box input:focus{border-color:var(--hash)}
+  .search-box input::placeholder{color:var(--line-nr)}
+  .search-box .search-icon{
+    position:absolute;left:8px;top:50%;transform:translateY(-50%);
+    color:var(--line-nr);font-size:13px;pointer-events:none;
+  }
+  .search-results-count{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    color:var(--line-nr);font-size:11px;
+  }
+
+  /* BLAME VIEW */
+  .blame-container{
+    display:flex;
+    min-height:calc(100vh - 42px);
+  }
+  .blame-view{
+    flex:1;
+    overflow-x:auto;
+    padding-bottom:40vh;
+  }
+  .blame-line{
+    display:flex;
+    align-items:flex-start;
+    padding:0 16px;
+    min-height:24px;
+    cursor:pointer;
+    transition:background .1s;
+    border-left:3px solid transparent;
+  }
+  .blame-line:hover{background:#ffffff06}
+  .blame-line.highlighted{background:var(--highlight);border-left-color:var(--hash)}
+  .blame-line.search-match{background:#D2992233;border-left-color:var(--yellow)}
+  .blame-line.same-commit{background:#ffffff04}
+
+  .blame-line .hash{
+    color:var(--hash);
+    min-width:80px;
+    cursor:pointer;
+    user-select:none;
+    flex-shrink:0;
+  }
+  .blame-line .hash:hover{text-decoration:underline}
+  .blame-line .meta-author{
+    color:var(--author);
+    min-width:140px;
+    flex-shrink:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .blame-line .meta-date{
+    color:var(--date);
+    min-width:130px;
+    flex-shrink:0;
+    text-align:right;
+    padding-right:12px;
+  }
+  .blame-line .line-nr{
+    color:var(--line-nr);
+    min-width:40px;
+    text-align:right;
+    padding-right:16px;
+    user-select:none;
+    flex-shrink:0;
+  }
+  .blame-line .line-content{
+    flex:1;
+    white-space:pre;
+    overflow-x:visible;
+  }
+
+  /* Content styling */
+  .line-content .heading{color:var(--hash);font-weight:bold}
+  .line-content .subheading{color:var(--purple);font-weight:bold}
+  .line-content .subsubheading{color:var(--orange);font-weight:bold}
+  .line-content .comment{color:var(--line-nr);font-style:italic}
+  .line-content .string{color:var(--green)}
+  .line-content .keyword{color:var(--red)}
+  .line-content .link{color:var(--hash);text-decoration:underline;cursor:pointer}
+  .line-content .bullet{color:var(--yellow)}
+  .line-content .tag{
+    display:inline-block;
+    background:#1F6FEB22;
+    color:var(--hash);
+    padding:0 6px;
+    border-radius:3px;
+    font-size:12px;
+    margin-right:4px;
+  }
+
+  /* COMMIT DETAIL PANEL */
+  .commit-panel{
+    position:fixed;
+    top:42px;right:0;bottom:0;
+    width:520px;
+    background:var(--bg-secondary);
+    border-left:1px solid var(--border);
+    transform:translateX(100%);
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+    z-index:90;
+    overflow-y:auto;
+    display:flex;flex-direction:column;
+  }
+  .commit-panel.open{transform:translateX(0)}
+  .commit-panel-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;
+    background:var(--bg-secondary);
+  }
+  .commit-panel-header h3{font-size:14px;font-weight:600;color:var(--author)}
+  .commit-panel-close{
+    background:none;border:none;color:var(--date);
+    cursor:pointer;font-size:18px;padding:4px 8px;
+    border-radius:4px;font-family:inherit;
+  }
+  .commit-panel-close:hover{background:var(--highlight);color:var(--author)}
+
+  .commit-detail{padding:20px;flex:1}
+  .commit-detail .commit-hash-full{
+    color:var(--hash);font-size:13px;
+    margin-bottom:16px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .commit-detail .commit-hash-full .copy-btn{
+    background:var(--highlight);border:1px solid var(--border);
+    color:var(--date);cursor:pointer;padding:2px 6px;
+    border-radius:4px;font-size:11px;font-family:inherit;
+  }
+  .commit-detail .commit-hash-full .copy-btn:hover{color:var(--author)}
+
+  .commit-detail .meta-block{
+    margin-bottom:20px;
+    padding:12px;
+    background:var(--bg);
+    border-radius:8px;
+    border:1px solid var(--border);
+  }
+  .commit-detail .meta-row{
+    display:flex;gap:12px;
+    padding:3px 0;
+    font-size:13px;
+  }
+  .commit-detail .meta-label{color:var(--date);min-width:60px}
+  .commit-detail .meta-value{color:var(--author)}
+
+  .commit-detail .commit-message{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+    margin-top:16px;
+    white-space:pre-wrap;
+    line-height:1.7;
+    font-size:13px;
+  }
+  .commit-detail .commit-message .msg-title{
+    color:var(--author);
+    font-weight:bold;
+    font-size:15px;
+    margin-bottom:12px;
+    display:block;
+  }
+  .commit-detail .commit-message .msg-body{
+    color:var(--date);
+    display:block;
+    padding-left:16px;
+  }
+  .commit-detail .commit-message .signed{
+    color:var(--green);
+    display:block;
+    margin-top:12px;
+    padding-left:16px;
+  }
+
+  .commit-detail .files-changed{
+    margin-top:20px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .commit-detail .files-changed-header{
+    padding:10px 14px;
+    background:var(--highlight);
+    font-size:12px;color:var(--date);
+    border-bottom:1px solid var(--border);
+  }
+  .commit-detail .file-entry{
+    padding:6px 14px;
+    font-size:12px;
+    display:flex;align-items:center;gap:8px;
+    border-bottom:1px solid #ffffff06;
+  }
+  .commit-detail .file-entry:last-child{border-bottom:none}
+  .commit-detail .file-entry .file-status{
+    font-size:10px;padding:1px 5px;border-radius:3px;
+    font-weight:600;
+  }
+  .commit-detail .file-entry .file-status.added{background:#3FB95022;color:var(--green)}
+  .commit-detail .file-entry .file-status.modified{background:#D2992222;color:var(--yellow)}
+  .commit-detail .file-entry .file-path-entry{color:var(--author)}
+  .commit-detail .file-entry .additions{color:var(--green);font-size:11px}
+  .commit-detail .file-entry .deletions{color:var(--red);font-size:11px;margin-left:auto}
+
+  /* LOG VIEW */
+  .log-view{
+    display:none;
+    padding:20px;
+    max-width:900px;
+  }
+  .log-view.active{display:block}
+  .blame-view.hidden{display:none}
+
+  .log-entry{
+    display:flex;
+    gap:20px;
+    padding:16px 0;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    transition:background .15s;
+    padding-left:12px;
+    margin-left:20px;
+    border-left:2px solid var(--border);
+    position:relative;
+  }
+  .log-entry::before{
+    content:'';
+    position:absolute;
+    left:-7px;top:22px;
+    width:12px;height:12px;
+    border-radius:50%;
+    background:var(--bg-secondary);
+    border:2px solid var(--hash);
+  }
+  .log-entry:hover{background:#ffffff04}
+  .log-entry:hover::before{background:var(--hash)}
+  .log-entry .log-hash{color:var(--hash);min-width:80px;font-size:13px;flex-shrink:0}
+  .log-entry .log-body{flex:1}
+  .log-entry .log-title{color:var(--author);font-weight:600;margin-bottom:4px}
+  .log-entry .log-meta{color:var(--date);font-size:12px}
+  .log-entry .log-date{color:var(--date);font-size:12px;min-width:120px;text-align:right;flex-shrink:0}
+
+  /* DIFF VIEW */
+  .diff-view{
+    display:none;
+    padding:20px;
+    max-width:1000px;
+  }
+  .diff-view.active{display:block}
+
+  .diff-file-block{
+    border:1px solid var(--border);
+    border-radius:8px;
+    margin-bottom:24px;
+    overflow:hidden;
+  }
+  .diff-file-header{
+    padding:10px 16px;
+    background:var(--highlight);
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+    color:var(--author);
+    display:flex;align-items:center;gap:8px;
+  }
+  .diff-file-header .diff-badge{
+    font-size:10px;padding:1px 6px;border-radius:3px;font-weight:600;
+  }
+  .diff-file-header .diff-badge.added{background:#3FB95022;color:var(--green)}
+  .diff-file-header .diff-badge.removed{background:#F8514922;color:var(--red)}
+  .diff-hunk{
+    padding:0;
+    font-size:13px;
+  }
+  .diff-hunk-header{
+    padding:6px 16px;
+    background:#1F6FEB11;
+    color:var(--hash);
+    font-size:12px;
+  }
+  .diff-line{
+    padding:0 16px;
+    min-height:22px;
+    display:flex;
+  }
+  .diff-line.added{background:#3FB95012}
+  .diff-line.added .diff-sign{color:var(--green)}
+  .diff-line.removed{background:#F8514912}
+  .diff-line.removed .diff-sign{color:var(--red)}
+  .diff-line .diff-ln{color:var(--line-nr);min-width:40px;text-align:right;padding-right:8px;user-select:none}
+  .diff-line .diff-sign{min-width:20px;user-select:none}
+  .diff-line .diff-text{flex:1;white-space:pre}
+
+  /* OVERLAY for mobile panel */
+  .overlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.5);
+    z-index:80;
+  }
+  .overlay.visible{display:block}
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--line-nr)}
+
+  /* Loading animation */
+  .loading-bar{
+    position:fixed;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--hash),transparent);
+    z-index:200;
+    animation:loadSlide 1.5s ease-out forwards;
+  }
+  @keyframes loadSlide{
+    0%{transform:translateX(-100%);opacity:1}
+    100%{transform:translateX(100%);opacity:0}
+  }
+
+  /* Responsive */
+  @media(max-width:900px){
+    .commit-panel{width:100%}
+    .blame-line .meta-author{min-width:100px;font-size:12px}
+    .blame-line .meta-date{min-width:100px;font-size:12px}
+    .toolbar{flex-wrap:wrap;gap:8px}
+    .search-box input{width:160px}
+  }
+  @media(max-width:600px){
+    .blame-line .meta-author{display:none}
+    .blame-line .meta-date{display:none}
+    .blame-line .hash{min-width:65px;font-size:12px}
+    .blame-line .line-nr{min-width:30px;padding-right:8px}
+    .toolbar .file-path span{display:none}
+    .search-box input{width:120px}
+  }
+
+  /* Selection */
+  ::selection{background:#58A6FF33}
+</style>
+</head>
+<body>
+
+<div class="loading-bar"></div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="file-path">
+    <span class="icon">&#128193;</span>
+    <span>~/portfolio/</span><strong>README.md</strong>
+  </div>
+  <div class="branch">
+    <svg viewBox="0 0 16 16"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/></svg>
+    main
+  </div>
+  <div class="separator"></div>
+  <div class="view-tabs">
+    <button class="view-tab active" data-view="blame" onclick="switchView('blame')">Blame</button>
+    <button class="view-tab" data-view="log" onclick="switchView('log')">Log</button>
+    <button class="view-tab" data-view="diff" onclick="switchView('diff')">Diff</button>
+  </div>
+  <div class="search-box">
+    <span class="search-icon">/</span>
+    <input type="text" id="searchInput" placeholder="Search in file..." oninput="handleSearch(this.value)">
+    <span class="search-results-count" id="searchCount"></span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="blame-container">
+  <div class="blame-view" id="blameView"></div>
+  <div class="log-view" id="logView"></div>
+  <div class="diff-view" id="diffView"></div>
+</div>
+
+<!-- COMMIT DETAIL PANEL -->
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="commit-panel" id="commitPanel">
+  <div class="commit-panel-header">
+    <h3>Commit Details</h3>
+    <button class="commit-panel-close" onclick="closePanel()">&times;</button>
+  </div>
+  <div class="commit-detail" id="commitDetail"></div>
+</div>
+
+<script>
+// ============================================================
+// DATA: Every line of the portfolio as git blame data
+// ============================================================
+
+const commits = {
+  "0000001a": {
+    hash: "0000001a",
+    fullHash: "0000001a4f7e2b3c8d9e1f0a5b6c7d8e9f0a1b2c",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2022-01-15",
+    relDate: "4 years ago",
+    title: "init: born, started breaking things",
+    body: "The very first commit. No tests, no CI, no code review.\nJust pure curiosity and a text editor.\n\nEveryone starts somewhere. For me, it was a black terminal\nand a blinking cursor that seemed to ask: \"Well? What now?\"\n\nI typed print(\"Hello, World!\") and never looked back.",
+    files: [
+      { name: "life.py", status: "added", add: 1, del: 0 },
+      { name: "README.md", status: "added", add: 3, del: 0 }
+    ]
+  },
+  "a7f2e1c8": {
+    hash: "a7f2e1c8",
+    fullHash: "a7f2e1c84d5b6a7e8f9c0d1e2f3a4b5c6d7e8f9a",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2023-03-10",
+    relDate: "3 years ago",
+    title: "feat: define professional identity",
+    body: "After years of learning and growing, finally committed\nto the title \"Software Developer\". This wasn't just a\nlabel change - it was a career-defining moment.\n\nFrom writing spaghetti code in college to building systems\nthat serve millions - the journey shaped the identity.",
+    files: [
+      { name: "README.md", status: "modified", add: 5, del: 2 }
+    ]
+  },
+  "b4d7e9a1": {
+    hash: "b4d7e9a1",
+    fullHash: "b4d7e9a12c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2023-06-20",
+    relDate: "3 years ago",
+    title: "feat: join Walmart as Software Developer",
+    body: "Joined Walmart Global Tech. The scale here is unlike\nanything I had worked with before.\n\nMillions of customers. Thousands of transactions per second.\nThe kind of engineering challenges that keep you up at night\n- in the best way possible.\n\nClean code isn't optional at this scale. It's survival.",
+    files: [
+      { name: "README.md", status: "modified", add: 8, del: 1 },
+      { name: "career/walmart.md", status: "added", add: 45, del: 0 }
+    ]
+  },
+  "1a3c5f7d": {
+    hash: "1a3c5f7d",
+    fullHash: "1a3c5f7d8e9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2024-02-14",
+    relDate: "2 years ago",
+    title: "chore: add blank lines because readability matters",
+    body: "Some people think blank lines are wasted space.\nI think they're the difference between code that\nscreams and code that breathes.\n\nReadability > cleverness. Always.",
+    files: [
+      { name: "README.md", status: "modified", add: 3, del: 0 }
+    ]
+  },
+  "e8f2a1c9": {
+    hash: "e8f2a1c9",
+    fullHash: "e8f2a1c94d5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-01-05",
+    relDate: "1 year ago",
+    title: "feat: add mission statement",
+    body: "Finally articulated what I do in one line.\n\n\"I build systems that serve millions of customers.\"\n\nShort. True. No fluff.\nIf your mission statement needs a paragraph,\nyou haven't figured it out yet.",
+    files: [
+      { name: "README.md", status: "modified", add: 2, del: 0 }
+    ]
+  },
+  "c3e5a7b9": {
+    hash: "c3e5a7b9",
+    fullHash: "c3e5a7b91d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-04-18",
+    relDate: "10 months ago",
+    title: "feat: document technical skills",
+    body: "Added the full tech stack. Deliberately kept it honest.\nOnly listing things I've actually shipped production code in.\n\nNo \"familiar with\" or \"exposure to\" - if it's on the list,\nI've debugged it at 2 AM.",
+    files: [
+      { name: "README.md", status: "modified", add: 12, del: 3 },
+      { name: "skills.json", status: "added", add: 38, del: 0 }
+    ]
+  },
+  "d45b2c1a": {
+    hash: "d45b2c1a",
+    fullHash: "d45b2c1a3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-08-12",
+    relDate: "6 months ago",
+    title: "feat: add projects section",
+    body: "Finally documenting the work. Not for bragging rights,\nbut because I keep forgetting what I built last quarter.\n\nNote to self: if you don't write it down, it didn't happen.\n(At least not during performance reviews.)",
+    files: [
+      { name: "README.md", status: "modified", add: 15, del: 0 },
+      { name: "projects/", status: "added", add: 0, del: 0 }
+    ]
+  },
+  "f7e3a2b5": {
+    hash: "f7e3a2b5",
+    fullHash: "f7e3a2b54c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-08-20",
+    relDate: "6 months ago",
+    title: "feat: document checkout optimization project",
+    body: "The Checkout Optimization Engine was the project that\ntaught me what \"scale\" really means.\n\nReducing page load by 40% doesn't sound dramatic until\nyou realize it affects every single checkout on walmart.com.\n\nThat's millions of pages served faster. Every. Single. Day.",
+    files: [
+      { name: "README.md", status: "modified", add: 4, del: 0 },
+      { name: "projects/checkout-engine.md", status: "added", add: 67, del: 0 }
+    ]
+  },
+  "a8c4d6e2": {
+    hash: "a8c4d6e2",
+    fullHash: "a8c4d6e21f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-09-01",
+    relDate: "5 months ago",
+    title: "feat: add inventory sync system details",
+    body: "Real-time inventory management across 4,700+ stores.\n\nThe challenge wasn't just technical - it was understanding\nthat every sync failure means a customer sees \"in stock\"\nfor something that isn't there.\n\nEventual consistency is great until a customer drives\n30 minutes to pick up something that doesn't exist.",
+    files: [
+      { name: "README.md", status: "modified", add: 3, del: 0 },
+      { name: "projects/inventory-sync.md", status: "added", add: 89, del: 0 }
+    ]
+  },
+  "9b1e3f5a": {
+    hash: "9b1e3f5a",
+    fullHash: "9b1e3f5a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-09-15",
+    relDate: "5 months ago",
+    title: "feat: document search autocomplete project",
+    body: "Built the search autocomplete with sub-100ms response.\n\nThe trick? Trie-based indexing with intelligent prefetching.\nAlso learned that users type faster than you'd expect,\nso debouncing is not optional.\n\n3x improvement in search-to-cart conversion. The PM was happy.\nI was happy the latency graphs stopped giving me anxiety.",
+    files: [
+      { name: "README.md", status: "modified", add: 3, del: 0 },
+      { name: "projects/search-autocomplete.md", status: "added", add: 54, del: 0 }
+    ]
+  },
+  "2c4e6a8b": {
+    hash: "2c4e6a8b",
+    fullHash: "2c4e6a8b0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-10-01",
+    relDate: "4 months ago",
+    title: "refactor: learned that 'it works' is not a test strategy",
+    body: "Rewrote the testing section after a production incident\ntaught me that \"it works on my machine\" is not a deployment\nstrategy.\n\nAdded unit tests, integration tests, and most importantly,\nthe humility to write tests BEFORE the code.\n\nTDD isn't religion. It's insurance.",
+    files: [
+      { name: "README.md", status: "modified", add: 5, del: 2 },
+      { name: ".github/workflows/ci.yml", status: "modified", add: 12, del: 3 }
+    ]
+  },
+  "7d9f1b3e": {
+    hash: "7d9f1b3e",
+    fullHash: "7d9f1b3e5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-11-10",
+    relDate: "3 months ago",
+    title: "feat: add experience timeline",
+    body: "Documenting the career path. From the first internship\nto Walmart Global Tech.\n\nEvery role taught something the previous one couldn't.\nThe growth wasn't linear - it was exponential once\nthe fundamentals clicked.",
+    files: [
+      { name: "README.md", status: "modified", add: 8, del: 0 }
+    ]
+  },
+  "3f5a7c9e": {
+    hash: "3f5a7c9e",
+    fullHash: "3f5a7c9e1b2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-12-01",
+    relDate: "2 months ago",
+    title: "fix: removed console.log before code review",
+    body: "We've all been there.\n\nconsole.log('HERE')\nconsole.log('HERE 2')\nconsole.log('WHY IS THIS NOT WORKING')\nconsole.log('PLEASE')\n\nThankfully caught it before the PR review.\nAdded a lint rule to prevent this shame in the future.",
+    files: [
+      { name: "README.md", status: "modified", add: 2, del: 2 },
+      { name: ".eslintrc.js", status: "modified", add: 1, del: 0 }
+    ]
+  },
+  "5a7b9c1d": {
+    hash: "5a7b9c1d",
+    fullHash: "5a7b9c1d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2025-12-20",
+    relDate: "2 months ago",
+    title: "feat: add philosophy section",
+    body: "Added the principles that guide my work.\n\nThese aren't things I read in a book and copied.\nThey're lessons from production incidents, code reviews,\nand the occasional 3 AM debugging session.\n\nShip fast, but ship right.",
+    files: [
+      { name: "README.md", status: "modified", add: 6, del: 0 }
+    ]
+  },
+  "8e0b2d4f": {
+    hash: "8e0b2d4f",
+    fullHash: "8e0b2d4f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2026-01-10",
+    relDate: "1 month ago",
+    title: "feat: add contact and links",
+    body: "Finally adding contact info. Took long enough.\n\nThe best opportunities in my career came from someone\nreaching out. Keeping the door open.",
+    files: [
+      { name: "README.md", status: "modified", add: 5, del: 0 }
+    ]
+  },
+  "bb42f1e7": {
+    hash: "bb42f1e7",
+    fullHash: "bb42f1e74a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2026-01-25",
+    relDate: "2 weeks ago",
+    title: "docs: add fun facts",
+    body: "Because a portfolio without personality is just a resume.\n\nFun fact: I once mass-renamed a production database column\nand brought down the app for 47 minutes. I learned more\nin those 47 minutes than in 4 years of school.\n\nAnother fun fact: my first website had a visitor counter\nand a \"best viewed in Internet Explorer\" badge. We all\nstart somewhere.",
+    files: [
+      { name: "README.md", status: "modified", add: 6, del: 0 }
+    ]
+  },
+  "ee17a3c5": {
+    hash: "ee17a3c5",
+    fullHash: "ee17a3c54d5b6a7e8f9c0d1e2f3a4b5c6d7e8f9a",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2026-02-05",
+    relDate: "3 days ago",
+    title: "feat: build this portfolio as git blame",
+    body: "Meta moment: building a portfolio that looks like\nthe tool we use every day to figure out who wrote\nthat questionable piece of code.\n\nIf you're reading this, you're either:\n1. A recruiter (hi, I'm interested)\n2. A developer (check out the source)\n3. Me, testing this for the 100th time\n\nEvery line tells a story. Every commit is a chapter.\nThis is my career, version-controlled.",
+    files: [
+      { name: "README.md", status: "modified", add: 12, del: 0 },
+      { name: "portfolio/git-blame.html", status: "added", add: 800, del: 0 }
+    ]
+  },
+  "ff00dead": {
+    hash: "ff00dead",
+    fullHash: "ff00dead4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d",
+    author: "Anshull Garg",
+    email: "anshull.garg@gmail.com",
+    date: "2026-02-08",
+    relDate: "just now",
+    title: "fix: final polish before sharing",
+    body: "Last minute tweaks. Adjusted spacing, fixed a typo,\nand triple-checked that no console.logs survived.\n\nThis time I'm sure. Probably. Maybe.\n\nShipping it.",
+    files: [
+      { name: "README.md", status: "modified", add: 3, del: 2 }
+    ]
+  }
+};
+
+// Lines: each line of the "file" being blamed
+const lines = [
+  { hash: "a7f2e1c8", content: "# Anshull Garg", style: "heading" },
+  { hash: "b4d7e9a1", content: "## Software Developer at Walmart", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "e8f2a1c9", content: "I build systems that serve millions of customers.", style: "" },
+  { hash: "b4d7e9a1", content: "I care about clean code, performance, and user experience.", style: "" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "c3e5a7b9", content: "## Skills", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "c3e5a7b9", content: "### Languages", style: "subsubheading" },
+  { hash: "c3e5a7b9", content: "- JavaScript / TypeScript", style: "bullet" },
+  { hash: "c3e5a7b9", content: "- Python", style: "bullet" },
+  { hash: "c3e5a7b9", content: "- Java", style: "bullet" },
+  { hash: "c3e5a7b9", content: "- SQL", style: "bullet" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "c3e5a7b9", content: "### Frameworks & Tools", style: "subsubheading" },
+  { hash: "c3e5a7b9", content: "- React, Node.js, Next.js", style: "bullet" },
+  { hash: "c3e5a7b9", content: "- Spring Boot, Express", style: "bullet" },
+  { hash: "c3e5a7b9", content: "- Docker, Kubernetes, AWS", style: "bullet" },
+  { hash: "c3e5a7b9", content: "- Redis, Kafka, PostgreSQL", style: "bullet" },
+  { hash: "3f5a7c9e", content: "- Git (obviously)", style: "bullet" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "d45b2c1a", content: "## Projects", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "f7e3a2b5", content: "### Checkout Optimization Engine", style: "subsubheading" },
+  { hash: "f7e3a2b5", content: "Reduced page load time by 40% across walmart.com checkout flow.", style: "" },
+  { hash: "f7e3a2b5", content: "React, Node.js, Redis | Impact: ~$2M annual revenue uplift", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "a8c4d6e2", content: "### Real-Time Inventory Sync", style: "subsubheading" },
+  { hash: "a8c4d6e2", content: "Live inventory tracking across 4,700+ Walmart stores.", style: "" },
+  { hash: "a8c4d6e2", content: "Kafka, Java, PostgreSQL | Latency: <200ms end-to-end", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "9b1e3f5a", content: "### Search Autocomplete System", style: "subsubheading" },
+  { hash: "9b1e3f5a", content: "Sub-100ms autocomplete for product search.", style: "" },
+  { hash: "9b1e3f5a", content: "Trie indexing, prefetch | 3x search-to-cart conversion", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "7d9f1b3e", content: "## Experience", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "7d9f1b3e", content: "### Software Developer  |  Walmart Global Tech", style: "subsubheading" },
+  { hash: "7d9f1b3e", content: "2023 - Present", style: "comment" },
+  { hash: "7d9f1b3e", content: "Building and scaling customer-facing systems.", style: "" },
+  { hash: "7d9f1b3e", content: "Owned checkout performance, inventory APIs, and search.", style: "" },
+  { hash: "7d9f1b3e", content: "Led migration from monolith to microservices architecture.", style: "" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "7d9f1b3e", content: "### Software Engineering Intern  |  Previous Co.", style: "subsubheading" },
+  { hash: "7d9f1b3e", content: "2022 - 2023", style: "comment" },
+  { hash: "7d9f1b3e", content: "Built internal tools. Learned that production is different.", style: "" },
+  { hash: "2c4e6a8b", content: "Wrote my first unit test here. It changed everything.", style: "" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "5a7b9c1d", content: "## Philosophy", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "5a7b9c1d", content: "> \"Ship fast, but ship right.\"", style: "string" },
+  { hash: "5a7b9c1d", content: "> \"Readability counts. Your future self is the next maintainer.\"", style: "string" },
+  { hash: "5a7b9c1d", content: "> \"The best code is the code you don't have to write.\"", style: "string" },
+  { hash: "2c4e6a8b", content: "> \"'It works' is not a test strategy.\"", style: "string" },
+  { hash: "3f5a7c9e", content: "> \"console.log is not a debugger.\" (I'm still learning this one)", style: "string" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "bb42f1e7", content: "## Fun Facts", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "bb42f1e7", content: "- Once mass-renamed a production DB column. App was down 47 min.", style: "bullet" },
+  { hash: "bb42f1e7", content: "  (Learned more in those 47 min than in 4 years of school)", style: "comment" },
+  { hash: "bb42f1e7", content: "- My first website had a visitor counter and 'Best viewed in IE' badge", style: "bullet" },
+  { hash: "bb42f1e7", content: "- I once debugged a race condition for 3 days. It was a typo.", style: "bullet" },
+  { hash: "3f5a7c9e", content: "- My git log has more 'fix typo' commits than actual features", style: "bullet" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "8e0b2d4f", content: "## Contact", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "8e0b2d4f", content: "- Email: anshull.garg@gmail.com", style: "bullet" },
+  { hash: "8e0b2d4f", content: "- GitHub: github.com/anshullgarg", style: "bullet" },
+  { hash: "8e0b2d4f", content: "- LinkedIn: linkedin.com/in/anshullgarg", style: "bullet" },
+  { hash: "ff00dead", content: "- Open to: interesting problems and good coffee", style: "bullet" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "1a3c5f7d", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "0000001a", content: "## The First Commit", style: "subheading" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "0000001a", content: "# Four years ago, in a dark terminal:", style: "comment" },
+  { hash: "0000001a", content: "print(\"Hello, World!\")", style: "string" },
+  { hash: "0000001a", content: "# And I never looked back.", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "ee17a3c5", content: "---", style: "comment" },
+  { hash: "1a3c5f7d", content: "", style: "" },
+  { hash: "ee17a3c5", content: "<!-- This portfolio is a git blame. Every line has a story. -->", style: "comment" },
+  { hash: "ee17a3c5", content: "<!-- Click any commit hash to read the full message. -->", style: "comment" },
+  { hash: "ff00dead", content: "<!-- Last updated: just now. Shipping it. -->", style: "comment" },
+];
+
+
+// ============================================================
+// RENDER: Blame View
+// ============================================================
+
+let selectedHash = null;
+let hoveredHash = null;
+
+function renderBlameView() {
+  const container = document.getElementById('blameView');
+  container.innerHTML = '';
+
+  lines.forEach((line, i) => {
+    const c = commits[line.hash];
+    const lineNum = i + 1;
+
+    const el = document.createElement('div');
+    el.className = 'blame-line';
+    el.dataset.hash = line.hash;
+    el.dataset.line = lineNum;
+
+    // Determine if we should show the meta (suppress duplicate consecutive)
+    const prevHash = i > 0 ? lines[i - 1].hash : null;
+    const showMeta = line.hash !== prevHash;
+
+    let contentHtml = escapeHtml(line.content);
+    if (line.style === 'heading') contentHtml = `<span class="heading">${contentHtml}</span>`;
+    else if (line.style === 'subheading') contentHtml = `<span class="subheading">${contentHtml}</span>`;
+    else if (line.style === 'subsubheading') contentHtml = `<span class="subsubheading">${contentHtml}</span>`;
+    else if (line.style === 'comment') contentHtml = `<span class="comment">${contentHtml}</span>`;
+    else if (line.style === 'string') contentHtml = `<span class="string">${contentHtml}</span>`;
+    else if (line.style === 'bullet') {
+      contentHtml = `<span class="bullet">-</span>${contentHtml.substring(1)}`;
+    }
+
+    el.innerHTML = `
+      <span class="hash" onclick="openCommit('${line.hash}', event)" title="View commit ${line.hash}">${showMeta ? line.hash : '........'}</span>
+      <span class="meta-author">${showMeta ? c.author : ''}</span>
+      <span class="meta-date">${showMeta ? c.relDate : ''}</span>
+      <span class="line-nr">${lineNum}</span>
+      <span class="line-content">${contentHtml || ' '}</span>
+    `;
+
+    el.addEventListener('mouseenter', () => highlightCommit(line.hash));
+    el.addEventListener('mouseleave', () => clearHighlight());
+    el.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('hash')) {
+        selectLine(el, line.hash);
+      }
+    });
+
+    container.appendChild(el);
+  });
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightCommit(hash) {
+  hoveredHash = hash;
+  document.querySelectorAll('.blame-line').forEach(el => {
+    if (el.dataset.hash === hash) {
+      el.classList.add('same-commit');
+    } else {
+      el.classList.remove('same-commit');
+    }
+  });
+}
+
+function clearHighlight() {
+  hoveredHash = null;
+  document.querySelectorAll('.blame-line.same-commit').forEach(el => {
+    el.classList.remove('same-commit');
+  });
+}
+
+function selectLine(el, hash) {
+  document.querySelectorAll('.blame-line.highlighted').forEach(e => e.classList.remove('highlighted'));
+  el.classList.add('highlighted');
+  selectedHash = hash;
+}
+
+
+// ============================================================
+// COMMIT DETAIL PANEL
+// ============================================================
+
+function openCommit(hash, event) {
+  if (event) event.stopPropagation();
+  const c = commits[hash];
+  if (!c) return;
+
+  selectedHash = hash;
+
+  // Highlight all lines from this commit
+  document.querySelectorAll('.blame-line.highlighted').forEach(e => e.classList.remove('highlighted'));
+  document.querySelectorAll(`.blame-line[data-hash="${hash}"]`).forEach(e => e.classList.add('highlighted'));
+
+  const detail = document.getElementById('commitDetail');
+  detail.innerHTML = `
+    <div class="commit-hash-full">
+      <span>commit ${c.fullHash}</span>
+      <button class="copy-btn" onclick="copyHash('${c.fullHash}')">Copy</button>
+    </div>
+
+    <div class="meta-block">
+      <div class="meta-row">
+        <span class="meta-label">Author:</span>
+        <span class="meta-value">${c.author} &lt;${c.email}&gt;</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Date:</span>
+        <span class="meta-value">${formatDate(c.date)} (${c.relDate})</span>
+      </div>
+    </div>
+
+    <div class="commit-message">
+      <span class="msg-title">${escapeHtml(c.title)}</span>
+      <span class="msg-body">${escapeHtml(c.body)}</span>
+      <span class="signed">Signed-off-by: ${c.author} &lt;${c.email}&gt;</span>
+    </div>
+
+    <div class="files-changed">
+      <div class="files-changed-header">${c.files.length} file${c.files.length > 1 ? 's' : ''} changed</div>
+      ${c.files.map(f => `
+        <div class="file-entry">
+          <span class="file-status ${f.status}">${f.status === 'added' ? 'A' : 'M'}</span>
+          <span class="file-path-entry">${f.name}</span>
+          ${f.add ? `<span class="additions">+${f.add}</span>` : ''}
+          ${f.del ? `<span class="deletions">-${f.del}</span>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('commitPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('visible');
+}
+
+function closePanel() {
+  document.getElementById('commitPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('visible');
+  document.querySelectorAll('.blame-line.highlighted').forEach(e => e.classList.remove('highlighted'));
+  selectedHash = null;
+}
+
+function copyHash(hash) {
+  navigator.clipboard.writeText(hash).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+
+// ============================================================
+// VIEW SWITCHING
+// ============================================================
+
+function switchView(view) {
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.view-tab[data-view="${view}"]`).classList.add('active');
+
+  const blameView = document.getElementById('blameView');
+  const logView = document.getElementById('logView');
+  const diffView = document.getElementById('diffView');
+
+  blameView.className = view === 'blame' ? 'blame-view' : 'blame-view hidden';
+  logView.className = view === 'log' ? 'log-view active' : 'log-view';
+  diffView.className = view === 'diff' ? 'diff-view active' : 'diff-view';
+
+  if (view === 'log' && !logView.hasChildNodes()) renderLogView();
+  if (view === 'diff' && !diffView.hasChildNodes()) renderDiffView();
+}
+
+
+// ============================================================
+// LOG VIEW (Career Timeline)
+// ============================================================
+
+function renderLogView() {
+  const container = document.getElementById('logView');
+
+  // Sort commits by date descending
+  const sorted = Object.values(commits).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const header = document.createElement('div');
+  header.style.cssText = 'padding:0 0 16px 0;color:var(--date);font-size:13px;';
+  header.innerHTML = `<span style="color:var(--hash)">git log</span> --oneline --graph README.md <span style="color:var(--line-nr)">(${sorted.length} commits)</span>`;
+  container.appendChild(header);
+
+  sorted.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'log-entry';
+    el.innerHTML = `
+      <span class="log-hash">${c.hash}</span>
+      <div class="log-body">
+        <div class="log-title">${escapeHtml(c.title)}</div>
+        <div class="log-meta">${c.author} &middot; ${c.files.length} file${c.files.length > 1 ? 's' : ''} changed</div>
+      </div>
+      <span class="log-date">${c.relDate}</span>
+    `;
+    el.addEventListener('click', () => {
+      switchView('blame');
+      setTimeout(() => openCommit(c.hash), 200);
+    });
+    container.appendChild(el);
+  });
+}
+
+
+// ============================================================
+// DIFF VIEW (Before/After)
+// ============================================================
+
+function renderDiffView() {
+  const container = document.getElementById('diffView');
+
+  const header = document.createElement('div');
+  header.style.cssText = 'padding:0 0 20px 0;color:var(--date);font-size:13px;';
+  header.innerHTML = `<span style="color:var(--hash)">git diff</span> HEAD~1 HEAD -- README.md <span style="color:var(--line-nr)">(latest changes)</span>`;
+  container.appendChild(header);
+
+  // Simulated diff blocks
+  const diffs = [
+    {
+      file: "README.md",
+      hunks: [
+        {
+          header: "@@ -78,4 +78,6 @@ ## Contact",
+          lines: [
+            { type: "context", ln1: 78, ln2: 78, text: "- GitHub: github.com/anshullgarg" },
+            { type: "context", ln1: 79, ln2: 79, text: "- LinkedIn: linkedin.com/in/anshullgarg" },
+            { type: "removed", ln1: 80, ln2: null, text: "- Open to: new challenges" },
+            { type: "added", ln1: null, ln2: 80, text: "- Open to: interesting problems and good coffee" },
+            { type: "context", ln1: 81, ln2: 81, text: "" },
+          ]
+        },
+        {
+          header: "@@ -90,3 +90,5 @@ ## The First Commit",
+          lines: [
+            { type: "context", ln1: 90, ln2: 90, text: "---" },
+            { type: "context", ln1: 91, ln2: 91, text: "" },
+            { type: "context", ln1: 92, ln2: 92, text: "<!-- This portfolio is a git blame. Every line has a story. -->" },
+            { type: "context", ln1: 93, ln2: 93, text: "<!-- Click any commit hash to read the full message. -->" },
+            { type: "removed", ln1: 94, ln2: null, text: "<!-- Last updated: yesterday. Almost ready. -->" },
+            { type: "added", ln1: null, ln2: 94, text: "<!-- Last updated: just now. Shipping it. -->" },
+          ]
+        }
+      ]
+    },
+    {
+      file: ".eslintrc.js",
+      hunks: [
+        {
+          header: "@@ -12,6 +12,7 @@ module.exports = {",
+          lines: [
+            { type: "context", ln1: 12, ln2: 12, text: "  rules: {" },
+            { type: "context", ln1: 13, ln2: 13, text: "    'no-unused-vars': 'warn'," },
+            { type: "added", ln1: null, ln2: 14, text: "    'no-console': 'error',  // never again" },
+            { type: "context", ln1: 14, ln2: 15, text: "    'prefer-const': 'error'," },
+            { type: "context", ln1: 15, ln2: 16, text: "  }" },
+          ]
+        }
+      ]
+    }
+  ];
+
+  diffs.forEach(d => {
+    const block = document.createElement('div');
+    block.className = 'diff-file-block';
+
+    let hunksHtml = '';
+    d.hunks.forEach(h => {
+      hunksHtml += `<div class="diff-hunk-header">${escapeHtml(h.header)}</div>`;
+      h.lines.forEach(l => {
+        const cls = l.type === 'added' ? 'added' : l.type === 'removed' ? 'removed' : '';
+        const sign = l.type === 'added' ? '+' : l.type === 'removed' ? '-' : ' ';
+        const ln1 = l.ln1 !== null ? l.ln1 : '';
+        const ln2 = l.ln2 !== null ? l.ln2 : '';
+        hunksHtml += `
+          <div class="diff-line ${cls}">
+            <span class="diff-ln">${ln1}</span>
+            <span class="diff-ln">${ln2}</span>
+            <span class="diff-sign">${sign}</span>
+            <span class="diff-text">${escapeHtml(l.text)}</span>
+          </div>`;
+      });
+    });
+
+    block.innerHTML = `
+      <div class="diff-file-header">
+        <span class="diff-badge ${d.file === '.eslintrc.js' ? 'added' : 'removed'}">
+          ${d.file === '.eslintrc.js' ? 'modified' : 'modified'}
+        </span>
+        ${d.file}
+      </div>
+      <div class="diff-hunk">${hunksHtml}</div>
+    `;
+    container.appendChild(block);
+  });
+}
+
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+function handleSearch(query) {
+  const countEl = document.getElementById('searchCount');
+  document.querySelectorAll('.blame-line.search-match').forEach(el => el.classList.remove('search-match'));
+
+  if (!query.trim()) {
+    countEl.textContent = '';
+    return;
+  }
+
+  const q = query.toLowerCase();
+  let matches = 0;
+  let firstMatch = null;
+
+  document.querySelectorAll('.blame-line').forEach(el => {
+    const content = el.querySelector('.line-content');
+    if (content && content.textContent.toLowerCase().includes(q)) {
+      el.classList.add('search-match');
+      matches++;
+      if (!firstMatch) firstMatch = el;
+    }
+  });
+
+  countEl.textContent = matches > 0 ? `${matches} match${matches > 1 ? 'es' : ''}` : 'No matches';
+
+  if (firstMatch) {
+    firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+
+document.addEventListener('keydown', (e) => {
+  // Escape to close panel
+  if (e.key === 'Escape') {
+    closePanel();
+    document.getElementById('searchInput').blur();
+  }
+
+  // / to focus search
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+
+  // 1, 2, 3 to switch views (when not in input)
+  if (document.activeElement.tagName !== 'INPUT') {
+    if (e.key === '1') switchView('blame');
+    if (e.key === '2') switchView('log');
+    if (e.key === '3') switchView('diff');
+  }
+});
+
+
+// ============================================================
+// INIT
+// ============================================================
+
+renderBlameView();
+
+// Animate lines appearing one by one on load
+const allLines = document.querySelectorAll('.blame-line');
+allLines.forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateX(-8px)';
+  el.style.transition = `opacity 0.15s ease ${i * 15}ms, transform 0.15s ease ${i * 15}ms`;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(0)';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
