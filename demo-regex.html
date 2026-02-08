@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Regex Portfolio</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0D1117;
+    --bg-raised:#161B22;
+    --bg-surface:#1C2333;
+    --green:#3FB950;
+    --green-dim:#238636;
+    --match:#264F78;
+    --orange:#CE9178;
+    --yellow:#DCDCAA;
+    --blue:#569CD6;
+    --purple:#C586C0;
+    --red:#F14C4C;
+    --text:#E6EDF3;
+    --text-dim:#8B949E;
+    --border:#30363D;
+    --font-mono:'Fira Code','Cascadia Code','JetBrains Mono','SF Mono',monospace;
+  }
+
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:var(--font-mono);
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+
+  /* ---------- scrollbar ---------- */
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--text-dim)}
+
+  /* ---------- global regex tooltip ---------- */
+  .regex-tooltip{
+    position:absolute;
+    background:var(--bg-surface);
+    border:1px solid var(--green-dim);
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:.82rem;
+    color:var(--text);
+    max-width:420px;
+    z-index:1000;
+    pointer-events:none;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 32px rgba(0,0,0,.45);
+  }
+  .regex-tooltip.visible{opacity:1;transform:translateY(0)}
+  .regex-tooltip .tt-label{color:var(--green);font-weight:700;margin-bottom:4px;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+  .regex-tooltip .tt-match{color:var(--orange);font-size:.9rem}
+  .regex-tooltip .tt-explain{color:var(--text-dim);font-size:.76rem;margin-top:6px;line-height:1.5}
+
+  /* ---------- regex syntax highlighting ---------- */
+  .rx{cursor:default;position:relative;display:inline}
+  .rx .rx-delim{color:var(--red);font-weight:700}
+  .rx .rx-group{color:var(--blue)}
+  .rx .rx-named{color:var(--purple)}
+  .rx .rx-quantifier{color:var(--yellow)}
+  .rx .rx-escape{color:var(--orange)}
+  .rx .rx-charset{color:var(--green)}
+  .rx .rx-anchor{color:var(--red)}
+  .rx .rx-flag{color:var(--purple);font-style:italic}
+  .rx .rx-literal{color:var(--text)}
+  .rx .rx-pipe{color:var(--yellow);font-weight:700}
+
+  .rx:hover{background:rgba(63,185,80,.08);border-radius:4px}
+  .rx.matched{background:var(--match);border-radius:4px;transition:background .3s}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;
+    background:rgba(13,17,23,.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    z-index:900;
+    padding:0 2rem;
+    display:flex;align-items:center;justify-content:space-between;
+    height:56px;
+  }
+  nav .logo{color:var(--green);font-size:.95rem;font-weight:700}
+  nav .logo span{color:var(--red)}
+  nav .nav-links{display:flex;gap:1.5rem;align-items:center}
+  nav .nav-links a{
+    color:var(--text-dim);text-decoration:none;font-size:.78rem;
+    transition:color .2s;
+  }
+  nav .nav-links a:hover{color:var(--green)}
+  #matchAllBtn{
+    background:var(--green-dim);color:#fff;border:none;
+    padding:5px 14px;border-radius:6px;font-family:var(--font-mono);
+    font-size:.75rem;cursor:pointer;transition:background .2s;
+  }
+  #matchAllBtn:hover{background:var(--green)}
+
+  /* ---------- sections ---------- */
+  section{padding:6rem 2rem 4rem;max-width:900px;margin:0 auto}
+  .section-label{
+    color:var(--text-dim);font-size:.7rem;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:.5rem;
+  }
+  .section-comment{
+    color:var(--green-dim);font-size:.8rem;margin-bottom:1.5rem;
+  }
+  .section-comment::before{content:'// '}
+
+  /* ---------- hero ---------- */
+  #hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding-top:56px;
+  }
+  .hero-line-num{
+    color:var(--text-dim);font-size:.7rem;
+    position:absolute;left:-3.5rem;top:50%;transform:translateY(-50%);
+    user-select:none;
+  }
+  .hero-regex-block{
+    position:relative;
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:2.5rem 4rem;
+    margin-bottom:2rem;
+  }
+  .hero-name{
+    font-size:clamp(1.6rem,4.5vw,3rem);
+    font-weight:700;
+    letter-spacing:-.02em;
+    line-height:1.3;
+  }
+  .hero-sub{
+    font-size:clamp(.85rem,2vw,1.1rem);
+    margin-top:1rem;
+    display:flex;flex-direction:column;gap:.5rem;
+    align-items:center;
+  }
+  .hero-cursor{
+    display:inline-block;width:2px;height:1.1em;
+    background:var(--green);
+    animation:blink 1s steps(1) infinite;
+    vertical-align:text-bottom;
+    margin-left:2px;
+  }
+  @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+  .hero-arrow{color:var(--yellow);margin:0 .5rem}
+
+  /* ---------- about ---------- */
+  .about-lines{
+    display:flex;flex-direction:column;gap:1rem;
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:2rem 2rem 2rem 4.5rem;
+    position:relative;
+    counter-reset:line-counter;
+  }
+  .about-line{
+    position:relative;
+    counter-increment:line-counter;
+  }
+  .about-line::before{
+    content:counter(line-counter);
+    position:absolute;left:-2.8rem;
+    color:var(--text-dim);font-size:.75rem;
+    width:1.5rem;text-align:right;
+    top:50%;transform:translateY(-50%);
+  }
+  .about-match{
+    color:var(--text-dim);font-size:.82rem;
+    margin-left:.5rem;
+  }
+  .about-match::before{content:'-> "'}
+  .about-match::after{content:'"'}
+
+  /* ---------- skills ---------- */
+  .skill-category{
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.5rem 2rem;
+    margin-bottom:1rem;
+  }
+  .skill-header{
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:.5rem;
+    margin-bottom:.8rem;
+  }
+  .skill-cat-name{
+    color:var(--text-dim);font-size:.78rem;
+    text-transform:uppercase;letter-spacing:.08em;
+  }
+  .skill-test-btn{
+    background:transparent;border:1px solid var(--green-dim);
+    color:var(--green);font-family:var(--font-mono);font-size:.72rem;
+    padding:3px 12px;border-radius:5px;cursor:pointer;
+    transition:all .2s;
+  }
+  .skill-test-btn:hover{background:var(--green-dim);color:#fff}
+  .skill-test-btn.active{background:var(--green);color:var(--bg)}
+  .skill-regex{font-size:clamp(.82rem,1.8vw,1rem)}
+  .skill-matches{
+    margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.4rem;
+    min-height:0;overflow:hidden;
+    transition:max-height .4s,opacity .3s;
+    max-height:0;opacity:0;
+  }
+  .skill-matches.open{max-height:200px;opacity:1}
+  .skill-match-tag{
+    background:var(--match);
+    color:var(--text);
+    padding:2px 10px;border-radius:4px;
+    font-size:.78rem;
+    border:1px solid rgba(63,185,80,.2);
+  }
+
+  /* ---------- projects ---------- */
+  .project-card{
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.5rem 2rem;
+    margin-bottom:1rem;
+    transition:border-color .3s;
+  }
+  .project-card:hover{border-color:var(--green-dim)}
+  .project-regex{font-size:clamp(.8rem,1.6vw,.95rem);margin-bottom:.8rem}
+  .project-groups{
+    display:flex;flex-wrap:wrap;gap:.6rem;
+    margin-top:.5rem;
+  }
+  .project-group{
+    background:var(--bg-surface);
+    border:1px solid var(--border);
+    border-radius:6px;padding:6px 12px;
+    font-size:.78rem;
+  }
+  .project-group .pg-name{color:var(--purple);font-size:.68rem;display:block;margin-bottom:2px}
+  .project-group .pg-value{color:var(--orange)}
+  .project-desc{color:var(--text-dim);font-size:.8rem;margin-top:.6rem;line-height:1.6}
+
+  /* ---------- test lab ---------- */
+  #testLab{
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:2rem;
+    margin-top:1rem;
+  }
+  #testLab h3{color:var(--green);font-size:.9rem;margin-bottom:1rem}
+  #testInput{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--text);
+    font-family:var(--font-mono);
+    font-size:.88rem;
+    padding:12px 16px;
+    outline:none;
+    transition:border-color .2s;
+  }
+  #testInput:focus{border-color:var(--green)}
+  #testResults{
+    margin-top:1rem;
+    max-height:300px;overflow-y:auto;
+    display:flex;flex-direction:column;gap:.5rem;
+  }
+  .test-result{
+    display:flex;align-items:center;gap:.8rem;
+    padding:6px 12px;border-radius:6px;
+    font-size:.8rem;
+    background:var(--bg);
+    border:1px solid var(--border);
+  }
+  .test-result.pass{border-color:var(--green-dim)}
+  .test-result.fail{border-color:var(--border);opacity:.5}
+  .test-status{font-size:.7rem;padding:1px 8px;border-radius:4px;font-weight:700}
+  .test-result.pass .test-status{background:var(--green-dim);color:#fff}
+  .test-result.fail .test-status{background:var(--border);color:var(--text-dim)}
+  .test-pattern{color:var(--text-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .test-match-val{color:var(--orange);font-size:.76rem}
+
+  /* ---------- contact ---------- */
+  .contact-lines{
+    display:flex;flex-direction:column;gap:1rem;
+  }
+  .contact-line{
+    display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1rem 1.5rem;
+    transition:border-color .3s;
+    text-decoration:none;
+  }
+  .contact-line:hover{border-color:var(--green-dim)}
+  .contact-arrow{color:var(--yellow);margin:0 .3rem}
+  .contact-match{color:var(--orange);font-size:.88rem}
+
+  /* ---------- explain panel ---------- */
+  #explainPanel{
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg-surface);
+    border-top:1px solid var(--border);
+    transform:translateY(100%);
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+    z-index:800;
+    max-height:40vh;
+    overflow-y:auto;
+  }
+  #explainPanel.open{transform:translateY(0)}
+  .explain-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 2rem;
+    border-bottom:1px solid var(--border);
+  }
+  .explain-header h4{color:var(--green);font-size:.8rem;letter-spacing:.05em}
+  .explain-close{
+    background:none;border:none;color:var(--text-dim);
+    font-size:1.2rem;cursor:pointer;font-family:var(--font-mono);
+  }
+  .explain-close:hover{color:var(--text)}
+  .explain-body{padding:1rem 2rem 1.5rem}
+  .explain-regex{
+    font-size:1rem;margin-bottom:1rem;
+    padding:10px 16px;
+    background:var(--bg);border-radius:8px;
+    border:1px solid var(--border);
+  }
+  .explain-breakdown{display:flex;flex-direction:column;gap:.4rem}
+  .explain-token{
+    display:flex;gap:1rem;align-items:baseline;
+    font-size:.8rem;padding:3px 0;
+  }
+  .explain-token .et-token{
+    min-width:120px;font-weight:700;
+    flex-shrink:0;
+  }
+  .explain-token .et-desc{color:var(--text-dim)}
+
+  /* ---------- backtracking joke ---------- */
+  .backtrack-joke{
+    text-align:center;
+    padding:2rem;
+    margin:3rem auto 0;
+    max-width:600px;
+    border:1px dashed var(--border);
+    border-radius:12px;
+    color:var(--text-dim);
+    font-size:.8rem;
+  }
+  .backtrack-joke .joke-regex{color:var(--red);font-size:.9rem;font-weight:700;margin-bottom:.5rem}
+  .backtrack-joke .joke-label{color:var(--yellow);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem}
+
+  /* ---------- footer ---------- */
+  footer{
+    text-align:center;padding:3rem 2rem 2rem;
+    color:var(--text-dim);font-size:.72rem;
+    border-top:1px solid var(--border);
+    margin-top:2rem;
+  }
+  footer a{color:var(--green);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  /* ---------- floating particles ---------- */
+  .particle{
+    position:fixed;
+    color:var(--green-dim);
+    font-size:.7rem;
+    opacity:.12;
+    pointer-events:none;
+    z-index:0;
+    animation:floatUp linear infinite;
+    font-family:var(--font-mono);
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(100vh) rotate(0deg);opacity:.12}
+    50%{opacity:.2}
+    100%{transform:translateY(-10vh) rotate(360deg);opacity:0}
+  }
+
+  /* ---------- responsive ---------- */
+  @media(max-width:640px){
+    section{padding:4rem 1rem 3rem}
+    .hero-regex-block{padding:1.5rem 1.5rem}
+    .about-lines{padding:1.5rem 1.5rem 1.5rem 3.5rem}
+    nav{padding:0 1rem}
+    nav .nav-links{gap:.8rem}
+    nav .nav-links a{font-size:.68rem}
+    .explain-body,.explain-header{padding-left:1rem;padding-right:1rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="logo"><span>/</span>regex<span>/</span>portfolio</div>
+  <div class="nav-links">
+    <a href="#about">about</a>
+    <a href="#skills">skills</a>
+    <a href="#projects">projects</a>
+    <a href="#contact">contact</a>
+    <button id="matchAllBtn" title="Highlight all regex matches on the page">Match All</button>
+  </div>
+</nav>
+
+<!-- Floating regex particles -->
+<div id="particles"></div>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+  <div class="section-comment">the pattern that matches me</div>
+  <div class="hero-regex-block">
+    <div class="hero-name">
+      <span class="rx" data-match="Matches: Anshull Garg (case insensitive)" data-pattern="/^Anshull\\s+Garg$/i"
+            data-explain='^|Start of string;Anshull|Literal "Anshull";\\s+|One or more whitespace characters;Garg|Literal "Garg";$|End of string;i|Case-insensitive flag'>
+        <span class="rx-delim">/</span><span class="rx-anchor">^</span><span class="rx-literal">Anshull</span><span class="rx-escape">\\s+</span><span class="rx-literal">Garg</span><span class="rx-anchor">$</span><span class="rx-delim">/</span><span class="rx-flag">i</span>
+      </span>
+      <span class="hero-cursor"></span>
+    </div>
+    <div class="hero-sub">
+      <span>
+        <span class="rx" data-match="Matches: Software Developer" data-pattern="/Software\\s+Developer/"
+              data-explain='Software|Literal "Software";\\s+|One or more whitespace;Developer|Literal "Developer"'>
+          <span class="rx-delim">/</span><span class="rx-literal">Software</span><span class="rx-escape">\\s+</span><span class="rx-literal">Developer</span><span class="rx-delim">/</span>
+        </span>
+        <span class="hero-arrow">-></span>
+        <span style="color:var(--orange)">"Software Developer"</span>
+      </span>
+      <span>
+        <span class="rx" data-match="Matches: Walmart or Walmart Global Tech" data-pattern="/Walmart(?:\\s+Global\\s+Tech)?/"
+              data-explain='Walmart|Literal "Walmart";(?:...)?|Optional non-capturing group;\\s+Global\\s+Tech|" Global Tech" (optional)'>
+          <span class="rx-delim">/</span><span class="rx-literal">Walmart</span><span class="rx-group">(?:</span><span class="rx-escape">\\s+</span><span class="rx-literal">Global</span><span class="rx-escape">\\s+</span><span class="rx-literal">Tech</span><span class="rx-group">)</span><span class="rx-quantifier">?</span><span class="rx-delim">/</span>
+        </span>
+        <span class="hero-arrow">-></span>
+        <span style="color:var(--orange)">"Walmart Global Tech"</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ABOUT ==================== -->
+<section id="about">
+  <div class="section-label">// about.regex</div>
+  <div class="section-comment">character class: me</div>
+  <div class="about-lines">
+    <div class="about-line">
+      <span class="rx" data-match="Matches: passionate developer, dedicated developer, skilled developer" data-pattern="/(?:passionate|dedicated|skilled)\\s+developer/"
+            data-explain='(?:...)|Non-capturing group;passionate|dedicated|skilled|Alternation: any of these words;\\s+|One or more whitespace;developer|Literal "developer"'>
+        <span class="rx-delim">/</span><span class="rx-group">(?:</span><span class="rx-literal">passionate</span><span class="rx-pipe">|</span><span class="rx-literal">dedicated</span><span class="rx-pipe">|</span><span class="rx-literal">skilled</span><span class="rx-group">)</span><span class="rx-escape">\\s+</span><span class="rx-literal">developer</span><span class="rx-delim">/</span>
+      </span>
+      <span class="about-match">passionate developer</span>
+    </div>
+    <div class="about-line">
+      <span class="rx" data-match='Matches: "4+ years experience"' data-pattern="/\\b\\d{4}\\+?\\s+years?\\s+experience\\b/"
+            data-explain='\\b|Word boundary;\\d{4}|Exactly 4 digits;\\+?|Optional literal "+";\\s+|One or more whitespace;years?|"year" or "years" (s is optional);\\s+experience|" experience";\\b|Word boundary'>
+        <span class="rx-delim">/</span><span class="rx-anchor">\\b</span><span class="rx-escape">\\d</span><span class="rx-quantifier">{4}</span><span class="rx-escape">\\+</span><span class="rx-quantifier">?</span><span class="rx-escape">\\s+</span><span class="rx-literal">years</span><span class="rx-quantifier">?</span><span class="rx-escape">\\s+</span><span class="rx-literal">experience</span><span class="rx-anchor">\\b</span><span class="rx-delim">/</span>
+      </span>
+      <span class="about-match">4+ years experience</span>
+    </div>
+    <div class="about-line">
+      <span class="rx" data-match="Matches: builds scalable systems, build reliable systems" data-pattern="/builds?\\s+(?:scalable|reliable)\\s+systems/i"
+            data-explain='builds?|"build" or "builds";\\s+|Whitespace;(?:scalable|reliable)|Either "scalable" or "reliable";\\s+systems|" systems";i|Case-insensitive flag'>
+        <span class="rx-delim">/</span><span class="rx-literal">builds</span><span class="rx-quantifier">?</span><span class="rx-escape">\\s+</span><span class="rx-group">(?:</span><span class="rx-literal">scalable</span><span class="rx-pipe">|</span><span class="rx-literal">reliable</span><span class="rx-group">)</span><span class="rx-escape">\\s+</span><span class="rx-literal">systems</span><span class="rx-delim">/</span><span class="rx-flag">i</span>
+      </span>
+      <span class="about-match">builds scalable systems</span>
+    </div>
+    <div class="about-line">
+      <span class="rx" data-match="Matches: problem solver who never stops learning" data-pattern="/problem\\s+solver.*?never\\s+stops\\s+learning/s"
+            data-explain='problem\\s+solver|"problem solver";.*?|Any characters (lazy/non-greedy);never\\s+stops\\s+learning|"never stops learning";s|Dotall flag (. matches newlines)'>
+        <span class="rx-delim">/</span><span class="rx-literal">problem</span><span class="rx-escape">\\s+</span><span class="rx-literal">solver</span><span class="rx-escape">.*?</span><span class="rx-literal">never</span><span class="rx-escape">\\s+</span><span class="rx-literal">stops</span><span class="rx-escape">\\s+</span><span class="rx-literal">learning</span><span class="rx-delim">/</span><span class="rx-flag">s</span>
+      </span>
+      <span class="about-match">problem solver who never stops learning</span>
+    </div>
+    <div class="about-line">
+      <span class="rx" data-match='Matches: "open source contributor"' data-pattern="/open[\\s-]+source\\s+contribut(?:or|ions?)/i"
+            data-explain='open|Literal "open";[\\s-]+|Whitespace or hyphen;source|Literal "source";\\s+|Whitespace;contribut(?:or|ions?)|"contributor", "contribution", or "contributions";i|Case-insensitive'>
+        <span class="rx-delim">/</span><span class="rx-literal">open</span><span class="rx-charset">[\\s-]</span><span class="rx-quantifier">+</span><span class="rx-literal">source</span><span class="rx-escape">\\s+</span><span class="rx-literal">contribut</span><span class="rx-group">(?:</span><span class="rx-literal">or</span><span class="rx-pipe">|</span><span class="rx-literal">ions</span><span class="rx-quantifier">?</span><span class="rx-group">)</span><span class="rx-delim">/</span><span class="rx-flag">i</span>
+      </span>
+      <span class="about-match">open source contributor</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SKILLS ==================== -->
+<section id="skills">
+  <div class="section-label">// skills.regex</div>
+  <div class="section-comment">global flag: match all my technologies</div>
+
+  <div class="skill-category">
+    <div class="skill-header">
+      <span class="skill-cat-name">Frontend</span>
+      <button class="skill-test-btn" onclick="toggleSkillMatches(this)">Test</button>
+    </div>
+    <div class="skill-regex">
+      <span class="rx" data-match="Matches: React, Next.js, TypeScript, Tailwind, HTML5, CSS3" data-pattern="/(?:React|Next\\.js|TypeScript|Tailwind|HTML5|CSS3)/g"
+            data-explain='(?:...)|Non-capturing group;React|Next\\.js|...|Alternation: matches any listed tech;g|Global flag: find all matches'>
+        <span class="rx-delim">/</span><span class="rx-group">(?:</span><span class="rx-literal">React</span><span class="rx-pipe">|</span><span class="rx-literal">Next</span><span class="rx-escape">\\.</span><span class="rx-literal">js</span><span class="rx-pipe">|</span><span class="rx-literal">TypeScript</span><span class="rx-pipe">|</span><span class="rx-literal">Tailwind</span><span class="rx-pipe">|</span><span class="rx-literal">HTML5</span><span class="rx-pipe">|</span><span class="rx-literal">CSS3</span><span class="rx-group">)</span><span class="rx-delim">/</span><span class="rx-flag">g</span>
+      </span>
+    </div>
+    <div class="skill-matches">
+      <span class="skill-match-tag">React</span>
+      <span class="skill-match-tag">Next.js</span>
+      <span class="skill-match-tag">TypeScript</span>
+      <span class="skill-match-tag">Tailwind</span>
+      <span class="skill-match-tag">HTML5</span>
+      <span class="skill-match-tag">CSS3</span>
+    </div>
+  </div>
+
+  <div class="skill-category">
+    <div class="skill-header">
+      <span class="skill-cat-name">Backend</span>
+      <button class="skill-test-btn" onclick="toggleSkillMatches(this)">Test</button>
+    </div>
+    <div class="skill-regex">
+      <span class="rx" data-match="Matches: Node.js, Java, Python, Express, GraphQL, REST" data-pattern="/(?:Node\\.js|Java|Python|Express|GraphQL|REST)/g"
+            data-explain='(?:...)|Non-capturing group;Node\\.js|Java|...|Alternation: matches any listed tech;g|Global flag'>
+        <span class="rx-delim">/</span><span class="rx-group">(?:</span><span class="rx-literal">Node</span><span class="rx-escape">\\.</span><span class="rx-literal">js</span><span class="rx-pipe">|</span><span class="rx-literal">Java</span><span class="rx-pipe">|</span><span class="rx-literal">Python</span><span class="rx-pipe">|</span><span class="rx-literal">Express</span><span class="rx-pipe">|</span><span class="rx-literal">GraphQL</span><span class="rx-pipe">|</span><span class="rx-literal">REST</span><span class="rx-group">)</span><span class="rx-delim">/</span><span class="rx-flag">g</span>
+      </span>
+    </div>
+    <div class="skill-matches">
+      <span class="skill-match-tag">Node.js</span>
+      <span class="skill-match-tag">Java</span>
+      <span class="skill-match-tag">Python</span>
+      <span class="skill-match-tag">Express</span>
+      <span class="skill-match-tag">GraphQL</span>
+      <span class="skill-match-tag">REST</span>
+    </div>
+  </div>
+
+  <div class="skill-category">
+    <div class="skill-header">
+      <span class="skill-cat-name">Infrastructure</span>
+      <button class="skill-test-btn" onclick="toggleSkillMatches(this)">Test</button>
+    </div>
+    <div class="skill-regex">
+      <span class="rx" data-match="Matches: AWS, Docker, K8s, CI/CD, Terraform, Redis" data-pattern="/(?:AWS|Docker|K8s|CI\\/CD|Terraform|Redis)/g"
+            data-explain='(?:...)|Non-capturing group;AWS|Docker|K8s|...|Alternation: infrastructure tools;\\/|Escaped forward slash (for CI/CD);g|Global flag'>
+        <span class="rx-delim">/</span><span class="rx-group">(?:</span><span class="rx-literal">AWS</span><span class="rx-pipe">|</span><span class="rx-literal">Docker</span><span class="rx-pipe">|</span><span class="rx-literal">K8s</span><span class="rx-pipe">|</span><span class="rx-literal">CI</span><span class="rx-escape">\\/</span><span class="rx-literal">CD</span><span class="rx-pipe">|</span><span class="rx-literal">Terraform</span><span class="rx-pipe">|</span><span class="rx-literal">Redis</span><span class="rx-group">)</span><span class="rx-delim">/</span><span class="rx-flag">g</span>
+      </span>
+    </div>
+    <div class="skill-matches">
+      <span class="skill-match-tag">AWS</span>
+      <span class="skill-match-tag">Docker</span>
+      <span class="skill-match-tag">K8s</span>
+      <span class="skill-match-tag">CI/CD</span>
+      <span class="skill-match-tag">Terraform</span>
+      <span class="skill-match-tag">Redis</span>
+    </div>
+  </div>
+
+  <div class="skill-category">
+    <div class="skill-header">
+      <span class="skill-cat-name">Databases</span>
+      <button class="skill-test-btn" onclick="toggleSkillMatches(this)">Test</button>
+    </div>
+    <div class="skill-regex">
+      <span class="rx" data-match="Matches: PostgreSQL, MongoDB, MySQL, DynamoDB" data-pattern="/(?:PostgreSQL|MongoDB|MySQL|DynamoDB)/g"
+            data-explain='(?:...)|Non-capturing group;PostgreSQL|MongoDB|...|Alternation: database technologies;g|Global flag'>
+        <span class="rx-delim">/</span><span class="rx-group">(?:</span><span class="rx-literal">PostgreSQL</span><span class="rx-pipe">|</span><span class="rx-literal">MongoDB</span><span class="rx-pipe">|</span><span class="rx-literal">MySQL</span><span class="rx-pipe">|</span><span class="rx-literal">DynamoDB</span><span class="rx-group">)</span><span class="rx-delim">/</span><span class="rx-flag">g</span>
+      </span>
+    </div>
+    <div class="skill-matches">
+      <span class="skill-match-tag">PostgreSQL</span>
+      <span class="skill-match-tag">MongoDB</span>
+      <span class="skill-match-tag">MySQL</span>
+      <span class="skill-match-tag">DynamoDB</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROJECTS ==================== -->
+<section id="projects">
+  <div class="section-label">// projects.regex</div>
+  <div class="section-comment">named capture groups: extracting impact</div>
+
+  <div class="project-card">
+    <div class="project-regex">
+      <span class="rx" data-match="Captures: name=Checkout Optimizer, impact=-40% latency" data-pattern="/(?<name>Checkout\\sOptimizer)(?<impact>-40%\\slatency)/"
+            data-explain='(?&lt;name&gt;...)|Named capture group "name";Checkout\\sOptimizer|Project name;(?&lt;impact&gt;...)|Named capture group "impact";-40%\\slatency|Performance improvement metric'>
+        <span class="rx-delim">/</span><span class="rx-group">(?&lt;</span><span class="rx-named">name</span><span class="rx-group">&gt;</span><span class="rx-literal">Checkout</span><span class="rx-escape">\\s</span><span class="rx-literal">Optimizer</span><span class="rx-group">)</span><span class="rx-group">(?&lt;</span><span class="rx-named">impact</span><span class="rx-group">&gt;</span><span class="rx-literal">-40%</span><span class="rx-escape">\\s</span><span class="rx-literal">latency</span><span class="rx-group">)</span><span class="rx-delim">/</span>
+      </span>
+    </div>
+    <div class="project-groups">
+      <div class="project-group"><span class="pg-name">name</span><span class="pg-value">Checkout Optimizer</span></div>
+      <div class="project-group"><span class="pg-name">impact</span><span class="pg-value">-40% latency</span></div>
+    </div>
+    <div class="project-desc">Led re-architecture of Walmart's checkout pipeline using React and Node.js microservices. Reduced average page latency by 40% across 200M+ weekly sessions.</div>
+  </div>
+
+  <div class="project-card">
+    <div class="project-regex">
+      <span class="rx" data-match="Captures: name=Component Library, adoption=12+ teams" data-pattern="/(?<name>Component\\sLibrary)(?<adoption>12\\+\\steams)/"
+            data-explain='(?&lt;name&gt;...)|Named capture group "name";Component\\sLibrary|Project name;(?&lt;adoption&gt;...)|Named capture group "adoption";12\\+\\steams|Number of teams using it'>
+        <span class="rx-delim">/</span><span class="rx-group">(?&lt;</span><span class="rx-named">name</span><span class="rx-group">&gt;</span><span class="rx-literal">Component</span><span class="rx-escape">\\s</span><span class="rx-literal">Library</span><span class="rx-group">)</span><span class="rx-group">(?&lt;</span><span class="rx-named">adoption</span><span class="rx-group">&gt;</span><span class="rx-literal">12</span><span class="rx-escape">\\+</span><span class="rx-escape">\\s</span><span class="rx-literal">teams</span><span class="rx-group">)</span><span class="rx-delim">/</span>
+      </span>
+    </div>
+    <div class="project-groups">
+      <div class="project-group"><span class="pg-name">name</span><span class="pg-value">Component Library</span></div>
+      <div class="project-group"><span class="pg-name">adoption</span><span class="pg-value">12+ teams</span></div>
+    </div>
+    <div class="project-desc">Built a design system and React component library with TypeScript, Storybook, and comprehensive a11y testing. Adopted by 12+ teams, reducing UI dev time by 60%.</div>
+  </div>
+
+  <div class="project-card">
+    <div class="project-regex">
+      <span class="rx" data-match="Captures: name=Search Intelligence, metric=+35% relevance" data-pattern="/(?<name>Search\\sIntelligence)(?<metric>\\+35%\\srelevance)/"
+            data-explain='(?&lt;name&gt;...)|Named capture group "name";Search\\sIntelligence|Project name;(?&lt;metric&gt;...)|Named capture group "metric";\\+35%\\srelevance|Relevance improvement'>
+        <span class="rx-delim">/</span><span class="rx-group">(?&lt;</span><span class="rx-named">name</span><span class="rx-group">&gt;</span><span class="rx-literal">Search</span><span class="rx-escape">\\s</span><span class="rx-literal">Intelligence</span><span class="rx-group">)</span><span class="rx-group">(?&lt;</span><span class="rx-named">metric</span><span class="rx-group">&gt;</span><span class="rx-escape">\\+</span><span class="rx-literal">35%</span><span class="rx-escape">\\s</span><span class="rx-literal">relevance</span><span class="rx-group">)</span><span class="rx-delim">/</span>
+      </span>
+    </div>
+    <div class="project-groups">
+      <div class="project-group"><span class="pg-name">name</span><span class="pg-value">Search Intelligence</span></div>
+      <div class="project-group"><span class="pg-name">metric</span><span class="pg-value">+35% relevance</span></div>
+    </div>
+    <div class="project-desc">Developed ML-powered search ranking service with Python and GraphQL. Improved product search relevance by 35%, directly impacting conversion rates.</div>
+  </div>
+
+  <div class="project-card">
+    <div class="project-regex">
+      <span class="rx" data-match="Captures: name=CI/CD Pipeline, speed=3x faster deploys" data-pattern="/(?<name>CI\\/CD\\sPipeline)(?<speed>3x\\sfaster\\sdeploys)/"
+            data-explain='(?&lt;name&gt;...)|Named capture group "name";CI\\/CD\\sPipeline|Project name (escaped slash);\\/|Escaped forward slash;(?&lt;speed&gt;...)|Named capture group "speed";3x\\sfaster\\sdeploys|Deployment speed improvement'>
+        <span class="rx-delim">/</span><span class="rx-group">(?&lt;</span><span class="rx-named">name</span><span class="rx-group">&gt;</span><span class="rx-literal">CI</span><span class="rx-escape">\\/</span><span class="rx-literal">CD</span><span class="rx-escape">\\s</span><span class="rx-literal">Pipeline</span><span class="rx-group">)</span><span class="rx-group">(?&lt;</span><span class="rx-named">speed</span><span class="rx-group">&gt;</span><span class="rx-literal">3x</span><span class="rx-escape">\\s</span><span class="rx-literal">faster</span><span class="rx-escape">\\s</span><span class="rx-literal">deploys</span><span class="rx-group">)</span><span class="rx-delim">/</span>
+      </span>
+    </div>
+    <div class="project-groups">
+      <div class="project-group"><span class="pg-name">name</span><span class="pg-value">CI/CD Pipeline</span></div>
+      <div class="project-group"><span class="pg-name">speed</span><span class="pg-value">3x faster deploys</span></div>
+    </div>
+    <div class="project-desc">Redesigned CI/CD infrastructure with Docker, Terraform, and GitHub Actions. Cut deployment time from 45min to 15min with zero-downtime blue/green strategy.</div>
+  </div>
+</section>
+
+<!-- ==================== TEST LAB ==================== -->
+<section id="test-lab-section">
+  <div class="section-label">// test-lab.regex</div>
+  <div class="section-comment">try your own input against my patterns</div>
+  <div id="testLab">
+    <h3>$ regex-test --interactive</h3>
+    <input type="text" id="testInput" placeholder='Type anything... e.g. "Anshull Garg is a passionate developer at Walmart with React skills"' spellcheck="false" autocomplete="off">
+    <div id="testResults"></div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section id="contact">
+  <div class="section-label">// contact.regex</div>
+  <div class="section-comment">captured output: how to reach me</div>
+  <div class="contact-lines">
+    <a class="contact-line" href="mailto:anshull.garg@email.com">
+      <span class="rx" data-match='Matches email addresses like "anshull.garg@email.com"' data-pattern="/[\\w.]+@[\\w]+\\.[\\w]+/"
+            data-explain='[\\w.]+|One or more word chars or dots (local part);@|Literal "@";[\\w]+|One or more word chars (domain);\\.|Literal dot;[\\w]+|One or more word chars (TLD)'>
+        <span class="rx-delim">/</span><span class="rx-charset">[\\w.]</span><span class="rx-quantifier">+</span><span class="rx-literal">@</span><span class="rx-charset">[\\w]</span><span class="rx-quantifier">+</span><span class="rx-escape">\\.</span><span class="rx-charset">[\\w]</span><span class="rx-quantifier">+</span><span class="rx-delim">/</span>
+      </span>
+      <span class="contact-arrow">-></span>
+      <span class="contact-match">anshull.garg@email.com</span>
+    </a>
+    <a class="contact-line" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+      <span class="rx" data-match='Matches GitHub profile URLs' data-pattern="/github\\.com\\/[\\w-]+/"
+            data-explain='github|Literal "github";\\.|Escaped dot;com|Literal "com";\\/|Escaped forward slash;[\\w-]+|Username (word chars or hyphens)'>
+        <span class="rx-delim">/</span><span class="rx-literal">github</span><span class="rx-escape">\\.</span><span class="rx-literal">com</span><span class="rx-escape">\\/</span><span class="rx-charset">[\\w-]</span><span class="rx-quantifier">+</span><span class="rx-delim">/</span>
+      </span>
+      <span class="contact-arrow">-></span>
+      <span class="contact-match">github.com/anshullgarg</span>
+    </a>
+    <a class="contact-line" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+      <span class="rx" data-match='Matches LinkedIn profile URLs' data-pattern="/linkedin\\.com\\/in\\/[\\w-]+/"
+            data-explain='linkedin\\.com|"linkedin.com";\\/in\\/|"/in/" path;[\\w-]+|Profile slug'>
+        <span class="rx-delim">/</span><span class="rx-literal">linkedin</span><span class="rx-escape">\\.</span><span class="rx-literal">com</span><span class="rx-escape">\\/</span><span class="rx-literal">in</span><span class="rx-escape">\\/</span><span class="rx-charset">[\\w-]</span><span class="rx-quantifier">+</span><span class="rx-delim">/</span>
+      </span>
+      <span class="contact-arrow">-></span>
+      <span class="contact-match">linkedin.com/in/anshullgarg</span>
+    </a>
+  </div>
+</section>
+
+<!-- Catastrophic Backtracking Joke -->
+<div class="backtrack-joke">
+  <div class="joke-label">// Warning: Catastrophic Backtracking</div>
+  <div class="joke-regex">/^(a+)+$/</div>
+  <p>This regex walks into a bar, orders a drink, orders a drink, orders a drink, orders a drink, orders a drink, orders a drink, orders a drink...</p>
+  <p style="margin-top:.5rem;color:var(--red);font-size:.72rem">// ReDOS: when your regex has commitment issues with backtracking</p>
+  <p style="margin-top:.8rem;color:var(--text-dim);font-size:.72rem">Also, I promise my actual code doesn't use regex for email validation.<br>...okay, maybe just once. In production. On a Friday.</p>
+</div>
+
+<!-- ==================== EXPLAIN PANEL ==================== -->
+<div id="explainPanel">
+  <div class="explain-header">
+    <h4>REGEX BREAKDOWN</h4>
+    <button class="explain-close" onclick="closeExplainPanel()">&times;</button>
+  </div>
+  <div class="explain-body">
+    <div class="explain-regex" id="explainRegex"></div>
+    <div class="explain-breakdown" id="explainBreakdown"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <span class="rx" data-match="Matches the current year" data-pattern="/20\\d{2}/"
+          data-explain='20|Literal "20";\\d{2}|Exactly 2 digits'>
+      <span class="rx-delim">/</span><span class="rx-literal">20</span><span class="rx-escape">\\d</span><span class="rx-quantifier">{2}</span><span class="rx-delim">/</span>
+    </span>
+    &nbsp;Anshull Garg &mdash; Built with <span style="color:var(--green)">/regex/</span> and <span style="color:var(--red)">/caffeine/g</span>
+  </p>
+  <p style="margin-top:.5rem">
+    <a href="#hero">Back to <span style="color:var(--red)">^</span> (start of string)</a>
+  </p>
+</footer>
+
+<script>
+(function(){
+  // =============================================
+  // TOOLTIP
+  // =============================================
+  const tooltip = document.createElement('div');
+  tooltip.className = 'regex-tooltip';
+  tooltip.innerHTML = '<div class="tt-label">Match Result</div><div class="tt-match"></div><div class="tt-explain"></div>';
+  document.body.appendChild(tooltip);
+
+  const ttMatch = tooltip.querySelector('.tt-match');
+  const ttExplain = tooltip.querySelector('.tt-explain');
+
+  document.querySelectorAll('.rx').forEach(rx => {
+    rx.addEventListener('mouseenter', e => {
+      const match = rx.dataset.match;
+      const pattern = rx.dataset.pattern;
+      if (!match) return;
+      ttMatch.textContent = match;
+      ttExplain.textContent = pattern || '';
+      tooltip.classList.add('visible');
+      positionTooltip(e);
+    });
+    rx.addEventListener('mousemove', positionTooltip);
+    rx.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+    // Click opens explain panel
+    rx.addEventListener('click', () => {
+      const explain = rx.dataset.explain;
+      const pattern = rx.dataset.pattern;
+      if (explain && pattern) openExplainPanel(pattern, explain);
+    });
+  });
+
+  function positionTooltip(e){
+    const pad = 16;
+    let x = e.clientX + pad;
+    let y = e.clientY + pad;
+    if (x + 420 > window.innerWidth) x = e.clientX - 420 - pad;
+    if (y + 120 > window.innerHeight) y = e.clientY - 120;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+
+  // =============================================
+  // EXPLAIN PANEL (regex101-style)
+  // =============================================
+  const explainPanel = document.getElementById('explainPanel');
+  const explainRegex = document.getElementById('explainRegex');
+  const explainBreakdown = document.getElementById('explainBreakdown');
+
+  window.openExplainPanel = function(pattern, explainStr){
+    explainRegex.textContent = pattern;
+    explainBreakdown.innerHTML = '';
+    const tokens = explainStr.split(';');
+    tokens.forEach(tok => {
+      const parts = tok.split('|');
+      if (parts.length < 2) return;
+      const div = document.createElement('div');
+      div.className = 'explain-token';
+      div.innerHTML = '<span class="et-token" style="color:var(--orange)">' + escHtml(parts[0]) + '</span><span class="et-desc">' + escHtml(parts[1]) + '</span>';
+      explainBreakdown.appendChild(div);
+    });
+    explainPanel.classList.add('open');
+  };
+
+  window.closeExplainPanel = function(){
+    explainPanel.classList.remove('open');
+  };
+
+  function escHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // =============================================
+  // SKILL TEST BUTTONS
+  // =============================================
+  window.toggleSkillMatches = function(btn){
+    const cat = btn.closest('.skill-category');
+    const matches = cat.querySelector('.skill-matches');
+    const isOpen = matches.classList.contains('open');
+    matches.classList.toggle('open');
+    btn.classList.toggle('active');
+    btn.textContent = isOpen ? 'Test' : 'Hide';
+    if (!isOpen) {
+      // Animate tags in
+      const tags = matches.querySelectorAll('.skill-match-tag');
+      tags.forEach((tag, i) => {
+        tag.style.opacity = '0';
+        tag.style.transform = 'translateY(8px)';
+        setTimeout(() => {
+          tag.style.transition = 'opacity .3s, transform .3s';
+          tag.style.opacity = '1';
+          tag.style.transform = 'translateY(0)';
+        }, i * 80);
+      });
+    }
+  };
+
+  // =============================================
+  // MATCH ALL BUTTON
+  // =============================================
+  let allMatched = false;
+  document.getElementById('matchAllBtn').addEventListener('click', function(){
+    allMatched = !allMatched;
+    this.textContent = allMatched ? 'Clear All' : 'Match All';
+    this.style.background = allMatched ? 'var(--red)' : '';
+    document.querySelectorAll('.rx').forEach((rx, i) => {
+      if (allMatched) {
+        setTimeout(() => rx.classList.add('matched'), i * 40);
+      } else {
+        rx.classList.remove('matched');
+      }
+    });
+    // Also toggle all skill matches
+    document.querySelectorAll('.skill-matches').forEach(m => {
+      if (allMatched) m.classList.add('open');
+      else m.classList.remove('open');
+    });
+    document.querySelectorAll('.skill-test-btn').forEach(b => {
+      b.textContent = allMatched ? 'Hide' : 'Test';
+      if(allMatched) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+  });
+
+  // =============================================
+  // TEST LAB - live regex testing
+  // =============================================
+  const testInput = document.getElementById('testInput');
+  const testResults = document.getElementById('testResults');
+
+  const testPatterns = [
+    { label: 'Name',       regex: /Anshull\s+Garg/i },
+    { label: 'Role',       regex: /Software\s+Developer/i },
+    { label: 'Company',    regex: /Walmart(\s+Global\s+Tech)?/i },
+    { label: 'Passion',    regex: /(passionate|dedicated|skilled)\s+developer/i },
+    { label: 'Experience', regex: /\d+\+?\s+years?\s+experience/i },
+    { label: 'Frontend',   regex: /(React|Next\.js|TypeScript|Tailwind|HTML5|CSS3)/gi },
+    { label: 'Backend',    regex: /(Node\.js|Java|Python|Express|GraphQL|REST)/gi },
+    { label: 'Infra',      regex: /(AWS|Docker|K8s|CI\/CD|Terraform|Redis)/gi },
+    { label: 'Database',   regex: /(PostgreSQL|MongoDB|MySQL|DynamoDB)/gi },
+    { label: 'Email',      regex: /[\w.]+@[\w]+\.[\w]+/i },
+    { label: 'GitHub',     regex: /github\.com\/[\w-]+/i },
+  ];
+
+  testInput.addEventListener('input', runTests);
+
+  function runTests(){
+    const val = testInput.value;
+    testResults.innerHTML = '';
+    if (!val.trim()) return;
+
+    testPatterns.forEach(tp => {
+      const re = new RegExp(tp.regex.source, tp.regex.flags);
+      const matches = val.match(re);
+      const div = document.createElement('div');
+      div.className = 'test-result ' + (matches ? 'pass' : 'fail');
+      div.innerHTML =
+        '<span class="test-status">' + (matches ? 'MATCH' : 'NO MATCH') + '</span>' +
+        '<span class="test-pattern">' + escHtml(tp.label + ': ' + tp.regex.toString()) + '</span>' +
+        (matches ? '<span class="test-match-val">' + escHtml(matches.join(', ')) + '</span>' : '');
+      testResults.appendChild(div);
+    });
+  }
+
+  // =============================================
+  // FLOATING REGEX PARTICLES
+  // =============================================
+  const particleContainer = document.getElementById('particles');
+  const particleChars = ['.*','\\d+','\\w','[a-z]','(?:)','^$','\\s','+?','\\b','{n}','|','[^]','(?=)','(?!)','\\1'];
+
+  function spawnParticle(){
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.textContent = particleChars[Math.floor(Math.random()*particleChars.length)];
+    el.style.left = Math.random()*100+'%';
+    el.style.animationDuration = (12+Math.random()*20)+'s';
+    el.style.animationDelay = Math.random()*5+'s';
+    el.style.fontSize = (.6+Math.random()*.5)+'rem';
+    particleContainer.appendChild(el);
+    setTimeout(()=>el.remove(), 35000);
+  }
+
+  // Spawn initial batch
+  for(let i=0;i<15;i++) setTimeout(spawnParticle, i*400);
+  setInterval(spawnParticle, 2500);
+
+  // =============================================
+  // SCROLL REVEAL
+  // =============================================
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('section, .project-card, .skill-category, .about-line, .contact-line, .backtrack-joke').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity .6s ease, transform .6s ease';
+    observer.observe(el);
+  });
+
+  // Hero should be visible immediately
+  document.getElementById('hero').style.opacity = '1';
+  document.getElementById('hero').style.transform = 'translateY(0)';
+
+  // =============================================
+  // KEYBOARD: Escape closes explain panel
+  // =============================================
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeExplainPanel();
+  });
+
+})();
+</script>
+</body>
+</html>

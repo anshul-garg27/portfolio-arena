@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHANGELOG.md - Anshull Garg</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0D1117;
+    --bg-secondary:#161B22;
+    --bg-tertiary:#1C2128;
+    --border:#30363D;
+    --text:#C9D1D9;
+    --text-muted:#8B949E;
+    --text-heading:#E6EDF3;
+    --green:#3FB950;
+    --green-bg:rgba(63,185,80,0.1);
+    --green-border:rgba(63,185,80,0.3);
+    --red:#F85149;
+    --red-bg:rgba(248,81,73,0.1);
+    --red-border:rgba(248,81,73,0.3);
+    --blue:#58A6FF;
+    --blue-bg:rgba(88,166,255,0.1);
+    --blue-border:rgba(88,166,255,0.3);
+    --yellow:#D29922;
+    --yellow-bg:rgba(210,153,34,0.1);
+    --yellow-border:rgba(210,153,34,0.3);
+    --purple:#BC8CFF;
+    --purple-bg:rgba(188,140,255,0.1);
+    --purple-border:rgba(188,140,255,0.3);
+    --font-mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+
+  html{scroll-behavior:smooth}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-sans);
+    font-size:16px;
+    line-height:1.6;
+    min-height:100vh;
+  }
+
+  /* ---- TOP NAV BAR ---- */
+  .topbar{
+    position:sticky;top:0;z-index:100;
+    background:rgba(13,17,23,0.85);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    padding:12px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:16px;
+  }
+  .topbar-left{display:flex;align-items:center;gap:12px}
+  .topbar-icon{
+    width:32px;height:32px;border-radius:6px;
+    background:var(--green);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:14px;color:var(--bg);
+  }
+  .topbar-path{font-family:var(--font-mono);font-size:14px;color:var(--text-muted)}
+  .topbar-path span{color:var(--blue);cursor:pointer}
+  .topbar-path span:hover{text-decoration:underline}
+  .topbar-actions{display:flex;align-items:center;gap:8px}
+  .topbar-btn{
+    background:var(--bg-secondary);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:5px 12px;
+    border-radius:6px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:var(--font-sans);
+    display:flex;align-items:center;gap:6px;
+    transition:border-color .2s,background .2s;
+  }
+  .topbar-btn:hover{background:var(--bg-tertiary);border-color:var(--text-muted)}
+  .topbar-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600}
+  .topbar-btn.primary:hover{opacity:.9}
+
+  /* ---- LAYOUT ---- */
+  .container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+  /* ---- MARKDOWN-STYLE HEADING ---- */
+  .md-h1{
+    font-size:clamp(28px,5vw,40px);
+    font-weight:700;
+    color:var(--text-heading);
+    padding-bottom:12px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:8px;
+  }
+  .md-subtitle{
+    color:var(--text-muted);
+    font-size:15px;
+    margin-bottom:6px;
+    line-height:1.7;
+  }
+  .md-subtitle code{
+    font-family:var(--font-mono);
+    background:var(--bg-secondary);
+    padding:2px 6px;
+    border-radius:4px;
+    font-size:13px;
+    color:var(--text);
+  }
+
+  /* ---- BADGES ROW ---- */
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 32px}
+  .badge{
+    height:24px;border-radius:4px;overflow:hidden;
+    display:inline-flex;font-size:12px;font-family:var(--font-mono);
+    border:1px solid var(--border);
+  }
+  .badge-label{
+    background:var(--bg-tertiary);
+    color:var(--text-muted);
+    padding:0 8px;
+    display:flex;align-items:center;
+  }
+  .badge-value{
+    padding:0 8px;
+    display:flex;align-items:center;
+    font-weight:600;
+  }
+  .badge-green .badge-value{background:var(--green-bg);color:var(--green)}
+  .badge-blue .badge-value{background:var(--blue-bg);color:var(--blue)}
+  .badge-yellow .badge-value{background:var(--yellow-bg);color:var(--yellow)}
+  .badge-red .badge-value{background:var(--red-bg);color:var(--red)}
+  .badge-purple .badge-value{background:var(--purple-bg);color:var(--purple)}
+
+  /* ---- COMPARE SELECTOR ---- */
+  .compare-bar{
+    background:var(--bg-secondary);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px 20px;
+    margin-bottom:32px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .compare-bar label{
+    font-size:14px;color:var(--text-muted);font-weight:600;
+    display:flex;align-items:center;gap:6px;
+  }
+  .compare-bar label svg{width:16px;height:16px;color:var(--blue)}
+  .compare-select{
+    background:var(--bg-tertiary);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:5px 10px;
+    border-radius:6px;
+    font-size:13px;
+    font-family:var(--font-mono);
+    cursor:pointer;
+  }
+  .compare-dots{color:var(--text-muted);font-family:var(--font-mono);font-size:14px}
+  .compare-btn{
+    margin-left:auto;
+    background:var(--blue);
+    color:var(--bg);
+    border:none;
+    padding:6px 14px;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:var(--font-sans);
+    transition:opacity .2s;
+  }
+  .compare-btn:hover{opacity:.85}
+
+  /* ---- COMPARE PANEL ---- */
+  .compare-panel{
+    display:none;
+    background:var(--bg-secondary);
+    border:1px solid var(--border);
+    border-radius:8px;
+    margin-bottom:32px;
+    overflow:hidden;
+    animation:slideDown .3s ease;
+  }
+  .compare-panel.open{display:block}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .compare-header{
+    padding:14px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--bg-tertiary);
+  }
+  .compare-header h3{font-size:15px;color:var(--text-heading);font-weight:600}
+  .compare-close{
+    background:none;border:none;color:var(--text-muted);cursor:pointer;
+    font-size:18px;line-height:1;padding:4px 8px;border-radius:4px;
+  }
+  .compare-close:hover{background:var(--bg-secondary);color:var(--text)}
+  .compare-body{padding:20px}
+  .compare-stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .compare-stat{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    text-align:center;
+  }
+  .compare-stat-value{
+    font-size:28px;font-weight:700;
+    font-family:var(--font-mono);
+    margin-bottom:2px;
+  }
+  .compare-stat-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .compare-diff{font-family:var(--font-mono);font-size:13px;line-height:2}
+  .compare-diff .line-add{color:var(--green)}
+  .compare-diff .line-add::before{content:'+ '}
+  .compare-diff .line-rm{color:var(--red)}
+  .compare-diff .line-rm::before{content:'- '}
+  .compare-diff .line-ctx{color:var(--text-muted)}
+  .compare-diff .line-ctx::before{content:'  '}
+  .compare-diff .line-head{color:var(--blue);font-weight:600;margin-top:8px}
+  .compare-diff .line-head::before{content:'@@ '}
+
+  /* ---- VERSION BLOCKS ---- */
+  .version-block{
+    margin-bottom:0;
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    transition:border-color .2s;
+  }
+  .version-block:hover{border-color:var(--text-muted)}
+  .version-block+.version-block{margin-top:16px}
+
+  .version-header{
+    padding:16px 20px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--bg-secondary);
+    user-select:none;
+    transition:background .2s;
+  }
+  .version-header:hover{background:var(--bg-tertiary)}
+
+  .version-toggle{
+    width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-muted);
+    transition:transform .25s ease;
+    flex-shrink:0;
+  }
+  .version-block.open .version-toggle{transform:rotate(90deg)}
+
+  .version-tag{
+    font-family:var(--font-mono);
+    font-size:14px;
+    font-weight:700;
+    color:var(--green);
+    background:var(--green-bg);
+    border:1px solid var(--green-border);
+    padding:2px 10px;
+    border-radius:20px;
+  }
+  .version-block[data-status="deprecated"] .version-tag{
+    color:var(--yellow);background:var(--yellow-bg);border-color:var(--yellow-border);
+  }
+  .version-block[data-status="legacy"] .version-tag{
+    color:var(--text-muted);background:var(--bg-tertiary);border-color:var(--border);
+  }
+
+  .version-date{
+    font-size:14px;color:var(--text-muted);
+    font-family:var(--font-mono);
+  }
+  .version-company{
+    font-size:14px;font-weight:600;
+    color:var(--text-heading);
+    text-transform:uppercase;
+    letter-spacing:.3px;
+  }
+
+  .version-labels{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .version-label{
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:20px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+  }
+  .label-latest{color:var(--green);background:var(--green-bg);border:1px solid var(--green-border)}
+  .label-stable{color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border)}
+  .label-breaking{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+  .label-pre{color:var(--yellow);background:var(--yellow-bg);border:1px solid var(--yellow-border)}
+
+  .version-body{
+    display:none;
+    padding:0 20px 20px;
+    background:var(--bg-secondary);
+  }
+  .version-block.open .version-body{display:block;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  /* ---- SECTION HEADINGS ---- */
+  .section{margin-top:18px}
+  .section-heading{
+    font-size:14px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    padding:6px 12px;
+    border-radius:6px;
+    display:inline-flex;align-items:center;gap:6px;
+    margin-bottom:10px;
+  }
+  .section-heading.added{color:var(--green);background:var(--green-bg)}
+  .section-heading.changed{color:var(--blue);background:var(--blue-bg)}
+  .section-heading.fixed{color:var(--purple);background:var(--purple-bg)}
+  .section-heading.deprecated{color:var(--yellow);background:var(--yellow-bg)}
+  .section-heading.removed{color:var(--red);background:var(--red-bg)}
+  .section-heading.breaking{color:var(--red);background:var(--red-bg)}
+  .section-heading.known{color:var(--yellow);background:var(--yellow-bg)}
+
+  /* ---- LIST ITEMS ---- */
+  .note-list{list-style:none;padding:0;margin:0 0 0 0}
+  .note-item{
+    padding:8px 12px;
+    border-left:3px solid var(--border);
+    margin-bottom:6px;
+    font-size:14px;
+    line-height:1.5;
+    border-radius:0 4px 4px 0;
+    background:var(--bg);
+    transition:border-color .2s,transform .2s;
+    cursor:default;
+  }
+  .note-item:hover{transform:translateX(4px)}
+  .note-item.added{border-left-color:var(--green)}
+  .note-item.changed{border-left-color:var(--blue)}
+  .note-item.fixed{border-left-color:var(--purple)}
+  .note-item.deprecated{border-left-color:var(--yellow)}
+  .note-item.removed{border-left-color:var(--red)}
+  .note-item.breaking{border-left-color:var(--red)}
+  .note-item.known{border-left-color:var(--yellow)}
+  .note-item code{
+    font-family:var(--font-mono);
+    background:var(--bg-tertiary);
+    padding:1px 5px;
+    border-radius:3px;
+    font-size:13px;
+  }
+  .note-item .tag{
+    display:inline-block;
+    font-size:11px;
+    padding:1px 6px;
+    border-radius:3px;
+    font-weight:600;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .tag-perf{color:var(--green);background:var(--green-bg)}
+  .tag-arch{color:var(--blue);background:var(--blue-bg)}
+  .tag-team{color:var(--purple);background:var(--purple-bg)}
+  .tag-growth{color:var(--yellow);background:var(--yellow-bg)}
+
+  /* ---- DOWNLOAD BUTTON ---- */
+  .version-footer{
+    padding:12px 0 0;
+    border-top:1px solid var(--border);
+    margin-top:16px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .dl-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--bg-tertiary);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:6px 14px;
+    border-radius:6px;
+    font-size:13px;
+    font-family:var(--font-sans);
+    cursor:pointer;
+    text-decoration:none;
+    transition:all .2s;
+  }
+  .dl-btn:hover{background:var(--bg);border-color:var(--text-muted)}
+  .dl-btn svg{width:14px;height:14px}
+  .version-meta{
+    font-size:12px;color:var(--text-muted);
+    font-family:var(--font-mono);
+    margin-left:auto;
+  }
+
+  /* ---- SEPARATOR ---- */
+  .v-sep{
+    height:32px;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .v-sep::before{
+    content:'';
+    position:absolute;
+    left:50%;
+    top:0;bottom:0;
+    width:2px;
+    background:var(--border);
+    transform:translateX(-50%);
+  }
+  .v-sep-dot{
+    width:10px;height:10px;
+    border-radius:50%;
+    background:var(--border);
+    position:relative;z-index:1;
+  }
+
+  /* ---- TOC SIDEBAR (desktop) ---- */
+  .toc{
+    position:fixed;
+    right:max(16px, calc((100vw - 900px)/2 - 200px));
+    top:80px;
+    width:180px;
+    display:none;
+  }
+  @media(min-width:1280px){.toc{display:block}}
+  .toc-title{
+    font-size:11px;color:var(--text-muted);
+    text-transform:uppercase;letter-spacing:1px;
+    font-weight:700;margin-bottom:10px;
+  }
+  .toc-link{
+    display:block;
+    font-size:13px;
+    font-family:var(--font-mono);
+    color:var(--text-muted);
+    text-decoration:none;
+    padding:4px 10px;
+    border-left:2px solid var(--border);
+    margin-bottom:2px;
+    transition:all .2s;
+  }
+  .toc-link:hover,.toc-link.active{
+    color:var(--text-heading);
+    border-left-color:var(--green);
+    background:var(--green-bg);
+  }
+
+  /* ---- FOOTER ---- */
+  .footer{
+    margin-top:48px;
+    padding-top:24px;
+    border-top:1px solid var(--border);
+    text-align:center;
+    color:var(--text-muted);
+    font-size:13px;
+  }
+  .footer a{color:var(--blue);text-decoration:none}
+  .footer a:hover{text-decoration:underline}
+  .footer .hearts{color:var(--red);margin:0 2px}
+
+  /* ---- SCROLL PROGRESS ---- */
+  .scroll-progress{
+    position:fixed;top:0;left:0;
+    height:3px;
+    background:linear-gradient(90deg,var(--green),var(--blue),var(--purple));
+    z-index:200;
+    width:0;
+    transition:width .1s linear;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media(max-width:640px){
+    .container{padding:20px 14px 60px}
+    .version-header{padding:12px 14px;gap:8px}
+    .version-body{padding:0 14px 14px}
+    .version-labels{display:none}
+    .compare-bar{flex-direction:column;align-items:stretch}
+    .compare-btn{margin-left:0}
+    .topbar{padding:10px 14px}
+    .topbar-actions{display:none}
+  }
+
+  /* ---- ANIMATIONS ---- */
+  .version-block{
+    opacity:0;
+    transform:translateY(12px);
+    transition:opacity .4s ease,transform .4s ease,border-color .2s;
+  }
+  .version-block.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- TOP BAR -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-icon">AG</div>
+    <div class="topbar-path">
+      <span>anshull-garg</span> / <span>career</span> / CHANGELOG.md
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="topbar-btn" onclick="toggleAll(true)">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A.5.5 0 011.5 2h13a.5.5 0 010 1h-13A.5.5 0 011 2.5zm0 4A.5.5 0 011.5 6h13a.5.5 0 010 1h-13A.5.5 0 011 6.5zm0 4a.5.5 0 01.5-.5h13a.5.5 0 010 1h-13a.5.5 0 01-.5-.5z"/></svg>
+      Expand All
+    </button>
+    <button class="topbar-btn" onclick="toggleAll(false)">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 3.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm2 4a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5zm2 4a.5.5 0 01.5-.5h1a.5.5 0 010 1h-1a.5.5 0 01-.5-.5z"/></svg>
+      Collapse All
+    </button>
+    <button class="topbar-btn primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.5.5 0 01.5.5v11.793l3.146-3.147a.5.5 0 01.708.708l-4 4a.5.5 0 01-.708 0l-4-4a.5.5 0 01.708-.708L7.5 13.293V1.5A.5.5 0 018 1z" transform="rotate(180 8 8)"/></svg>
+      Top
+    </button>
+  </div>
+</nav>
+
+<!-- TOC SIDEBAR -->
+<aside class="toc" id="toc">
+  <div class="toc-title">Versions</div>
+  <a class="toc-link" href="#v4.2.0">v4.2.0</a>
+  <a class="toc-link" href="#v4.0.0">v4.0.0</a>
+  <a class="toc-link" href="#v3.0.0">v3.0.0</a>
+  <a class="toc-link" href="#v2.1.0">v2.1.0</a>
+  <a class="toc-link" href="#v2.0.0">v2.0.0</a>
+  <a class="toc-link" href="#v1.0.0">v1.0.0</a>
+  <a class="toc-link" href="#v0.1.0">v0.1.0</a>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="container">
+
+  <!-- HEADING -->
+  <h1 class="md-h1">Changelog</h1>
+  <p class="md-subtitle">
+    All notable changes to <strong style="color:var(--text-heading)">Anshull Garg</strong> will be documented in this file.
+  </p>
+  <p class="md-subtitle">
+    This project adheres to <code>Semantic Versioning</code>.
+    Format based on <a href="#" style="color:var(--blue);text-decoration:none">Keep a Changelog</a>.
+  </p>
+
+  <!-- BADGES -->
+  <div class="badges">
+    <div class="badge badge-green">
+      <div class="badge-label">version</div>
+      <div class="badge-value">4.2.0</div>
+    </div>
+    <div class="badge badge-blue">
+      <div class="badge-label">status</div>
+      <div class="badge-value">active</div>
+    </div>
+    <div class="badge badge-green">
+      <div class="badge-label">build</div>
+      <div class="badge-value">passing</div>
+    </div>
+    <div class="badge badge-purple">
+      <div class="badge-label">skills</div>
+      <div class="badge-value">27+</div>
+    </div>
+    <div class="badge badge-yellow">
+      <div class="badge-label">coffee</div>
+      <div class="badge-value">critical</div>
+    </div>
+    <div class="badge badge-blue">
+      <div class="badge-label">yoe</div>
+      <div class="badge-value">6+</div>
+    </div>
+  </div>
+
+  <!-- COMPARE BAR -->
+  <div class="compare-bar">
+    <label>
+      <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M9.573.677L7.177 3.073a.25.25 0 000 .354l2.396 2.396a.25.25 0 00.427-.177V4.033a5.068 5.068 0 013.567 2.17.75.75 0 101.238-.848A6.568 6.568 0 009.573.677zM6.427 15.323l2.396-2.396a.25.25 0 000-.354L6.427 10.177a.25.25 0 00-.427.177v1.613a5.068 5.068 0 01-3.567-2.17.75.75 0 10-1.238.848 6.568 6.568 0 005.232 4.678z"/></svg>
+      Compare
+    </label>
+    <select class="compare-select" id="compareFrom">
+      <option value="v0.1.0">v0.1.0</option>
+      <option value="v1.0.0" selected>v1.0.0</option>
+      <option value="v2.0.0">v2.0.0</option>
+      <option value="v2.1.0">v2.1.0</option>
+      <option value="v3.0.0">v3.0.0</option>
+      <option value="v4.0.0">v4.0.0</option>
+      <option value="v4.2.0">v4.2.0</option>
+    </select>
+    <span class="compare-dots">...</span>
+    <select class="compare-select" id="compareTo">
+      <option value="v0.1.0">v0.1.0</option>
+      <option value="v1.0.0">v1.0.0</option>
+      <option value="v2.0.0">v2.0.0</option>
+      <option value="v2.1.0">v2.1.0</option>
+      <option value="v3.0.0">v3.0.0</option>
+      <option value="v4.0.0">v4.0.0</option>
+      <option value="v4.2.0" selected>v4.2.0</option>
+    </select>
+    <button class="compare-btn" onclick="showCompare()">Compare versions</button>
+  </div>
+
+  <!-- COMPARE PANEL -->
+  <div class="compare-panel" id="comparePanel">
+    <div class="compare-header">
+      <h3 id="compareTitle">Comparing v1.0.0...v4.2.0</h3>
+      <button class="compare-close" onclick="closeCompare()">&times;</button>
+    </div>
+    <div class="compare-body">
+      <div class="compare-stats" id="compareStats"></div>
+      <div class="compare-diff" id="compareDiff"></div>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 4.2.0                            -->
+  <!-- ======================================== -->
+  <div class="version-block open" id="v4.2.0" data-status="current">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v4.2.0</span>
+      <span class="version-date">2024 - Present</span>
+      <span class="version-company">Walmart Global Tech</span>
+      <div class="version-labels">
+        <span class="version-label label-latest">Latest</span>
+        <span class="version-label label-stable">Stable</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added">Checkout optimization engine reducing latency by <code>40%</code> across Walmart.com <span class="tag tag-perf">performance</span></li>
+          <li class="note-item added">Reusable component library adopted by <code>12</code> frontend teams globally <span class="tag tag-arch">architecture</span></li>
+          <li class="note-item added">Mentorship program for <code>3</code> junior developers <span class="tag tag-team">leadership</span></li>
+          <li class="note-item added">Real-time inventory sync for <code>4,700+</code> stores <span class="tag tag-perf">performance</span></li>
+          <li class="note-item added">CI/CD pipeline reducing deploy time from <code>45min</code> to <code>12min</code> <span class="tag tag-arch">architecture</span></li>
+          <li class="note-item added">Accessibility audit achieving <code>WCAG 2.1 AA</code> compliance <span class="tag tag-growth">a11y</span></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading changed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61z"/></svg>
+          Changed
+        </div>
+        <ul class="note-list">
+          <li class="note-item changed">Upgraded role from individual contributor to <strong>Tech Lead</strong> <span class="tag tag-team">role</span></li>
+          <li class="note-item changed">Migrated <code>5</code> backend services from REST to GraphQL <span class="tag tag-arch">architecture</span></li>
+          <li class="note-item changed">Transitioned monolith checkout to micro-frontends architecture</li>
+          <li class="note-item changed">Replaced Webpack with Vite, reducing build time by <code>60%</code></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading fixed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.5 1.75a.25.25 0 01.25-.25h6.5a.25.25 0 01.25.25V7.5H4.5V1.75zM7 7.5V2H5.5v5.5H7zm4-5.5v5.5H9.5V2H11zm2.75 7H2.25a.75.75 0 000 1.5h.75v3.75c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75V10.5h.75a.75.75 0 000-1.5z"/></svg>
+          Fixed
+        </div>
+        <ul class="note-list">
+          <li class="note-item fixed">Resolved imposter syndrome <code>(ongoing patch)</code></li>
+          <li class="note-item fixed">Fixed work-life balance configuration file</li>
+          <li class="note-item fixed">Corrected timezone handling: now properly supports sleep</li>
+          <li class="note-item fixed">Patched <code>burnout.exe</code> with regular PTO</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" onclick="downloadResume('4.2.0')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Download Resume v4.2.0
+        </button>
+        <span class="version-meta">released 2024 | 6 features, 4 changes, 4 fixes</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-sep"><div class="v-sep-dot"></div></div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 4.0.0                            -->
+  <!-- ======================================== -->
+  <div class="version-block" id="v4.0.0" data-status="current">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v4.0.0</span>
+      <span class="version-date">2024</span>
+      <span class="version-company">Walmart Global Tech (Joined)</span>
+      <div class="version-labels">
+        <span class="version-label label-breaking">Breaking</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added">Joined Walmart Global Tech as Senior Software Engineer</li>
+          <li class="note-item added">Enterprise-scale e-commerce development experience <span class="tag tag-growth">scale</span></li>
+          <li class="note-item added">System design skills for <code>100M+</code> daily active users</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading breaking">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M2.343 13.657A8 8 0 1113.657 2.343 8 8 0 012.343 13.657zM6.03 4.97a.75.75 0 00-1.06 1.06L6.94 8 4.97 9.97a.75.75 0 101.06 1.06L8 9.06l1.97 1.97a.75.75 0 101.06-1.06L9.06 8l1.97-1.97a.75.75 0 10-1.06-1.06L8 6.94 6.03 4.97z"/></svg>
+          Breaking Changes
+        </div>
+        <ul class="note-list">
+          <li class="note-item breaking">Complete environment migration -- new city, new team, new stack</li>
+          <li class="note-item breaking">Deprecated previous codebase; rewrote career dependencies</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading removed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/></svg>
+          Removed
+        </div>
+        <ul class="note-list">
+          <li class="note-item removed">Comfort zone module <code>(deprecated since v3.0)</code></li>
+          <li class="note-item removed">Small-scale thinking limiter</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" onclick="downloadResume('4.0.0')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Download Resume v4.0.0
+        </button>
+        <span class="version-meta">released 2024 | major version</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-sep"><div class="v-sep-dot"></div></div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 3.0.0                            -->
+  <!-- ======================================== -->
+  <div class="version-block" id="v3.0.0">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v3.0.0</span>
+      <span class="version-date">2022 - 2024</span>
+      <span class="version-company">Previous Role (Senior Dev)</span>
+      <div class="version-labels">
+        <span class="version-label label-breaking">Breaking</span>
+        <span class="version-label label-stable">Stable</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added">Full-stack development capabilities unlocked <span class="tag tag-growth">milestone</span></li>
+          <li class="note-item added">TypeScript expertise with strict mode <code>enabled</code></li>
+          <li class="note-item added">System design interview confidence module</li>
+          <li class="note-item added">First production microservices architecture</li>
+          <li class="note-item added">Open source contributions to <code>3</code> major libraries</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading breaking">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M2.343 13.657A8 8 0 1113.657 2.343 8 8 0 012.343 13.657zM6.03 4.97a.75.75 0 00-1.06 1.06L6.94 8 4.97 9.97a.75.75 0 101.06 1.06L8 9.06l1.97 1.97a.75.75 0 101.06-1.06L9.06 8l1.97-1.97a.75.75 0 10-1.06-1.06L8 6.94 6.03 4.97z"/></svg>
+          Breaking Changes
+        </div>
+        <ul class="note-list">
+          <li class="note-item breaking">Completely rewritten from <code>Java</code> to <code>TypeScript</code></li>
+          <li class="note-item breaking">Dropped support for monolithic thinking</li>
+          <li class="note-item breaking">API surface redesigned: now speaks fluent REST + GraphQL</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading changed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61z"/></svg>
+          Changed
+        </div>
+        <ul class="note-list">
+          <li class="note-item changed">Promoted to Senior Developer</li>
+          <li class="note-item changed">Shifted from "just coding" to "solving problems"</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading deprecated">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"/></svg>
+          Deprecated
+        </div>
+        <ul class="note-list">
+          <li class="note-item deprecated">Comfort zone module <code>(will be removed in v4.0)</code></li>
+          <li class="note-item deprecated">Fear of public speaking <code>(workaround: conferences)</code></li>
+          <li class="note-item deprecated">Single-language dependency</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" onclick="downloadResume('3.0.0')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Download Resume v3.0.0
+        </button>
+        <span class="version-meta">released 2022 | major version</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-sep"><div class="v-sep-dot"></div></div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 2.1.0                            -->
+  <!-- ======================================== -->
+  <div class="version-block" id="v2.1.0" data-status="deprecated">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v2.1.0</span>
+      <span class="version-date">2021 - 2022</span>
+      <span class="version-company">Growth Phase (Advanced)</span>
+      <div class="version-labels">
+        <span class="version-label label-pre">Patch</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added">Docker and container orchestration skills <span class="tag tag-arch">devops</span></li>
+          <li class="note-item added">First cloud deployment on AWS <span class="tag tag-growth">milestone</span></li>
+          <li class="note-item added">Testing discipline: unit, integration, e2e <code>jest + cypress</code></li>
+          <li class="note-item added">Agile/Scrum certification unlocked</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading changed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61z"/></svg>
+          Changed
+        </div>
+        <ul class="note-list">
+          <li class="note-item changed">Upgraded debugging from <code>console.log</code> to proper dev tools</li>
+          <li class="note-item changed">Replaced tutorial hell with building real projects</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading fixed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.5 1.75a.25.25 0 01.25-.25h6.5a.25.25 0 01.25.25V7.5H4.5V1.75zM7 7.5V2H5.5v5.5H7zm4-5.5v5.5H9.5V2H11zm2.75 7H2.25a.75.75 0 000 1.5h.75v3.75c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75V10.5h.75a.75.75 0 000-1.5z"/></svg>
+          Fixed
+        </div>
+        <ul class="note-list">
+          <li class="note-item fixed">Resolved <code>"it works on my machine"</code> syndrome via Docker</li>
+          <li class="note-item fixed">Fixed merge conflict anxiety</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" onclick="downloadResume('2.1.0')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Download Resume v2.1.0
+        </button>
+        <span class="version-meta">released 2021 | minor version</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-sep"><div class="v-sep-dot"></div></div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 2.0.0                            -->
+  <!-- ======================================== -->
+  <div class="version-block" id="v2.0.0" data-status="deprecated">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v2.0.0</span>
+      <span class="version-date">2020 - 2021</span>
+      <span class="version-company">Growth Phase</span>
+      <div class="version-labels">
+        <span class="version-label label-pre">Superseded</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added">React.js -- component-based thinking unlocked <span class="tag tag-growth">core</span></li>
+          <li class="note-item added">Node.js backend development <span class="tag tag-growth">core</span></li>
+          <li class="note-item added">AWS fundamentals: S3, EC2, Lambda <span class="tag tag-arch">cloud</span></li>
+          <li class="note-item added">Git workflow: branching, PRs, code review</li>
+          <li class="note-item added">First production deployment (did not break anything...much)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading changed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61z"/></svg>
+          Changed
+        </div>
+        <ul class="note-list">
+          <li class="note-item changed">Migrated from "learning" to "building" mode</li>
+          <li class="note-item changed">Upgraded from notepad to VS Code (finally)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading fixed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.5 1.75a.25.25 0 01.25-.25h6.5a.25.25 0 01.25.25V7.5H4.5V1.75zM7 7.5V2H5.5v5.5H7zm4-5.5v5.5H9.5V2H11zm2.75 7H2.25a.75.75 0 000 1.5h.75v3.75c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75V10.5h.75a.75.75 0 000-1.5z"/></svg>
+          Fixed
+        </div>
+        <ul class="note-list">
+          <li class="note-item fixed"><code>"it works on my machine"</code> syndrome (partially)</li>
+          <li class="note-item fixed">Stopped writing spaghetti code (mostly)</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" onclick="downloadResume('2.0.0')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Download Resume v2.0.0
+        </button>
+        <span class="version-meta">released 2020 | major version</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-sep"><div class="v-sep-dot"></div></div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 1.0.0                            -->
+  <!-- ======================================== -->
+  <div class="version-block" id="v1.0.0" data-status="legacy">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v1.0.0</span>
+      <span class="version-date">2020</span>
+      <span class="version-company">Initial Release</span>
+      <div class="version-labels">
+        <span class="version-label label-pre">Legacy</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added"><code>print("Hello, World!")</code> -- it compiled and everything</li>
+          <li class="note-item added">Basic understanding of HTML, CSS, JavaScript</li>
+          <li class="note-item added">First professional developer role secured</li>
+          <li class="note-item added">Stack Overflow account (primary problem-solving tool)</li>
+          <li class="note-item added">Ability to center a <code>&lt;div&gt;</code> (after 3 hours)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading changed">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61z"/></svg>
+          Changed
+        </div>
+        <ul class="note-list">
+          <li class="note-item changed">Career path finalized: "I want to build things for the web"</li>
+          <li class="note-item changed">Sleep schedule now optimized for late-night coding</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading known">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"/></svg>
+          Known Issues
+        </div>
+        <ul class="note-list">
+          <li class="note-item known">Still googles how to exit Vim</li>
+          <li class="note-item known">CSS specificity remains a mystery</li>
+          <li class="note-item known">Infinite loop tendency when encountering new frameworks</li>
+          <li class="note-item known">Memory leak: accumulates too many browser tabs</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" onclick="downloadResume('1.0.0')">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Download Resume v1.0.0
+        </button>
+        <span class="version-meta">released 2020 | initial release</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-sep"><div class="v-sep-dot"></div></div>
+
+  <!-- ======================================== -->
+  <!-- VERSION 0.1.0 (BETA)                     -->
+  <!-- ======================================== -->
+  <div class="version-block" id="v0.1.0" data-status="legacy">
+    <div class="version-header" onclick="toggleVersion(this)">
+      <div class="version-toggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </div>
+      <span class="version-tag">v0.1.0-beta</span>
+      <span class="version-date">Pre-2020</span>
+      <span class="version-company">Education / Self-Learning</span>
+      <div class="version-labels">
+        <span class="version-label label-pre">Pre-release</span>
+      </div>
+    </div>
+    <div class="version-body">
+
+      <div class="section">
+        <div class="section-heading added">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+          Added
+        </div>
+        <ul class="note-list">
+          <li class="note-item added">Computer Science fundamentals: data structures, algorithms</li>
+          <li class="note-item added">First line of code: <code>System.out.println("Hello World");</code></li>
+          <li class="note-item added">Passion for technology and problem-solving</li>
+          <li class="note-item added">Late-night debugging endurance trait</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-heading known">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"/></svg>
+          Known Issues
+        </div>
+        <ul class="note-list">
+          <li class="note-item known">No idea what a <code>production environment</code> is</li>
+          <li class="note-item known">Thinks <code>!important</code> is a valid CSS strategy</li>
+          <li class="note-item known">Version control? Just rename the folder</li>
+          <li class="note-item known">Undefined career path -- awaiting initialization</li>
+        </ul>
+      </div>
+
+      <div class="version-footer">
+        <button class="dl-btn" style="opacity:.5;cursor:not-allowed" onclick="return false">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"/></svg>
+          Resume not available (pre-release)
+        </button>
+        <span class="version-meta">pre-release | beta</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>
+      Generated by <strong style="color:var(--text-heading)">anshull-garg/career</strong> |
+      Last updated: February 2026 |
+      <a href="#">View raw</a> |
+      <a href="#">Blame</a> |
+      <a href="#">History</a>
+    </p>
+    <p style="margin-top:6px">
+      Built with <span class="hearts">&lt;3</span> and too much caffeine
+    </p>
+  </footer>
+
+</main>
+
+<script>
+// ---- VERSION TOGGLE ----
+function toggleVersion(header) {
+  const block = header.parentElement;
+  block.classList.toggle('open');
+}
+
+function toggleAll(open) {
+  document.querySelectorAll('.version-block').forEach(b => {
+    if (open) b.classList.add('open');
+    else b.classList.remove('open');
+  });
+}
+
+// ---- SCROLL PROGRESS ----
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('scrollProgress').style.width = pct + '%';
+});
+
+// ---- TOC ACTIVE STATE ----
+const tocLinks = document.querySelectorAll('.toc-link');
+const versionBlocks = document.querySelectorAll('.version-block');
+
+function updateToc() {
+  let current = '';
+  versionBlocks.forEach(block => {
+    const rect = block.getBoundingClientRect();
+    if (rect.top <= 120) current = block.id;
+  });
+  tocLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', updateToc);
+
+// ---- SCROLL REVEAL ----
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.05 });
+
+versionBlocks.forEach(b => observer.observe(b));
+
+// ---- COMPARE FEATURE ----
+const versionData = {
+  'v0.1.0': {
+    skills: 3, projects: 0, year: 'Pre-2020', role: 'Student',
+    techs: ['Java', 'HTML basics', 'CSS basics'],
+    added: ['CS fundamentals', 'First code', 'Passion for tech'],
+    removed: []
+  },
+  'v1.0.0': {
+    skills: 5, projects: 1, year: '2020', role: 'Junior Developer',
+    techs: ['JavaScript', 'HTML', 'CSS', 'Git basics', 'Stack Overflow'],
+    added: ['Hello World', 'HTML/CSS/JS', 'First dev role', 'SO account'],
+    removed: []
+  },
+  'v2.0.0': {
+    skills: 10, projects: 3, year: '2020-2021', role: 'Developer',
+    techs: ['React', 'Node.js', 'AWS', 'Git', 'JavaScript', 'HTML', 'CSS', 'REST APIs', 'SQL', 'MongoDB'],
+    added: ['React', 'Node.js', 'AWS', 'Git workflow', 'Production deploys'],
+    removed: ['Spaghetti code']
+  },
+  'v2.1.0': {
+    skills: 14, projects: 5, year: '2021-2022', role: 'Developer',
+    techs: ['React', 'Node.js', 'AWS', 'Docker', 'Jest', 'Cypress', 'Git', 'JavaScript', 'HTML', 'CSS', 'REST APIs', 'SQL', 'MongoDB', 'Agile'],
+    added: ['Docker', 'AWS cloud', 'Testing', 'Agile/Scrum'],
+    removed: ['console.log debugging', 'Tutorial hell']
+  },
+  'v3.0.0': {
+    skills: 20, projects: 8, year: '2022-2024', role: 'Senior Developer',
+    techs: ['TypeScript', 'React', 'Node.js', 'GraphQL', 'REST', 'AWS', 'Docker', 'Microservices', 'System Design', 'Jest', 'Cypress', 'Git', 'CI/CD', 'PostgreSQL', 'MongoDB', 'Redis', 'Next.js', 'Webpack', 'Agile', 'Open Source'],
+    added: ['Full-stack', 'TypeScript', 'System design', 'Microservices', 'OSS contributions'],
+    removed: ['Java-only', 'Monolith thinking', 'Comfort zone (deprecated)']
+  },
+  'v4.0.0': {
+    skills: 24, projects: 10, year: '2024', role: 'Senior SWE @ Walmart',
+    techs: ['TypeScript', 'React', 'Node.js', 'GraphQL', 'REST', 'AWS', 'Docker', 'Microservices', 'System Design', 'Jest', 'Cypress', 'Git', 'CI/CD', 'PostgreSQL', 'MongoDB', 'Redis', 'Next.js', 'Vite', 'Agile', 'E-commerce', 'Walmart Scale', 'Enterprise', 'Kubernetes', 'Performance'],
+    added: ['Walmart Global Tech', 'Enterprise e-commerce', '100M+ DAU systems'],
+    removed: ['Comfort zone', 'Small-scale thinking']
+  },
+  'v4.2.0': {
+    skills: 27, projects: 14, year: '2024-Present', role: 'Tech Lead @ Walmart',
+    techs: ['TypeScript', 'React', 'Node.js', 'GraphQL', 'REST', 'AWS', 'Docker', 'Microservices', 'System Design', 'Jest', 'Cypress', 'Playwright', 'Git', 'CI/CD', 'PostgreSQL', 'MongoDB', 'Redis', 'Next.js', 'Vite', 'Agile', 'E-commerce', 'Walmart Scale', 'Enterprise', 'Kubernetes', 'Performance', 'Accessibility', 'Component Libraries', 'Mentorship', 'Micro-frontends', 'Team Leadership'],
+    added: ['Checkout optimization (-40% latency)', 'Component library (12 teams)', 'Mentorship (3 devs)', 'Inventory sync (4700+ stores)', 'CI/CD pipeline (-73% deploy time)', 'WCAG 2.1 AA compliance'],
+    removed: ['Imposter syndrome (patching)', 'Work-life imbalance']
+  }
+};
+
+const versionOrder = ['v0.1.0','v1.0.0','v2.0.0','v2.1.0','v3.0.0','v4.0.0','v4.2.0'];
+
+function showCompare() {
+  const from = document.getElementById('compareFrom').value;
+  const to = document.getElementById('compareTo').value;
+  const fi = versionOrder.indexOf(from);
+  const ti = versionOrder.indexOf(to);
+
+  if (fi === ti) {
+    alert('Select two different versions to compare.');
+    return;
+  }
+
+  const older = fi < ti ? from : to;
+  const newer = fi < ti ? to : from;
+  const o = versionData[older];
+  const n = versionData[newer];
+
+  document.getElementById('compareTitle').textContent = 'Comparing ' + older + '...' + newer;
+
+  // Stats
+  const skillDiff = n.skills - o.skills;
+  const projDiff = n.projects - o.projects;
+  const newTechs = n.techs.filter(t => !o.techs.includes(t));
+  const removedTechs = o.techs.filter(t => !n.techs.includes(t));
+
+  document.getElementById('compareStats').innerHTML = `
+    <div class="compare-stat">
+      <div class="compare-stat-value" style="color:var(--green)">+${skillDiff}</div>
+      <div class="compare-stat-label">Skills Added</div>
+    </div>
+    <div class="compare-stat">
+      <div class="compare-stat-value" style="color:var(--blue)">+${projDiff}</div>
+      <div class="compare-stat-label">Projects</div>
+    </div>
+    <div class="compare-stat">
+      <div class="compare-stat-value" style="color:var(--green)">+${newTechs.length}</div>
+      <div class="compare-stat-label">Technologies</div>
+    </div>
+    <div class="compare-stat">
+      <div class="compare-stat-value" style="color:var(--purple)">${o.role.split(' ')[0]}</div>
+      <div class="compare-stat-label">From Role</div>
+    </div>
+    <div class="compare-stat">
+      <div class="compare-stat-value" style="color:var(--green)">${n.role.split('@')[0].trim().split(' ')[0]}</div>
+      <div class="compare-stat-label">To Role</div>
+    </div>
+  `;
+
+  // Diff output
+  let diff = '';
+  diff += `<div class="line-head">${older}...${newer} diff</div>`;
+  diff += `<div class="line-ctx">role: ${o.role}</div>`;
+  diff += `<div class="line-rm">role: ${o.role}</div>`;
+  diff += `<div class="line-add">role: ${n.role}</div>`;
+  diff += `<div class="line-ctx">&nbsp;</div>`;
+  diff += `<div class="line-head">technologies</div>`;
+
+  removedTechs.forEach(t => {
+    diff += `<div class="line-rm">${t}</div>`;
+  });
+  newTechs.forEach(t => {
+    diff += `<div class="line-add">${t}</div>`;
+  });
+
+  const keptTechs = n.techs.filter(t => o.techs.includes(t));
+  if (keptTechs.length > 0) {
+    diff += `<div class="line-ctx">${keptTechs.slice(0, 5).join(', ')}${keptTechs.length > 5 ? ` (+${keptTechs.length - 5} more)` : ''}</div>`;
+  }
+
+  diff += `<div class="line-ctx">&nbsp;</div>`;
+  diff += `<div class="line-head">changelog entries (${older} to ${newer})</div>`;
+
+  // Collect all added/removed across versions between older and newer
+  const oi = versionOrder.indexOf(older);
+  const ni = versionOrder.indexOf(newer);
+  for (let i = oi + 1; i <= ni; i++) {
+    const v = versionOrder[i];
+    const d = versionData[v];
+    diff += `<div class="line-ctx">&nbsp;</div>`;
+    diff += `<div class="line-head">${v} (${d.year})</div>`;
+    d.added.forEach(a => {
+      diff += `<div class="line-add">${a}</div>`;
+    });
+    d.removed.forEach(r => {
+      diff += `<div class="line-rm">${r}</div>`;
+    });
+  }
+
+  document.getElementById('compareDiff').innerHTML = diff;
+
+  const panel = document.getElementById('comparePanel');
+  panel.classList.add('open');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeCompare() {
+  document.getElementById('comparePanel').classList.remove('open');
+}
+
+// ---- DOWNLOAD RESUME ----
+function downloadResume(version) {
+  // In a real app, this would link to actual resume PDFs.
+  // For the demo, we show a toast notification.
+  showToast(`Resume v${version} download started...`);
+}
+
+// ---- TOAST NOTIFICATION ----
+function showToast(message) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:var(--bg-tertiary);color:var(--text-heading);
+      border:1px solid var(--border);
+      padding:10px 20px;border-radius:8px;font-size:14px;
+      font-family:var(--font-mono);z-index:300;
+      transition:transform .3s ease,opacity .3s ease;opacity:0;
+      box-shadow:0 8px 24px rgba(0,0,0,.4);
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    toast.style.opacity = '1';
+  });
+  setTimeout(() => {
+    toast.style.transform = 'translateX(-50%) translateY(80px)';
+    toast.style.opacity = '0';
+  }, 2500);
+}
+
+// ---- KEYBOARD NAVIGATION ----
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCompare();
+  }
+  // j/k navigation between versions
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  const blocks = Array.from(document.querySelectorAll('.version-block'));
+  const currentIdx = blocks.findIndex(b => {
+    const rect = b.getBoundingClientRect();
+    return rect.top >= 0 && rect.top < window.innerHeight / 2;
+  });
+
+  if (e.key === 'j' && currentIdx < blocks.length - 1) {
+    blocks[currentIdx + 1 < 0 ? 0 : currentIdx + 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  if (e.key === 'k' && currentIdx > 0) {
+    blocks[currentIdx - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  if (e.key === 'Enter' || e.key === ' ') {
+    if (currentIdx >= 0) {
+      e.preventDefault();
+      blocks[currentIdx].classList.toggle('open');
+    }
+  }
+});
+
+// ---- INITIAL REVEAL ----
+window.addEventListener('DOMContentLoaded', () => {
+  // Stagger the reveal of version blocks
+  const blocks = document.querySelectorAll('.version-block');
+  blocks.forEach((block, i) => {
+    setTimeout(() => {
+      block.classList.add('visible');
+    }, 100 + i * 80);
+  });
+});
+</script>
+
+</body>
+</html>

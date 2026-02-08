@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Portfolio Generator - Anshull Garg</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   RESET & VARIABLES
+   ======================================== */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+  --bg: #0D0D0D;
+  --bg-surface: #141414;
+  --bg-elevated: #1A1A1A;
+  --bg-card: #1E1E1E;
+  --border: #2A2A2A;
+  --border-light: #333333;
+  --purple: #7C3AED;
+  --purple-light: #8B5CF6;
+  --purple-dim: rgba(124, 58, 237, 0.15);
+  --purple-glow: rgba(124, 58, 237, 0.3);
+  --green: #22C55E;
+  --green-dim: rgba(34, 197, 94, 0.15);
+  --green-glow: rgba(34, 197, 94, 0.3);
+  --text: #E5E5E5;
+  --text-secondary: #A3A3A3;
+  --text-muted: #666666;
+  --blue: #3B82F6;
+  --orange: #F97316;
+  --cyan: #06B6D4;
+  --pink: #EC4899;
+  --yellow: #EAB308;
+  --red: #EF4444;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--purple); color: #fff; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+
+/* ========================================
+   AMBIENT BACKGROUND
+   ======================================== */
+.bg-ambient {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+}
+.bg-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(150px); opacity: 0.06;
+}
+.bg-orb:nth-child(1) {
+  width: 800px; height: 800px; background: var(--purple);
+  top: -300px; left: -200px;
+  animation: orbDrift1 25s ease-in-out infinite;
+}
+.bg-orb:nth-child(2) {
+  width: 600px; height: 600px; background: var(--green);
+  bottom: -200px; right: -100px;
+  animation: orbDrift2 30s ease-in-out infinite;
+}
+.bg-orb:nth-child(3) {
+  width: 400px; height: 400px; background: var(--blue);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  animation: orbDrift3 20s ease-in-out infinite;
+}
+@keyframes orbDrift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(100px, 80px); } }
+@keyframes orbDrift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-80px, -60px); } }
+@keyframes orbDrift3 { 0%,100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-30%,-40%) scale(1.2); } }
+
+/* Grid pattern overlay */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ========================================
+   MAIN LAYOUT
+   ======================================== */
+.app-container {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ========================================
+   HEADER / BRANDING
+   ======================================== */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.header-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #fff;
+}
+.brand-text {
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.brand-tag {
+  font-size: 0.65rem; font-weight: 400;
+  color: var(--text-muted);
+  display: block;
+}
+.header-meta {
+  display: flex; align-items: center; gap: 16px;
+  font-size: 0.75rem; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.model-badge {
+  padding: 4px 10px;
+  background: var(--purple-dim);
+  color: var(--purple-light);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* ========================================
+   PROMPT INPUT AREA
+   ======================================== */
+.prompt-section {
+  padding: 40px 0 20px;
+}
+.prompt-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.prompt-box {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 4px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.prompt-box:focus-within {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-dim), 0 8px 32px rgba(0,0,0,0.4);
+}
+.prompt-input-wrap {
+  display: flex; align-items: flex-end; gap: 8px;
+}
+.prompt-textarea {
+  flex: 1; resize: none; border: none; outline: none;
+  background: transparent; color: var(--text);
+  font-family: var(--font-sans); font-size: 0.95rem;
+  line-height: 1.5; padding: 14px 16px;
+  min-height: 56px; max-height: 200px;
+}
+.prompt-textarea::placeholder {
+  color: var(--text-muted);
+}
+.generate-btn {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--purple), #6D28D9);
+  color: #fff; border: none; border-radius: 12px;
+  padding: 12px 20px; font-family: var(--font-sans);
+  font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.25s;
+  margin: 4px;
+  white-space: nowrap;
+}
+.generate-btn:hover {
+  background: linear-gradient(135deg, var(--purple-light), var(--purple));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--purple-glow);
+}
+.generate-btn:active { transform: translateY(0); }
+.generate-btn:disabled {
+  opacity: 0.5; cursor: not-allowed; transform: none;
+  box-shadow: none;
+}
+.generate-btn svg { width: 16px; height: 16px; }
+
+/* Suggestion chips */
+.prompt-suggestions {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 12px;
+}
+.suggestion-chip {
+  padding: 6px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.75rem; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.2s;
+  font-family: var(--font-sans);
+}
+.suggestion-chip:hover {
+  border-color: var(--purple);
+  color: var(--purple-light);
+  background: var(--purple-dim);
+}
+
+/* ========================================
+   OUTPUT AREA
+   ======================================== */
+.output-section {
+  padding: 20px 0 80px;
+  display: none;
+}
+.output-section.active { display: block; }
+
+/* Output toolbar */
+.output-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.output-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.8rem; color: var(--text-secondary);
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+.status-dot.done { animation: none; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--green-glow); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px transparent; }
+}
+.output-actions {
+  display: flex; gap: 6px;
+}
+.action-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.75rem; cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  border-color: var(--purple);
+  color: var(--purple-light);
+}
+.action-btn svg { width: 14px; height: 14px; }
+
+/* Token counter */
+.token-counter {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  padding: 8px 0;
+  display: flex; gap: 16px;
+}
+.token-counter span {
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* ========================================
+   STREAMED CONTENT RENDERING
+   ======================================== */
+#output-content {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text);
+}
+
+/* Blinking cursor at end of stream */
+.stream-cursor {
+  display: inline-block;
+  width: 2px; height: 1.1em;
+  background: var(--purple-light);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: cursorBlink 0.8s step-end infinite;
+}
+@keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Markdown-rendered elements */
+#output-content .gen-thinking {
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border-left: 3px solid var(--purple);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.85rem;
+}
+
+#output-content h2 {
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--text);
+  margin-top: 36px; margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 10px;
+}
+#output-content h2 .section-icon {
+  width: 28px; height: 28px;
+  background: var(--purple-dim);
+  border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+
+#output-content h3 {
+  font-size: 1.05rem; font-weight: 600;
+  color: var(--text);
+  margin-top: 20px; margin-bottom: 10px;
+}
+
+#output-content p {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+#output-content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+#output-content em {
+  color: var(--purple-light);
+  font-style: italic;
+}
+
+#output-content code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--green);
+}
+
+#output-content a {
+  color: var(--purple-light);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+#output-content a:hover {
+  border-bottom-color: var(--purple-light);
+}
+
+#output-content .divider {
+  height: 1px;
+  background: var(--border);
+  margin: 28px 0;
+}
+
+/* Skill bars */
+.skill-bar-wrap {
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: fadeSlideIn 0.4s forwards;
+}
+.skill-bar-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.skill-bar-name {
+  font-size: 0.85rem; font-weight: 500; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.skill-bar-name .skill-icon {
+  font-size: 0.75rem;
+}
+.skill-bar-pct {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; color: var(--purple-light);
+  font-weight: 500;
+}
+.skill-bar-track {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.skill-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skill-bar-fill.purple { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+.skill-bar-fill.green { background: linear-gradient(90deg, #16A34A, var(--green)); }
+.skill-bar-fill.blue { background: linear-gradient(90deg, #2563EB, var(--blue)); }
+.skill-bar-fill.orange { background: linear-gradient(90deg, #EA580C, var(--orange)); }
+.skill-bar-fill.cyan { background: linear-gradient(90deg, #0891B2, var(--cyan)); }
+.skill-bar-fill.pink { background: linear-gradient(90deg, #DB2777, var(--pink)); }
+.skill-bar-fill.yellow { background: linear-gradient(90deg, #CA8A04, var(--yellow)); }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Project cards */
+.project-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: cardAppear 0.5s forwards;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.project-card:hover {
+  border-color: var(--purple);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+@keyframes cardAppear {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.project-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.project-name {
+  font-size: 1rem; font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.project-name .proj-icon {
+  font-size: 1.1rem;
+}
+.project-status {
+  font-size: 0.65rem; font-weight: 500;
+  padding: 3px 8px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.project-status.live {
+  background: var(--green-dim); color: var(--green);
+}
+.project-status.dev {
+  background: rgba(234,179,8,0.15); color: var(--yellow);
+}
+.project-status.oss {
+  background: var(--purple-dim); color: var(--purple-light);
+}
+.project-desc {
+  font-size: 0.85rem; color: var(--text-secondary);
+  margin-bottom: 12px; line-height: 1.6;
+}
+.project-tech {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 12px;
+}
+.tech-tag {
+  padding: 3px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.7rem; color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.project-links {
+  display: flex; gap: 12px;
+}
+.project-link {
+  font-size: 0.78rem; color: var(--purple-light);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 4px;
+  transition: color 0.2s;
+}
+.project-link:hover { color: var(--text); }
+.project-link svg { width: 14px; height: 14px; }
+
+/* Experience timeline */
+.timeline-item {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 28px;
+  border-left: 2px solid var(--border);
+  margin-left: 8px;
+  opacity: 0;
+  animation: fadeSlideIn 0.5s forwards;
+}
+.timeline-item:last-child { border-left-color: transparent; }
+.timeline-dot {
+  position: absolute; left: -7px; top: 2px;
+  width: 12px; height: 12px;
+  background: var(--purple);
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 3px var(--purple-dim);
+}
+.timeline-dot.current {
+  background: var(--green);
+  box-shadow: 0 0 0 3px var(--green-dim);
+}
+.timeline-role {
+  font-size: 0.95rem; font-weight: 600; color: var(--text);
+}
+.timeline-company {
+  font-size: 0.85rem; color: var(--purple-light); font-weight: 500;
+}
+.timeline-period {
+  font-size: 0.75rem; color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-bottom: 6px;
+}
+.timeline-desc {
+  font-size: 0.82rem; color: var(--text-secondary);
+  line-height: 1.6;
+}
+.timeline-desc li {
+  margin-bottom: 4px; list-style: none;
+  position: relative; padding-left: 16px;
+}
+.timeline-desc li::before {
+  content: '';
+  position: absolute; left: 0; top: 9px;
+  width: 6px; height: 6px;
+  background: var(--purple-dim);
+  border: 1px solid var(--purple);
+  border-radius: 2px;
+}
+
+/* Contact links */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.contact-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s;
+  opacity: 0;
+  animation: cardAppear 0.4s forwards;
+}
+.contact-card:hover {
+  border-color: var(--purple);
+  background: var(--purple-dim);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.contact-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.contact-icon.gh { background: rgba(255,255,255,0.1); }
+.contact-icon.li { background: rgba(59,130,246,0.15); color: var(--blue); }
+.contact-icon.em { background: rgba(34,197,94,0.15); color: var(--green); }
+.contact-icon.tw { background: rgba(6,182,212,0.15); color: var(--cyan); }
+.contact-label {
+  font-size: 0.8rem; font-weight: 500;
+}
+.contact-sublabel {
+  font-size: 0.7rem; color: var(--text-muted);
+}
+
+/* Code block */
+.code-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 16px 0;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeSlideIn 0.4s forwards;
+}
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.code-block-body {
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  color: var(--text-secondary);
+}
+.code-block-body .kw { color: var(--purple-light); }
+.code-block-body .fn { color: var(--blue); }
+.code-block-body .str { color: var(--green); }
+.code-block-body .cm { color: var(--text-muted); font-style: italic; }
+.code-block-body .num { color: var(--orange); }
+.code-block-body .op { color: var(--text-muted); }
+.code-block-body .type { color: var(--cyan); }
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  opacity: 0;
+  animation: cardAppear 0.4s forwards;
+  transition: border-color 0.3s;
+}
+.stat-card:hover { border-color: var(--purple); }
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--purple-light), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  font-size: 0.7rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+/* Sparkle effect */
+.sparkle {
+  display: inline-block;
+  animation: sparkleAnim 1.5s ease-in-out infinite;
+}
+@keyframes sparkleAnim {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* Loading spinner */
+.loading-dots {
+  display: inline-flex; gap: 4px; margin-left: 8px;
+  vertical-align: middle;
+}
+.loading-dots span {
+  width: 6px; height: 6px;
+  background: var(--purple-light);
+  border-radius: 50%;
+  animation: dotBounce 1.4s infinite ease-in-out both;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.32s; }
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Completion badge */
+.completion-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  background: var(--green-dim);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 8px;
+  color: var(--green);
+  font-size: 0.8rem; font-weight: 500;
+  margin-top: 24px;
+  opacity: 0;
+  animation: fadeSlideIn 0.5s forwards;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 640px) {
+  .app-container { padding: 0 14px; }
+  .header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .header-meta { display: none; }
+  .prompt-textarea { font-size: 0.88rem; }
+  .generate-btn { padding: 10px 16px; font-size: 0.8rem; }
+  .prompt-suggestions { gap: 6px; }
+  .suggestion-chip { font-size: 0.7rem; padding: 5px 10px; }
+  #output-content h2 { font-size: 1.15rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: 1fr; }
+  .output-toolbar { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .project-header { flex-direction: column; gap: 6px; }
+}
+
+/* ========================================
+   INITIAL STATE: Welcome
+   ======================================== */
+.welcome-hint {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+.welcome-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+.welcome-title {
+  font-size: 1.1rem; font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.welcome-sub {
+  font-size: 0.85rem;
+  max-width: 400px; margin: 0 auto;
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="bg-ambient">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+<div class="bg-grid"></div>
+
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-text">PortfolioGPT</span>
+        <span class="brand-tag">AI-powered portfolio generator</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="model-badge">GPT-Portfolio v4.2</span>
+      <span>Context: 128k</span>
+    </div>
+  </header>
+
+  <!-- Prompt Input -->
+  <section class="prompt-section">
+    <div class="prompt-label">Prompt</div>
+    <div class="prompt-box">
+      <div class="prompt-input-wrap">
+        <textarea id="prompt-input" class="prompt-textarea" rows="2"
+          placeholder="Describe the developer you want to learn about..."></textarea>
+        <button id="generate-btn" class="generate-btn" onclick="handleGenerate()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v1m0 16v1m-8-9H3m18 0h-1m-2.636-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          Generate
+        </button>
+      </div>
+    </div>
+    <div class="prompt-suggestions">
+      <button class="suggestion-chip" onclick="setPrompt('Write me a complete portfolio for Anshull Garg, Software Developer at Walmart')">Full portfolio</button>
+      <button class="suggestion-chip" onclick="setPrompt('Focus on technical skills and expertise of Anshull Garg')">Technical deep-dive</button>
+      <button class="suggestion-chip" onclick="setPrompt('Show me the projects and work experience of Anshull Garg at Walmart')">Projects + Experience</button>
+      <button class="suggestion-chip" onclick="setPrompt('Give me a brief summary of Anshull Garg - keep it concise')">Quick summary</button>
+    </div>
+  </section>
+
+  <!-- Welcome State -->
+  <div id="welcome" class="welcome-hint">
+    <div class="welcome-icon">&#9672;</div>
+    <div class="welcome-title">Enter a prompt to generate a portfolio</div>
+    <div class="welcome-sub">Try the suggested prompts above or write your own. The portfolio will stream in real-time, just like a language model.</div>
+  </div>
+
+  <!-- Output Section -->
+  <section id="output-section" class="output-section">
+    <div class="output-toolbar">
+      <div class="output-status">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="status-text">Generating...</span>
+        <div id="loading-dots" class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="output-actions">
+        <button class="action-btn" onclick="handleRegenerate()" title="Regenerate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Regenerate
+        </button>
+        <button class="action-btn" onclick="handleCopy()" title="Copy output">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span id="copy-label">Copy</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Token Counter -->
+    <div class="token-counter">
+      <span>Tokens: <strong id="token-count">0</strong></span>
+      <span>Time: <strong id="time-elapsed">0.0s</strong></span>
+      <span>Speed: <strong id="tokens-per-sec">0</strong> tok/s</span>
+    </div>
+
+    <!-- Streamed Content -->
+    <div id="output-content"></div>
+  </section>
+</div>
+
+<script>
+/* ================================================================
+   PORTFOLIO DATA + AI STREAMING ENGINE
+   ================================================================ */
+
+// State
+let isGenerating = false;
+let currentTimeout = null;
+let allTimeouts = [];
+let tokenCount = 0;
+let startTime = 0;
+let timerInterval = null;
+let plainTextOutput = '';
+
+// Prompt handling
+function setPrompt(text) {
+  document.getElementById('prompt-input').value = text;
+  document.getElementById('prompt-input').focus();
+}
+
+// Detect prompt "mode"
+function detectMode(prompt) {
+  const p = prompt.toLowerCase();
+  if (p.includes('technical') || p.includes('skill')) return 'technical';
+  if (p.includes('project') || p.includes('experience') || p.includes('work')) return 'projects';
+  if (p.includes('brief') || p.includes('summary') || p.includes('concise') || p.includes('short')) return 'summary';
+  return 'full';
+}
+
+// Generate handler
+function handleGenerate() {
+  const promptEl = document.getElementById('prompt-input');
+  let prompt = promptEl.value.trim();
+  if (!prompt) {
+    prompt = 'Write me a complete portfolio for Anshull Garg, Software Developer at Walmart';
+    promptEl.value = prompt;
+  }
+  if (isGenerating) return;
+  startGeneration(prompt);
+}
+
+// Regenerate
+function handleRegenerate() {
+  const prompt = document.getElementById('prompt-input').value.trim() || 'Write me a complete portfolio for Anshull Garg, Software Developer at Walmart';
+  startGeneration(prompt);
+}
+
+// Copy
+function handleCopy() {
+  const content = document.getElementById('output-content').innerText;
+  navigator.clipboard.writeText(content).then(() => {
+    const label = document.getElementById('copy-label');
+    label.textContent = 'Copied!';
+    setTimeout(() => { label.textContent = 'Copy'; }, 2000);
+  });
+}
+
+// ================================================================
+// STREAMING ENGINE
+// ================================================================
+
+function startGeneration(prompt) {
+  // Cancel any previous generation
+  allTimeouts.forEach(t => clearTimeout(t));
+  allTimeouts = [];
+  if (timerInterval) clearInterval(timerInterval);
+
+  isGenerating = true;
+  tokenCount = 0;
+  plainTextOutput = '';
+  startTime = Date.now();
+
+  // UI updates
+  document.getElementById('welcome').style.display = 'none';
+  const outputSection = document.getElementById('output-section');
+  outputSection.classList.add('active');
+  document.getElementById('output-content').innerHTML = '';
+  document.getElementById('generate-btn').disabled = true;
+  document.getElementById('status-dot').classList.remove('done');
+  document.getElementById('status-text').textContent = 'Generating...';
+  document.getElementById('loading-dots').style.display = 'inline-flex';
+  document.getElementById('token-count').textContent = '0';
+  document.getElementById('time-elapsed').textContent = '0.0s';
+  document.getElementById('tokens-per-sec').textContent = '0';
+
+  // Start timer
+  timerInterval = setInterval(updateTimer, 100);
+
+  // Build content blocks based on mode
+  const mode = detectMode(prompt);
+  const blocks = buildBlocks(mode, prompt);
+
+  // Schedule streaming
+  let delay = 400;
+  blocks.forEach(block => {
+    const t = setTimeout(() => {
+      renderBlock(block);
+    }, delay);
+    allTimeouts.push(t);
+    delay += block.delay || 100;
+  });
+
+  // Finish
+  const finishT = setTimeout(() => {
+    finishGeneration();
+  }, delay + 200);
+  allTimeouts.push(finishT);
+}
+
+function updateTimer() {
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  document.getElementById('time-elapsed').textContent = elapsed + 's';
+  const tps = elapsed > 0 ? Math.round(tokenCount / parseFloat(elapsed)) : 0;
+  document.getElementById('tokens-per-sec').textContent = tps;
+}
+
+function addTokens(text) {
+  // Rough token approximation: 1 token ~ 4 chars
+  tokenCount += Math.max(1, Math.ceil(text.length / 4));
+  document.getElementById('token-count').textContent = tokenCount.toLocaleString();
+}
+
+function finishGeneration() {
+  isGenerating = false;
+  if (timerInterval) clearInterval(timerInterval);
+  updateTimer();
+  document.getElementById('generate-btn').disabled = false;
+  document.getElementById('status-dot').classList.add('done');
+  document.getElementById('status-text').textContent = 'Complete';
+  document.getElementById('loading-dots').style.display = 'none';
+
+  // Remove any dangling cursors
+  document.querySelectorAll('.stream-cursor').forEach(c => c.remove());
+
+  // Add completion badge
+  const badge = document.createElement('div');
+  badge.className = 'completion-badge';
+  badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Generation complete. Scroll up to explore the full portfolio.';
+  document.getElementById('output-content').appendChild(badge);
+}
+
+// ================================================================
+// CONTENT BLOCKS BUILDER
+// ================================================================
+
+function buildBlocks(mode, prompt) {
+  const blocks = [];
+
+  // Thinking preamble
+  blocks.push({ type: 'thinking', text: 'Analyzing prompt... Retrieving information about Anshull Garg...', delay: 600 });
+  blocks.push({ type: 'thinking', text: 'Compiling portfolio data from professional records, GitHub activity, and skill assessments...', delay: 800 });
+
+  if (mode === 'full' || mode === 'summary') {
+    blocks.push(...buildAboutBlocks(mode));
+  }
+  if (mode === 'full' || mode === 'summary') {
+    blocks.push(...buildStatsBlocks());
+  }
+  if (mode === 'full' || mode === 'technical') {
+    blocks.push(...buildSkillsBlocks(mode));
+  }
+  if (mode === 'full' || mode === 'technical') {
+    blocks.push(...buildCodeBlocks());
+  }
+  if (mode === 'full' || mode === 'projects') {
+    blocks.push(...buildProjectBlocks());
+  }
+  if (mode === 'full' || mode === 'projects') {
+    blocks.push(...buildExperienceBlocks());
+  }
+  if (mode !== 'summary') {
+    blocks.push(...buildPhilosophyBlocks());
+  }
+  blocks.push(...buildContactBlocks());
+
+  return blocks;
+}
+
+function buildAboutBlocks(mode) {
+  const blocks = [];
+  blocks.push({ type: 'heading', text: 'About', icon: '\u{1F9D1}\u200D\u{1F4BB}', delay: 400 });
+
+  if (mode === 'summary') {
+    blocks.push({
+      type: 'stream-text',
+      text: 'Anshull Garg is a Software Developer at Walmart Global Tech, building scalable, high-performance systems that power enterprise e-commerce at Fortune 1 scale. He specializes in full-stack development with React, Node.js, and cloud-native architectures.',
+      delay: 100
+    });
+    blocks.push({
+      type: 'stream-text',
+      text: 'With a strong focus on clean architecture, system reliability, and user-centric design, Anshull delivers production-grade code that serves millions of users daily.',
+      delay: 100
+    });
+  } else {
+    blocks.push({
+      type: 'stream-text',
+      text: 'Anshull Garg is a Software Developer at Walmart Global Tech, where he architects and builds the systems behind one of the world\'s largest digital retail platforms. His work sits at the intersection of performance engineering, scalable architecture, and user-centric design.',
+      delay: 100
+    });
+    blocks.push({
+      type: 'stream-text',
+      text: 'On a daily basis, Anshull designs robust APIs, optimizes frontend performance for millions of concurrent users, and collaborates with cross-functional teams to ship features that directly impact Walmart\'s digital commerce experience. He brings a systems-thinking mindset to every problem -- understanding that great software is not just about writing code, but about making the right architectural decisions under real-world constraints.',
+      delay: 100
+    });
+    blocks.push({
+      type: 'stream-text',
+      text: 'His engineering philosophy centers on three principles: code should be readable before it is clever, every system should be designed for the team that inherits it, and shipping iteratively beats shipping perfectly.',
+      delay: 100
+    });
+  }
+  return blocks;
+}
+
+function buildStatsBlocks() {
+  return [
+    { type: 'heading', text: 'By the Numbers', icon: '\u{1F4CA}', delay: 500 },
+    {
+      type: 'stats',
+      items: [
+        { value: '50M+', label: 'Users Served' },
+        { value: '99.9%', label: 'Uptime SLA' },
+        { value: '40%', label: 'Perf Improvement' },
+        { value: '200+', label: 'PRs Shipped' },
+      ],
+      delay: 300
+    }
+  ];
+}
+
+function buildSkillsBlocks(mode) {
+  const blocks = [];
+  blocks.push({ type: 'heading', text: 'Technical Skills', icon: '\u{1F527}', delay: 500 });
+  blocks.push({
+    type: 'stream-text',
+    text: 'Based on codebase analysis, commit history, and project involvement, here is a proficiency breakdown:',
+    delay: 100
+  });
+
+  const skills = [
+    { name: 'React / Next.js', pct: 95, color: 'cyan', icon: '\u269B' },
+    { name: 'TypeScript', pct: 93, color: 'blue', icon: '\u{1F7E6}' },
+    { name: 'Node.js / Express', pct: 92, color: 'green', icon: '\u{1F7E2}' },
+    { name: 'System Design', pct: 90, color: 'purple', icon: '\u{1F3D7}' },
+    { name: 'Python', pct: 85, color: 'yellow', icon: '\u{1F40D}' },
+    { name: 'SQL / PostgreSQL', pct: 88, color: 'orange', icon: '\u{1F5C4}' },
+    { name: 'Docker / Kubernetes', pct: 82, color: 'blue', icon: '\u{1F433}' },
+    { name: 'AWS / Cloud Services', pct: 84, color: 'orange', icon: '\u2601' },
+    { name: 'CI/CD & DevOps', pct: 80, color: 'green', icon: '\u2699' },
+    { name: 'GraphQL', pct: 78, color: 'pink', icon: '\u25C8' },
+  ];
+
+  if (mode === 'technical') {
+    skills.push(
+      { name: 'Redis / Caching', pct: 83, color: 'pink', icon: '\u26A1' },
+      { name: 'Testing (Jest/Cypress)', pct: 87, color: 'green', icon: '\u2705' },
+      { name: 'Webpack / Vite', pct: 80, color: 'cyan', icon: '\u{1F4E6}' },
+      { name: 'MongoDB', pct: 79, color: 'green', icon: '\u{1F343}' }
+    );
+  }
+
+  skills.forEach((s, i) => {
+    blocks.push({
+      type: 'skill-bar',
+      name: s.name, pct: s.pct, color: s.color, icon: s.icon,
+      delay: 150
+    });
+  });
+
+  return blocks;
+}
+
+function buildCodeBlocks() {
+  return [
+    { type: 'heading', text: 'Code Sample', icon: '\u{1F4DD}', delay: 500 },
+    { type: 'stream-text', text: 'Here is a representative snippet showcasing Anshull\'s approach to clean, typed, and well-structured code:', delay: 100 },
+    {
+      type: 'code',
+      lang: 'typescript',
+      code: `<span class="cm">// High-performance API middleware with caching</span>
+<span class="kw">import</span> { <span class="type">Request</span>, <span class="type">Response</span>, <span class="type">NextFunction</span> } <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> { <span class="fn">createRedisClient</span> } <span class="kw">from</span> <span class="str">'./cache'</span>;
+
+<span class="kw">interface</span> <span class="type">CacheConfig</span> {
+  ttl: <span class="type">number</span>;
+  keyPrefix: <span class="type">string</span>;
+  invalidateOn: <span class="type">string</span>[];
+}
+
+<span class="kw">export const</span> <span class="fn">withCache</span> = (config: <span class="type">CacheConfig</span>) <span class="kw">=></span> {
+  <span class="kw">const</span> redis = <span class="fn">createRedisClient</span>();
+
+  <span class="kw">return async</span> (req: <span class="type">Request</span>, res: <span class="type">Response</span>, next: <span class="type">NextFunction</span>) <span class="kw">=></span> {
+    <span class="kw">const</span> key = <span class="str">\`\${config.keyPrefix}:\${req.originalUrl}\`</span>;
+    <span class="kw">const</span> cached = <span class="kw">await</span> redis.<span class="fn">get</span>(key);
+
+    <span class="kw">if</span> (cached) {
+      <span class="kw">return</span> res.<span class="fn">json</span>(JSON.<span class="fn">parse</span>(cached)); <span class="cm">// Cache HIT</span>
+    }
+
+    <span class="kw">const</span> originalJson = res.json.<span class="fn">bind</span>(res);
+    res.json = (body: <span class="type">any</span>) <span class="kw">=></span> {
+      redis.<span class="fn">setex</span>(key, config.ttl, JSON.<span class="fn">stringify</span>(body));
+      <span class="kw">return</span> <span class="fn">originalJson</span>(body);
+    };
+    <span class="fn">next</span>();
+  };
+};`,
+      delay: 400
+    }
+  ];
+}
+
+function buildProjectBlocks() {
+  const blocks = [];
+  blocks.push({ type: 'heading', text: 'Featured Projects', icon: '\u{1F680}', delay: 500 });
+  blocks.push({
+    type: 'stream-text',
+    text: 'A curated selection of projects demonstrating breadth across frontend, backend, and systems engineering:',
+    delay: 100
+  });
+
+  const projects = [
+    {
+      name: 'Walmart Commerce Engine',
+      icon: '\u{1F6D2}',
+      status: 'live', statusLabel: 'Production',
+      desc: 'Core e-commerce platform powering Walmart\'s digital storefront. Architected high-throughput product catalog APIs handling 50M+ daily requests with sub-100ms p95 latency. Implemented intelligent caching layers that reduced database load by 40%.',
+      tech: ['React', 'Node.js', 'TypeScript', 'Redis', 'PostgreSQL', 'Kubernetes'],
+      links: []
+    },
+    {
+      name: 'Real-Time Inventory Tracker',
+      icon: '\u{1F4E6}',
+      status: 'live', statusLabel: 'Production',
+      desc: 'Distributed inventory management system with real-time sync across 4,700+ Walmart stores. Built event-driven architecture using WebSockets and message queues, achieving 99.9% data consistency across nodes.',
+      tech: ['TypeScript', 'Kafka', 'WebSocket', 'Docker', 'AWS', 'GraphQL'],
+      links: []
+    },
+    {
+      name: 'DevFlow CLI',
+      icon: '\u2318',
+      status: 'oss', statusLabel: 'Open Source',
+      desc: 'A developer productivity CLI that automates repetitive workflows -- branch creation, PR templates, deployment checklists, and environment setup. Reduced team onboarding time from 2 days to 4 hours.',
+      tech: ['Node.js', 'TypeScript', 'Commander.js', 'Ink', 'GitHub API'],
+      links: [
+        { label: 'Source Code', url: '#', type: 'github' },
+      ]
+    },
+    {
+      name: 'SkyCast Weather Dashboard',
+      icon: '\u26C5',
+      status: 'live', statusLabel: 'Live Demo',
+      desc: 'A performant weather dashboard aggregating data from multiple meteorological APIs with intelligent caching, reducing API calls by 60%. Achieves sub-200ms time-to-interactive through code splitting and progressive loading.',
+      tech: ['Next.js', 'Tailwind CSS', 'Chart.js', 'OpenWeather API', 'Vercel'],
+      links: [
+        { label: 'Live Demo', url: '#', type: 'external' },
+        { label: 'Source Code', url: '#', type: 'github' },
+      ]
+    },
+    {
+      name: 'Neural Search Prototype',
+      icon: '\u{1F9E0}',
+      status: 'dev', statusLabel: 'In Development',
+      desc: 'Experimental semantic search engine using vector embeddings for natural-language product discovery. Early testing shows 35% improvement in search relevance over keyword-based approaches.',
+      tech: ['Python', 'FastAPI', 'Pinecone', 'OpenAI API', 'React', 'Docker'],
+      links: [
+        { label: 'Source Code', url: '#', type: 'github' },
+      ]
+    }
+  ];
+
+  projects.forEach((p, i) => {
+    blocks.push({ type: 'project-card', data: p, delay: 500 });
+  });
+
+  return blocks;
+}
+
+function buildExperienceBlocks() {
+  const blocks = [];
+  blocks.push({ type: 'heading', text: 'Experience', icon: '\u{1F3E2}', delay: 500 });
+  blocks.push({
+    type: 'stream-text',
+    text: 'Reconstructed career timeline from professional data:',
+    delay: 100
+  });
+
+  const timeline = [
+    {
+      role: 'Software Developer',
+      company: 'Walmart Global Tech',
+      period: '2023 - Present',
+      current: true,
+      items: [
+        'Architected high-throughput APIs handling 50M+ daily requests with sub-100ms p95 latency',
+        'Reduced frontend bundle size by 35% through code splitting and tree-shaking optimization',
+        'Led migration of legacy monolith to microservices, improving deployment frequency by 4x',
+        'Implemented intelligent caching layers reducing database load by 40% during peak traffic',
+        'Mentored 3 junior developers through code reviews and pair programming sessions'
+      ]
+    },
+    {
+      role: 'Software Engineering Intern',
+      company: 'Walmart Global Tech',
+      period: '2022 - 2023',
+      current: false,
+      items: [
+        'Built internal dashboard used by 200+ engineers to monitor service health metrics',
+        'Developed automated testing pipeline that caught 30% more regressions pre-deployment',
+        'Contributed to the design system component library, shipping 15 reusable UI components'
+      ]
+    },
+    {
+      role: 'Freelance Developer',
+      company: 'Self-Employed',
+      period: '2020 - 2022',
+      current: false,
+      items: [
+        'Delivered 10+ full-stack web applications for small businesses and startups',
+        'Specialized in React frontends with Node.js backends and PostgreSQL databases',
+        'Maintained 100% client satisfaction rate with average project delivery 20% ahead of schedule'
+      ]
+    }
+  ];
+
+  timeline.forEach(t => {
+    blocks.push({ type: 'timeline-item', data: t, delay: 600 });
+  });
+
+  return blocks;
+}
+
+function buildPhilosophyBlocks() {
+  return [
+    { type: 'heading', text: 'Engineering Philosophy', icon: '\u{1F4A1}', delay: 500 },
+    { type: 'stream-text', text: 'Based on code review patterns and commit messages, the following principles emerge:', delay: 100 },
+    { type: 'stream-text', text: '\u25B8 Readability over cleverness -- code is read 10x more than it is written\n\u25B8 Tests are documentation that executes\n\u25B8 The best abstraction is the one you don\'t need yet\n\u25B8 Performance matters, but premature optimization is the root of all evil\n\u25B8 Every pull request should leave the codebase better than you found it\n\u25B8 Accessibility is a baseline, not a feature\n\u25B8 Ship, measure, iterate -- perfection is the enemy of progress', delay: 100 },
+    { type: 'divider', delay: 100 }
+  ];
+}
+
+function buildContactBlocks() {
+  return [
+    { type: 'heading', text: 'Connect', icon: '\u{1F517}', delay: 500 },
+    { type: 'stream-text', text: 'Anshull is open to discussions about engineering, collaboration, and new opportunities:', delay: 100 },
+    {
+      type: 'contact-grid',
+      items: [
+        { icon: 'gh', emoji: '\u{1F4BB}', label: 'GitHub', sub: 'github.com/anshullgarg', url: 'https://github.com/anshullgarg' },
+        { icon: 'li', emoji: '\u{1F310}', label: 'LinkedIn', sub: 'linkedin.com/in/anshullgarg', url: 'https://linkedin.com/in/anshullgarg' },
+        { icon: 'em', emoji: '\u2709', label: 'Email', sub: 'anshullgarg@gmail.com', url: 'mailto:anshullgarg@gmail.com' },
+        { icon: 'tw', emoji: '\u{1F426}', label: 'Twitter / X', sub: '@anshullgarg', url: 'https://x.com/anshullgarg' },
+      ],
+      delay: 400
+    }
+  ];
+}
+
+// ================================================================
+// BLOCK RENDERERS
+// ================================================================
+
+function renderBlock(block) {
+  const container = document.getElementById('output-content');
+
+  // Remove previous cursor
+  document.querySelectorAll('.stream-cursor').forEach(c => c.remove());
+
+  switch (block.type) {
+    case 'thinking':
+      renderThinking(container, block);
+      break;
+    case 'heading':
+      renderHeading(container, block);
+      break;
+    case 'stream-text':
+      renderStreamText(container, block);
+      break;
+    case 'skill-bar':
+      renderSkillBar(container, block);
+      break;
+    case 'code':
+      renderCode(container, block);
+      break;
+    case 'project-card':
+      renderProjectCard(container, block);
+      break;
+    case 'timeline-item':
+      renderTimelineItem(container, block);
+      break;
+    case 'contact-grid':
+      renderContactGrid(container, block);
+      break;
+    case 'stats':
+      renderStats(container, block);
+      break;
+    case 'divider':
+      renderDivider(container, block);
+      break;
+  }
+
+  // Auto-scroll
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function renderThinking(container, block) {
+  const el = document.createElement('div');
+  el.className = 'gen-thinking';
+  container.appendChild(el);
+  streamTextInto(el, block.text, 20);
+}
+
+function renderHeading(container, block) {
+  const h2 = document.createElement('h2');
+  h2.innerHTML = `<span class="section-icon">${block.icon}</span> `;
+  container.appendChild(h2);
+  streamTextInto(h2, block.text, 40);
+  addTokens(block.text);
+}
+
+function renderStreamText(container, block) {
+  const p = document.createElement('p');
+  container.appendChild(p);
+  streamTextInto(p, block.text, 12);
+}
+
+function streamTextInto(el, text, charDelay) {
+  // Remove old cursors
+  document.querySelectorAll('.stream-cursor').forEach(c => c.remove());
+
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'stream-cursor';
+  el.appendChild(cursor);
+
+  // Stream word by word for speed, but char by char for small texts
+  const words = text.split(' ');
+  let wordIndex = 0;
+  let isFirst = true;
+
+  function typeWord() {
+    if (wordIndex >= words.length) {
+      cursor.remove();
+      return;
+    }
+    const word = (isFirst ? '' : ' ') + words[wordIndex];
+    isFirst = false;
+    el.insertBefore(document.createTextNode(word), cursor);
+    addTokens(word);
+    wordIndex++;
+    plainTextOutput += word;
+
+    const t = setTimeout(typeWord, charDelay + Math.random() * charDelay);
+    allTimeouts.push(t);
+  }
+  typeWord();
+}
+
+function renderSkillBar(container, block) {
+  const wrap = document.createElement('div');
+  wrap.className = 'skill-bar-wrap';
+  wrap.style.animationDelay = '0s';
+  wrap.innerHTML = `
+    <div class="skill-bar-header">
+      <span class="skill-bar-name"><span class="skill-icon">${block.icon}</span> ${block.name}</span>
+      <span class="skill-bar-pct">${block.pct}%</span>
+    </div>
+    <div class="skill-bar-track">
+      <div class="skill-bar-fill ${block.color}" style="width:0"></div>
+    </div>
+  `;
+  container.appendChild(wrap);
+  addTokens(block.name + block.pct);
+
+  // Animate fill
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      wrap.querySelector('.skill-bar-fill').style.width = block.pct + '%';
+    });
+  });
+}
+
+function renderCode(container, block) {
+  const el = document.createElement('div');
+  el.className = 'code-block';
+  el.innerHTML = `
+    <div class="code-block-header">
+      <span>${block.lang}</span>
+      <span>anshull-garg/cache-middleware.ts</span>
+    </div>
+    <pre class="code-block-body">${block.code}</pre>
+  `;
+  container.appendChild(el);
+  addTokens(block.code);
+}
+
+function renderProjectCard(container, block) {
+  const p = block.data;
+  const el = document.createElement('div');
+  el.className = 'project-card';
+
+  let linksHTML = '';
+  p.links.forEach(l => {
+    const icon = l.type === 'github'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    linksHTML += `<a href="${l.url}" class="project-link" target="_blank">${icon} ${l.label}</a>`;
+  });
+
+  el.innerHTML = `
+    <div class="project-header">
+      <div class="project-name"><span class="proj-icon">${p.icon}</span> ${p.name}</div>
+      <span class="project-status ${p.status}">${p.statusLabel}</span>
+    </div>
+    <div class="project-desc">${p.desc}</div>
+    <div class="project-tech">${p.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}</div>
+    ${linksHTML ? `<div class="project-links">${linksHTML}</div>` : ''}
+  `;
+  container.appendChild(el);
+  addTokens(p.name + p.desc);
+}
+
+function renderTimelineItem(container, block) {
+  const d = block.data;
+  const el = document.createElement('div');
+  el.className = 'timeline-item';
+  el.innerHTML = `
+    <div class="timeline-dot ${d.current ? 'current' : ''}"></div>
+    <div class="timeline-role">${d.role}</div>
+    <div class="timeline-company">${d.company}</div>
+    <div class="timeline-period">${d.period}</div>
+    <ul class="timeline-desc">
+      ${d.items.map(item => `<li>${item}</li>`).join('')}
+    </ul>
+  `;
+  container.appendChild(el);
+  addTokens(d.role + d.company + d.items.join(' '));
+}
+
+function renderContactGrid(container, block) {
+  const grid = document.createElement('div');
+  grid.className = 'contact-grid';
+  block.items.forEach((item, i) => {
+    const card = document.createElement('a');
+    card.className = 'contact-card';
+    card.href = item.url;
+    card.target = '_blank';
+    card.style.animationDelay = (i * 0.12) + 's';
+    card.innerHTML = `
+      <div class="contact-icon ${item.icon}">${item.emoji}</div>
+      <div>
+        <div class="contact-label">${item.label}</div>
+        <div class="contact-sublabel">${item.sub}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  container.appendChild(grid);
+  addTokens('contact links');
+}
+
+function renderStats(container, block) {
+  const grid = document.createElement('div');
+  grid.className = 'stats-grid';
+  block.items.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'stat-card';
+    card.style.animationDelay = (i * 0.1) + 's';
+    card.innerHTML = `
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+    `;
+    grid.appendChild(card);
+  });
+  container.appendChild(grid);
+  addTokens('stats');
+}
+
+function renderDivider(container) {
+  const div = document.createElement('div');
+  div.className = 'divider';
+  container.appendChild(div);
+}
+
+// ================================================================
+// AUTO-RESIZE TEXTAREA
+// ================================================================
+const textarea = document.getElementById('prompt-input');
+textarea.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+});
+
+// Enter to submit (Shift+Enter for newline)
+textarea.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleGenerate();
+  }
+});
+
+// Set initial prompt suggestion
+textarea.value = 'Write me a portfolio for Anshull Garg, Software Developer at Walmart';
+</script>
+</body>
+</html>
