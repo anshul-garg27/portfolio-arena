@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg's Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Light theme (default) */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F6F3;
+  --bg-tertiary: #FBFBFA;
+  --bg-hover: rgba(55, 53, 47, 0.04);
+  --bg-active: rgba(55, 53, 47, 0.08);
+  --text-primary: #37352F;
+  --text-secondary: rgba(55, 53, 47, 0.65);
+  --text-tertiary: rgba(55, 53, 47, 0.45);
+  --border: rgba(55, 53, 47, 0.09);
+  --border-strong: rgba(55, 53, 47, 0.16);
+  --accent: #2383E2;
+  --accent-bg: rgba(35, 131, 226, 0.1);
+  --sidebar-bg: #F7F6F3;
+  --sidebar-hover: rgba(55, 53, 47, 0.04);
+  --sidebar-active: rgba(55, 53, 47, 0.08);
+  --callout-blue: rgba(35, 131, 226, 0.08);
+  --callout-blue-border: rgba(35, 131, 226, 0.3);
+  --tag-red: #FFE2DD;
+  --tag-red-text: #93271F;
+  --tag-blue: #D3E5EF;
+  --tag-blue-text: #183B56;
+  --tag-green: #DBEDDB;
+  --tag-green-text: #1E4620;
+  --tag-yellow: #FDECC8;
+  --tag-yellow-text: #5B4620;
+  --tag-purple: #E8DEEE;
+  --tag-purple-text: #412B50;
+  --tag-pink: #F5E0E9;
+  --tag-pink-text: #4E2837;
+  --tag-orange: #FADEC9;
+  --tag-orange-text: #5B3A1F;
+  --tag-gray: #E3E2E0;
+  --tag-gray-text: #37352F;
+  --tag-brown: #EEE0DA;
+  --tag-brown-text: #492F22;
+  --code-bg: rgba(135, 131, 120, 0.15);
+  --divider: rgba(55, 53, 47, 0.09);
+  --shadow: rgba(15, 15, 15, 0.05);
+  --shadow-strong: rgba(15, 15, 15, 0.1);
+  --table-header-bg: #F7F6F3;
+  --quote-border: #37352F;
+  --toggle-arrow: rgba(55, 53, 47, 0.45);
+  --drag-handle: rgba(55, 53, 47, 0.35);
+  --scrollbar-thumb: rgba(55, 53, 47, 0.16);
+  --cover-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #191919;
+  --bg-secondary: #202020;
+  --bg-tertiary: #1E1E1E;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --bg-active: rgba(255, 255, 255, 0.08);
+  --text-primary: rgba(255, 255, 255, 0.81);
+  --text-secondary: rgba(255, 255, 255, 0.53);
+  --text-tertiary: rgba(255, 255, 255, 0.33);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --accent: #529CCA;
+  --accent-bg: rgba(82, 156, 202, 0.15);
+  --sidebar-bg: #252525;
+  --sidebar-hover: rgba(255, 255, 255, 0.04);
+  --sidebar-active: rgba(255, 255, 255, 0.08);
+  --callout-blue: rgba(82, 156, 202, 0.12);
+  --callout-blue-border: rgba(82, 156, 202, 0.3);
+  --tag-red: #492B25;
+  --tag-red-text: #E87461;
+  --tag-blue: #1F3A4F;
+  --tag-blue-text: #6CB4EE;
+  --tag-green: #243B24;
+  --tag-green-text: #6ABF69;
+  --tag-yellow: #3E3422;
+  --tag-yellow-text: #D9A841;
+  --tag-purple: #352B3D;
+  --tag-purple-text: #B57FD3;
+  --tag-pink: #3B2533;
+  --tag-pink-text: #D478A1;
+  --tag-orange: #3D2E1E;
+  --tag-orange-text: #D99548;
+  --tag-gray: #2E2E2E;
+  --tag-gray-text: rgba(255, 255, 255, 0.6);
+  --tag-brown: #3B2E26;
+  --tag-brown-text: #C38E6D;
+  --code-bg: rgba(135, 131, 120, 0.15);
+  --divider: rgba(255, 255, 255, 0.07);
+  --shadow: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+  --table-header-bg: #252525;
+  --quote-border: rgba(255, 255, 255, 0.4);
+  --toggle-arrow: rgba(255, 255, 255, 0.4);
+  --drag-handle: rgba(255, 255, 255, 0.3);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+  --cover-gradient: linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%);
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow: hidden;
+  height: 100vh;
+  transition: background 0.15s, color 0.15s;
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--drag-handle); }
+
+/* ========== LAYOUT ========== */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: background 0.15s, border-color 0.15s;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 12px 12px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.sidebar-header:hover { background: var(--sidebar-hover); }
+
+.workspace-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.workspace-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-search {
+  margin: 8px 8px 4px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 14px;
+  height: 30px;
+}
+
+.sidebar-search:hover { background: var(--sidebar-hover); }
+
+.sidebar-search svg { flex-shrink: 0; opacity: 0.65; }
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 4px 8px;
+}
+
+.sidebar-section-label {
+  padding: 6px 8px 2px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  margin: 0 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  min-height: 28px;
+  user-select: none;
+  transition: background 0.08s;
+  position: relative;
+}
+
+.nav-item:hover { background: var(--sidebar-hover); }
+.nav-item.active { background: var(--sidebar-active); color: var(--text-primary); }
+
+.nav-item .nav-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.nav-item .nav-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-item .nav-toggle {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.nav-item:hover .nav-toggle { opacity: 1; }
+.nav-item .nav-toggle:hover { background: var(--sidebar-active); }
+
+.nav-sub-items {
+  display: none;
+  padding-left: 18px;
+}
+
+.nav-sub-items.open { display: block; }
+
+.sidebar-bottom {
+  padding: 4px 8px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.new-page-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  width: 100%;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.new-page-btn:hover { background: var(--sidebar-hover); color: var(--text-secondary); }
+
+/* ========== MAIN AREA ========== */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 44px;
+  min-height: 44px;
+  border-bottom: 1px solid transparent;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: border-color 0.15s;
+}
+
+.topbar.scrolled { border-bottom-color: var(--border); }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.breadcrumb-item:hover { background: var(--bg-hover); }
+.breadcrumb-item:last-child { color: var(--text-primary); }
+
+.breadcrumb-sep { color: var(--text-tertiary); font-size: 12px; }
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.topbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border: none;
+  background: none;
+  font-size: 14px;
+}
+
+.topbar-btn:hover { background: var(--bg-hover); }
+
+.topbar-btn.theme-toggle {
+  width: auto;
+  padding: 0 8px;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.last-edited {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+/* ========== CONTENT SCROLL AREA ========== */
+.content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Cover image */
+.cover-image {
+  width: 100%;
+  height: 200px;
+  background: var(--cover-gradient);
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cover-image::after {
+  content: "Change cover";
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: rgba(0,0,0,0.3);
+  color: white;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.cover-image:hover::after { opacity: 1; }
+
+.cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.15));
+}
+
+/* Page content area */
+.page-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 96px;
+  width: 100%;
+  position: relative;
+}
+
+/* Page icon */
+.page-icon-wrapper {
+  margin-top: -40px;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.page-icon {
+  font-size: 78px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-block;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: background 0.1s;
+}
+
+.page-icon:hover { background: var(--bg-hover); }
+
+/* Title */
+.page-title {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  outline: none;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.page-title::selection { background: var(--accent-bg); }
+
+/* Properties */
+.properties-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 8px 0 16px;
+  font-size: 14px;
+}
+
+.property-item {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.property-label {
+  width: 140px;
+  min-width: 140px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.property-label svg { opacity: 0.5; }
+
+.property-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.property-value:hover { background: var(--bg-hover); }
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.available { background: #2BC472; }
+.status-dot.busy { background: #EB5757; }
+
+/* ========== CONTENT BLOCKS ========== */
+.block {
+  position: relative;
+  padding: 3px 0;
+}
+
+.block:hover > .drag-handle {
+  opacity: 1;
+}
+
+.drag-handle {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.1s;
+  color: var(--drag-handle);
+  font-size: 16px;
+}
+
+.drag-handle:hover { background: var(--bg-hover); }
+
+/* Headings */
+.block h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.block h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 2px;
+  color: var(--text-primary);
+}
+
+.block p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin: 1px 0;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--divider);
+  margin: 12px 0;
+}
+
+/* ========== TOGGLE BLOCK ========== */
+.toggle-block {
+  padding: 3px 0;
+}
+
+.toggle-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  cursor: pointer;
+  padding: 3px 2px;
+  border-radius: 3px;
+  user-select: none;
+}
+
+.toggle-header:hover { background: var(--bg-hover); }
+
+.toggle-arrow {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--toggle-arrow);
+  transition: transform 0.2s;
+  margin-top: 1px;
+}
+
+.toggle-block.open .toggle-arrow { transform: rotate(90deg); }
+
+.toggle-title {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.toggle-content {
+  display: none;
+  padding-left: 26px;
+  padding-top: 2px;
+}
+
+.toggle-block.open .toggle-content { display: block; }
+
+.toggle-content p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin: 2px 0;
+}
+
+/* ========== CALLOUT BLOCK ========== */
+.callout-block {
+  display: flex;
+  gap: 8px;
+  padding: 16px 16px 16px 12px;
+  border-radius: 3px;
+  background: var(--callout-blue);
+  margin: 8px 0;
+  border-left: 3px solid var(--accent);
+}
+
+.callout-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.callout-text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.callout-text a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ========== DATABASE / TABLE ========== */
+.database-block {
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.database-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+.database-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.database-views {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.view-btn {
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+}
+
+.view-btn:hover { background: var(--bg-hover); }
+.view-btn.active { color: var(--text-primary); background: var(--bg-active); }
+
+.database-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 6px;
+}
+
+.db-tool-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  border: none;
+  background: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.db-tool-btn:hover { background: var(--bg-hover); color: var(--text-secondary); }
+
+.database-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.database-table thead th {
+  text-align: left;
+  padding: 6px 10px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 13px;
+  background: var(--table-header-bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.database-table thead th:hover { background: var(--bg-hover); }
+
+.database-table thead th .sort-icon {
+  opacity: 0;
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.database-table thead th:hover .sort-icon { opacity: 0.5; }
+
+.database-table tbody td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.database-table tbody tr:hover { background: var(--bg-hover); }
+
+.database-table tbody tr:last-child td { border-bottom: none; }
+
+.project-name {
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.project-name:hover { text-decoration: underline; }
+
+.project-name .open-icon {
+  opacity: 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.database-table tbody tr:hover .open-icon { opacity: 1; }
+
+/* Tags */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+  margin: 1px 2px;
+  line-height: 1.6;
+}
+
+.tag-green { background: var(--tag-green); color: var(--tag-green-text); }
+.tag-blue { background: var(--tag-blue); color: var(--tag-blue-text); }
+.tag-yellow { background: var(--tag-yellow); color: var(--tag-yellow-text); }
+.tag-red { background: var(--tag-red); color: var(--tag-red-text); }
+.tag-purple { background: var(--tag-purple); color: var(--tag-purple-text); }
+.tag-pink { background: var(--tag-pink); color: var(--tag-pink-text); }
+.tag-orange { background: var(--tag-orange); color: var(--tag-orange-text); }
+.tag-gray { background: var(--tag-gray); color: var(--tag-gray-text); }
+.tag-brown { background: var(--tag-brown); color: var(--tag-brown-text); }
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* New row */
+.new-row {
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  border-top: 1px solid var(--border);
+}
+
+.new-row:hover { background: var(--bg-hover); color: var(--text-secondary); }
+
+/* ========== QUOTE BLOCK ========== */
+.quote-block {
+  border-left: 3px solid var(--quote-border);
+  padding: 3px 0 3px 16px;
+  margin: 8px 0;
+}
+
+.quote-block p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.quote-block .quote-author {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ========== SKILLS / TAGS SECTION ========== */
+.skills-category {
+  margin: 8px 0;
+}
+
+.skills-category-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ========== EXPERIENCE TIMELINE / GALLERY ========== */
+.experience-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.experience-card {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.experience-card:hover {
+  box-shadow: 0 2px 8px var(--shadow), 0 0 0 1px var(--border-strong);
+}
+
+.exp-card-banner {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.exp-card-body {
+  padding: 10px 12px;
+}
+
+.exp-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.exp-card-company {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.exp-card-duration {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.exp-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 8px;
+}
+
+.exp-card-tags .tag { font-size: 11px; padding: 0 6px; }
+
+/* ========== CONTACT LINK BLOCKS ========== */
+.link-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.link-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: background 0.1s, box-shadow 0.1s;
+  text-decoration: none;
+  min-width: 180px;
+}
+
+.link-block:hover {
+  background: var(--bg-hover);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.link-block-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.link-block-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.link-block-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.link-block-url {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ========== SLASH COMMAND HINT ========== */
+.slash-hint {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  padding: 4px 2px;
+  margin-top: 24px;
+  margin-bottom: 80px;
+  user-select: none;
+}
+
+/* ========== HOVER HIGHLIGHT ON BLOCKS ========== */
+.block-highlight:hover {
+  background: var(--bg-hover);
+  border-radius: 3px;
+  margin-left: -4px;
+  margin-right: -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed;
+    left: -240px;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transition: left 0.2s;
+    box-shadow: 2px 0 8px var(--shadow-strong);
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 99;
+  }
+  .sidebar.open ~ .sidebar-overlay { display: block; }
+  .page-content { padding: 0 24px; }
+  .topbar .menu-toggle { display: flex !important; }
+}
+
+@media (min-width: 861px) {
+  .topbar .menu-toggle { display: none !important; }
+}
+
+/* ========== NOTION INLINE CODE ========== */
+code {
+  background: var(--code-bg);
+  color: #EB5757;
+  font-size: 85%;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace;
+}
+
+[data-theme="dark"] code { color: #E87461; }
+
+/* ========== BOLD / ITALIC in notion ========== */
+strong { font-weight: 600; }
+
+/* ========== NOTION LIST ========== */
+.bulleted-list {
+  padding-left: 26px;
+  list-style: disc;
+}
+
+.bulleted-list li {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  padding: 1px 0;
+}
+
+.bulleted-list li::marker {
+  color: var(--text-primary);
+}
+
+/* ========== ANIMATION ========== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+.animate-in:nth-child(1) { animation-delay: 0.05s; }
+.animate-in:nth-child(2) { animation-delay: 0.1s; }
+.animate-in:nth-child(3) { animation-delay: 0.15s; }
+.animate-in:nth-child(4) { animation-delay: 0.2s; }
+.animate-in:nth-child(5) { animation-delay: 0.25s; }
+.animate-in:nth-child(6) { animation-delay: 0.3s; }
+.animate-in:nth-child(7) { animation-delay: 0.35s; }
+.animate-in:nth-child(8) { animation-delay: 0.4s; }
+.animate-in:nth-child(9) { animation-delay: 0.45s; }
+.animate-in:nth-child(10) { animation-delay: 0.5s; }
+.animate-in:nth-child(11) { animation-delay: 0.55s; }
+.animate-in:nth-child(12) { animation-delay: 0.6s; }
+.animate-in:nth-child(13) { animation-delay: 0.65s; }
+.animate-in:nth-child(14) { animation-delay: 0.7s; }
+.animate-in:nth-child(15) { animation-delay: 0.75s; }
+
+/* Experience timeline view */
+.timeline-view {
+  display: none;
+}
+
+.timeline-view.active {
+  display: block;
+}
+
+.gallery-view {
+  display: block;
+}
+
+.gallery-view.hidden {
+  display: none;
+}
+
+.timeline-container {
+  position: relative;
+  padding-left: 24px;
+  margin: 12px 0;
+}
+
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-strong);
+}
+
+.timeline-item {
+  position: relative;
+  padding: 12px 0 24px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+}
+
+.timeline-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.timeline-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.timeline-item-company {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.timeline-item-date {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.timeline-item-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="workspace-avatar">A</div>
+      <span class="workspace-name">AG's Portfolio</span>
+    </div>
+
+    <div class="sidebar-search">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M6.33 11.66A5.33 5.33 0 1 0 6.33 1a5.33 5.33 0 0 0 0 10.66ZM13 13l-2.9-2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Search</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Pages</div>
+
+      <div class="nav-item active" data-page="overview" onclick="navigateTo('overview')">
+        <span class="nav-icon">&#128203;</span>
+        <span class="nav-label">Overview</span>
+      </div>
+
+      <div class="nav-item" data-page="about" onclick="navigateTo('about')">
+        <span class="nav-icon">&#128100;</span>
+        <span class="nav-label">About Me</span>
+      </div>
+
+      <div class="nav-item" data-page="experience" onclick="navigateTo('experience')">
+        <span class="nav-icon">&#128188;</span>
+        <span class="nav-label">Experience</span>
+      </div>
+
+      <div class="nav-item" onclick="toggleSubNav(this)">
+        <span class="nav-icon">&#128736;</span>
+        <span class="nav-label">Projects</span>
+        <span class="nav-toggle">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M4.5 2.5L8.5 6L4.5 9.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <div class="nav-sub-items" id="projectsSubNav">
+        <div class="nav-item" onclick="navigateTo('projects')">
+          <span class="nav-icon" style="font-size:13px;">&#128196;</span>
+          <span class="nav-label">All Projects</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon" style="font-size:13px;">&#128196;</span>
+          <span class="nav-label">E-Commerce Platform</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon" style="font-size:13px;">&#128196;</span>
+          <span class="nav-label">ML Pipeline</span>
+        </div>
+      </div>
+
+      <div class="nav-item" data-page="skills" onclick="navigateTo('skills')">
+        <span class="nav-icon">&#127919;</span>
+        <span class="nav-label">Skills</span>
+      </div>
+
+      <div class="nav-item" data-page="blog" onclick="navigateTo('blog')">
+        <span class="nav-icon">&#128221;</span>
+        <span class="nav-label">Blog</span>
+      </div>
+
+      <div class="nav-item" data-page="contact" onclick="navigateTo('contact')">
+        <span class="nav-icon">&#128236;</span>
+        <span class="nav-label">Contact</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="new-page-btn">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        New Page
+      </button>
+    </div>
+  </aside>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- ========== MAIN AREA ========== -->
+  <main class="main-area">
+
+    <!-- Top bar -->
+    <div class="topbar" id="topbar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="topbar-btn menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">
+            <span style="font-size:14px;">&#128203;</span>
+            <span>AG's Portfolio</span>
+          </span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-item" id="breadcrumbPage">Overview</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="last-edited">Edited just now</span>
+        <button class="topbar-btn" title="Share">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM5.73 8.94l4.54 2.62M10.27 4.44l-4.54 2.62" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="topbar-btn" title="Comments">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 10.67A1.33 1.33 0 0 1 12.67 12H4.67L2 14.67V3.33A1.33 1.33 0 0 1 3.33 2h9.34A1.33 1.33 0 0 1 14 3.33v7.34Z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="topbar-btn" title="Updates">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3.33V8l3.33 1.67M14.67 8A6.67 6.67 0 1 1 1.33 8a6.67 6.67 0 0 1 13.34 0Z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="topbar-btn theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" id="themeBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" id="themeIcon"><path d="M7 1v1M7 12v1M1 7h1M12 7h1M2.76 2.76l.7.7M10.54 10.54l.7.7M11.24 2.76l-.7.7M3.46 10.54l-.7.7M10 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="topbar-btn" title="More">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="4" r="1" fill="currentColor"/><circle cx="8" cy="8" r="1" fill="currentColor"/><circle cx="8" cy="12" r="1" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content scroll area -->
+    <div class="content-scroll" id="contentScroll">
+
+      <!-- Cover image -->
+      <div class="cover-image">
+        <div class="cover-overlay"></div>
+      </div>
+
+      <!-- Page content -->
+      <div class="page-content">
+
+        <!-- Page icon -->
+        <div class="page-icon-wrapper animate-in">
+          <div class="page-icon">&#128187;</div>
+        </div>
+
+        <!-- Title -->
+        <div class="page-title animate-in" contenteditable="true" spellcheck="false">Anshull Garg's Portfolio</div>
+
+        <!-- Properties -->
+        <div class="properties-row animate-in">
+          <div class="property-item">
+            <div class="property-label">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 7.67A3.33 3.33 0 1 0 7 1a3.33 3.33 0 0 0 0 6.67ZM1.46 13c0-2.3 2.48-4.17 5.54-4.17s5.54 1.87 5.54 4.17" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              Role
+            </div>
+            <div class="property-value">Software Developer</div>
+          </div>
+          <div class="property-item">
+            <div class="property-label">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 3V1.5M9 3V1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              Company
+            </div>
+            <div class="property-value">
+              <span class="tag tag-blue">Walmart</span>
+            </div>
+          </div>
+          <div class="property-item">
+            <div class="property-label">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7l2 2L10 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Status
+            </div>
+            <div class="property-value">
+              <span class="status-dot available"></span>
+              Available for opportunities
+            </div>
+          </div>
+          <div class="property-item">
+            <div class="property-label">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 7.5c1.38 0 2.5-1.12 2.5-2.5S8.38 2.5 7 2.5 4.5 3.62 4.5 5 5.62 7.5 7 7.5Zm0 0v5m-3-2.5h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Location
+            </div>
+            <div class="property-value">India</div>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== TOGGLE BLOCKS ========== -->
+        <div class="block toggle-block animate-in" onclick="toggleBlock(this, event)">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="toggle-header">
+            <div class="toggle-arrow">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="toggle-title"><strong>About Me</strong></div>
+          </div>
+          <div class="toggle-content">
+            <p>Hey there! I'm Anshull Garg, a Software Developer at <strong>Walmart</strong> with a deep passion for building scalable, user-centric applications. I thrive at the intersection of engineering excellence and product thinking.</p>
+            <br>
+            <p>When I'm not writing code, you'll find me exploring new technologies, contributing to open source, or writing about software architecture and best practices. I believe in writing clean, maintainable code that not only works but <em>endures</em>.</p>
+          </div>
+        </div>
+
+        <div class="block toggle-block animate-in" onclick="toggleBlock(this, event)">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="toggle-header">
+            <div class="toggle-arrow">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="toggle-title"><strong>What I'm Working On</strong></div>
+          </div>
+          <div class="toggle-content">
+            <ul class="bulleted-list">
+              <li>Building high-performance microservices at Walmart scale</li>
+              <li>Exploring AI/ML integrations in retail technology</li>
+              <li>Contributing to internal developer tooling and platform improvements</li>
+              <li>Learning about distributed systems and event-driven architecture</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="block toggle-block animate-in" onclick="toggleBlock(this, event)">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="toggle-header">
+            <div class="toggle-arrow">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="toggle-title"><strong>My Philosophy</strong></div>
+          </div>
+          <div class="toggle-content">
+            <p>I believe great software is built at the intersection of <strong>empathy</strong>, <strong>craftsmanship</strong>, and <strong>pragmatism</strong>. Ship fast, learn faster. Every line of code is a conversation with the future.</p>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== CALLOUT BLOCK ========== -->
+        <div class="block animate-in">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="callout-block">
+            <div class="callout-icon">&#128161;</div>
+            <div class="callout-text">
+              <strong>I'm currently open to new opportunities.</strong> Whether it's a full-time role, an exciting project, or just a chat about technology -- <a href="#contact" onclick="navigateTo('contact')">let's connect!</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== PROJECTS DATABASE ========== -->
+        <div class="block animate-in" id="projects-section">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="block">
+            <h2>&#128736; Projects</h2>
+          </div>
+          <div class="database-block">
+            <div class="database-header">
+              <div class="database-title">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 5.5h13M5.5 5.5v9" stroke="currentColor" stroke-width="1.2"/></svg>
+                Project Database
+              </div>
+              <div class="database-views">
+                <button class="view-btn active" onclick="switchDbView(this, 'table')">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px;vertical-align:middle;"><rect x="1" y="1" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1"/><path d="M1 4h10M4 4v7" stroke="currentColor" stroke-width="1"/></svg>
+                  Table
+                </button>
+              </div>
+            </div>
+            <div class="database-toolbar">
+              <button class="db-tool-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 3l3-2 3 2 3-2v9l-3 2-3-2-3 2V3z" stroke="currentColor" stroke-width="1"/></svg>
+                Filter
+              </button>
+              <button class="db-tool-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4h8M4 6h4M5 8h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Sort
+              </button>
+              <button class="db-tool-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                New
+              </button>
+            </div>
+            <table class="database-table">
+              <thead>
+                <tr>
+                  <th style="width:35%;">Name <span class="sort-icon">&#8593;</span></th>
+                  <th style="width:15%;">Status <span class="sort-icon">&#8593;</span></th>
+                  <th style="width:35%;">Tech Stack <span class="sort-icon">&#8593;</span></th>
+                  <th style="width:15%;">Year <span class="sort-icon">&#8593;</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="project-name">
+                      <span>&#128230;</span> E-Commerce Platform
+                      <span class="open-icon">&#8599;</span>
+                    </span>
+                  </td>
+                  <td><span class="tag tag-green">Shipped</span></td>
+                  <td>
+                    <div class="tech-tags">
+                      <span class="tag tag-blue">React</span>
+                      <span class="tag tag-green">Node.js</span>
+                      <span class="tag tag-orange">Kafka</span>
+                    </div>
+                  </td>
+                  <td style="color:var(--text-secondary);">2025</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="project-name">
+                      <span>&#129302;</span> ML Pipeline Engine
+                      <span class="open-icon">&#8599;</span>
+                    </span>
+                  </td>
+                  <td><span class="tag tag-blue">In Progress</span></td>
+                  <td>
+                    <div class="tech-tags">
+                      <span class="tag tag-yellow">Python</span>
+                      <span class="tag tag-purple">TensorFlow</span>
+                      <span class="tag tag-gray">Docker</span>
+                    </div>
+                  </td>
+                  <td style="color:var(--text-secondary);">2025</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="project-name">
+                      <span>&#128202;</span> Real-Time Analytics Dashboard
+                      <span class="open-icon">&#8599;</span>
+                    </span>
+                  </td>
+                  <td><span class="tag tag-green">Shipped</span></td>
+                  <td>
+                    <div class="tech-tags">
+                      <span class="tag tag-blue">TypeScript</span>
+                      <span class="tag tag-red">D3.js</span>
+                      <span class="tag tag-brown">PostgreSQL</span>
+                    </div>
+                  </td>
+                  <td style="color:var(--text-secondary);">2024</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="project-name">
+                      <span>&#128274;</span> Auth Microservice
+                      <span class="open-icon">&#8599;</span>
+                    </span>
+                  </td>
+                  <td><span class="tag tag-yellow">Maintained</span></td>
+                  <td>
+                    <div class="tech-tags">
+                      <span class="tag tag-orange">Java</span>
+                      <span class="tag tag-pink">Spring Boot</span>
+                      <span class="tag tag-gray">Redis</span>
+                    </div>
+                  </td>
+                  <td style="color:var(--text-secondary);">2024</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="project-name">
+                      <span>&#128241;</span> Mobile Checkout Redesign
+                      <span class="open-icon">&#8599;</span>
+                    </span>
+                  </td>
+                  <td><span class="tag tag-green">Shipped</span></td>
+                  <td>
+                    <div class="tech-tags">
+                      <span class="tag tag-blue">React Native</span>
+                      <span class="tag tag-purple">GraphQL</span>
+                    </div>
+                  </td>
+                  <td style="color:var(--text-secondary);">2023</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="new-row">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              New
+            </div>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== EXPERIENCE ========== -->
+        <div class="block animate-in" id="experience-section">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="block">
+            <h2>&#128188; Experience</h2>
+          </div>
+
+          <!-- View toggle for experience -->
+          <div style="display:flex;gap:2px;margin:8px 0;">
+            <button class="view-btn active" id="galleryViewBtn" onclick="switchExpView('gallery')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px;vertical-align:middle;"><rect x="1" y="1" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1"/><rect x="7" y="1" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1"/><rect x="1" y="7" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1"/><rect x="7" y="7" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1"/></svg>
+              Gallery
+            </button>
+            <button class="view-btn" id="timelineViewBtn" onclick="switchExpView('timeline')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px;vertical-align:middle;"><path d="M1 2h10M1 6h10M1 10h10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+              Timeline
+            </button>
+          </div>
+
+          <!-- Gallery View -->
+          <div class="experience-gallery gallery-view" id="expGallery">
+            <div class="experience-card">
+              <div class="exp-card-banner" style="background:linear-gradient(135deg,#0071CE,#004C91);">&#127981;</div>
+              <div class="exp-card-body">
+                <div class="exp-card-title">Software Developer</div>
+                <div class="exp-card-company">Walmart</div>
+                <div class="exp-card-duration">2023 - Present</div>
+                <div class="exp-card-tags">
+                  <span class="tag tag-blue">Java</span>
+                  <span class="tag tag-green">Microservices</span>
+                  <span class="tag tag-orange">Kafka</span>
+                </div>
+              </div>
+            </div>
+            <div class="experience-card">
+              <div class="exp-card-banner" style="background:linear-gradient(135deg,#667eea,#764ba2);">&#128640;</div>
+              <div class="exp-card-body">
+                <div class="exp-card-title">Software Engineer Intern</div>
+                <div class="exp-card-company">Tech Startup</div>
+                <div class="exp-card-duration">2022 - 2023</div>
+                <div class="exp-card-tags">
+                  <span class="tag tag-blue">React</span>
+                  <span class="tag tag-yellow">Python</span>
+                  <span class="tag tag-purple">AWS</span>
+                </div>
+              </div>
+            </div>
+            <div class="experience-card">
+              <div class="exp-card-banner" style="background:linear-gradient(135deg,#11998e,#38ef7d);">&#127891;</div>
+              <div class="exp-card-body">
+                <div class="exp-card-title">Open Source Contributor</div>
+                <div class="exp-card-company">Various Projects</div>
+                <div class="exp-card-duration">2021 - Present</div>
+                <div class="exp-card-tags">
+                  <span class="tag tag-gray">TypeScript</span>
+                  <span class="tag tag-red">Rust</span>
+                  <span class="tag tag-green">Go</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline View -->
+          <div class="timeline-view" id="expTimeline">
+            <div class="timeline-container">
+              <div class="timeline-item">
+                <div class="timeline-item-header">
+                  <div class="timeline-item-title">Software Developer</div>
+                  <span class="tag tag-blue" style="font-size:12px;padding:0 6px;">Current</span>
+                </div>
+                <div class="timeline-item-company">Walmart -- 2023 - Present</div>
+                <div class="timeline-item-desc">Building scalable microservices and high-throughput data pipelines. Working on real-time inventory systems serving millions of users daily. Led migration of legacy monolith to event-driven architecture.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-item-header">
+                  <div class="timeline-item-title">Software Engineer Intern</div>
+                </div>
+                <div class="timeline-item-company">Tech Startup -- 2022 - 2023</div>
+                <div class="timeline-item-desc">Developed full-stack features for a SaaS platform. Built CI/CD pipelines and automated testing infrastructure. Improved API response times by 40% through query optimization.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-item-header">
+                  <div class="timeline-item-title">Open Source Contributor</div>
+                </div>
+                <div class="timeline-item-company">Various Projects -- 2021 - Present</div>
+                <div class="timeline-item-desc">Active contributor to open-source projects in the JavaScript and Rust ecosystems. Maintained community libraries and mentored new contributors.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== SKILLS ========== -->
+        <div class="block animate-in" id="skills-section">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="block">
+            <h2>&#127919; Skills</h2>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-category-name">Languages</div>
+            <div class="skills-tags">
+              <span class="tag tag-orange">Java</span>
+              <span class="tag tag-yellow">Python</span>
+              <span class="tag tag-blue">TypeScript</span>
+              <span class="tag tag-blue">JavaScript</span>
+              <span class="tag tag-red">Rust</span>
+              <span class="tag tag-green">Go</span>
+              <span class="tag tag-purple">SQL</span>
+            </div>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-category-name">Frontend</div>
+            <div class="skills-tags">
+              <span class="tag tag-blue">React</span>
+              <span class="tag tag-green">Next.js</span>
+              <span class="tag tag-purple">Tailwind CSS</span>
+              <span class="tag tag-blue">React Native</span>
+              <span class="tag tag-pink">HTML / CSS</span>
+              <span class="tag tag-yellow">Figma</span>
+            </div>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-category-name">Backend & Infrastructure</div>
+            <div class="skills-tags">
+              <span class="tag tag-green">Node.js</span>
+              <span class="tag tag-pink">Spring Boot</span>
+              <span class="tag tag-orange">Kafka</span>
+              <span class="tag tag-purple">GraphQL</span>
+              <span class="tag tag-gray">Docker</span>
+              <span class="tag tag-blue">Kubernetes</span>
+              <span class="tag tag-yellow">AWS</span>
+              <span class="tag tag-brown">Terraform</span>
+            </div>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-category-name">Databases</div>
+            <div class="skills-tags">
+              <span class="tag tag-blue">PostgreSQL</span>
+              <span class="tag tag-green">MongoDB</span>
+              <span class="tag tag-red">Redis</span>
+              <span class="tag tag-orange">Elasticsearch</span>
+              <span class="tag tag-yellow">DynamoDB</span>
+            </div>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-category-name">Practices & Tools</div>
+            <div class="skills-tags">
+              <span class="tag tag-gray">Git</span>
+              <span class="tag tag-blue">CI/CD</span>
+              <span class="tag tag-green">TDD</span>
+              <span class="tag tag-purple">Agile/Scrum</span>
+              <span class="tag tag-orange">System Design</span>
+              <span class="tag tag-pink">Microservices</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== QUOTE BLOCK ========== -->
+        <div class="block animate-in">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="quote-block">
+            <p>"Any fool can write code that a computer can understand. Good programmers write code that humans can understand."</p>
+            <p class="quote-author">-- Martin Fowler</p>
+          </div>
+        </div>
+
+        <div class="divider animate-in"></div>
+
+        <!-- ========== CONTACT ========== -->
+        <div class="block animate-in" id="contact-section">
+          <div class="drag-handle">&#8942;&#8942;</div>
+          <div class="block">
+            <h2>&#128236; Contact</h2>
+          </div>
+          <div class="block">
+            <p>Feel free to reach out. I'm always interested in hearing about new projects and opportunities.</p>
+          </div>
+
+          <div class="link-blocks" style="margin-top:12px;">
+            <a class="link-block" href="mailto:anshull@example.com">
+              <span class="link-block-icon">&#9993;&#65039;</span>
+              <span class="link-block-label">
+                <span class="link-block-title">Email</span>
+                <span class="link-block-url">anshull@example.com</span>
+              </span>
+            </a>
+            <a class="link-block" href="https://github.com/anshullgarg" target="_blank">
+              <span class="link-block-icon">&#128025;</span>
+              <span class="link-block-label">
+                <span class="link-block-title">GitHub</span>
+                <span class="link-block-url">github.com/anshullgarg</span>
+              </span>
+            </a>
+            <a class="link-block" href="https://linkedin.com/in/anshullgarg" target="_blank">
+              <span class="link-block-icon">&#128101;</span>
+              <span class="link-block-label">
+                <span class="link-block-title">LinkedIn</span>
+                <span class="link-block-url">linkedin.com/in/anshullgarg</span>
+              </span>
+            </a>
+            <a class="link-block" href="https://twitter.com/anshullgarg" target="_blank">
+              <span class="link-block-icon">&#128038;</span>
+              <span class="link-block-label">
+                <span class="link-block-title">Twitter / X</span>
+                <span class="link-block-url">@anshullgarg</span>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Slash command hint -->
+        <div class="slash-hint animate-in">Type <code>/</code> for commands</div>
+
+      </div><!-- end page-content -->
+    </div><!-- end content-scroll -->
+  </main>
+</div>
+
+<script>
+// ========== THEME TOGGLE ==========
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('notion-theme', isDark ? 'light' : 'dark');
+  updateThemeIcon(!isDark);
+}
+
+function updateThemeIcon(isDark) {
+  const icon = document.getElementById('themeIcon');
+  if (isDark) {
+    icon.innerHTML = '<path d="M7 1C3.69 1 1 3.69 1 7s2.69 6 6 6c2.47 0 4.62-1.5 5.53-3.63A4.5 4.5 0 0 1 7.5 2.03 6.02 6.02 0 0 1 7 1Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+  } else {
+    icon.innerHTML = '<path d="M7 1v1M7 12v1M1 7h1M12 7h1M2.76 2.76l.7.7M10.54 10.54l.7.7M11.24 2.76l-.7.7M3.46 10.54l-.7.7M10 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+}
+
+// Load saved theme
+(function() {
+  const saved = localStorage.getItem('notion-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    updateThemeIcon(true);
+  }
+})();
+
+// ========== TOGGLE BLOCKS ==========
+function toggleBlock(el, event) {
+  // Only toggle when clicking on the header area
+  const header = el.querySelector('.toggle-header');
+  if (header && header.contains(event.target)) {
+    el.classList.toggle('open');
+  }
+}
+
+// ========== SIDEBAR NAV ==========
+function toggleSubNav(el) {
+  const subItems = el.nextElementSibling;
+  if (subItems && subItems.classList.contains('nav-sub-items')) {
+    subItems.classList.toggle('open');
+    const toggle = el.querySelector('.nav-toggle svg');
+    if (toggle) {
+      toggle.style.transform = subItems.classList.contains('open') ? 'rotate(90deg)' : '';
+    }
+  }
+}
+
+function navigateTo(page) {
+  // Update active nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('data-page') === page) {
+      item.classList.add('active');
+    }
+  });
+
+  // Update breadcrumb
+  const names = {
+    overview: 'Overview',
+    about: 'About Me',
+    experience: 'Experience',
+    projects: 'Projects',
+    skills: 'Skills',
+    blog: 'Blog',
+    contact: 'Contact'
+  };
+  document.getElementById('breadcrumbPage').textContent = names[page] || page;
+
+  // Scroll to section
+  const sectionMap = {
+    experience: 'experience-section',
+    projects: 'projects-section',
+    skills: 'skills-section',
+    contact: 'contact-section'
+  };
+
+  if (sectionMap[page]) {
+    const el = document.getElementById(sectionMap[page]);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  } else if (page === 'overview' || page === 'about') {
+    document.getElementById('contentScroll').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Close sidebar on mobile
+  closeSidebar();
+}
+
+// ========== SIDEBAR MOBILE ==========
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ========== TOPBAR SCROLL SHADOW ==========
+document.getElementById('contentScroll').addEventListener('scroll', function() {
+  const topbar = document.getElementById('topbar');
+  if (this.scrollTop > 10) {
+    topbar.classList.add('scrolled');
+  } else {
+    topbar.classList.remove('scrolled');
+  }
+});
+
+// ========== EXPERIENCE VIEW TOGGLE ==========
+function switchExpView(view) {
+  const gallery = document.getElementById('expGallery');
+  const timeline = document.getElementById('expTimeline');
+  const galleryBtn = document.getElementById('galleryViewBtn');
+  const timelineBtn = document.getElementById('timelineViewBtn');
+
+  if (view === 'gallery') {
+    gallery.classList.remove('hidden');
+    gallery.classList.add('gallery-view');
+    timeline.classList.remove('active');
+    galleryBtn.classList.add('active');
+    timelineBtn.classList.remove('active');
+  } else {
+    gallery.classList.add('hidden');
+    gallery.classList.remove('gallery-view');
+    timeline.classList.add('active');
+    timelineBtn.classList.add('active');
+    galleryBtn.classList.remove('active');
+  }
+}
+
+// ========== DATABASE VIEW SWITCH (visual only) ==========
+function switchDbView(btn, view) {
+  btn.parentElement.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ========== OPEN FIRST TOGGLE BY DEFAULT ==========
+document.addEventListener('DOMContentLoaded', function() {
+  const firstToggle = document.querySelector('.toggle-block');
+  if (firstToggle) {
+    firstToggle.classList.add('open');
+  }
+
+  // Open projects sub-nav by default
+  const projectsSub = document.getElementById('projectsSubNav');
+  if (projectsSub) {
+    projectsSub.classList.add('open');
+  }
+
+  // Update timestamp
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const h = hours % 12 || 12;
+  const m = minutes < 10 ? '0' + minutes : minutes;
+  document.querySelector('.last-edited').textContent = 'Edited ' + h + ':' + m + ' ' + ampm;
+});
+</script>
+</body>
+</html>
