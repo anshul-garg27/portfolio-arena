@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Anshull Garg - Card Stack Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#111111;
+    --card:#FFFFFF;
+    --text:#1A1A1A;
+    --text-muted:#6B7280;
+    --coral:#FF6B6B;
+    --blue:#4A90D9;
+    --spring:cubic-bezier(0.34,1.56,0.64,1);
+    --smooth:cubic-bezier(0.4,0,0.2,1);
+    --card-radius:28px;
+    --card-max:420px;
+  }
+  html,body{
+    height:100%;
+    overflow:hidden;
+    background:var(--bg);
+    font-family:'DM Sans',system-ui,sans-serif;
+    color:var(--text);
+    -webkit-tap-highlight-color:transparent;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+
+  /* ---- SCENE ---- */
+  .scene{
+    position:fixed;inset:0;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:24px 16px 80px;
+  }
+
+  /* ---- CARD COUNTER ---- */
+  .counter{
+    position:fixed;top:24px;right:24px;
+    font-size:13px;font-weight:600;letter-spacing:0.04em;
+    color:rgba(255,255,255,0.35);
+    z-index:100;
+  }
+
+  /* ---- STACK CONTAINER ---- */
+  .stack{
+    position:relative;
+    width:100%;max-width:var(--card-max);
+    aspect-ratio:3/4.2;
+    max-height:min(580px,72vh);
+    perspective:1200px;
+  }
+
+  /* ---- CARD ---- */
+  .card{
+    position:absolute;inset:0;
+    background:var(--card);
+    border-radius:var(--card-radius);
+    padding:36px 30px;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+    box-shadow:
+      0 4px 6px rgba(0,0,0,0.04),
+      0 10px 30px rgba(0,0,0,0.08),
+      0 30px 60px rgba(0,0,0,0.12);
+    will-change:transform,opacity;
+    transition:transform 0.5s var(--spring),opacity 0.4s var(--smooth);
+    cursor:grab;
+    touch-action:pan-y;
+  }
+  .card:active{cursor:grabbing}
+
+  /* stack peek offsets */
+  .card[data-pos="0"]{z-index:10;transform:translateY(0) scale(1);opacity:1}
+  .card[data-pos="1"]{z-index:9;transform:translateY(10px) scale(0.96);opacity:0.7;pointer-events:none}
+  .card[data-pos="2"]{z-index:8;transform:translateY(20px) scale(0.92);opacity:0.45;pointer-events:none}
+  .card[data-pos="3"]{z-index:7;transform:translateY(28px) scale(0.88);opacity:0.25;pointer-events:none}
+  .card[data-pos="hidden"]{z-index:1;transform:translateY(40px) scale(0.85);opacity:0;pointer-events:none}
+
+  /* swiped-out states */
+  .card.exit-right{
+    transform:translateX(140%) rotate(18deg) !important;
+    opacity:0 !important;
+    transition:transform 0.45s var(--smooth),opacity 0.35s var(--smooth);
+    pointer-events:none;
+  }
+  .card.exit-left{
+    transform:translateX(-140%) rotate(-18deg) !important;
+    opacity:0 !important;
+    transition:transform 0.45s var(--smooth),opacity 0.35s var(--smooth);
+    pointer-events:none;
+  }
+
+  /* ---- CARD CONTENT STYLES ---- */
+  .card-label{
+    font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--coral);margin-bottom:8px;
+  }
+  .card h2{
+    font-size:28px;font-weight:800;line-height:1.15;
+    color:var(--text);margin-bottom:6px;
+  }
+  .card h3{
+    font-size:18px;font-weight:600;line-height:1.3;
+    color:var(--text);margin-bottom:4px;
+  }
+  .card p{
+    font-size:14.5px;line-height:1.65;
+    color:var(--text-muted);
+  }
+  .card .subtitle{
+    font-size:15px;font-weight:500;
+    color:var(--text-muted);margin-bottom:16px;
+  }
+
+  /* Intro card */
+  .card-intro{justify-content:center;align-items:center;text-align:center}
+  .card-intro .greeting{
+    font-size:16px;font-weight:500;color:var(--coral);margin-bottom:8px;
+  }
+  .card-intro h2{font-size:36px;margin-bottom:8px}
+  .card-intro .role{
+    font-size:15px;color:var(--text-muted);font-weight:500;margin-bottom:32px;
+  }
+  .card-intro .swipe-hint{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;color:var(--blue);
+    animation:pulseHint 2s ease-in-out infinite;
+  }
+  @keyframes pulseHint{
+    0%,100%{opacity:1;transform:translateX(0)}
+    50%{opacity:0.6;transform:translateX(6px)}
+  }
+
+  /* About card */
+  .avatar{
+    width:80px;height:80px;border-radius:50%;
+    background:linear-gradient(135deg,var(--coral),var(--blue));
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;font-weight:800;color:#fff;
+    margin-bottom:20px;flex-shrink:0;
+  }
+  .card-about .bio{margin-top:8px}
+
+  /* Walmart card */
+  .walmart-header{
+    margin:-36px -30px 24px;
+    padding:28px 30px;
+    background:linear-gradient(135deg,#0071DC 0%,#004C91 100%);
+    color:#fff;
+  }
+  .walmart-header .card-label{color:rgba(255,255,255,0.7)}
+  .walmart-header h2{color:#fff}
+  .walmart-header .subtitle{color:rgba(255,255,255,0.8)}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:auto}
+  .metric{
+    background:#F8F9FA;border-radius:16px;padding:16px;text-align:center;
+  }
+  .metric .num{font-size:24px;font-weight:800;color:var(--blue)}
+  .metric .label{font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;letter-spacing:0.02em}
+
+  /* Project cards */
+  .project-meta{
+    display:flex;align-items:center;gap:8px;margin-bottom:16px;
+  }
+  .project-icon{
+    width:44px;height:44px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;flex-shrink:0;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .tag{
+    font-size:11.5px;font-weight:600;
+    padding:5px 12px;border-radius:100px;
+    background:#F0F4FF;color:var(--blue);
+  }
+  .tag.coral{background:#FFF0F0;color:var(--coral)}
+  .tag.green{background:#ECFDF5;color:#059669}
+  .tag.purple{background:#F3F0FF;color:#7C3AED}
+
+  .impact{
+    margin-top:auto;padding-top:16px;
+    border-top:1px solid #F0F0F0;
+  }
+  .impact-item{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;color:var(--text);
+    margin-bottom:6px;
+  }
+  .impact-dot{
+    width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  }
+
+  /* Skills card */
+  .skill-group{margin-bottom:18px}
+  .skill-group:last-child{margin-bottom:0}
+  .skill-group-title{
+    font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--text-muted);margin-bottom:8px;
+  }
+  .skill-list{display:flex;flex-wrap:wrap;gap:6px}
+  .skill-item{
+    display:flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:600;color:var(--text);
+    padding:5px 12px;border-radius:100px;
+    background:#F8F9FA;
+  }
+  .skill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+  /* Philosophy card */
+  .card-philosophy{justify-content:center}
+  .principle{
+    padding:18px 0;
+    border-bottom:1px solid #F0F0F0;
+  }
+  .principle:last-child{border-bottom:none}
+  .principle-num{
+    font-size:11px;font-weight:700;color:var(--coral);
+    letter-spacing:0.1em;margin-bottom:6px;
+  }
+  .principle h3{font-size:17px;margin-bottom:4px}
+  .principle p{font-size:13px;line-height:1.55}
+
+  /* Contact card */
+  .card-contact{justify-content:center;align-items:center;text-align:center}
+  .card-contact h2{font-size:32px;margin-bottom:6px}
+  .card-contact .subtitle{margin-bottom:28px}
+  .contact-btns{
+    display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;
+  }
+  .contact-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:14px 24px;border-radius:16px;
+    font-size:14px;font-weight:700;
+    text-decoration:none;
+    transition:transform 0.25s var(--spring),box-shadow 0.25s var(--smooth);
+  }
+  .contact-btn:active{transform:scale(0.97)}
+  .contact-btn.primary{
+    background:linear-gradient(135deg,var(--coral),#FF8E53);
+    color:#fff;
+    box-shadow:0 4px 16px rgba(255,107,107,0.35);
+  }
+  .contact-btn.secondary{
+    background:#F0F4FF;color:var(--blue);
+  }
+  .contact-btn.tertiary{
+    background:#F8F9FA;color:var(--text);
+  }
+
+  /* ---- NAV ARROWS ---- */
+  .nav{
+    position:fixed;bottom:0;left:0;right:0;
+    display:flex;align-items:center;justify-content:center;
+    gap:32px;padding:16px 0 28px;
+    z-index:100;
+  }
+  .nav-btn{
+    width:52px;height:52px;border-radius:50%;
+    border:2px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.05);
+    color:rgba(255,255,255,0.5);
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;cursor:pointer;
+    transition:all 0.25s var(--spring);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .nav-btn:hover{
+    background:rgba(255,255,255,0.1);
+    border-color:rgba(255,255,255,0.25);
+    color:rgba(255,255,255,0.8);
+    transform:scale(1.08);
+  }
+  .nav-btn:active{transform:scale(0.95)}
+  .nav-btn.disabled{opacity:0.2;pointer-events:none}
+
+  /* ---- DOTS ---- */
+  .dots{
+    display:flex;gap:6px;align-items:center;
+  }
+  .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    transition:all 0.4s var(--spring);
+  }
+  .dot.active{
+    width:24px;border-radius:100px;
+    background:var(--coral);
+  }
+
+  /* ---- DRAGGING ---- */
+  .card.dragging{
+    transition:none !important;
+    cursor:grabbing;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media(max-width:440px){
+    .card{padding:28px 22px}
+    .card h2{font-size:24px}
+    .walmart-header{margin:-28px -22px 20px;padding:22px}
+    .card-intro h2{font-size:30px}
+  }
+
+  /* Scrollbar inside cards */
+  .card-scroll{
+    overflow-y:auto;flex:1;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .card-scroll::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="counter"><span id="counterText">1 / 8</span></div>
+
+  <div class="stack" id="stack">
+
+    <!-- Card 1: INTRO -->
+    <div class="card card-intro" data-index="0">
+      <div class="greeting">Hello there</div>
+      <h2>I'm Anshull Garg</h2>
+      <p class="role">Software Developer at Walmart</p>
+      <div style="width:48px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--coral),var(--blue));margin:0 auto 32px"></div>
+      <p style="font-size:13.5px;color:var(--text-muted);max-width:280px;margin:0 auto 28px">
+        Building scalable systems that serve millions. Passionate about clean architecture and great user experiences.
+      </p>
+      <div class="swipe-hint">
+        Swipe to explore
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h8m0 0l-3-3m3 3l-3 3"/></svg>
+      </div>
+    </div>
+
+    <!-- Card 2: ABOUT -->
+    <div class="card card-about" data-index="1">
+      <div class="card-label">About</div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div class="avatar">AG</div>
+        <div>
+          <h2 style="font-size:22px;margin-bottom:2px">Anshull Garg</h2>
+          <p style="font-size:13px;font-weight:500">Bentonville, AR</p>
+        </div>
+      </div>
+      <div class="card-scroll">
+        <p class="bio">
+          Software developer with a focus on building high-performance, user-centric applications at scale. Currently at Walmart, where I work on systems that touch millions of users daily.
+        </p>
+        <p class="bio" style="margin-top:12px">
+          I thrive at the intersection of engineering excellence and product thinking. Whether it is optimizing checkout flows or building reusable component libraries, I bring a systematic approach to solving problems that matter.
+        </p>
+        <p class="bio" style="margin-top:12px">
+          Outside of code, I'm drawn to clean design, thoughtful architecture, and the craft of making complex things feel simple.
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 3: WALMART -->
+    <div class="card" data-index="2" style="padding:0">
+      <div class="walmart-header">
+        <div class="card-label">Current Role</div>
+        <h2>Walmart</h2>
+        <p class="subtitle" style="margin-bottom:0">Software Developer</p>
+      </div>
+      <div class="card-scroll" style="padding:0 30px 30px;display:flex;flex-direction:column;flex:1">
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-muted);margin-bottom:20px">
+          Building and maintaining critical e-commerce systems that power one of the world's largest retailers.
+        </p>
+        <div class="metrics" style="margin-top:auto">
+          <div class="metric">
+            <div class="num">240M+</div>
+            <div class="label">Weekly Customers</div>
+          </div>
+          <div class="metric">
+            <div class="num">99.9%</div>
+            <div class="label">Uptime SLA</div>
+          </div>
+          <div class="metric">
+            <div class="num">50ms</div>
+            <div class="label">Avg Response</div>
+          </div>
+          <div class="metric">
+            <div class="num">500+</div>
+            <div class="label">Services</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: PROJECT 1 -->
+    <div class="card" data-index="3">
+      <div class="card-label">Project</div>
+      <div class="project-meta">
+        <div class="project-icon" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">
+          <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M3 3h7v7H3zM13 3h7v7h-7zM3 13h7v7H3zM13 13h7v7h-7z"/></svg>
+        </div>
+        <div>
+          <h3>Checkout Optimization</h3>
+          <p style="font-size:12px;margin:0">E-commerce Platform</p>
+        </div>
+      </div>
+      <div class="card-scroll">
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-muted)">
+          Led the redesign of the checkout flow, reducing cart abandonment and improving conversion rates. Implemented real-time inventory checks and streamlined the payment pipeline.
+        </p>
+        <div class="tags">
+          <span class="tag">React</span>
+          <span class="tag coral">Node.js</span>
+          <span class="tag green">GraphQL</span>
+          <span class="tag purple">Redis</span>
+          <span class="tag">TypeScript</span>
+        </div>
+        <div class="impact">
+          <div class="impact-item">
+            <div class="impact-dot" style="background:var(--coral)"></div>
+            15% increase in conversion rate
+          </div>
+          <div class="impact-item">
+            <div class="impact-dot" style="background:var(--blue)"></div>
+            40% faster page load time
+          </div>
+          <div class="impact-item">
+            <div class="impact-dot" style="background:#059669"></div>
+            Reduced API calls by 60%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: PROJECT 2 -->
+    <div class="card" data-index="4">
+      <div class="card-label">Project</div>
+      <div class="project-meta">
+        <div class="project-icon" style="background:linear-gradient(135deg,#4A90D9,#7C3AED)">
+          <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="16" height="16" rx="3"/><path d="M8 8h6M8 11h6M8 14h4"/></svg>
+        </div>
+        <div>
+          <h3>Component Library</h3>
+          <p style="font-size:12px;margin:0">Design System</p>
+        </div>
+      </div>
+      <div class="card-scroll">
+        <p style="font-size:13.5px;line-height:1.6;color:var(--text-muted)">
+          Architected and built a shared component library adopted across multiple product teams. Enforced design consistency and reduced development time for new features.
+        </p>
+        <div class="tags">
+          <span class="tag">React</span>
+          <span class="tag purple">Storybook</span>
+          <span class="tag green">Figma</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag coral">Jest</span>
+        </div>
+        <div class="impact">
+          <div class="impact-item">
+            <div class="impact-dot" style="background:var(--coral)"></div>
+            80+ reusable components
+          </div>
+          <div class="impact-item">
+            <div class="impact-dot" style="background:var(--blue)"></div>
+            Adopted by 12 product teams
+          </div>
+          <div class="impact-item">
+            <div class="impact-dot" style="background:#7C3AED"></div>
+            30% faster feature delivery
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: SKILLS -->
+    <div class="card" data-index="5">
+      <div class="card-label">Skills</div>
+      <h2 style="font-size:22px;margin-bottom:20px">Tech Stack</h2>
+      <div class="card-scroll">
+        <div class="skill-group">
+          <div class="skill-group-title">Frontend</div>
+          <div class="skill-list">
+            <span class="skill-item"><span class="skill-dot" style="background:#61DAFB"></span>React</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#3178C6"></span>TypeScript</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#000"></span>Next.js</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#06B6D4"></span>Tailwind</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#764ABC"></span>Redux</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Backend</div>
+          <div class="skill-list">
+            <span class="skill-item"><span class="skill-dot" style="background:#339933"></span>Node.js</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#E535AB"></span>GraphQL</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#F7DF1E"></span>JavaScript</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#5C4EE5"></span>REST APIs</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#DC382D"></span>Redis</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Tools & Infrastructure</div>
+          <div class="skill-list">
+            <span class="skill-item"><span class="skill-dot" style="background:#2496ED"></span>Docker</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#FF9900"></span>AWS</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#F05032"></span>Git</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#326CE5"></span>Kubernetes</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#E44D26"></span>CI/CD</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Practices</div>
+          <div class="skill-list">
+            <span class="skill-item"><span class="skill-dot" style="background:var(--coral)"></span>System Design</span>
+            <span class="skill-item"><span class="skill-dot" style="background:var(--blue)"></span>TDD</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#059669"></span>Agile</span>
+            <span class="skill-item"><span class="skill-dot" style="background:#7C3AED"></span>Code Review</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 7: PHILOSOPHY -->
+    <div class="card card-philosophy" data-index="6">
+      <div class="card-label">Philosophy</div>
+      <h2 style="font-size:22px;margin-bottom:8px">How I Build</h2>
+      <div class="card-scroll">
+        <div class="principle">
+          <div class="principle-num">01</div>
+          <h3>Simplicity is the ultimate sophistication</h3>
+          <p>The best code is the code you don't have to write. I optimize for readability, maintainability, and the developer who'll inherit my work.</p>
+        </div>
+        <div class="principle">
+          <div class="principle-num">02</div>
+          <h3>Measure twice, deploy once</h3>
+          <p>Data-driven decisions over gut feelings. Every feature ships with metrics, every optimization is benchmarked, every assumption is tested.</p>
+        </div>
+        <div class="principle">
+          <div class="principle-num">03</div>
+          <h3>Build for the user, always</h3>
+          <p>Engineering exists to serve people. The most elegant architecture means nothing if it doesn't translate to a better experience.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 8: CONTACT -->
+    <div class="card card-contact" data-index="7">
+      <div class="card-label">Contact</div>
+      <h2>Let's Connect</h2>
+      <p class="subtitle">Open to interesting conversations and opportunities</p>
+      <div class="contact-btns">
+        <a href="mailto:anshullgarg@gmail.com" class="contact-btn primary">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="14" height="10" rx="2"/><path d="M2 4l7 5 7-5"/></svg>
+          anshullgarg@gmail.com
+        </a>
+        <a href="https://github.com/anshullgarg" class="contact-btn secondary" target="_blank" rel="noopener">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-btn tertiary" target="_blank" rel="noopener">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button class="nav-btn disabled" id="prevBtn" aria-label="Previous card">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5l-6 4.5L14 14"/></svg>
+    </button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="nextBtn" aria-label="Next card">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l6 4.5L7 14"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const TOTAL = 8;
+  let current = 0;
+  let isAnimating = false;
+
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const dotsEl = document.getElementById('dots');
+  const counterText = document.getElementById('counterText');
+
+  // Build dots
+  for(let i = 0; i < TOTAL; i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  }
+  const dots = Array.from(dotsEl.children);
+
+  function updateStack(){
+    cards.forEach((card, i) => {
+      card.classList.remove('exit-right','exit-left','dragging');
+      card.style.transform = '';
+      const rel = i - current;
+      if(rel < 0){
+        card.setAttribute('data-pos','hidden');
+        card.style.transform = 'translateX(-60px) scale(0.9)';
+        card.style.opacity = '0';
+        card.style.pointerEvents = 'none';
+      } else if(rel === 0){
+        card.setAttribute('data-pos','0');
+        card.style.opacity = '';
+        card.style.pointerEvents = '';
+      } else if(rel <= 3){
+        card.setAttribute('data-pos', String(rel));
+        card.style.opacity = '';
+        card.style.pointerEvents = '';
+      } else {
+        card.setAttribute('data-pos','hidden');
+        card.style.pointerEvents = 'none';
+      }
+    });
+    counterText.textContent = `${current + 1} / ${TOTAL}`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    prevBtn.classList.toggle('disabled', current === 0);
+    nextBtn.classList.toggle('disabled', current === TOTAL - 1);
+  }
+
+  function goNext(){
+    if(current >= TOTAL - 1 || isAnimating) return;
+    isAnimating = true;
+    const card = cards[current];
+    card.classList.add('exit-right');
+    setTimeout(() => {
+      current++;
+      updateStack();
+      isAnimating = false;
+    }, 400);
+  }
+
+  function goPrev(){
+    if(current <= 0 || isAnimating) return;
+    isAnimating = true;
+    current--;
+    const card = cards[current];
+    // Fly in from left
+    card.classList.remove('exit-right','exit-left');
+    card.style.transition = 'none';
+    card.style.transform = 'translateX(-140%) rotate(-18deg)';
+    card.style.opacity = '0';
+    card.setAttribute('data-pos','0');
+    card.style.pointerEvents = '';
+    // Force reflow
+    void card.offsetWidth;
+    card.style.transition = '';
+    card.style.transform = '';
+    card.style.opacity = '';
+    updateStack();
+    setTimeout(() => { isAnimating = false; }, 400);
+  }
+
+  prevBtn.addEventListener('click', goPrev);
+  nextBtn.addEventListener('click', goNext);
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goPrev();
+  });
+
+  // Touch & Mouse drag
+  let dragStartX = 0;
+  let dragCurrentX = 0;
+  let isDragging = false;
+  let dragCard = null;
+
+  function getActiveCard(){
+    return cards[current] || null;
+  }
+
+  function onDragStart(x){
+    if(isAnimating) return;
+    dragCard = getActiveCard();
+    if(!dragCard) return;
+    isDragging = true;
+    dragStartX = x;
+    dragCurrentX = x;
+    dragCard.classList.add('dragging');
+  }
+
+  function onDragMove(x){
+    if(!isDragging || !dragCard) return;
+    dragCurrentX = x;
+    const dx = dragCurrentX - dragStartX;
+    const rotate = dx * 0.06;
+    const opacity = Math.max(0, 1 - Math.abs(dx) / 400);
+    dragCard.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
+    dragCard.style.opacity = opacity;
+  }
+
+  function onDragEnd(){
+    if(!isDragging || !dragCard) return;
+    isDragging = false;
+    const dx = dragCurrentX - dragStartX;
+    dragCard.classList.remove('dragging');
+
+    if(dx > 80 && current < TOTAL - 1){
+      dragCard.style.transform = '';
+      dragCard.style.opacity = '';
+      goNext();
+    } else if(dx < -80 && current > 0){
+      dragCard.style.transform = '';
+      dragCard.style.opacity = '';
+      goPrev();
+    } else {
+      // Snap back
+      dragCard.style.transform = '';
+      dragCard.style.opacity = '';
+    }
+    dragCard = null;
+  }
+
+  // Touch events
+  document.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    onDragStart(t.clientX);
+  }, {passive:true});
+  document.addEventListener('touchmove', (e) => {
+    if(!isDragging) return;
+    const t = e.touches[0];
+    onDragMove(t.clientX);
+  }, {passive:true});
+  document.addEventListener('touchend', onDragEnd);
+  document.addEventListener('touchcancel', onDragEnd);
+
+  // Mouse events
+  document.addEventListener('mousedown', (e) => {
+    if(e.target.closest('.nav-btn') || e.target.closest('.contact-btn')) return;
+    onDragStart(e.clientX);
+  });
+  document.addEventListener('mousemove', (e) => {
+    if(!isDragging) return;
+    onDragMove(e.clientX);
+  });
+  document.addEventListener('mouseup', onDragEnd);
+  document.addEventListener('mouseleave', onDragEnd);
+
+  // Init
+  updateStack();
+})();
+</script>
+</body>
+</html>
