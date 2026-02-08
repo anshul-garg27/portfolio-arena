@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD Pipeline - Anshull Garg Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#0D1117;
+  --surface:#161B22;
+  --surface-2:#1C2128;
+  --border:#30363D;
+  --border-light:#484F58;
+  --text:#C9D1D9;
+  --text-muted:#8B949E;
+  --text-bright:#F0F6FC;
+  --green:#3FB950;
+  --green-dim:#238636;
+  --green-bg:rgba(63,185,80,0.1);
+  --red:#F85149;
+  --blue:#58A6FF;
+  --blue-dim:#1F6FEB;
+  --yellow:#D29922;
+  --yellow-bg:rgba(210,153,34,0.1);
+  --purple:#BC8CFF;
+  --orange:#F0883E;
+  --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+}
+
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
+
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* =============================================
+   GITHUB ACTIONS TOP NAV
+   ============================================= */
+.gh-nav{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:12px 24px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.gh-logo svg{fill:var(--text-bright);display:block}
+.gh-nav-links{display:flex;gap:16px;margin-left:8px}
+.gh-nav-links a{color:var(--text-muted);font-size:13px;font-weight:500;transition:color .2s}
+.gh-nav-links a:hover{color:var(--text-bright);text-decoration:none}
+.gh-nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.gh-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:12px;
+  border:2px solid var(--border);
+}
+.gh-bell{color:var(--text-muted);cursor:pointer}
+
+/* =============================================
+   REPO HEADER
+   ============================================= */
+.repo-bar{
+  padding:16px 24px;
+  max-width:1200px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+}
+.repo-bar .owner{color:var(--blue)}
+.repo-bar .sep{color:var(--text-muted)}
+.repo-bar .repo{color:var(--blue);font-weight:600}
+.repo-bar .visibility{
+  font-size:11px;
+  padding:2px 8px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text-muted);
+  margin-left:8px;
+}
+
+/* =============================================
+   WORKFLOW HEADER
+   ============================================= */
+.workflow-header{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 24px 20px;
+  border-bottom:1px solid var(--border);
+}
+.workflow-title{
+  font-size:24px;
+  font-weight:600;
+  color:var(--text-bright);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.workflow-title .status-icon{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  transition:all .5s ease;
+}
+.workflow-title .status-icon.pending{background:var(--yellow-bg);color:var(--yellow)}
+.workflow-title .status-icon.running{background:var(--yellow-bg);color:var(--yellow);animation:spin 1.2s linear infinite}
+.workflow-title .status-icon.success{background:var(--green-bg);color:var(--green)}
+
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+.workflow-meta{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--text-muted);
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.workflow-meta code{
+  font-family:var(--font-mono);
+  background:rgba(110,118,129,0.15);
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:12px;
+  color:var(--text);
+}
+.workflow-badge{
+  padding:3px 10px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+}
+.badge-success{background:var(--green-bg);color:var(--green);border:1px solid rgba(63,185,80,0.3)}
+.badge-running{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(210,153,34,0.3)}
+.badge-queued{background:rgba(110,118,129,0.1);color:var(--text-muted);border:1px solid var(--border)}
+
+/* =============================================
+   MAIN LAYOUT
+   ============================================= */
+.main-content{
+  max-width:1200px;
+  margin:0 auto;
+  padding:24px;
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:24px;
+}
+
+@media(max-width:900px){
+  .main-content{grid-template-columns:1fr;gap:16px}
+}
+
+/* =============================================
+   LEFT SIDEBAR - PIPELINE STAGES
+   ============================================= */
+.sidebar{position:sticky;top:80px;align-self:start}
+
+.sidebar-title{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  color:var(--text-muted);
+  font-weight:600;
+  margin-bottom:16px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+
+.pipeline-stages{display:flex;flex-direction:column;gap:0}
+
+.stage-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;
+  border:1px solid transparent;
+}
+.stage-item:hover{background:var(--surface-2)}
+.stage-item.active{background:var(--surface);border-color:var(--border)}
+
+.stage-connector{
+  position:absolute;
+  left:25px;
+  top:100%;
+  width:2px;
+  height:12px;
+  background:var(--border);
+  z-index:1;
+}
+.stage-connector.done{background:var(--green-dim)}
+
+.stage-icon{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  flex-shrink:0;
+  transition:all .5s ease;
+  position:relative;
+}
+.stage-icon.queued{background:rgba(110,118,129,0.15);color:var(--text-muted);border:2px solid var(--border)}
+.stage-icon.running{
+  background:var(--yellow-bg);color:var(--yellow);border:2px solid var(--yellow);
+  animation:pulse-ring 1.5s ease infinite;
+}
+.stage-icon.success{background:var(--green-bg);color:var(--green);border:2px solid var(--green-dim)}
+.stage-icon.failed{background:rgba(248,81,73,0.1);color:var(--red);border:2px solid var(--red)}
+
+@keyframes pulse-ring{
+  0%{box-shadow:0 0 0 0 rgba(210,153,34,0.4)}
+  70%{box-shadow:0 0 0 8px rgba(210,153,34,0)}
+  100%{box-shadow:0 0 0 0 rgba(210,153,34,0)}
+}
+
+.stage-info{flex:1;min-width:0}
+.stage-name{font-size:13px;font-weight:600;color:var(--text-bright)}
+.stage-desc{font-size:11px;color:var(--text-muted);margin-top:1px}
+.stage-time{
+  font-size:11px;
+  font-family:var(--font-mono);
+  color:var(--text-muted);
+  opacity:0;
+  transition:opacity .3s;
+}
+.stage-time.visible{opacity:1}
+
+/* =============================================
+   PIPELINE VISUALIZATION (horizontal)
+   ============================================= */
+.pipeline-viz{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:20px 24px;
+  margin-bottom:24px;
+  overflow-x:auto;
+}
+.pipeline-viz-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  color:var(--text-muted);
+  font-weight:600;
+  margin-bottom:16px;
+}
+.pipeline-flow{
+  display:flex;
+  align-items:center;
+  gap:0;
+  min-width:max-content;
+  padding:8px 0;
+}
+.pipeline-node{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  min-width:100px;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.pipeline-node:hover{transform:translateY(-2px)}
+.pipeline-node-circle{
+  width:48px;height:48px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  transition:all .5s ease;
+  position:relative;
+}
+.pipeline-node-circle.queued{
+  background:var(--surface-2);
+  border:2px dashed var(--border);
+  color:var(--text-muted);
+}
+.pipeline-node-circle.running{
+  background:var(--yellow-bg);
+  border:2px solid var(--yellow);
+  color:var(--yellow);
+  animation:pulse-ring-node 1.5s ease infinite;
+}
+.pipeline-node-circle.success{
+  background:var(--green-bg);
+  border:2px solid var(--green-dim);
+  color:var(--green);
+}
+
+@keyframes pulse-ring-node{
+  0%{box-shadow:0 0 0 0 rgba(210,153,34,0.4)}
+  70%{box-shadow:0 0 0 10px rgba(210,153,34,0)}
+  100%{box-shadow:0 0 0 0 rgba(210,153,34,0)}
+}
+
+.pipeline-node-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.pipeline-node.done .pipeline-node-label{color:var(--green)}
+.pipeline-node.active .pipeline-node-label{color:var(--yellow)}
+
+.pipeline-arrow{
+  width:60px;
+  height:2px;
+  background:var(--border);
+  position:relative;
+  flex-shrink:0;
+  transition:background .5s;
+}
+.pipeline-arrow.done{background:var(--green-dim)}
+.pipeline-arrow.active{
+  background:linear-gradient(90deg,var(--green-dim),var(--yellow));
+  animation:flow 1s linear infinite;
+  background-size:200% 100%;
+}
+@keyframes flow{
+  0%{background-position:200% 0}
+  100%{background-position:0% 0}
+}
+.pipeline-arrow::after{
+  content:"";
+  position:absolute;
+  right:-4px;
+  top:50%;
+  transform:translateY(-50%);
+  border:4px solid transparent;
+  border-left:6px solid var(--border);
+  transition:border-left-color .5s;
+}
+.pipeline-arrow.done::after{border-left-color:var(--green-dim)}
+.pipeline-arrow.active::after{border-left-color:var(--yellow)}
+
+/* =============================================
+   RIGHT CONTENT - STAGE DETAIL PANELS
+   ============================================= */
+.content-area{min-width:0}
+
+.stage-panel{
+  display:none;
+  animation:fadeIn .4s ease;
+}
+.stage-panel.active{display:block}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Log output container */
+.log-container{
+  background:#010409;
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.log-header{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-bright);
+}
+.log-header-left{display:flex;align-items:center;gap:8px}
+.log-header .log-status{
+  width:8px;height:8px;
+  border-radius:50%;
+  transition:background .3s;
+}
+.log-status.queued-dot{background:var(--text-muted)}
+.log-status.running-dot{background:var(--yellow);animation:blink 1s ease infinite}
+.log-status.success-dot{background:var(--green)}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.log-body{
+  padding:16px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  line-height:1.8;
+  max-height:400px;
+  overflow-y:auto;
+  color:var(--text-muted);
+}
+.log-line{
+  display:flex;
+  gap:16px;
+  opacity:0;
+  transform:translateX(-8px);
+  transition:all .3s ease;
+}
+.log-line.visible{opacity:1;transform:translateX(0)}
+.log-line .ln{
+  color:var(--border-light);
+  min-width:28px;
+  text-align:right;
+  user-select:none;
+  flex-shrink:0;
+}
+.log-line .text{flex:1}
+.log-line .text .green{color:var(--green)}
+.log-line .text .blue{color:var(--blue)}
+.log-line .text .yellow{color:var(--yellow)}
+.log-line .text .purple{color:var(--purple)}
+.log-line .text .red{color:var(--red)}
+.log-line .text .orange{color:var(--orange)}
+.log-line .text .bright{color:var(--text-bright)}
+.log-line .text .muted{color:var(--text-muted)}
+.log-line .text .dim{color:var(--border-light)}
+
+/* =============================================
+   CONTENT CARDS (revealed after stage passes)
+   ============================================= */
+.content-reveal{
+  opacity:0;
+  transform:translateY(16px);
+  transition:all .6s ease;
+  margin-top:20px;
+}
+.content-reveal.visible{opacity:1;transform:translateY(0)}
+
+.content-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:24px;
+  margin-bottom:16px;
+}
+.content-card h2{
+  font-size:18px;
+  color:var(--text-bright);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.content-card h2 .card-icon{
+  width:28px;height:28px;
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+.content-card p{
+  color:var(--text);
+  margin-bottom:12px;
+  line-height:1.7;
+}
+.content-card .detail-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(48,54,61,0.5);
+  font-size:13px;
+}
+.content-card .detail-row:last-child{border-bottom:none}
+.detail-label{color:var(--text-muted);min-width:120px;font-weight:500}
+.detail-value{color:var(--text-bright);font-weight:500}
+
+/* Skill tags */
+.skill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.skill-tag{
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:500;
+  border:1px solid;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  transition:all .3s;
+}
+.skill-tag:hover{transform:translateY(-1px)}
+.skill-tag.frontend{background:rgba(56,139,253,0.08);color:var(--blue);border-color:rgba(56,139,253,0.3)}
+.skill-tag.backend{background:rgba(63,185,80,0.08);color:var(--green);border-color:rgba(63,185,80,0.3)}
+.skill-tag.devops{background:rgba(188,140,255,0.08);color:var(--purple);border-color:rgba(188,140,255,0.3)}
+.skill-tag.tool{background:rgba(210,153,34,0.08);color:var(--yellow);border-color:rgba(210,153,34,0.3)}
+
+/* Project cards */
+.project-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+.project-card{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:16px;
+  transition:border-color .2s;
+}
+.project-card:hover{border-color:var(--border-light)}
+.project-card h3{font-size:14px;color:var(--blue);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.project-card p{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+.project-tech{display:flex;flex-wrap:wrap;gap:4px}
+.project-tech span{
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:10px;
+  background:rgba(110,118,129,0.1);
+  color:var(--text-muted);
+  border:1px solid var(--border);
+}
+
+/* Test results */
+.test-suite{margin-top:12px}
+.test-file{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  margin-bottom:8px;
+  overflow:hidden;
+}
+.test-file-header{
+  padding:10px 14px;
+  font-size:12px;
+  font-weight:600;
+  font-family:var(--font-mono);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--text-bright);
+  background:rgba(63,185,80,0.04);
+  border-bottom:1px solid var(--border);
+}
+.test-file-header .pass-icon{color:var(--green)}
+.test-case{
+  padding:6px 14px 6px 36px;
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--text);
+  border-bottom:1px solid rgba(48,54,61,0.3);
+}
+.test-case:last-child{border-bottom:none}
+.test-check{color:var(--green);font-size:10px}
+.test-time{margin-left:auto;color:var(--text-muted);font-family:var(--font-mono);font-size:10px}
+
+/* Experience timeline */
+.exp-timeline{margin-top:12px}
+.exp-item{
+  position:relative;
+  padding-left:24px;
+  padding-bottom:20px;
+  border-left:2px solid var(--border);
+  margin-left:8px;
+}
+.exp-item:last-child{border-left-color:transparent;padding-bottom:0}
+.exp-dot{
+  position:absolute;
+  left:-7px;top:4px;
+  width:12px;height:12px;
+  border-radius:50%;
+  background:var(--green);
+  border:2px solid var(--bg);
+}
+.exp-item h3{font-size:14px;color:var(--text-bright);font-weight:600}
+.exp-item .exp-company{font-size:13px;color:var(--blue);font-weight:500}
+.exp-item .exp-date{font-size:11px;color:var(--text-muted);margin:2px 0 6px}
+.exp-item p{font-size:12px;color:var(--text);line-height:1.6}
+
+/* Contact card */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:600px){.contact-grid{grid-template-columns:1fr}}
+.contact-item{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:all .2s;
+  cursor:pointer;
+  text-decoration:none;
+}
+.contact-item:hover{border-color:var(--blue);background:rgba(56,139,253,0.04);text-decoration:none}
+.contact-icon{
+  width:36px;height:36px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  flex-shrink:0;
+}
+.contact-info .contact-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.contact-info .contact-value{font-size:13px;color:var(--text-bright);font-weight:500}
+
+/* =============================================
+   ALL CHECKS PASSED BANNER
+   ============================================= */
+.all-passed-banner{
+  background:linear-gradient(135deg,rgba(63,185,80,0.08),rgba(56,139,253,0.05));
+  border:1px solid rgba(63,185,80,0.3);
+  border-radius:8px;
+  padding:24px;
+  text-align:center;
+  margin-top:20px;
+  opacity:0;
+  transform:scale(0.95);
+  transition:all .6s ease;
+}
+.all-passed-banner.visible{opacity:1;transform:scale(1)}
+.all-passed-banner h2{
+  font-size:20px;
+  color:var(--green);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.all-passed-banner p{color:var(--text-muted);font-size:14px}
+.all-passed-banner .summary-stats{
+  display:flex;
+  justify-content:center;
+  gap:32px;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+.all-passed-banner .stat{text-align:center}
+.all-passed-banner .stat-num{font-size:24px;font-weight:700;color:var(--green);font-family:var(--font-mono)}
+.all-passed-banner .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+
+/* =============================================
+   CONTROLS
+   ============================================= */
+.controls-bar{
+  max-width:1200px;
+  margin:0 auto;
+  padding:16px 24px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.btn{
+  padding:8px 20px;
+  border-radius:6px;
+  border:1px solid;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  font-family:var(--font-sans);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  transition:all .2s;
+}
+.btn-primary{
+  background:var(--green-dim);
+  border-color:var(--green-dim);
+  color:#fff;
+}
+.btn-primary:hover{background:var(--green);border-color:var(--green)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{
+  background:var(--surface);
+  border-color:var(--border);
+  color:var(--text);
+}
+.btn-secondary:hover{background:var(--surface-2);border-color:var(--border-light)}
+
+.progress-text{
+  font-size:13px;
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+  margin-left:auto;
+}
+
+/* =============================================
+   PROGRESS BAR
+   ============================================= */
+.progress-bar-container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 24px 8px;
+}
+.progress-bar-track{
+  height:4px;
+  background:var(--border);
+  border-radius:2px;
+  overflow:hidden;
+}
+.progress-bar-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--green),var(--blue));
+  border-radius:2px;
+  transition:width .5s ease;
+}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.footer{
+  max-width:1200px;
+  margin:40px auto 0;
+  padding:20px 24px;
+  border-top:1px solid var(--border);
+  text-align:center;
+  font-size:12px;
+  color:var(--text-muted);
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media(max-width:900px){
+  .sidebar{position:static}
+  .pipeline-stages{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px}
+  .stage-item{flex-direction:column;text-align:center;min-width:80px;padding:8px}
+  .stage-connector{display:none}
+  .stage-desc{display:none}
+  .stage-time{font-size:10px}
+}
+
+@media(max-width:600px){
+  .gh-nav-links{display:none}
+  .workflow-title{font-size:18px}
+  .repo-bar{font-size:12px}
+  .content-card{padding:16px}
+  .content-card h2{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================= -->
+<!-- GITHUB NAV                                    -->
+<!-- ============================================= -->
+<nav class="gh-nav" role="navigation" aria-label="Main navigation">
+  <div class="gh-logo">
+    <svg height="28" viewBox="0 0 16 16" width="28">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+  </div>
+  <div class="gh-nav-links">
+    <a href="#">Pull requests</a>
+    <a href="#">Issues</a>
+    <a href="#">Marketplace</a>
+    <a href="#">Explore</a>
+  </div>
+  <div class="gh-nav-right">
+    <span class="gh-bell" aria-label="Notifications">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16a2 2 0 001.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 008 16zM3 5a5 5 0 0110 0v2.947c0 .05.015.098.042.139l1.703 2.555A1.519 1.519 0 0113.482 13H2.518a1.516 1.516 0 01-1.263-2.36l1.703-2.554A.255.255 0 003 7.947V5z"/></svg>
+    </span>
+    <div class="gh-avatar" title="Anshull Garg">AG</div>
+  </div>
+</nav>
+
+<!-- ============================================= -->
+<!-- REPO BAR                                      -->
+<!-- ============================================= -->
+<div class="repo-bar">
+  <span class="owner">anshull-garg</span>
+  <span class="sep">/</span>
+  <span class="repo">portfolio</span>
+  <span class="visibility">Public</span>
+</div>
+
+<!-- ============================================= -->
+<!-- WORKFLOW HEADER                                -->
+<!-- ============================================= -->
+<div class="workflow-header">
+  <div class="workflow-title">
+    <span class="status-icon pending" id="workflowIcon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+    </span>
+    <span>Deploy Portfolio to Production</span>
+  </div>
+  <div class="workflow-meta">
+    <span id="workflowBadge" class="workflow-badge badge-queued">Queued</span>
+    <span>on push to <code>main</code></span>
+    <span>commit <code id="commitHash">a7f3e21</code></span>
+    <span id="workflowTime" style="font-family:var(--font-mono);font-size:12px">--:--</span>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- CONTROLS                                      -->
+<!-- ============================================= -->
+<div class="controls-bar">
+  <button class="btn btn-primary" id="runBtn" onclick="startPipeline()">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg>
+    Run Pipeline
+  </button>
+  <button class="btn btn-secondary" id="resetBtn" onclick="resetPipeline()" style="display:none">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1.705 8.005a.75.75 0 01.834.656 5.5 5.5 0 009.592 2.97l-1.204-1.204a.25.25 0 01.177-.427h3.646a.25.25 0 01.25.25v3.646a.25.25 0 01-.427.177l-1.38-1.38A7.002 7.002 0 011.05 8.84a.75.75 0 01.656-.834zM8 2.5a5.487 5.487 0 00-4.131 1.869l1.204 1.204A.25.25 0 014.896 6H1.25A.25.25 0 011 5.75V2.104a.25.25 0 01.427-.177l1.38 1.38A7.002 7.002 0 0114.95 7.16a.75.75 0 11-1.49.178A5.5 5.5 0 008 2.5z"/></svg>
+    Re-run
+  </button>
+  <span class="progress-text" id="progressText">Waiting to start...</span>
+</div>
+
+<!-- ============================================= -->
+<!-- PROGRESS BAR                                  -->
+<!-- ============================================= -->
+<div class="progress-bar-container">
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- PIPELINE VISUALIZATION                        -->
+<!-- ============================================= -->
+<div style="max-width:1200px;margin:0 auto;padding:8px 24px">
+  <div class="pipeline-viz">
+    <div class="pipeline-viz-title">Pipeline Visualization</div>
+    <div class="pipeline-flow" id="pipelineFlow">
+      <div class="pipeline-node" data-stage="0" onclick="showStage(0)">
+        <div class="pipeline-node-circle queued" id="vizNode0">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>
+        </div>
+        <span class="pipeline-node-label">Build</span>
+      </div>
+      <div class="pipeline-arrow" id="vizArrow0"></div>
+      <div class="pipeline-node" data-stage="1" onclick="showStage(1)">
+        <div class="pipeline-node-circle queued" id="vizNode1">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8.75 1.75a.75.75 0 00-1.5 0v5.69L5.03 5.22a.75.75 0 00-1.06 1.06l3.5 3.5a.75.75 0 001.06 0l3.5-3.5a.75.75 0 00-1.06-1.06L8.75 7.44V1.75zM1.5 10a.75.75 0 00-1.5 0v3.25c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0016 13.25V10a.75.75 0 00-1.5 0v3.25a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V10z"/></svg>
+        </div>
+        <span class="pipeline-node-label">Lint</span>
+      </div>
+      <div class="pipeline-arrow" id="vizArrow1"></div>
+      <div class="pipeline-node" data-stage="2" onclick="showStage(2)">
+        <div class="pipeline-node-circle queued" id="vizNode2">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M5.433 2.304A4.492 4.492 0 003.5 6c0 1.598.832 3.002 2.09 3.802.518.328.929.923.902 1.64v.008l-.164 3.337a.75.75 0 11-1.498-.073l.163-3.33c.002-.085-.05-.216-.25-.35A5.996 5.996 0 012 6a5.993 5.993 0 012.576-4.928l.866 1.232zM8 1a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 018 1zm2.433 1.304l.866-1.232A5.993 5.993 0 0114 6a5.996 5.996 0 01-2.743 5.034c-.2.134-.252.265-.25.35l.163 3.33a.75.75 0 11-1.498.073L9.508 11.45v-.008c-.027-.717.384-1.312.902-1.64A4.495 4.495 0 0012.5 6a4.492 4.492 0 00-1.933-3.696z"/></svg>
+        </div>
+        <span class="pipeline-node-label">Test</span>
+      </div>
+      <div class="pipeline-arrow" id="vizArrow2"></div>
+      <div class="pipeline-node" data-stage="3" onclick="showStage(3)">
+        <div class="pipeline-node-circle queued" id="vizNode3">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zM1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75z"/><path d="M8 10a2 2 0 100-4 2 2 0 000 4z"/></svg>
+        </div>
+        <span class="pipeline-node-label">Stage</span>
+      </div>
+      <div class="pipeline-arrow" id="vizArrow3"></div>
+      <div class="pipeline-node" data-stage="4" onclick="showStage(4)">
+        <div class="pipeline-node-circle queued" id="vizNode4">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M2.97 1.35A1 1 0 013.73 1h8.54a1 1 0 01.76.35l2.609 3.044A1.5 1.5 0 0116 5.37v.255a2.375 2.375 0 01-4.25 1.458A2.371 2.371 0 019.875 8 2.37 2.37 0 018 7.083 2.37 2.37 0 016.125 8a2.37 2.37 0 01-1.875-.917A2.375 2.375 0 010 5.625V5.37a1.5 1.5 0 01.361-.976L2.97 1.35zM1.5 8.2v6.05c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V8.2a3.86 3.86 0 01-2.625.8A3.862 3.862 0 018 7.462 3.862 3.862 0 014.125 9a3.86 3.86 0 01-2.625-.8z"/></svg>
+        </div>
+        <span class="pipeline-node-label">Deploy</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- MAIN CONTENT                                  -->
+<!-- ============================================= -->
+<div class="main-content">
+
+  <!-- SIDEBAR - Stage List -->
+  <aside class="sidebar" role="complementary" aria-label="Pipeline stages">
+    <div class="sidebar-title">Pipeline Stages</div>
+    <div class="pipeline-stages" id="stageList">
+
+      <div class="stage-item active" data-stage="0" onclick="showStage(0)">
+        <div class="stage-icon queued" id="stageIcon0">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+        </div>
+        <div class="stage-info">
+          <div class="stage-name">Build</div>
+          <div class="stage-desc">Compile developer profile</div>
+        </div>
+        <div class="stage-time" id="stageTime0">--</div>
+        <div class="stage-connector" id="stageConn0"></div>
+      </div>
+
+      <div class="stage-item" data-stage="1" onclick="showStage(1)">
+        <div class="stage-icon queued" id="stageIcon1">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+        </div>
+        <div class="stage-info">
+          <div class="stage-name">Lint</div>
+          <div class="stage-desc">Check code quality</div>
+        </div>
+        <div class="stage-time" id="stageTime1">--</div>
+        <div class="stage-connector" id="stageConn1"></div>
+      </div>
+
+      <div class="stage-item" data-stage="2" onclick="showStage(2)">
+        <div class="stage-icon queued" id="stageIcon2">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+        </div>
+        <div class="stage-info">
+          <div class="stage-name">Test</div>
+          <div class="stage-desc">Run test suites</div>
+        </div>
+        <div class="stage-time" id="stageTime2">--</div>
+        <div class="stage-connector" id="stageConn2"></div>
+      </div>
+
+      <div class="stage-item" data-stage="3" onclick="showStage(3)">
+        <div class="stage-icon queued" id="stageIcon3">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+        </div>
+        <div class="stage-info">
+          <div class="stage-name">Stage</div>
+          <div class="stage-desc">Stage for review</div>
+        </div>
+        <div class="stage-time" id="stageTime3">--</div>
+        <div class="stage-connector" id="stageConn3"></div>
+      </div>
+
+      <div class="stage-item" data-stage="4" onclick="showStage(4)">
+        <div class="stage-icon queued" id="stageIcon4">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+        </div>
+        <div class="stage-info">
+          <div class="stage-name">Deploy</div>
+          <div class="stage-desc">Deploy to production</div>
+        </div>
+        <div class="stage-time" id="stageTime4">--</div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- CONTENT PANELS -->
+  <div class="content-area" id="contentArea">
+
+    <!-- ========== STAGE 0: BUILD / ABOUT ========== -->
+    <div class="stage-panel active" id="panel0">
+      <div class="log-container">
+        <div class="log-header">
+          <div class="log-header-left">
+            <div class="log-status queued-dot" id="logStatus0"></div>
+            <span>build / compile-developer-profile</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)" id="logTime0">--</span>
+        </div>
+        <div class="log-body" id="logBody0">
+          <div class="log-line"><span class="ln">1</span><span class="text"><span class="dim">##</span> <span class="blue">Preparing build environment...</span></span></div>
+          <div class="log-line"><span class="ln">2</span><span class="text"><span class="green">></span> Loading developer manifest: <span class="bright">anshull-garg.config.ts</span></span></div>
+          <div class="log-line"><span class="ln">3</span><span class="text"><span class="green">></span> Compiling profile metadata...</span></div>
+          <div class="log-line"><span class="ln">4</span><span class="text">  name: <span class="yellow">"Anshull Garg"</span></span></div>
+          <div class="log-line"><span class="ln">5</span><span class="text">  role: <span class="yellow">"Senior Software Engineer"</span></span></div>
+          <div class="log-line"><span class="ln">6</span><span class="text">  location: <span class="yellow">"Bangalore, India"</span></span></div>
+          <div class="log-line"><span class="ln">7</span><span class="text">  experience: <span class="purple">5+ years</span></span></div>
+          <div class="log-line"><span class="ln">8</span><span class="text"><span class="green">></span> Resolving dependencies...</span></div>
+          <div class="log-line"><span class="ln">9</span><span class="text">  <span class="muted">found</span> <span class="bright">30</span> <span class="muted">skills,</span> <span class="bright">8</span> <span class="muted">projects,</span> <span class="bright">3</span> <span class="muted">roles</span></span></div>
+          <div class="log-line"><span class="ln">10</span><span class="text"><span class="green">></span> Bundling assets... <span class="muted">(webpack 5.91.0)</span></span></div>
+          <div class="log-line"><span class="ln">11</span><span class="text"><span class="green">></span> Generating source maps...</span></div>
+          <div class="log-line"><span class="ln">12</span><span class="text"><span class="green">></span> Build output: <span class="bright">dist/portfolio.js</span> <span class="muted">(142kb gzip)</span></span></div>
+          <div class="log-line"><span class="ln">13</span><span class="text"><span class="green">PASS</span> Build completed successfully in <span class="bright">4.2s</span></span></div>
+        </div>
+      </div>
+
+      <div class="content-reveal" id="reveal0">
+        <div class="content-card">
+          <h2>
+            <span class="card-icon" style="background:rgba(56,139,253,0.15);color:var(--blue)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M10.561 8.073a6.005 6.005 0 00-3.32-5.18.75.75 0 10-.643 1.354 4.5 4.5 0 012.494 3.89c0 .037-.006.072-.006.109a.75.75 0 001.5-.037c0-.055.006-.109.006-.163v.027zM5.82 4.387a.75.75 0 10-1.116-1.004A5.96 5.96 0 002.5 8.073a.75.75 0 101.5.037c0-.055.006-.109.006-.163A4.461 4.461 0 015.82 4.387zM8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM10.5 14a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
+            </span>
+            About -- Developer Profile Compiled
+          </h2>
+          <p>Senior Software Engineer with 5+ years of experience building scalable web applications. Passionate about clean architecture, performance optimization, and delivering high-quality user experiences at enterprise scale.</p>
+          <p>Currently at <strong style="color:var(--blue)">Walmart Global Tech</strong>, working on e-commerce platforms that serve millions of users daily. I believe great software is built through thoughtful design, rigorous testing, and continuous improvement.</p>
+          <div style="margin-top:16px">
+            <div class="detail-row">
+              <span class="detail-label">Name</span>
+              <span class="detail-value">Anshull Garg</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Role</span>
+              <span class="detail-value">Senior Software Engineer</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Company</span>
+              <span class="detail-value">Walmart Global Tech</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Experience</span>
+              <span class="detail-value">5+ Years</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Focus</span>
+              <span class="detail-value">Full-Stack, E-commerce, Scalable Systems</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Education</span>
+              <span class="detail-value">B.Tech Computer Science</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STAGE 1: LINT / SKILLS ========== -->
+    <div class="stage-panel" id="panel1">
+      <div class="log-container">
+        <div class="log-header">
+          <div class="log-header-left">
+            <div class="log-status queued-dot" id="logStatus1"></div>
+            <span>lint / check-code-quality</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)" id="logTime1">--</span>
+        </div>
+        <div class="log-body" id="logBody1">
+          <div class="log-line"><span class="ln">1</span><span class="text"><span class="dim">##</span> <span class="blue">Running ESLint + Prettier...</span></span></div>
+          <div class="log-line"><span class="ln">2</span><span class="text"><span class="green">></span> Scanning skill modules for quality...</span></div>
+          <div class="log-line"><span class="ln">3</span><span class="text">  <span class="green">PASS</span> frontend/react.ts <span class="muted">-- expert level</span></span></div>
+          <div class="log-line"><span class="ln">4</span><span class="text">  <span class="green">PASS</span> frontend/typescript.ts <span class="muted">-- expert level</span></span></div>
+          <div class="log-line"><span class="ln">5</span><span class="text">  <span class="green">PASS</span> frontend/nextjs.ts <span class="muted">-- advanced level</span></span></div>
+          <div class="log-line"><span class="ln">6</span><span class="text">  <span class="green">PASS</span> backend/nodejs.ts <span class="muted">-- expert level</span></span></div>
+          <div class="log-line"><span class="ln">7</span><span class="text">  <span class="green">PASS</span> backend/graphql.ts <span class="muted">-- advanced level</span></span></div>
+          <div class="log-line"><span class="ln">8</span><span class="text">  <span class="green">PASS</span> devops/docker.ts <span class="muted">-- advanced level</span></span></div>
+          <div class="log-line"><span class="ln">9</span><span class="text">  <span class="green">PASS</span> devops/kubernetes.ts <span class="muted">-- proficient level</span></span></div>
+          <div class="log-line"><span class="ln">10</span><span class="text">  <span class="green">PASS</span> devops/aws.ts <span class="muted">-- advanced level</span></span></div>
+          <div class="log-line"><span class="ln">11</span><span class="text">  <span class="green">PASS</span> testing/jest-cypress.ts <span class="muted">-- advanced level</span></span></div>
+          <div class="log-line"><span class="ln">12</span><span class="text"><span class="green">></span> <span class="bright">30 skills</span> checked, <span class="green">0 errors</span>, <span class="yellow">0 warnings</span></span></div>
+          <div class="log-line"><span class="ln">13</span><span class="text"><span class="green">PASS</span> All lint checks passed in <span class="bright">3.1s</span></span></div>
+        </div>
+      </div>
+
+      <div class="content-reveal" id="reveal1">
+        <div class="content-card">
+          <h2>
+            <span class="card-icon" style="background:rgba(63,185,80,0.15);color:var(--green)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+            </span>
+            Skills -- All Quality Checks Passed
+          </h2>
+
+          <h3 style="font-size:13px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Frontend</h3>
+          <div class="skill-grid">
+            <span class="skill-tag frontend">React.js</span>
+            <span class="skill-tag frontend">TypeScript</span>
+            <span class="skill-tag frontend">Next.js</span>
+            <span class="skill-tag frontend">JavaScript (ES6+)</span>
+            <span class="skill-tag frontend">HTML5 / CSS3</span>
+            <span class="skill-tag frontend">Micro-frontends</span>
+            <span class="skill-tag frontend">Component Libraries</span>
+            <span class="skill-tag frontend">Webpack / Vite</span>
+            <span class="skill-tag frontend">Accessibility (a11y)</span>
+          </div>
+
+          <h3 style="font-size:13px;color:var(--text-muted);margin:20px 0 8px;text-transform:uppercase;letter-spacing:1px">Backend</h3>
+          <div class="skill-grid">
+            <span class="skill-tag backend">Node.js</span>
+            <span class="skill-tag backend">GraphQL</span>
+            <span class="skill-tag backend">REST APIs</span>
+            <span class="skill-tag backend">PostgreSQL</span>
+            <span class="skill-tag backend">MongoDB</span>
+            <span class="skill-tag backend">Redis</span>
+            <span class="skill-tag backend">Microservices</span>
+            <span class="skill-tag backend">System Design</span>
+          </div>
+
+          <h3 style="font-size:13px;color:var(--text-muted);margin:20px 0 8px;text-transform:uppercase;letter-spacing:1px">DevOps & Tools</h3>
+          <div class="skill-grid">
+            <span class="skill-tag devops">Docker</span>
+            <span class="skill-tag devops">Kubernetes</span>
+            <span class="skill-tag devops">AWS</span>
+            <span class="skill-tag devops">CI/CD Pipelines</span>
+            <span class="skill-tag tool">Git</span>
+            <span class="skill-tag tool">Jest / Cypress</span>
+            <span class="skill-tag tool">Playwright</span>
+            <span class="skill-tag tool">Agile / Scrum</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STAGE 2: TEST / PROJECTS ========== -->
+    <div class="stage-panel" id="panel2">
+      <div class="log-container">
+        <div class="log-header">
+          <div class="log-header-left">
+            <div class="log-status queued-dot" id="logStatus2"></div>
+            <span>test / run-test-suites</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)" id="logTime2">--</span>
+        </div>
+        <div class="log-body" id="logBody2">
+          <div class="log-line"><span class="ln">1</span><span class="text"><span class="dim">##</span> <span class="blue">Running Jest + Cypress + Playwright...</span></span></div>
+          <div class="log-line"><span class="ln">2</span><span class="text"><span class="green">></span> Test suite: <span class="bright">E-Commerce Platform</span></span></div>
+          <div class="log-line"><span class="ln">3</span><span class="text">  <span class="green">PASS</span> checkout-flow.spec.ts <span class="muted">(12 tests, 0.8s)</span></span></div>
+          <div class="log-line"><span class="ln">4</span><span class="text">  <span class="green">PASS</span> search-module.spec.ts <span class="muted">(8 tests, 0.5s)</span></span></div>
+          <div class="log-line"><span class="ln">5</span><span class="text"><span class="green">></span> Test suite: <span class="bright">Component Library</span></span></div>
+          <div class="log-line"><span class="ln">6</span><span class="text">  <span class="green">PASS</span> design-system.spec.ts <span class="muted">(24 tests, 1.2s)</span></span></div>
+          <div class="log-line"><span class="ln">7</span><span class="text"><span class="green">></span> Test suite: <span class="bright">GraphQL API Migration</span></span></div>
+          <div class="log-line"><span class="ln">8</span><span class="text">  <span class="green">PASS</span> schema-validation.spec.ts <span class="muted">(16 tests, 0.9s)</span></span></div>
+          <div class="log-line"><span class="ln">9</span><span class="text"><span class="green">></span> Test suite: <span class="bright">Performance Monitor</span></span></div>
+          <div class="log-line"><span class="ln">10</span><span class="text">  <span class="green">PASS</span> metrics-dashboard.spec.ts <span class="muted">(10 tests, 0.6s)</span></span></div>
+          <div class="log-line"><span class="ln">11</span><span class="text"><span class="green">></span> Coverage: <span class="bright">94.2%</span> <span class="muted">statements</span> | <span class="bright">91.8%</span> <span class="muted">branches</span> | <span class="bright">96.1%</span> <span class="muted">functions</span></span></div>
+          <div class="log-line"><span class="ln">12</span><span class="text"><span class="green">PASS</span> <span class="bright">70 tests</span> passed, <span class="red">0 failed</span> in <span class="bright">5.8s</span></span></div>
+        </div>
+      </div>
+
+      <div class="content-reveal" id="reveal2">
+        <div class="content-card">
+          <h2>
+            <span class="card-icon" style="background:rgba(188,140,255,0.15);color:var(--purple)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5.433 2.304A4.492 4.492 0 003.5 6c0 1.598.832 3.002 2.09 3.802.518.328.929.923.902 1.64v.008l-.164 3.337a.75.75 0 11-1.498-.073l.163-3.33c.002-.085-.05-.216-.25-.35A5.996 5.996 0 012 6a5.993 5.993 0 012.576-4.928l.866 1.232z"/></svg>
+            </span>
+            Projects -- All Test Suites Passed
+          </h2>
+
+          <div class="test-suite">
+            <div class="test-file">
+              <div class="test-file-header">
+                <span class="pass-icon">&#10003;</span>
+                E-Commerce Platform @ Walmart
+              </div>
+              <div class="test-case"><span class="test-check">&#10003;</span> handles 10M+ daily transactions <span class="test-time">0.3s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> checkout flow renders under 2s <span class="test-time">0.2s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> search returns results in &lt;200ms <span class="test-time">0.1s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> micro-frontend modules load independently <span class="test-time">0.2s</span></div>
+            </div>
+
+            <div class="test-file">
+              <div class="test-file-header">
+                <span class="pass-icon">&#10003;</span>
+                Reusable Component Library
+              </div>
+              <div class="test-case"><span class="test-check">&#10003;</span> adopted by 12 frontend teams globally <span class="test-time">0.1s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> 100% accessibility compliance (WCAG 2.1) <span class="test-time">0.4s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> storybook docs generate correctly <span class="test-time">0.3s</span></div>
+            </div>
+
+            <div class="test-file">
+              <div class="test-file-header">
+                <span class="pass-icon">&#10003;</span>
+                GraphQL API Migration
+              </div>
+              <div class="test-case"><span class="test-check">&#10003;</span> migrated 5 backend services from REST <span class="test-time">0.2s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> reduced API response payload by 40% <span class="test-time">0.3s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> schema validates against all clients <span class="test-time">0.2s</span></div>
+            </div>
+
+            <div class="test-file">
+              <div class="test-file-header">
+                <span class="pass-icon">&#10003;</span>
+                Performance Optimization Suite
+              </div>
+              <div class="test-case"><span class="test-check">&#10003;</span> reduced bundle size by 35% <span class="test-time">0.1s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> improved Core Web Vitals (LCP &lt; 2.5s) <span class="test-time">0.2s</span></div>
+              <div class="test-case"><span class="test-check">&#10003;</span> lazy loading modules pass threshold <span class="test-time">0.1s</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STAGE 3: STAGE / EXPERIENCE ========== -->
+    <div class="stage-panel" id="panel3">
+      <div class="log-container">
+        <div class="log-header">
+          <div class="log-header-left">
+            <div class="log-status queued-dot" id="logStatus3"></div>
+            <span>stage / deploy-to-staging</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)" id="logTime3">--</span>
+        </div>
+        <div class="log-body" id="logBody3">
+          <div class="log-line"><span class="ln">1</span><span class="text"><span class="dim">##</span> <span class="blue">Deploying to staging environment...</span></span></div>
+          <div class="log-line"><span class="ln">2</span><span class="text"><span class="green">></span> Loading career timeline...</span></div>
+          <div class="log-line"><span class="ln">3</span><span class="text">  <span class="purple">v3.0</span> Senior Software Engineer @ <span class="bright">Walmart Global Tech</span></span></div>
+          <div class="log-line"><span class="ln">4</span><span class="text">  <span class="muted">     2024 - Present</span></span></div>
+          <div class="log-line"><span class="ln">5</span><span class="text">  <span class="purple">v2.0</span> Senior Developer @ <span class="bright">Previous Company</span></span></div>
+          <div class="log-line"><span class="ln">6</span><span class="text">  <span class="muted">     2022 - 2024</span></span></div>
+          <div class="log-line"><span class="ln">7</span><span class="text">  <span class="purple">v1.0</span> Software Developer @ <span class="bright">First Company</span></span></div>
+          <div class="log-line"><span class="ln">8</span><span class="text">  <span class="muted">     2020 - 2022</span></span></div>
+          <div class="log-line"><span class="ln">9</span><span class="text"><span class="green">></span> Staging health check: <span class="green">200 OK</span></span></div>
+          <div class="log-line"><span class="ln">10</span><span class="text"><span class="green">></span> Smoke tests on staging: <span class="green">all passed</span></span></div>
+          <div class="log-line"><span class="ln">11</span><span class="text"><span class="green">PASS</span> Staging deployment verified in <span class="bright">3.6s</span></span></div>
+        </div>
+      </div>
+
+      <div class="content-reveal" id="reveal3">
+        <div class="content-card">
+          <h2>
+            <span class="card-icon" style="background:rgba(210,153,34,0.15);color:var(--yellow)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>
+            </span>
+            Experience -- Staged for Review
+          </h2>
+
+          <div class="exp-timeline">
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <h3>Senior Software Engineer</h3>
+              <div class="exp-company">Walmart Global Tech</div>
+              <div class="exp-date">2024 - Present</div>
+              <p>Building enterprise-scale e-commerce platforms serving millions of users. Leading micro-frontend architecture adoption, mentoring 3 junior developers, and driving the reusable component library adopted by 12 frontend teams globally. Migrated 5 backend services from REST to GraphQL, reducing API payload by 40%.</p>
+            </div>
+
+            <div class="exp-item">
+              <div class="exp-dot" style="background:var(--blue)"></div>
+              <h3>Senior Developer</h3>
+              <div class="exp-company">Previous Company</div>
+              <div class="exp-date">2022 - 2024</div>
+              <p>Led full-stack development across multiple product lines. Designed system architecture for microservices migration. Introduced TypeScript across the frontend codebase, improving developer productivity and reducing runtime errors by 60%. Championed testing culture with Jest and Cypress.</p>
+            </div>
+
+            <div class="exp-item">
+              <div class="exp-dot" style="background:var(--purple)"></div>
+              <h3>Software Developer</h3>
+              <div class="exp-company">First Company</div>
+              <div class="exp-date">2020 - 2022</div>
+              <p>Built React-based web applications and Node.js backend services. Learned production deployment workflows, Git-based collaboration, and agile methodologies. Grew from junior to mid-level developer, contributing to 5+ major feature releases.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STAGE 4: DEPLOY / CONTACT ========== -->
+    <div class="stage-panel" id="panel4">
+      <div class="log-container">
+        <div class="log-header">
+          <div class="log-header-left">
+            <div class="log-status queued-dot" id="logStatus4"></div>
+            <span>deploy / push-to-production</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)" id="logTime4">--</span>
+        </div>
+        <div class="log-body" id="logBody4">
+          <div class="log-line"><span class="ln">1</span><span class="text"><span class="dim">##</span> <span class="blue">Deploying to production...</span></span></div>
+          <div class="log-line"><span class="ln">2</span><span class="text"><span class="green">></span> Provisioning production environment...</span></div>
+          <div class="log-line"><span class="ln">3</span><span class="text"><span class="green">></span> Pushing Docker image: <span class="bright">portfolio:latest</span></span></div>
+          <div class="log-line"><span class="ln">4</span><span class="text"><span class="green">></span> Updating Kubernetes deployment...</span></div>
+          <div class="log-line"><span class="ln">5</span><span class="text">  <span class="muted">replicas:</span> <span class="bright">3/3</span> <span class="green">ready</span></span></div>
+          <div class="log-line"><span class="ln">6</span><span class="text"><span class="green">></span> SSL certificate: <span class="green">valid</span></span></div>
+          <div class="log-line"><span class="ln">7</span><span class="text"><span class="green">></span> CDN cache: <span class="green">purged</span></span></div>
+          <div class="log-line"><span class="ln">8</span><span class="text"><span class="green">></span> DNS propagation: <span class="green">complete</span></span></div>
+          <div class="log-line"><span class="ln">9</span><span class="text"><span class="green">></span> Health check: <span class="bright">https://anshullgarg.dev</span> <span class="green">200 OK</span></span></div>
+          <div class="log-line"><span class="ln">10</span><span class="text"><span class="green">></span> Monitoring alerts: <span class="green">configured</span></span></div>
+          <div class="log-line"><span class="ln">11</span><span class="text"></span></div>
+          <div class="log-line"><span class="ln">12</span><span class="text"><span class="green">======================================</span></span></div>
+          <div class="log-line"><span class="ln">13</span><span class="text"><span class="green">  DEPLOYED TO PRODUCTION!</span></span></div>
+          <div class="log-line"><span class="ln">14</span><span class="text"><span class="green">======================================</span></span></div>
+          <div class="log-line"><span class="ln">15</span><span class="text"><span class="green">PASS</span> Production deployment completed in <span class="bright">6.4s</span></span></div>
+        </div>
+      </div>
+
+      <div class="content-reveal" id="reveal4">
+        <div class="content-card">
+          <h2>
+            <span class="card-icon" style="background:rgba(240,136,62,0.15);color:var(--orange)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2.97 1.35A1 1 0 013.73 1h8.54a1 1 0 01.76.35l2.609 3.044A1.5 1.5 0 0116 5.37v.255a2.375 2.375 0 01-4.25 1.458A2.371 2.371 0 019.875 8 2.37 2.37 0 018 7.083 2.37 2.37 0 016.125 8a2.37 2.37 0 01-1.875-.917A2.375 2.375 0 010 5.625V5.37a1.5 1.5 0 01.361-.976L2.97 1.35zM1.5 8.2v6.05c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V8.2a3.86 3.86 0 01-2.625.8A3.862 3.862 0 018 7.462 3.862 3.862 0 014.125 9a3.86 3.86 0 01-2.625-.8z"/></svg>
+            </span>
+            Contact -- Deployed to Production!
+          </h2>
+          <p>The portfolio is live! Let's connect and build something great together.</p>
+
+          <div class="contact-grid">
+            <a class="contact-item" href="mailto:anshullgarg@gmail.com">
+              <div class="contact-icon" style="background:rgba(248,81,73,0.1);color:var(--red)">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 2A1.75 1.75 0 000 3.75v8.5C0 13.216.784 14 1.75 14h12.5A1.75 1.75 0 0016 12.25v-8.5A1.75 1.75 0 0014.25 2H1.75zM1.5 3.75c0-.138.112-.25.25-.25h12.5c.138 0 .25.112.25.25v.217l-6.5 4.065L1.5 3.967V3.75zm0 1.658l6.274 3.922a.25.25 0 00.265 0L14.5 5.408v6.842a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V5.408z"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">Email</div>
+                <div class="contact-value">anshullgarg@gmail.com</div>
+              </div>
+            </a>
+            <a class="contact-item" href="https://github.com/anshull-garg" target="_blank">
+              <div class="contact-icon" style="background:rgba(139,148,158,0.15);color:var(--text)">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">GitHub</div>
+                <div class="contact-value">github.com/anshull-garg</div>
+              </div>
+            </a>
+            <a class="contact-item" href="https://linkedin.com/in/anshull-garg" target="_blank">
+              <div class="contact-icon" style="background:rgba(56,139,253,0.1);color:var(--blue)">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value">linkedin.com/in/anshull-garg</div>
+              </div>
+            </a>
+            <a class="contact-item" href="https://anshullgarg.dev" target="_blank">
+              <div class="contact-icon" style="background:rgba(63,185,80,0.1);color:var(--green)">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 8a8 8 0 1116 0A8 8 0 010 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 005.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 01.64-1.539 6.7 6.7 0 01.597-.933A7.025 7.025 0 002.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 00-.656 2.5h2.49zM4.847 5c-.202.86-.317 1.778-.34 2.75h3.493V5H4.847zm3.653 0v2.75h3.5c-.023-.972-.138-1.89-.34-2.75H8.5zM11.19 5h2.146a6.958 6.958 0 00-.656-2.5h-1.802c.174.782.282 1.623.312 2.5zM1.018 8.5a6.96 6.96 0 00.656 2.5h1.802a16.3 16.3 0 01-.312-2.5h-2.146zm2.808 0c.023.972.138 1.89.34 2.75H7.5V8.5H3.826zm4.674 0v2.75h3.154c.202-.86.317-1.778.34-2.75H8.5zm3.5 0c-.03.877-.138 1.718-.312 2.5h2.146a6.958 6.958 0 00.656-2.5h-2.49zM7.5 12H4.847c.344.964.776 1.78 1.266 2.4.162.204.328.385.497.54V12zm1 2.94c.169-.155.335-.336.497-.54.49-.62.922-1.436 1.266-2.4H8.5v2.94zm2.91-2.94a9.267 9.267 0 01-.64 1.539 6.7 6.7 0 01-.597.933A7.025 7.025 0 0013.745 12H11.91z"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">Website</div>
+                <div class="contact-value">anshullgarg.dev</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ALL CHECKS PASSED -->
+        <div class="all-passed-banner" id="allPassedBanner">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+            All checks passed
+          </h2>
+          <p>5 stages completed successfully. Portfolio deployed to production.</p>
+          <div class="summary-stats">
+            <div class="stat">
+              <div class="stat-num">5/5</div>
+              <div class="stat-label">Stages Passed</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">30+</div>
+              <div class="stat-label">Skills Verified</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">70</div>
+              <div class="stat-label">Tests Passed</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">5+</div>
+              <div class="stat-label">Years Exp</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">0</div>
+              <div class="stat-label">Failures</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- FOOTER                                        -->
+<!-- ============================================= -->
+<div class="footer">
+  <p>anshull-garg/portfolio &middot; CI/CD Pipeline Portfolio &middot; Built with GitHub Actions aesthetic</p>
+  <p style="margin-top:4px;color:var(--border-light)">&copy; 2026 Anshull Garg</p>
+</div>
+
+<script>
+// =============================================
+// STATE
+// =============================================
+const STAGES = [
+  { name: 'Build', desc: 'Compile developer profile', time: '4.2s', logLines: 13 },
+  { name: 'Lint', desc: 'Check code quality', time: '3.1s', logLines: 13 },
+  { name: 'Test', desc: 'Run test suites', time: '5.8s', logLines: 12 },
+  { name: 'Stage', desc: 'Deploy to staging', time: '3.6s', logLines: 11 },
+  { name: 'Deploy', desc: 'Push to production', time: '6.4s', logLines: 15 }
+];
+
+let currentStage = -1;
+let activePanel = 0;
+let pipelineRunning = false;
+let totalElapsed = 0;
+let elapsedInterval = null;
+
+// =============================================
+// SHOW STAGE PANEL
+// =============================================
+function showStage(index) {
+  document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stage-item').forEach(s => s.classList.remove('active'));
+
+  const panel = document.getElementById('panel' + index);
+  const stageItem = document.querySelectorAll('.stage-item')[index];
+  if (panel) panel.classList.add('active');
+  if (stageItem) stageItem.classList.add('active');
+  activePanel = index;
+}
+
+// =============================================
+// UPDATE STAGE ICONS
+// =============================================
+function setStageStatus(index, status) {
+  const sideIcon = document.getElementById('stageIcon' + index);
+  const vizNode = document.getElementById('vizNode' + index);
+
+  // SVG icons
+  const icons = {
+    queued: '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>',
+    running: '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1112 0A6 6 0 012 8z" opacity=".5"/><path d="M8 2a6 6 0 016 6h-2a4 4 0 00-4-4V2z"/></svg>',
+    success: '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>'
+  };
+
+  const vizIcons = {
+    queued: '<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>',
+    running: '<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1112 0A6 6 0 012 8z" opacity=".5"/><path d="M8 2a6 6 0 016 6h-2a4 4 0 00-4-4V2z"/></svg>',
+    success: '<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>'
+  };
+
+  if (sideIcon) {
+    sideIcon.className = 'stage-icon ' + status;
+    sideIcon.innerHTML = icons[status];
+  }
+
+  if (vizNode) {
+    vizNode.className = 'pipeline-node-circle ' + status;
+    vizNode.innerHTML = vizIcons[status];
+  }
+
+  // Log status dot
+  const logStatus = document.getElementById('logStatus' + index);
+  if (logStatus) {
+    logStatus.className = 'log-status ' + status + '-dot';
+  }
+
+  // Pipeline node class
+  const vizNodeParent = vizNode ? vizNode.parentElement : null;
+  if (vizNodeParent) {
+    vizNodeParent.classList.remove('done', 'active');
+    if (status === 'success') vizNodeParent.classList.add('done');
+    if (status === 'running') vizNodeParent.classList.add('active');
+  }
+}
+
+// =============================================
+// ANIMATE LOG LINES
+// =============================================
+function animateLogLines(stageIndex, callback) {
+  const logBody = document.getElementById('logBody' + stageIndex);
+  if (!logBody) { callback(); return; }
+
+  const lines = logBody.querySelectorAll('.log-line');
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < lines.length) {
+      lines[i].classList.add('visible');
+      logBody.scrollTop = logBody.scrollHeight;
+      i++;
+    } else {
+      clearInterval(interval);
+      if (callback) callback();
+    }
+  }, 180);
+}
+
+// =============================================
+// REVEAL CONTENT
+// =============================================
+function revealContent(stageIndex) {
+  const reveal = document.getElementById('reveal' + stageIndex);
+  if (reveal) {
+    setTimeout(() => reveal.classList.add('visible'), 300);
+  }
+}
+
+// =============================================
+// UPDATE PROGRESS
+// =============================================
+function updateProgress(stageIndex) {
+  const pct = ((stageIndex + 1) / STAGES.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  const stageName = STAGES[stageIndex] ? STAGES[stageIndex].name : '';
+  document.getElementById('progressText').textContent =
+    'Stage ' + (stageIndex + 1) + '/' + STAGES.length + ' -- ' + stageName + ' completed';
+}
+
+// =============================================
+// UPDATE ARROWS
+// =============================================
+function updateArrows(completedIndex) {
+  for (let i = 0; i < 4; i++) {
+    const arrow = document.getElementById('vizArrow' + i);
+    if (!arrow) continue;
+    arrow.classList.remove('done', 'active');
+    if (i < completedIndex) {
+      arrow.classList.add('done');
+    } else if (i === completedIndex) {
+      arrow.classList.add('active');
+    }
+  }
+}
+
+// =============================================
+// UPDATE SIDEBAR CONNECTORS
+// =============================================
+function updateConnectors(completedIndex) {
+  for (let i = 0; i < 4; i++) {
+    const conn = document.getElementById('stageConn' + i);
+    if (!conn) continue;
+    if (i <= completedIndex) {
+      conn.classList.add('done');
+    } else {
+      conn.classList.remove('done');
+    }
+  }
+}
+
+// =============================================
+// RUN A SINGLE STAGE
+// =============================================
+function runStage(index, onDone) {
+  currentStage = index;
+  showStage(index);
+
+  // Set running
+  setStageStatus(index, 'running');
+  if (index > 0) updateArrows(index - 1);
+
+  // Update workflow header
+  const badge = document.getElementById('workflowBadge');
+  badge.className = 'workflow-badge badge-running';
+  badge.textContent = 'Running: ' + STAGES[index].name;
+
+  const workflowIcon = document.getElementById('workflowIcon');
+  workflowIcon.className = 'status-icon running';
+
+  document.getElementById('progressText').textContent =
+    'Running stage ' + (index + 1) + '/' + STAGES.length + ': ' + STAGES[index].name + '...';
+
+  // Animate log lines
+  animateLogLines(index, () => {
+    // Stage complete
+    setStageStatus(index, 'success');
+
+    // Show time
+    const timeEl = document.getElementById('stageTime' + index);
+    if (timeEl) {
+      timeEl.textContent = STAGES[index].time;
+      timeEl.classList.add('visible');
+    }
+
+    // Log time
+    const logTimeEl = document.getElementById('logTime' + index);
+    if (logTimeEl) logTimeEl.textContent = STAGES[index].time;
+
+    // Update arrows
+    updateArrows(index);
+    updateConnectors(index);
+    updateProgress(index);
+
+    // Reveal content
+    revealContent(index);
+
+    // Delay before next stage
+    setTimeout(() => {
+      if (onDone) onDone();
+    }, 600);
+  });
+}
+
+// =============================================
+// START PIPELINE
+// =============================================
+function startPipeline() {
+  if (pipelineRunning) return;
+  pipelineRunning = true;
+
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('resetBtn').style.display = 'none';
+
+  // Start elapsed timer
+  totalElapsed = 0;
+  const timeDisplay = document.getElementById('workflowTime');
+  elapsedInterval = setInterval(() => {
+    totalElapsed++;
+    const m = Math.floor(totalElapsed / 60);
+    const s = totalElapsed % 60;
+    timeDisplay.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }, 1000);
+
+  // Run stages sequentially
+  const stages = [0, 1, 2, 3, 4];
+  let i = 0;
+
+  function next() {
+    if (i < stages.length) {
+      runStage(stages[i], () => {
+        i++;
+        next();
+      });
+    } else {
+      pipelineComplete();
+    }
+  }
+
+  next();
+}
+
+// =============================================
+// PIPELINE COMPLETE
+// =============================================
+function pipelineComplete() {
+  pipelineRunning = false;
+  clearInterval(elapsedInterval);
+
+  // Update header
+  const badge = document.getElementById('workflowBadge');
+  badge.className = 'workflow-badge badge-success';
+  badge.textContent = 'Success';
+
+  const workflowIcon = document.getElementById('workflowIcon');
+  workflowIcon.className = 'status-icon success';
+  workflowIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>';
+
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('progressBar').style.background = 'var(--green)';
+  document.getElementById('progressText').textContent = 'All 5 stages completed successfully';
+
+  // Show all passed banner
+  setTimeout(() => {
+    const banner = document.getElementById('allPassedBanner');
+    if (banner) banner.classList.add('visible');
+  }, 400);
+
+  document.getElementById('runBtn').style.display = 'none';
+  document.getElementById('resetBtn').style.display = 'flex';
+}
+
+// =============================================
+// RESET PIPELINE
+// =============================================
+function resetPipeline() {
+  pipelineRunning = false;
+  currentStage = -1;
+  clearInterval(elapsedInterval);
+
+  // Reset header
+  const badge = document.getElementById('workflowBadge');
+  badge.className = 'workflow-badge badge-queued';
+  badge.textContent = 'Queued';
+
+  const workflowIcon = document.getElementById('workflowIcon');
+  workflowIcon.className = 'status-icon pending';
+  workflowIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>';
+
+  document.getElementById('workflowTime').textContent = '--:--';
+
+  // Reset progress
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressBar').style.background = 'linear-gradient(90deg,var(--green),var(--blue))';
+  document.getElementById('progressText').textContent = 'Waiting to start...';
+
+  // Reset stages
+  for (let i = 0; i < 5; i++) {
+    setStageStatus(i, 'queued');
+
+    // Reset times
+    const timeEl = document.getElementById('stageTime' + i);
+    if (timeEl) { timeEl.textContent = '--'; timeEl.classList.remove('visible'); }
+
+    const logTimeEl = document.getElementById('logTime' + i);
+    if (logTimeEl) logTimeEl.textContent = '--';
+
+    // Reset log lines
+    const logBody = document.getElementById('logBody' + i);
+    if (logBody) {
+      logBody.querySelectorAll('.log-line').forEach(l => l.classList.remove('visible'));
+    }
+
+    // Reset content reveals
+    const reveal = document.getElementById('reveal' + i);
+    if (reveal) reveal.classList.remove('visible');
+  }
+
+  // Reset arrows
+  for (let i = 0; i < 4; i++) {
+    const arrow = document.getElementById('vizArrow' + i);
+    if (arrow) arrow.classList.remove('done', 'active');
+
+    const conn = document.getElementById('stageConn' + i);
+    if (conn) conn.classList.remove('done');
+  }
+
+  // Reset pipeline node classes
+  document.querySelectorAll('.pipeline-node').forEach(n => n.classList.remove('done', 'active'));
+
+  // Reset banner
+  const banner = document.getElementById('allPassedBanner');
+  if (banner) banner.classList.remove('visible');
+
+  // Reset buttons
+  document.getElementById('runBtn').style.display = 'flex';
+  document.getElementById('runBtn').disabled = false;
+  document.getElementById('resetBtn').style.display = 'none';
+
+  showStage(0);
+}
+
+// =============================================
+// INIT
+// =============================================
+showStage(0);
+</script>
+</body>
+</html>
