@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 - Page Not Found</title>
+<style>
+  /* ===== BASE RESET ===== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --error: #EF4444;
+    --error-dark: #DC2626;
+    --warn: #F59E0B;
+    --warn-dark: #D97706;
+    --success: #22C55E;
+    --success-dark: #16A34A;
+    --bg-dark: #1A1A1A;
+    --bg-darker: #111111;
+    --bg-terminal: #0D1117;
+    --text-primary: #E5E5E5;
+    --text-muted: #888888;
+    --accent-blue: #3B82F6;
+    --white: #FFFFFF;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 1s ease;
+  }
+
+  /* ===== STATUS BAR ===== */
+  .status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: var(--error);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--white);
+    z-index: 1000;
+    transition: background 0.8s ease;
+  }
+  .status-bar.fixing { background: var(--warn); }
+  .status-bar.fixed { background: var(--success); }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--white);
+    display: inline-block;
+    margin-right: 8px;
+    animation: blink-dot 1s infinite;
+  }
+  .status-bar.fixed .status-dot { animation: none; }
+  @keyframes blink-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {
+    margin-top: 40px;
+    padding: 40px 20px;
+    min-height: calc(100vh - 40px - 280px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ===== 404 ERROR STATE ===== */
+  .error-display {
+    text-align: center;
+    transition: all 1s ease;
+  }
+  .error-code {
+    font-size: clamp(80px, 15vw, 200px);
+    font-weight: 900;
+    color: var(--error);
+    line-height: 1;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+    transition: all 1s ease;
+    position: relative;
+  }
+  .error-code.glitch {
+    animation: glitch 0.3s infinite;
+  }
+  @keyframes glitch {
+    0% { transform: translate(0); text-shadow: 0 0 40px rgba(239, 68, 68, 0.4); }
+    20% { transform: translate(-3px, 2px); text-shadow: 3px 0 #00ffff, -3px 0 #ff00ff; }
+    40% { transform: translate(3px, -2px); text-shadow: -3px 0 #00ffff, 3px 0 #ff00ff; }
+    60% { transform: translate(-2px, -1px); text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff; }
+    80% { transform: translate(2px, 1px); text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff; }
+    100% { transform: translate(0); text-shadow: 0 0 40px rgba(239, 68, 68, 0.4); }
+  }
+  .error-code.fixing {
+    animation: none;
+    color: var(--warn);
+    text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+  }
+  .error-code.fixed {
+    animation: none;
+    font-size: clamp(40px, 6vw, 60px);
+    color: var(--success);
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+  .error-message {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    transition: all 0.8s ease;
+  }
+
+  /* ===== BROKEN CSS OVERLAY ===== */
+  .broken-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 500;
+    transition: opacity 0.5s ease;
+  }
+  .broken-overlay.hidden { opacity: 0; }
+  .broken-scanline {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(239, 68, 68, 0.03) 2px,
+      rgba(239, 68, 68, 0.03) 4px
+    );
+  }
+  .broken-flicker {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    animation: screen-flicker 4s infinite;
+  }
+  @keyframes screen-flicker {
+    0%, 95%, 100% { opacity: 0; }
+    96% { opacity: 0.05; background: var(--error); }
+    97% { opacity: 0; }
+    98% { opacity: 0.03; background: var(--error); }
+  }
+
+  /* ===== STACK TRACE ===== */
+  .stack-trace {
+    background: var(--bg-darker);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px;
+    max-width: 640px;
+    width: 100%;
+    text-align: left;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow: hidden;
+    transition: all 0.8s ease;
+  }
+  .stack-trace.hidden {
+    max-height: 0;
+    padding: 0 20px;
+    opacity: 0;
+    margin-top: 0;
+    border-color: transparent;
+  }
+  .stack-trace .error-type {
+    color: var(--error);
+    font-weight: bold;
+  }
+  .stack-trace .stack-line {
+    color: var(--text-muted);
+    padding-left: 16px;
+  }
+  .stack-trace .stack-file {
+    color: #6B7280;
+  }
+  .stack-trace .stack-highlight {
+    color: var(--warn);
+  }
+
+  /* ===== PORTFOLIO CONTENT (initially hidden) ===== */
+  .portfolio-content {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease;
+    pointer-events: none;
+  }
+  .portfolio-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  /* ===== HERO SECTION ===== */
+  .hero {
+    text-align: center;
+    padding: 40px 0 50px;
+  }
+  .hero-pretitle {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--success);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .hero-pretitle.visible { opacity: 1; }
+  .hero-name {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.8s ease;
+  }
+  .hero-name.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .hero-role {
+    font-size: clamp(16px, 3vw, 22px);
+    color: var(--text-muted);
+    font-weight: 400;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .hero-role.visible { opacity: 1; }
+  .hero-role span {
+    color: var(--accent-blue);
+    font-weight: 600;
+  }
+
+  /* ===== SKILLS ===== */
+  .skills-section {
+    padding: 30px 0;
+  }
+  .section-label {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--success);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(34, 197, 94, 0.2);
+  }
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .skill-tag {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--success);
+    opacity: 0;
+    transform: translateY(20px) rotate(-5deg);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .skill-tag.visible {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  .skill-tag.broken {
+    position: absolute;
+    opacity: 0.3;
+    border-color: var(--error);
+    color: var(--error);
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  /* ===== PROJECTS ===== */
+  .projects-section {
+    padding: 30px 0;
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .project-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 24px;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .project-card:nth-child(even) {
+    transform: translateX(40px);
+  }
+  .project-card.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .project-card:hover {
+    border-color: rgba(34, 197, 94, 0.3);
+    background: rgba(34, 197, 94, 0.03);
+  }
+  .project-card .card-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .project-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .project-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .project-card .card-tech {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .project-card .card-tech span {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 4px;
+    padding: 3px 8px;
+  }
+
+  /* ===== CONTACT ===== */
+  .contact-section {
+    padding: 40px 0;
+    text-align: center;
+  }
+  .contact-section h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .contact-section p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  .contact-link:hover {
+    border-color: var(--success);
+    color: var(--success);
+    background: rgba(34, 197, 94, 0.05);
+  }
+
+  /* ===== TERMINAL ===== */
+  .terminal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 280px;
+    background: var(--bg-terminal);
+    border-top: 2px solid var(--error);
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.8s ease;
+  }
+  .terminal.visible { transform: translateY(0); }
+  .terminal.fixing { border-top-color: var(--warn); }
+  .terminal.fixed { border-top-color: var(--success); }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    user-select: none;
+  }
+  .terminal-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .terminal-dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .terminal-dots span:nth-child(1) { background: #EF4444; }
+  .terminal-dots span:nth-child(2) { background: #F59E0B; }
+  .terminal-dots span:nth-child(3) { background: #22C55E; }
+  .terminal-title {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .terminal-body {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+    line-height: 1.9;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+  }
+  .terminal-body::-webkit-scrollbar { width: 6px; }
+  .terminal-body::-webkit-scrollbar-track { background: transparent; }
+  .terminal-body::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+  .term-line {
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .term-line.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .term-prompt { color: var(--success); }
+  .term-cmd { color: var(--white); }
+  .term-comment { color: #6B7280; font-style: italic; }
+  .term-output { color: var(--text-muted); }
+  .term-error { color: var(--error); }
+  .term-warn { color: var(--warn); }
+  .term-success { color: var(--success); }
+  .term-info { color: var(--accent-blue); }
+
+  /* ===== INTERACTIVE INPUT ===== */
+  .terminal-input-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .terminal-input-row.visible { opacity: 1; }
+  .terminal-input-row .prompt-sign {
+    color: var(--success);
+    margin-right: 8px;
+    user-select: none;
+  }
+  .terminal-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    caret-color: var(--success);
+  }
+
+  /* ===== FIX FLASH ===== */
+  .fix-flash {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--success);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2000;
+    transition: opacity 0.1s ease;
+  }
+  .fix-flash.active {
+    opacity: 0.08;
+    transition: opacity 0.05s ease;
+  }
+
+  /* ===== ACTION BUTTONS ===== */
+  .action-bar {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 30px 0 60px;
+    flex-wrap: wrap;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .action-bar.visible { opacity: 1; }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+  }
+  .btn-break {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--error);
+  }
+  .btn-break:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: var(--error);
+  }
+  .btn-deploy {
+    background: var(--success);
+    color: var(--bg-dark);
+  }
+  .btn-deploy:hover {
+    background: var(--success-dark);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+
+  /* ===== FINAL STATUS FOOTER ===== */
+  .build-status {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--bg-dark);
+    font-weight: 600;
+    transform: translateY(100%);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 950;
+  }
+  .build-status.visible { transform: translateY(0); }
+
+  /* ===== TYPING CURSOR ===== */
+  .typing-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: var(--success);
+    margin-left: 2px;
+    animation: cursor-blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+  @keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* ===== DEPLOY MODAL ===== */
+  .deploy-modal-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .deploy-modal-bg.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .deploy-modal {
+    background: var(--bg-darker);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .deploy-modal-bg.visible .deploy-modal {
+    transform: scale(1);
+  }
+  .deploy-modal .deploy-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .deploy-modal h3 {
+    font-size: 20px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .deploy-modal p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .deploy-modal .deploy-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .deploy-modal .deploy-bar-fill {
+    height: 100%;
+    background: var(--success);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 2s ease;
+  }
+  .deploy-modal .deploy-status-text {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--success);
+    margin-bottom: 20px;
+  }
+  .deploy-modal .btn-close {
+    padding: 8px 24px;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+  }
+  .deploy-modal .btn-close:hover {
+    border-color: var(--white);
+    color: var(--white);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .terminal { height: 220px; }
+    .main-content { min-height: calc(100vh - 40px - 220px); }
+    .stack-trace { font-size: 11px; padding: 14px; }
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="statusBar">
+    <div><span class="status-dot"></span><span id="statusCode">404 Not Found</span></div>
+    <div id="statusRight">anshullgarg.dev</div>
+  </div>
+
+  <!-- BROKEN OVERLAY -->
+  <div class="broken-overlay" id="brokenOverlay">
+    <div class="broken-scanline"></div>
+    <div class="broken-flicker"></div>
+  </div>
+
+  <!-- FIX FLASH -->
+  <div class="fix-flash" id="fixFlash"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
+
+    <!-- ERROR DISPLAY -->
+    <div class="error-display" id="errorDisplay">
+      <div class="error-code glitch" id="errorCode">404</div>
+      <div class="error-message" id="errorMessage">Oops! Something went wrong.</div>
+    </div>
+
+    <!-- STACK TRACE -->
+    <div class="stack-trace" id="stackTrace">
+      <div class="error-type">TypeError: Cannot read properties of undefined (reading 'portfolio')</div>
+      <div class="stack-line">at renderPage (<span class="stack-highlight">app.js:42</span>)</div>
+      <div class="stack-line">at processRequest (<span class="stack-file">router.js:87</span>)</div>
+      <div class="stack-line">at Server.handleRequest (<span class="stack-file">server.js:108</span>)</div>
+      <div class="stack-line">at Server.emit (<span class="stack-file">events.js:315</span>)</div>
+      <div class="stack-line">at parserOnIncoming (<span class="stack-file">_http_server.js:874</span>)</div>
+      <div style="margin-top:8px; color:#6B7280; font-size:11px;">// developer is not defined. Did you forget to initialize?</div>
+    </div>
+
+    <!-- PORTFOLIO CONTENT (hidden initially) -->
+    <div class="portfolio-content" id="portfolioContent">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-pretitle" id="heroPretitle">// developer.init() successful</div>
+        <h1 class="hero-name" id="heroName">Anshull Garg</h1>
+        <p class="hero-role" id="heroRole">Software Developer at <span>Walmart</span></p>
+      </div>
+
+      <!-- SKILLS -->
+      <div class="skills-section" id="skillsSection">
+        <div class="section-label">developer.skills</div>
+        <div class="skills-grid" id="skillsGrid"></div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="projects-section" id="projectsSection">
+        <div class="section-label">developer.projects</div>
+        <div class="projects-grid" id="projectsGrid"></div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="contact-section" id="contactSection">
+        <h2>Let's Connect</h2>
+        <p>The bugs are fixed, but the conversation is just getting started.</p>
+        <div class="contact-links">
+          <a href="#" class="contact-link" onclick="return false;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email
+          </a>
+          <a href="#" class="contact-link" onclick="return false;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+          <a href="#" class="contact-link" onclick="return false;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+
+      <!-- ACTION BAR -->
+      <div class="action-bar" id="actionBar">
+        <button class="btn btn-break" id="btnBreak" onclick="breakItAgain()">Break it again</button>
+        <button class="btn btn-deploy" id="btnDeploy" onclick="deploy()">Deploy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="terminal" id="terminal">
+    <div class="terminal-header">
+      <div class="terminal-dots"><span></span><span></span><span></span></div>
+      <div class="terminal-title">debug-console -- bash</div>
+      <div style="width:48px"></div>
+    </div>
+    <div class="terminal-body" id="terminalBody"></div>
+    <div class="terminal-input-row" id="inputRow">
+      <span class="prompt-sign">$</span>
+      <input class="terminal-input" id="terminalInput" type="text" placeholder="Type a command..." autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
+  <!-- BUILD STATUS -->
+  <div class="build-status" id="buildStatus">
+    <span>&#10003;</span> All tests passing &mdash; Build successful! 0 errors, 0 warnings
+  </div>
+
+  <!-- DEPLOY MODAL -->
+  <div class="deploy-modal-bg" id="deployModal">
+    <div class="deploy-modal">
+      <span class="deploy-icon">&#x1F680;</span>
+      <h3>Deploying...</h3>
+      <div class="deploy-bar"><div class="deploy-bar-fill" id="deployBarFill"></div></div>
+      <div class="deploy-status-text" id="deployStatusText">Initializing...</div>
+      <p id="deployDesc">Pushing to production. No pressure.</p>
+      <button class="btn-close" id="deployClose" onclick="closeDeployModal()">Close</button>
+    </div>
+  </div>
+
+<script>
+// ===== DATA =====
+const SKILLS = [
+  'React', 'Node.js', 'TypeScript', 'JavaScript', 'Python',
+  'Java', 'SQL', 'GraphQL', 'AWS', 'Docker',
+  'Redux', 'Next.js', 'REST APIs', 'CI/CD', 'Git'
+];
+
+const PROJECTS = [
+  {
+    icon: '\u{1F6D2}',
+    title: 'E-Commerce Platform',
+    desc: 'High-traffic storefront handling millions of daily transactions with real-time inventory sync.',
+    tech: ['React', 'Node.js', 'GraphQL']
+  },
+  {
+    icon: '\u{1F4CA}',
+    title: 'Analytics Dashboard',
+    desc: 'Internal analytics tool for monitoring supply chain metrics and operational KPIs.',
+    tech: ['TypeScript', 'D3.js', 'Python']
+  },
+  {
+    icon: '\u{26A1}',
+    title: 'Microservices Gateway',
+    desc: 'API gateway orchestrating 50+ microservices with load balancing and circuit breakers.',
+    tech: ['Java', 'Docker', 'AWS']
+  },
+  {
+    icon: '\u{1F50D}',
+    title: 'Search Optimization',
+    desc: 'Intelligent search system improving product discovery with ML-powered relevance ranking.',
+    tech: ['Python', 'Elasticsearch', 'React']
+  }
+];
+
+// ===== TERMINAL ENGINE =====
+const termBody = document.getElementById('terminalBody');
+let lineIndex = 0;
+
+function addLine(html, cls = '') {
+  const div = document.createElement('div');
+  div.className = 'term-line ' + cls;
+  div.innerHTML = html;
+  termBody.appendChild(div);
+  // trigger reflow then show
+  requestAnimationFrame(() => {
+    div.classList.add('visible');
+    termBody.scrollTop = termBody.scrollHeight;
+  });
+  return div;
+}
+
+function typeText(element, text, speed = 35) {
+  return new Promise(resolve => {
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    element.appendChild(cursor);
+
+    function tick() {
+      if (i < text.length) {
+        cursor.before(document.createTextNode(text[i]));
+        i++;
+        setTimeout(tick, speed + Math.random() * 20);
+      } else {
+        cursor.remove();
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+async function termType(prefix, text, cls = '', speed = 35) {
+  const line = addLine(prefix, cls);
+  await typeText(line, text, speed);
+  return line;
+}
+
+function termPrint(html, cls = '') {
+  return addLine(html, cls);
+}
+
+function flashFix() {
+  const el = document.getElementById('fixFlash');
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 150);
+}
+
+function wait(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+// ===== SEQUENCE =====
+let isPlaying = false;
+
+async function playSequence() {
+  if (isPlaying) return;
+  isPlaying = true;
+
+  const statusBar = document.getElementById('statusBar');
+  const errorCode = document.getElementById('errorCode');
+  const errorMessage = document.getElementById('errorMessage');
+  const stackTrace = document.getElementById('stackTrace');
+  const brokenOverlay = document.getElementById('brokenOverlay');
+  const terminal = document.getElementById('terminal');
+  const portfolioContent = document.getElementById('portfolioContent');
+  const errorDisplay = document.getElementById('errorDisplay');
+  const inputRow = document.getElementById('inputRow');
+  const buildStatus = document.getElementById('buildStatus');
+  const actionBar = document.getElementById('actionBar');
+
+  // Reset everything
+  statusBar.className = 'status-bar';
+  document.getElementById('statusCode').textContent = '404 Not Found';
+  errorCode.className = 'error-code glitch';
+  errorCode.textContent = '404';
+  errorMessage.textContent = 'Oops! Something went wrong.';
+  errorMessage.style.display = '';
+  stackTrace.className = 'stack-trace';
+  stackTrace.style.display = '';
+  brokenOverlay.className = 'broken-overlay';
+  terminal.className = 'terminal';
+  portfolioContent.className = 'portfolio-content';
+  errorDisplay.style.display = '';
+  inputRow.className = 'terminal-input-row';
+  buildStatus.className = 'build-status';
+  actionBar.className = 'action-bar';
+  termBody.innerHTML = '';
+  document.title = '404 - Page Not Found';
+  document.getElementById('skillsGrid').innerHTML = '';
+  document.getElementById('projectsGrid').innerHTML = '';
+
+  // Reset hero elements
+  document.getElementById('heroPretitle').className = 'hero-pretitle';
+  document.getElementById('heroName').className = 'hero-name';
+  document.getElementById('heroRole').className = 'hero-role';
+
+  // ===== PHASE 1: BROKEN (0-3s) =====
+  await wait(3000);
+
+  // ===== PHASE 2: DEBUGGING (3-6s) =====
+  terminal.classList.add('visible');
+  await wait(600);
+
+  await termType('<span class="term-comment">// </span>', 'Hmm, let me check what\'s wrong...', '', 40);
+  await wait(400);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'console.log(developer)</span>', '', 30);
+  await wait(300);
+  termPrint('<span class="term-error">undefined</span>');
+  await wait(600);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'typeof developer</span>', '', 30);
+  await wait(200);
+  termPrint('<span class="term-output">"undefined"</span>');
+  await wait(500);
+
+  termPrint('<span class="term-warn">// That\'s the problem. No developer instance created.</span>');
+  await wait(400);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'developer = new SoftwareDeveloper("Anshull Garg")</span>', '', 25);
+  await wait(300);
+  termPrint('<span class="term-output">SoftwareDeveloper { name: "Anshull Garg", initialized: true }</span>');
+  await wait(300);
+
+  termPrint('<span class="term-success">// Found the issue! Let me fix it...</span>');
+  await wait(500);
+
+  // Status -> Fixing
+  statusBar.classList.add('fixing');
+  terminal.classList.add('fixing');
+  document.getElementById('statusCode').textContent = '102 Processing...';
+  errorCode.classList.remove('glitch');
+  errorCode.classList.add('fixing');
+
+  // ===== PHASE 3: FIXING PART 1 (6-10s) =====
+  await wait(400);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'developer.setRole("Software Developer at Walmart")</span>', '', 22);
+  await wait(300);
+  termPrint('<span class="term-info">  -> Role set successfully</span>');
+  flashFix();
+  await wait(200);
+
+  // Fix hero text
+  errorCode.textContent = '200';
+  errorCode.classList.remove('fixing');
+  errorCode.classList.add('fixed');
+  errorMessage.textContent = 'Developer found. Loading portfolio...';
+  flashFix();
+  await wait(600);
+
+  // Remove broken overlay
+  brokenOverlay.classList.add('hidden');
+  await wait(300);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'developer.init()</span>', '', 30);
+  await wait(300);
+  termPrint('<span class="term-output">  Mounting components...</span>');
+  await wait(200);
+  termPrint('<span class="term-output">  Connecting to database...</span>');
+  await wait(200);
+  termPrint('<span class="term-success">  Portfolio engine started.</span>');
+  flashFix();
+  await wait(400);
+
+  // Hide error, show portfolio
+  stackTrace.classList.add('hidden');
+  await wait(400);
+  stackTrace.style.display = 'none';
+
+  errorDisplay.style.display = 'none';
+  portfolioContent.classList.add('visible');
+
+  // Show hero elements
+  await wait(200);
+  document.getElementById('heroPretitle').classList.add('visible');
+  await wait(200);
+  flashFix();
+  document.getElementById('heroName').classList.add('visible');
+  await wait(300);
+  document.getElementById('heroRole').classList.add('visible');
+
+  // ===== PHASE 4: FIXING PART 2 (10-15s) =====
+  await wait(400);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'developer.loadSkills(["React", "Node.js", "TypeScript", ...])</span>', '', 20);
+  await wait(300);
+  termPrint('<span class="term-info">  -> Loading ' + SKILLS.length + ' skills...</span>');
+
+  // Populate skills
+  const skillsGrid = document.getElementById('skillsGrid');
+  SKILLS.forEach((skill, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'skill-tag';
+    tag.textContent = skill;
+    skillsGrid.appendChild(tag);
+    setTimeout(() => {
+      tag.classList.add('visible');
+      if (i % 3 === 0) flashFix();
+    }, i * 100);
+  });
+
+  await wait(SKILLS.length * 100 + 300);
+  termPrint('<span class="term-success">  -> ' + SKILLS.length + ' skills loaded.</span>');
+  await wait(400);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'developer.loadProjects()</span>', '', 25);
+  await wait(300);
+
+  // Populate projects
+  const projectsGrid = document.getElementById('projectsGrid');
+  PROJECTS.forEach((proj, i) => {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML = `
+      <span class="card-icon">${proj.icon}</span>
+      <h3>${proj.title}</h3>
+      <p>${proj.desc}</p>
+      <div class="card-tech">${proj.tech.map(t => '<span>' + t + '</span>').join('')}</div>
+    `;
+    projectsGrid.appendChild(card);
+    setTimeout(() => {
+      card.classList.add('visible');
+      flashFix();
+    }, i * 250 + 100);
+  });
+
+  await wait(PROJECTS.length * 250 + 400);
+  termPrint('<span class="term-success">  -> ' + PROJECTS.length + ' projects loaded.</span>');
+  await wait(400);
+
+  await termType('<span class="term-prompt">$ </span><span class="term-cmd">', 'developer.fixCSS()</span>', '', 30);
+  await wait(200);
+  termPrint('<span class="term-output">  Repainting layout...</span>');
+  await wait(200);
+  termPrint('<span class="term-output">  Applying theme variables...</span>');
+  await wait(200);
+  termPrint('<span class="term-success">  CSS fixed. Layout stable.</span>');
+  flashFix();
+
+  // ===== PHASE 5: ALL FIXED (15-20s) =====
+  await wait(500);
+
+  statusBar.classList.remove('fixing');
+  statusBar.classList.add('fixed');
+  terminal.classList.remove('fixing');
+  terminal.classList.add('fixed');
+  document.getElementById('statusCode').textContent = '200 OK | All systems operational';
+  document.title = 'Anshull Garg | Software Developer';
+
+  await wait(300);
+  termPrint('');
+  termPrint('<span class="term-success">========================================</span>');
+  termPrint('<span class="term-success">  Build successful!</span>');
+  termPrint('<span class="term-success">  0 errors, 0 warnings</span>');
+  termPrint('<span class="term-success">  All tests passing.</span>');
+  termPrint('<span class="term-success">========================================</span>');
+  await wait(400);
+  termPrint('');
+  termPrint('<span class="term-comment">// Portfolio ready. Type "help" for available commands.</span>');
+
+  // Show interactive input
+  inputRow.classList.add('visible');
+  document.getElementById('terminalInput').focus();
+
+  // Show action bar
+  actionBar.classList.add('visible');
+
+  // Show build status bar
+  await wait(600);
+  buildStatus.classList.add('visible');
+
+  isPlaying = false;
+}
+
+// ===== INTERACTIVE TERMINAL =====
+const termInput = document.getElementById('terminalInput');
+termInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const cmd = termInput.value.trim();
+    termInput.value = '';
+    if (!cmd) return;
+    handleCommand(cmd);
+  }
+});
+
+function handleCommand(cmd) {
+  addLine('<span class="term-prompt">$ </span><span class="term-cmd">' + escapeHtml(cmd) + '</span>');
+
+  const lower = cmd.toLowerCase();
+
+  if (lower === 'help') {
+    termPrint('<span class="term-output">Available commands:</span>');
+    termPrint('<span class="term-info">  help</span>         <span class="term-output">Show this help</span>');
+    termPrint('<span class="term-info">  about</span>        <span class="term-output">About Anshull Garg</span>');
+    termPrint('<span class="term-info">  skills</span>       <span class="term-output">List all skills</span>');
+    termPrint('<span class="term-info">  projects</span>     <span class="term-output">List all projects</span>');
+    termPrint('<span class="term-info">  contact</span>      <span class="term-output">Contact information</span>');
+    termPrint('<span class="term-info">  clear</span>        <span class="term-output">Clear terminal</span>');
+    termPrint('<span class="term-info">  break</span>        <span class="term-output">Break the page (replay sequence)</span>');
+    termPrint('<span class="term-info">  deploy</span>       <span class="term-output">Deploy to production</span>');
+    termPrint('<span class="term-info">  status</span>       <span class="term-output">System status</span>');
+    termPrint('<span class="term-info">  sudo rm -rf /</span> <span class="term-output">Don\'t try this.</span>');
+  } else if (lower === 'about') {
+    termPrint('<span class="term-output">{</span>');
+    termPrint('<span class="term-info">  "name"</span><span class="term-output">: "Anshull Garg",</span>');
+    termPrint('<span class="term-info">  "role"</span><span class="term-output">: "Software Developer",</span>');
+    termPrint('<span class="term-info">  "company"</span><span class="term-output">: "Walmart",</span>');
+    termPrint('<span class="term-info">  "passion"</span><span class="term-output">: "Building scalable systems that serve millions",</span>');
+    termPrint('<span class="term-info">  "debugMode"</span><span class="term-output">: true</span>');
+    termPrint('<span class="term-output">}</span>');
+  } else if (lower === 'skills') {
+    termPrint('<span class="term-output">developer.skills = [</span>');
+    SKILLS.forEach((s, i) => {
+      termPrint('<span class="term-info">  "' + s + '"' + (i < SKILLS.length - 1 ? ',' : '') + '</span>');
+    });
+    termPrint('<span class="term-output">]  // ' + SKILLS.length + ' skills loaded</span>');
+  } else if (lower === 'projects') {
+    PROJECTS.forEach(p => {
+      termPrint('<span class="term-output">' + p.icon + ' <span class="term-info">' + p.title + '</span> - ' + p.desc.slice(0, 60) + '...</span>');
+    });
+  } else if (lower === 'contact') {
+    termPrint('<span class="term-info">  Email:</span>    <span class="term-output">anshull.garg@email.com</span>');
+    termPrint('<span class="term-info">  GitHub:</span>   <span class="term-output">github.com/anshullgarg</span>');
+    termPrint('<span class="term-info">  LinkedIn:</span> <span class="term-output">linkedin.com/in/anshullgarg</span>');
+  } else if (lower === 'clear') {
+    termBody.innerHTML = '';
+  } else if (lower === 'break') {
+    breakItAgain();
+  } else if (lower === 'deploy') {
+    deploy();
+  } else if (lower === 'status') {
+    termPrint('<span class="term-success">  Server:     ONLINE</span>');
+    termPrint('<span class="term-success">  Database:   CONNECTED</span>');
+    termPrint('<span class="term-success">  API:        HEALTHY</span>');
+    termPrint('<span class="term-success">  Uptime:     ' + Math.floor((Date.now() - startTime) / 1000) + 's</span>');
+    termPrint('<span class="term-success">  Errors:     0</span>');
+    termPrint('<span class="term-success">  Status:     ALL SYSTEMS GO</span>');
+  } else if (lower === 'sudo rm -rf /' || lower === 'sudo rm -rf / --no-preserve-root') {
+    termPrint('<span class="term-error">  Nice try. Permission denied.</span>');
+    termPrint('<span class="term-warn">  // Also, this is a portfolio, not a server.</span>');
+  } else if (lower.startsWith('echo ')) {
+    termPrint('<span class="term-output">' + escapeHtml(cmd.slice(5)) + '</span>');
+  } else if (lower === 'whoami') {
+    termPrint('<span class="term-output">visitor@anshullgarg.dev</span>');
+  } else if (lower === 'date') {
+    termPrint('<span class="term-output">' + new Date().toString() + '</span>');
+  } else if (lower === 'pwd') {
+    termPrint('<span class="term-output">/home/anshullgarg/portfolio</span>');
+  } else if (lower === 'ls') {
+    termPrint('<span class="term-info">index.html</span>  <span class="term-info">app.js</span>  <span class="term-info">styles.css</span>  <span class="term-output">package.json</span>  <span class="term-output">README.md</span>');
+    termPrint('<span class="term-info">components/</span>  <span class="term-info">utils/</span>  <span class="term-output">node_modules/</span>  <span class="term-output">.env</span>');
+  } else if (lower === 'cat .env') {
+    termPrint('<span class="term-error">  ACCESS DENIED</span>');
+    termPrint('<span class="term-warn">  // Nice try, secrets are safe.</span>');
+  } else if (lower === 'exit') {
+    termPrint('<span class="term-output">  Goodbye! Closing terminal...</span>');
+    setTimeout(() => {
+      document.getElementById('terminal').classList.remove('visible');
+      document.getElementById('buildStatus').classList.remove('visible');
+    }, 800);
+  } else if (lower === 'hire me' || lower === 'hire') {
+    termPrint('<span class="term-success">  Now you\'re talking! Let\'s chat.</span>');
+    termPrint('<span class="term-info">  -> Scroll up to the contact section.</span>');
+  } else if (lower === 'coffee' || lower === 'make coffee') {
+    termPrint('<span class="term-warn">  Brewing...</span>');
+    setTimeout(() => termPrint('<span class="term-output">  Here you go: \u2615 </span>'), 800);
+  } else {
+    termPrint('<span class="term-error">  Command not found: ' + escapeHtml(cmd) + '</span>');
+    termPrint('<span class="term-output">  Type "help" for available commands.</span>');
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== BREAK IT AGAIN =====
+function breakItAgain() {
+  if (isPlaying) return;
+  document.getElementById('buildStatus').classList.remove('visible');
+  document.getElementById('terminal').classList.remove('visible');
+  setTimeout(() => playSequence(), 400);
+}
+
+// ===== DEPLOY =====
+function deploy() {
+  const modal = document.getElementById('deployModal');
+  const fill = document.getElementById('deployBarFill');
+  const statusText = document.getElementById('deployStatusText');
+  const desc = document.getElementById('deployDesc');
+
+  modal.classList.add('visible');
+  fill.style.width = '0%';
+  statusText.textContent = 'Initializing...';
+  desc.textContent = 'Pushing to production. No pressure.';
+
+  setTimeout(() => { fill.style.width = '25%'; statusText.textContent = 'Running tests...'; }, 400);
+  setTimeout(() => { fill.style.width = '50%'; statusText.textContent = 'Building assets...'; }, 1000);
+  setTimeout(() => { fill.style.width = '75%'; statusText.textContent = 'Optimizing bundles...'; }, 1600);
+  setTimeout(() => {
+    fill.style.width = '100%';
+    statusText.textContent = 'Deployed successfully!';
+    desc.textContent = 'anshullgarg.dev is now live. Zero downtime deployment.';
+  }, 2200);
+}
+
+function closeDeployModal() {
+  document.getElementById('deployModal').classList.remove('visible');
+}
+
+// ===== INIT =====
+const startTime = Date.now();
+
+// Start the sequence once the page loads
+window.addEventListener('load', () => {
+  playSequence();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>npm install anshull-garg</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --green:#33FF66;
+    --green-dim:#1a8035;
+    --green-glow:rgba(51,255,102,.15);
+    --red:#CC3534;
+    --red-dim:#8a2322;
+    --bg:#0A0A0F;
+    --bg-lighter:#111118;
+    --bg-card:#0f0f17;
+    --text:#c8c8d0;
+    --text-dim:#666680;
+    --white:#e8e8f0;
+    --yellow:#f0c040;
+    --cyan:#40d0f0;
+    --magenta:#d060e0;
+    --blue:#4488ff;
+    --mono:'SF Mono','Fira Code','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace;
+  }
+
+  html{font-size:16px;scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--green);
+    font-family:var(--mono);
+    line-height:1.6;
+    overflow-x:hidden;
+    cursor:default;
+  }
+
+  ::selection{background:var(--green);color:var(--bg)}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:3px}
+
+  /* ── PHASE 1: TERMINAL ── */
+  #terminal-phase{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+
+  .terminal-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 20px;
+    background:#16161e;
+    border-bottom:1px solid #222230;
+    position:sticky;
+    top:0;
+    z-index:100;
+  }
+  .terminal-dot{
+    width:12px;height:12px;border-radius:50%;
+  }
+  .terminal-dot.r{background:#ff5f57}
+  .terminal-dot.y{background:#febc2e}
+  .terminal-dot.g{background:#28c840}
+  .terminal-title{
+    flex:1;text-align:center;
+    color:var(--text-dim);font-size:.75rem;
+    letter-spacing:.5px;
+  }
+
+  #terminal-output{
+    flex:1;
+    padding:24px 28px;
+    font-size:.9rem;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  .line{opacity:0;animation:lineIn .1s forwards}
+  @keyframes lineIn{to{opacity:1}}
+
+  .prompt{color:var(--green)}
+  .cmd{color:var(--white);font-weight:600}
+  .warn{color:var(--yellow)}
+  .err{color:var(--red)}
+  .info{color:var(--cyan)}
+  .dim{color:var(--text-dim)}
+  .success{color:var(--green)}
+  .pkg{color:var(--magenta)}
+  .kw{color:var(--blue)}
+  .str{color:var(--yellow)}
+
+  .cursor-blink{
+    display:inline-block;
+    width:8px;height:1.1em;
+    background:var(--green);
+    vertical-align:text-bottom;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap{
+    display:inline-block;width:200px;
+    background:#222230;height:10px;border-radius:5px;
+    overflow:hidden;vertical-align:middle;margin:0 8px;
+  }
+  .progress-bar-fill{
+    height:100%;width:0;
+    background:linear-gradient(90deg,var(--green-dim),var(--green));
+    border-radius:5px;
+    transition:width .05s linear;
+  }
+
+  /* ── INTERACTIVE INPUT ── */
+  #input-section{
+    display:none;
+    border-top:1px solid #222230;
+    padding:12px 28px;
+    background:#0e0e16;
+    position:sticky;
+    bottom:0;
+  }
+  #input-section.active{display:flex;align-items:center;gap:0}
+  #input-section .prompt-label{
+    color:var(--green);font-size:.9rem;white-space:nowrap;
+  }
+  #cmd-input{
+    flex:1;
+    background:transparent;border:none;outline:none;
+    color:var(--white);font-family:var(--mono);font-size:.9rem;
+    caret-color:var(--green);padding-left:4px;
+  }
+
+  /* ── PHASE 2: README ── */
+  #readme-phase{
+    display:none;
+    max-width:860px;
+    margin:0 auto;
+    padding:40px 28px 100px;
+  }
+  #readme-phase.active{display:block}
+
+  .readme-file-bar{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 16px;
+    background:#16161e;
+    border:1px solid #222230;
+    border-bottom:none;
+    border-radius:8px 8px 0 0;
+    color:var(--text-dim);font-size:.8rem;
+  }
+  .readme-file-bar svg{width:16px;height:16px;fill:var(--text-dim)}
+
+  .readme-body{
+    background:var(--bg-card);
+    border:1px solid #222230;
+    border-radius:0 0 8px 8px;
+    padding:40px 48px;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,var(--mono);
+    color:var(--text);
+    line-height:1.8;
+  }
+
+  .readme-body h1{
+    font-size:2rem;color:var(--white);
+    border-bottom:1px solid #222230;padding-bottom:16px;margin-bottom:20px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .readme-body h2{
+    font-size:1.35rem;color:var(--white);
+    margin:36px 0 16px;padding-bottom:8px;
+    border-bottom:1px solid #1a1a28;
+  }
+  .readme-body h3{
+    font-size:1.05rem;color:var(--green);margin:24px 0 10px;
+  }
+  .readme-body p{margin:10px 0}
+  .readme-body ul{padding-left:24px;margin:8px 0}
+  .readme-body li{margin:4px 0}
+  .readme-body a{color:var(--green);text-decoration:none;border-bottom:1px dashed var(--green-dim)}
+  .readme-body a:hover{color:var(--white);border-color:var(--white)}
+
+  .badge{
+    display:inline-block;
+    padding:3px 10px;border-radius:4px;
+    font-size:.7rem;font-weight:700;
+    font-family:var(--mono);letter-spacing:.3px;
+    vertical-align:middle;
+  }
+  .badge-green{background:#1a3a1a;color:var(--green);border:1px solid var(--green-dim)}
+  .badge-red{background:#3a1a1a;color:var(--red);border:1px solid var(--red-dim)}
+  .badge-blue{background:#1a1a3a;color:var(--blue);border:1px solid #334}
+  .badge-yellow{background:#3a3a1a;color:var(--yellow);border:1px solid #554}
+
+  .code-block{
+    background:#0a0a12;
+    border:1px solid #1a1a28;border-radius:6px;
+    padding:20px 24px;margin:12px 0;
+    font-family:var(--mono);font-size:.85rem;
+    color:var(--text);overflow-x:auto;
+    line-height:1.7;
+  }
+  .code-block .comment{color:var(--text-dim)}
+  .code-block .kw{color:var(--magenta)}
+  .code-block .fn{color:var(--blue)}
+  .code-block .str{color:var(--yellow)}
+  .code-block .num{color:var(--cyan)}
+  .code-block .type{color:var(--green)}
+
+  .inline-code{
+    background:#1a1a24;padding:2px 7px;border-radius:4px;
+    font-family:var(--mono);font-size:.82rem;color:var(--cyan);
+  }
+
+  .skill-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:12px;margin:16px 0;
+  }
+  .skill-card{
+    background:#0e0e18;border:1px solid #1a1a28;
+    border-radius:6px;padding:14px 18px;
+    transition:border-color .2s,transform .2s;
+  }
+  .skill-card:hover{border-color:var(--green-dim);transform:translateY(-2px)}
+  .skill-card .fn-name{color:var(--blue);font-family:var(--mono);font-size:.85rem}
+  .skill-card .fn-sig{color:var(--text-dim);font-family:var(--mono);font-size:.75rem;margin:4px 0}
+  .skill-card .fn-desc{color:var(--text);font-size:.82rem;margin-top:6px}
+
+  .changelog-entry{
+    border-left:3px solid var(--green-dim);
+    padding:16px 20px;margin:16px 0;
+    background:#0c0c14;border-radius:0 6px 6px 0;
+    transition:border-color .2s;
+  }
+  .changelog-entry:hover{border-color:var(--green)}
+  .changelog-entry .version{
+    color:var(--green);font-weight:700;font-size:1rem;
+    font-family:var(--mono);
+  }
+  .changelog-entry .date{color:var(--text-dim);font-size:.8rem;margin-left:8px}
+  .changelog-entry .org{color:var(--yellow);font-size:.85rem;margin-top:2px}
+  .changelog-entry .tag{
+    display:inline-block;padding:1px 8px;border-radius:3px;
+    font-size:.65rem;font-weight:600;margin-left:8px;
+    font-family:var(--mono);text-transform:uppercase;
+  }
+  .tag-added{background:#1a3a1a;color:var(--green)}
+  .tag-improved{background:#1a2a3a;color:var(--cyan)}
+  .tag-breaking{background:#3a1a1a;color:var(--red)}
+
+  .contact-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:12px;margin:16px 0;
+  }
+  .contact-card{
+    display:flex;align-items:center;gap:12px;
+    background:#0e0e18;border:1px solid #1a1a28;
+    border-radius:6px;padding:14px 18px;
+    text-decoration:none;color:var(--text);
+    transition:border-color .2s,transform .2s;
+    cursor:pointer;
+  }
+  .contact-card:hover{border-color:var(--green);transform:translateY(-2px);color:var(--white)}
+  .contact-card .icon{font-size:1.4rem}
+  .contact-card .label{font-size:.75rem;color:var(--text-dim);margin-bottom:2px}
+  .contact-card .value{font-size:.85rem;font-family:var(--mono)}
+
+  .pkg-json{
+    background:#0a0a12;border:1px solid #1a1a28;border-radius:6px;
+    padding:24px;margin:16px 0;font-family:var(--mono);
+    font-size:.82rem;color:var(--text);line-height:1.8;
+    overflow-x:auto;
+  }
+
+  /* ── BACK TO TOP ── */
+  #back-to-terminal{
+    position:fixed;bottom:24px;right:24px;
+    background:var(--bg-lighter);border:1px solid var(--green-dim);
+    color:var(--green);padding:10px 16px;border-radius:6px;
+    font-family:var(--mono);font-size:.8rem;cursor:pointer;
+    display:none;z-index:200;
+    transition:background .2s,transform .2s;
+  }
+  #back-to-terminal:hover{background:var(--green-dim);color:var(--bg);transform:translateY(-2px)}
+
+  /* ── SCANLINE ── */
+  #terminal-phase::after{
+    content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+    background:repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(51,255,102,.015) 2px,
+      rgba(51,255,102,.015) 4px
+    );
+    pointer-events:none;z-index:50;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:640px){
+    #terminal-output{padding:16px;font-size:.78rem}
+    .readme-body{padding:24px 20px}
+    .readme-body h1{font-size:1.4rem}
+    .skill-grid{grid-template-columns:1fr}
+    .contact-grid{grid-template-columns:1fr}
+    #input-section{padding:10px 16px}
+    .progress-bar-wrap{width:120px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════ TERMINAL PHASE ════════════ -->
+<div id="terminal-phase">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">anshull-garg@dev ~ npm</span>
+  </div>
+  <div id="terminal-output"></div>
+  <div id="input-section">
+    <span class="prompt-label">~/anshull-garg $&nbsp;</span>
+    <input id="cmd-input" type="text" spellcheck="false" autocomplete="off" placeholder="type a command...">
+  </div>
+</div>
+
+<!-- ════════════ README PHASE ════════════ -->
+<div id="readme-phase">
+  <div class="readme-file-bar">
+    <svg viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/></svg>
+    README.md
+  </div>
+  <div class="readme-body" id="readme-content"></div>
+</div>
+
+<button id="back-to-terminal" onclick="scrollToTerminal()">$ cd ~/terminal</button>
+
+<script>
+// ════════════════════════════════════════════
+//  TERMINAL ENGINE
+// ════════════════════════════════════════════
+const output = document.getElementById('terminal-output');
+const inputSection = document.getElementById('input-section');
+const cmdInput = document.getElementById('cmd-input');
+const readmePhase = document.getElementById('readme-phase');
+const backBtn = document.getElementById('back-to-terminal');
+
+let typingSpeed = 35;
+let lineDelay = 60;
+let currentLineEl = null;
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function addLine(html, cls) {
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  div.innerHTML = html;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+  return div;
+}
+
+async function typeText(text, cls, speed) {
+  speed = speed || typingSpeed;
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  output.appendChild(div);
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor-blink';
+  div.appendChild(cursor);
+
+  for (let i = 0; i < text.length; i++) {
+    const span = document.createElement('span');
+    span.innerHTML = text[i] === ' ' ? '&nbsp;' : text.charAt(i);
+    div.insertBefore(span, cursor);
+    output.scrollTop = output.scrollHeight;
+    // Variable speed for realism
+    const variance = (Math.random() - 0.5) * speed * 0.6;
+    await sleep(speed + variance);
+  }
+  cursor.remove();
+  // Replace spans with innerHTML for cleanliness
+  div.innerHTML = text;
+  return div;
+}
+
+async function typeHTML(htmlParts, speed) {
+  // htmlParts = [{text, cls}]
+  speed = speed || typingSpeed;
+  const div = document.createElement('div');
+  div.className = 'line';
+  output.appendChild(div);
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor-blink';
+  div.appendChild(cursor);
+
+  let fullHTML = '';
+  for (const part of htmlParts) {
+    const openTag = part.cls ? `<span class="${part.cls}">` : '';
+    const closeTag = part.cls ? '</span>' : '';
+    for (let i = 0; i < part.text.length; i++) {
+      fullHTML += openTag + (part.text[i] === ' ' ? '&nbsp;' : part.text.charAt(i)) + closeTag;
+      div.innerHTML = fullHTML + '<span class="cursor-blink"></span>';
+      output.scrollTop = output.scrollHeight;
+      const variance = (Math.random() - 0.5) * speed * 0.5;
+      await sleep(speed + variance);
+    }
+  }
+  cursor.remove();
+  div.innerHTML = fullHTML.replace(/&nbsp;/g, ' ');
+  return div;
+}
+
+async function promptType(cmd, speed) {
+  speed = speed || 30;
+  const div = document.createElement('div');
+  div.className = 'line';
+  output.appendChild(div);
+  div.innerHTML = '<span class="prompt">~/anshull-garg $ </span><span class="cursor-blink"></span>';
+  await sleep(400);
+
+  let typed = '';
+  for (let i = 0; i < cmd.length; i++) {
+    typed += cmd[i];
+    div.innerHTML = '<span class="prompt">~/anshull-garg $ </span><span class="cmd">' + typed + '</span><span class="cursor-blink"></span>';
+    output.scrollTop = output.scrollHeight;
+    const variance = (Math.random() - 0.5) * speed * 0.7;
+    await sleep(speed + variance);
+  }
+  await sleep(300);
+  div.innerHTML = '<span class="prompt">~/anshull-garg $ </span><span class="cmd">' + cmd + '</span>';
+  return div;
+}
+
+async function showProgressBar(duration) {
+  const wrap = document.createElement('div');
+  wrap.className = 'line';
+  wrap.innerHTML = '<span class="dim">resolving </span><span class="progress-bar-wrap"><span class="progress-bar-fill" id="pb-fill"></span></span><span class="dim" id="pb-pct"> 0%</span>';
+  output.appendChild(wrap);
+  output.scrollTop = output.scrollHeight;
+
+  const fill = document.getElementById('pb-fill');
+  const pct = document.getElementById('pb-pct');
+  const steps = 40;
+  const stepTime = duration / steps;
+
+  for (let i = 1; i <= steps; i++) {
+    const p = Math.round((i / steps) * 100);
+    fill.style.width = p + '%';
+    pct.textContent = ' ' + p + '%';
+    output.scrollTop = output.scrollHeight;
+    await sleep(stepTime + (Math.random() - 0.5) * stepTime * 0.4);
+  }
+  await sleep(200);
+  wrap.remove();
+}
+
+// ════════════════════════════════════════════
+//  MAIN BOOT SEQUENCE
+// ════════════════════════════════════════════
+async function bootSequence() {
+  await sleep(600);
+
+  // ── npm install ──
+  await promptType('npm install anshull-garg');
+  await sleep(300);
+
+  addLine('<span class="warn">npm</span> <span class="dim">WARN</span> resolving dependencies...');
+  await sleep(200);
+
+  await showProgressBar(2200);
+
+  const deps = [
+    ['react', '18.2.0'],
+    ['node', '20.10.0'],
+    ['typescript', '5.3.0'],
+    ['next.js', '14.0.4'],
+    ['aws-sdk', '3.400.0'],
+    ['docker', '24.0.7'],
+    ['kubernetes', '1.28.0'],
+    ['postgresql', '16.1.0'],
+    ['redis', '7.2.0'],
+    ['graphql', '16.8.0'],
+  ];
+
+  // Simulate dependency install
+  for (let i = 0; i < deps.length; i++) {
+    const d = deps[i];
+    addLine('<span class="dim">  ' + (i === deps.length - 1 ? '\\u2514' : '\\u251C') + '\\u2500\\u2500 </span><span class="pkg">' + d[0] + '</span><span class="dim">@</span><span class="info">' + d[1] + '</span>');
+    await sleep(80 + Math.random() * 60);
+  }
+
+  await sleep(400);
+  addLine('');
+  addLine('<span class="success">added 47 packages</span> in <span class="info">4.2s</span>');
+  addLine('');
+  addLine('<span class="dim">47 packages are looking for funding</span>');
+  addLine('<span class="dim">  run `npm fund` for details</span>');
+
+  await sleep(800);
+  addLine('');
+
+  // ── npm info ──
+  await promptType('npm info anshull-garg');
+  await sleep(400);
+
+  addLine('');
+  addLine('<span class="pkg">anshull-garg</span><span class="dim">@</span><span class="info">4.2.0</span> <span class="dim">|</span> <span class="success">MIT</span> <span class="dim">|</span> deps: <span class="info">47</span> <span class="dim">|</span> versions: <span class="info">12</span>');
+  addLine('');
+  addLine('<span class="white" style="color:var(--white);font-weight:600">Software Developer at Walmart</span>');
+  addLine('<span class="dim">Building systems that serve millions</span>');
+  addLine('');
+
+  await sleep(300);
+
+  addLine('<span class="str">CURRENT TAGS:</span>');
+  addLine('  <span class="success">latest</span>: <span class="info">4.2.0</span> <span class="dim">(Walmart - Software Developer)</span>');
+  addLine('  <span class="warn">stable</span>: <span class="info">3.0.0</span> <span class="dim">(Previous Role)</span>');
+  addLine('  <span class="dim">legacy</span>: <span class="info">1.0.0</span> <span class="dim">(First Steps)</span>');
+  addLine('');
+
+  await sleep(200);
+
+  addLine('<span class="str">KEYWORDS:</span> <span class="dim">react, node, typescript, next.js, full-stack, walmart, scalable, aws</span>');
+  addLine('');
+  addLine('<span class="str">HOMEPAGE:</span> <span class="info">anshullgarg.dev</span>');
+  addLine('<span class="str">REPOSITORY:</span> <span class="info">github.com/anshullgarg</span>');
+
+  await sleep(900);
+  addLine('');
+
+  // ── cat README ──
+  await promptType('cat README.md');
+  await sleep(500);
+
+  addLine('');
+  addLine('<span class="dim">--- rendering markdown ---</span>');
+  await sleep(600);
+
+  // Show README
+  renderReadme();
+  readmePhase.classList.add('active');
+  await sleep(200);
+
+  // Smooth scroll to readme
+  readmePhase.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  await sleep(600);
+
+  // Activate interactive input
+  inputSection.classList.add('active');
+  backBtn.style.display = 'block';
+}
+
+// ════════════════════════════════════════════
+//  INTERACTIVE COMMANDS
+// ════════════════════════════════════════════
+const commandHelp = {
+  'help': true,
+  'npm info': true,
+  'npm test': true,
+  'npm run build': true,
+  'npm run contact': true,
+  'npm run skills': true,
+  'npm fund': true,
+  'cat package.json': true,
+  'clear': true,
+  'whoami': true,
+  'npm start': true,
+};
+
+async function handleCommand(raw) {
+  const cmd = raw.trim().toLowerCase();
+  if (!cmd) return;
+
+  // Add the command line
+  addLine('<span class="prompt">~/anshull-garg $ </span><span class="cmd">' + escapeHtml(raw.trim()) + '</span>');
+
+  if (cmd === 'help' || cmd === '--help' || cmd === '-h') {
+    addLine('');
+    addLine('<span class="str">Available commands:</span>');
+    addLine('');
+    addLine('  <span class="cmd">npm info</span>          <span class="dim">Show package details</span>');
+    addLine('  <span class="cmd">npm test</span>          <span class="dim">Run the test suite</span>');
+    addLine('  <span class="cmd">npm run build</span>     <span class="dim">Build the project</span>');
+    addLine('  <span class="cmd">npm run contact</span>   <span class="dim">Get in touch</span>');
+    addLine('  <span class="cmd">npm run skills</span>    <span class="dim">List all skills</span>');
+    addLine('  <span class="cmd">npm fund</span>          <span class="dim">Support information</span>');
+    addLine('  <span class="cmd">npm start</span>         <span class="dim">Start the portfolio</span>');
+    addLine('  <span class="cmd">cat package.json</span>  <span class="dim">View package manifest</span>');
+    addLine('  <span class="cmd">whoami</span>            <span class="dim">Who is this?</span>');
+    addLine('  <span class="cmd">clear</span>             <span class="dim">Clear the terminal</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm info' || cmd === 'npm info anshull-garg') {
+    addLine('');
+    addLine('<span class="pkg">anshull-garg</span><span class="dim">@</span><span class="info">4.2.0</span> <span class="dim">|</span> <span class="success">MIT</span> <span class="dim">|</span> deps: <span class="info">47</span> <span class="dim">|</span> versions: <span class="info">12</span>');
+    addLine('');
+    addLine('<span style="color:var(--white);font-weight:600">Software Developer at Walmart</span>');
+    addLine('<span class="dim">Building systems that serve millions</span>');
+    addLine('');
+    addLine('<span class="str">dist-tags:</span>');
+    addLine('  <span class="success">latest</span>: 4.2.0    <span class="warn">stable</span>: 3.0.0    <span class="dim">legacy</span>: 1.0.0');
+    addLine('');
+  }
+  else if (cmd === 'npm test' || cmd === 'npm t') {
+    addLine('');
+    addLine('<span class="dim">> anshull-garg@4.2.0 test</span>');
+    addLine('<span class="dim">> jest --coverage</span>');
+    addLine('');
+    await sleep(300);
+
+    const tests = [
+      ['communication', 'speaks human and machine fluently'],
+      ['problem-solving', 'finds solutions others miss'],
+      ['react-mastery', 'component architecture is second nature'],
+      ['system-design', 'designs for scale from day one'],
+      ['collaboration', 'multiplies team output'],
+      ['debugging', 'finds the bug before it finds the user'],
+      ['adaptability', 'learns new stacks in record time'],
+      ['ownership', 'ships and stands behind every line'],
+    ];
+
+    for (const t of tests) {
+      addLine('  <span class="success">PASS</span>  <span class="dim">src/__tests__/</span><span class="info">' + t[0] + '.test.ts</span>');
+      addLine('    <span class="success">\\u2713</span> <span class="dim">' + t[1] + '</span>');
+      await sleep(120);
+    }
+
+    addLine('');
+    addLine('<span class="str">Test Suites:</span>  <span class="success">8 passed</span>, 8 total');
+    addLine('<span class="str">Tests:</span>       <span class="success">8 passed</span>, 8 total');
+    addLine('<span class="str">Coverage:</span>    <span class="success">100%</span>');
+    addLine('<span class="str">Time:</span>        <span class="dim">2.847s</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm run build') {
+    addLine('');
+    addLine('<span class="dim">> anshull-garg@4.2.0 build</span>');
+    addLine('<span class="dim">> next build</span>');
+    addLine('');
+    await sleep(200);
+
+    const buildSteps = [
+      ['Compiling experience...', 300],
+      ['Bundling skills...', 250],
+      ['Optimizing performance...', 350],
+      ['Generating static pages...', 200],
+      ['Analyzing bundle size...', 150],
+    ];
+
+    for (const s of buildSteps) {
+      addLine('<span class="info">  \\u25B6</span> <span class="dim">' + s[0] + '</span>');
+      await sleep(s[1]);
+      // Replace last line with success
+    }
+
+    addLine('');
+    addLine('<span class="success">\\u2714 Build completed successfully</span>');
+    addLine('');
+    addLine('  <span class="dim">Route                        Size     First Load</span>');
+    addLine('  <span class="dim">\\u250C</span> <span class="info">/</span>                          <span class="success">4.2 kB</span>   <span class="dim">87 kB</span>');
+    addLine('  <span class="dim">\\u251C</span> <span class="info">/experience</span>               <span class="success">2.1 kB</span>   <span class="dim">64 kB</span>');
+    addLine('  <span class="dim">\\u251C</span> <span class="info">/skills</span>                   <span class="success">1.8 kB</span>   <span class="dim">58 kB</span>');
+    addLine('  <span class="dim">\\u2514</span> <span class="info">/contact</span>                  <span class="success">0.9 kB</span>   <span class="dim">42 kB</span>');
+    addLine('');
+    addLine('<span class="dim">  First Load JS shared by all: </span><span class="success">38 kB</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm run contact') {
+    addLine('');
+    addLine('<span class="str">\\u2709  Contact Information</span>');
+    addLine('');
+    addLine('  <span class="info">Email:</span>     <span style="color:var(--white)">anshullgarg@gmail.com</span>');
+    addLine('  <span class="info">GitHub:</span>    <span style="color:var(--white)">github.com/anshullgarg</span>');
+    addLine('  <span class="info">LinkedIn:</span>  <span style="color:var(--white)">linkedin.com/in/anshullgarg</span>');
+    addLine('  <span class="info">Website:</span>   <span style="color:var(--white)">anshullgarg.dev</span>');
+    addLine('');
+    addLine('<span class="success">Open to opportunities? </span><span class="warn">Yes</span>');
+    addLine('<span class="dim">Let\'s build something amazing together.</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm run skills') {
+    addLine('');
+    addLine('<span class="str">\\u{1F527}  Skills & Dependencies</span>');
+    addLine('');
+    addLine('<span class="warn">Frontend:</span>');
+    addLine('  <span class="pkg">react</span>@18.2.0  <span class="pkg">next.js</span>@14.0.4  <span class="pkg">typescript</span>@5.3.0');
+    addLine('  <span class="pkg">tailwind</span>@3.4.0  <span class="pkg">redux</span>@5.0.0  <span class="pkg">graphql</span>@16.8.0');
+    addLine('');
+    addLine('<span class="warn">Backend:</span>');
+    addLine('  <span class="pkg">node</span>@20.10.0  <span class="pkg">express</span>@4.18.0  <span class="pkg">nest.js</span>@10.2.0');
+    addLine('  <span class="pkg">postgresql</span>@16.1.0  <span class="pkg">redis</span>@7.2.0  <span class="pkg">mongodb</span>@7.0.0');
+    addLine('');
+    addLine('<span class="warn">Infrastructure:</span>');
+    addLine('  <span class="pkg">aws-sdk</span>@3.400.0  <span class="pkg">docker</span>@24.0.7  <span class="pkg">kubernetes</span>@1.28.0');
+    addLine('  <span class="pkg">terraform</span>@1.6.0  <span class="pkg">github-actions</span>@latest  <span class="pkg">jenkins</span>@2.4.0');
+    addLine('');
+    addLine('<span class="dim">Total: 47 production dependencies</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm fund') {
+    addLine('');
+    addLine('<span class="pkg">anshull-garg</span><span class="dim">@4.2.0</span>');
+    addLine('');
+    addLine('<span class="str">\\u2764  Ways to support:</span>');
+    addLine('');
+    addLine('  <span class="info">\\u2022</span> <span style="color:var(--white)">Hire me for your next project</span>');
+    addLine('  <span class="info">\\u2022</span> <span style="color:var(--white)">Refer me to your network</span>');
+    addLine('  <span class="info">\\u2022</span> <span style="color:var(--white)">Star my repos on GitHub</span>');
+    addLine('  <span class="info">\\u2022</span> <span style="color:var(--white)">Connect on LinkedIn</span>');
+    addLine('');
+    addLine('<span class="dim">Your support helps maintain this open-source developer.</span>');
+    addLine('');
+  }
+  else if (cmd === 'cat package.json') {
+    addLine('');
+    addLine('{');
+    addLine('  <span class="str">"name"</span>: <span class="str">"anshull-garg"</span>,');
+    addLine('  <span class="str">"version"</span>: <span class="str">"4.2.0"</span>,');
+    addLine('  <span class="str">"description"</span>: <span class="str">"Software Developer building at scale"</span>,');
+    addLine('  <span class="str">"main"</span>: <span class="str">"./brain/index.ts"</span>,');
+    addLine('  <span class="str">"scripts"</span>: {');
+    addLine('    <span class="str">"dev"</span>: <span class="str">"think --watch"</span>,');
+    addLine('    <span class="str">"build"</span>: <span class="str">"learn && ship"</span>,');
+    addLine('    <span class="str">"test"</span>: <span class="str">"jest --coverage"</span>,');
+    addLine('    <span class="str">"deploy"</span>: <span class="str">"push-to-prod --with-confidence"</span>');
+    addLine('  },');
+    addLine('  <span class="str">"keywords"</span>: [');
+    addLine('    <span class="str">"react"</span>, <span class="str">"node"</span>, <span class="str">"typescript"</span>, <span class="str">"next.js"</span>,');
+    addLine('    <span class="str">"aws"</span>, <span class="str">"docker"</span>, <span class="str">"full-stack"</span>, <span class="str">"scalable"</span>');
+    addLine('  ],');
+    addLine('  <span class="str">"author"</span>: <span class="str">"Anshull Garg &lt;anshullgarg@gmail.com&gt;"</span>,');
+    addLine('  <span class="str">"license"</span>: <span class="str">"MIT"</span>,');
+    addLine('  <span class="str">"repository"</span>: {');
+    addLine('    <span class="str">"type"</span>: <span class="str">"git"</span>,');
+    addLine('    <span class="str">"url"</span>: <span class="str">"https://github.com/anshullgarg"</span>');
+    addLine('  },');
+    addLine('  <span class="str">"engines"</span>: {');
+    addLine('    <span class="str">"coffee"</span>: <span class="str">">=3 cups/day"</span>,');
+    addLine('    <span class="str">"curiosity"</span>: <span class="str">"*"</span>');
+    addLine('  },');
+    addLine('  <span class="str">"dependencies"</span>: {');
+    addLine('    <span class="str">"react"</span>: <span class="str">"^18.2.0"</span>,');
+    addLine('    <span class="str">"typescript"</span>: <span class="str">"^5.3.0"</span>,');
+    addLine('    <span class="str">"next"</span>: <span class="str">"^14.0.4"</span>,');
+    addLine('    <span class="str">"node"</span>: <span class="str">"^20.10.0"</span>,');
+    addLine('    <span class="str">"aws-sdk"</span>: <span class="str">"^3.400.0"</span>,');
+    addLine('    <span class="str">"docker"</span>: <span class="str">"^24.0.7"</span>,');
+    addLine('    <span class="str">"passion"</span>: <span class="str">"infinity"</span>');
+    addLine('  }');
+    addLine('}');
+    addLine('');
+  }
+  else if (cmd === 'clear') {
+    output.innerHTML = '';
+  }
+  else if (cmd === 'whoami') {
+    addLine('');
+    addLine('<span style="color:var(--white);font-weight:600">Anshull Garg</span>');
+    addLine('<span class="dim">Software Developer @ Walmart Global Tech</span>');
+    addLine('<span class="dim">Full-stack engineer who builds systems that scale.</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm start') {
+    addLine('');
+    addLine('<span class="dim">> anshull-garg@4.2.0 start</span>');
+    addLine('<span class="dim">> next start</span>');
+    addLine('');
+    await sleep(300);
+    addLine('<span class="success">\\u25B6 Ready</span> on <span class="info">http://localhost:3000</span>');
+    addLine('');
+    addLine('<span class="dim">  \\u250C Local:    http://localhost:3000</span>');
+    addLine('<span class="dim">  \\u2514 Network:  http://192.168.1.42:3000</span>');
+    addLine('');
+    addLine('<span class="warn">Portfolio is live. Let\'s go.</span>');
+    addLine('');
+  }
+  else if (cmd === 'npm install' || cmd === 'npm i') {
+    addLine('');
+    addLine('<span class="success">up to date</span>, audited <span class="info">47</span> packages in <span class="info">0.8s</span>');
+    addLine('');
+    addLine('<span class="dim">found 0 vulnerabilities</span>');
+    addLine('');
+  }
+  else if (cmd === 'exit' || cmd === 'quit') {
+    addLine('');
+    addLine('<span class="dim">Thanks for visiting. See you in the next release.</span>');
+    addLine('');
+  }
+  else if (cmd.startsWith('sudo')) {
+    addLine('');
+    addLine('<span class="err">Permission denied:</span> <span class="dim">Nice try. I respect the audacity.</span>');
+    addLine('');
+  }
+  else if (cmd === 'ls') {
+    addLine('');
+    addLine('<span class="info">README.md</span>  <span class="info">package.json</span>  <span class="str">src/</span>  <span class="str">node_modules/</span>  <span class="dim">.gitignore</span>  <span class="dim">tsconfig.json</span>');
+    addLine('');
+  }
+  else if (cmd === 'pwd') {
+    addLine('/home/anshull-garg');
+  }
+  else {
+    addLine('');
+    addLine('<span class="err">zsh: command not found:</span> <span class="dim">' + escapeHtml(raw.trim()) + '</span>');
+    addLine('<span class="dim">Type </span><span class="cmd">help</span><span class="dim"> for available commands</span>');
+    addLine('');
+  }
+
+  output.scrollTop = output.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Input handling
+cmdInput.addEventListener('keydown', async function(e) {
+  if (e.key === 'Enter') {
+    const val = cmdInput.value;
+    cmdInput.value = '';
+    cmdInput.disabled = true;
+    await handleCommand(val);
+    cmdInput.disabled = false;
+    cmdInput.focus();
+  }
+});
+
+// Click terminal to focus input
+document.getElementById('terminal-phase').addEventListener('click', function() {
+  if (inputSection.classList.contains('active')) {
+    cmdInput.focus();
+  }
+});
+
+function scrollToTerminal() {
+  document.getElementById('terminal-phase').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => cmdInput.focus(), 400);
+}
+
+// Show/hide back button
+window.addEventListener('scroll', function() {
+  if (window.scrollY > window.innerHeight * 0.5) {
+    backBtn.style.display = 'block';
+  }
+});
+
+// ════════════════════════════════════════════
+//  README RENDERER
+// ════════════════════════════════════════════
+function renderReadme() {
+  const el = document.getElementById('readme-content');
+  el.innerHTML = `
+    <h1>
+      anshull-garg
+      <span class="badge badge-green">build: passing</span>
+      <span class="badge badge-red">npm: v4.2.0</span>
+      <span class="badge badge-blue">downloads: 47k/week</span>
+      <span class="badge badge-yellow">license: MIT</span>
+    </h1>
+
+    <p style="font-size:1.1rem;color:var(--white);">
+      A highly reliable, full-stack software developer optimized for building scalable systems that serve millions.
+      Currently deployed at <strong style="color:var(--green)">Walmart Global Tech</strong>.
+    </p>
+
+    <h2>Installation</h2>
+    <div class="code-block">
+<span class="comment"># Using npm</span>
+$ npm install anshull-garg
+
+<span class="comment"># Using yarn</span>
+$ yarn add anshull-garg
+
+<span class="comment"># Using pnpm</span>
+$ pnpm add anshull-garg
+    </div>
+
+    <h2>Quick Start</h2>
+    <div class="code-block">
+<span class="kw">import</span> { <span class="type">Developer</span> } <span class="kw">from</span> <span class="str">'anshull-garg'</span>;
+
+<span class="kw">const</span> <span class="fn">anshull</span> = <span class="kw">new</span> <span class="type">Developer</span>({
+  <span class="fn">role</span>: <span class="str">'Software Developer'</span>,
+  <span class="fn">company</span>: <span class="str">'Walmart'</span>,
+  <span class="fn">passion</span>: <span class="num">Infinity</span>,
+  <span class="fn">coffeePerDay</span>: <span class="num">3</span>,
+});
+
+<span class="comment">// Start building something incredible</span>
+<span class="kw">await</span> <span class="fn">anshull</span>.<span class="fn">build</span>({
+  <span class="fn">scale</span>: <span class="str">'millions-of-users'</span>,
+  <span class="fn">quality</span>: <span class="str">'production-grade'</span>,
+  <span class="fn">tests</span>: <span class="kw">true</span>,
+});
+
+<span class="comment">// Returns: a system that just works</span>
+    </div>
+
+    <h2>API Reference</h2>
+    <p>Core methods exposed by the <span class="inline-code">anshull-garg</span> package:</p>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="fn-name">.buildFrontend()</div>
+        <div class="fn-sig">(config: ReactConfig) => UIComponent</div>
+        <div class="fn-desc">React, Next.js, TypeScript, Tailwind CSS. Component libraries, SPAs, and server-rendered apps.</div>
+      </div>
+      <div class="skill-card">
+        <div class="fn-name">.buildBackend()</div>
+        <div class="fn-sig">(config: ServerConfig) => API</div>
+        <div class="fn-desc">Node.js, Express, NestJS. REST and GraphQL APIs built for throughput and reliability.</div>
+      </div>
+      <div class="skill-card">
+        <div class="fn-name">.designSystem()</div>
+        <div class="fn-sig">(requirements: SystemReq) => Architecture</div>
+        <div class="fn-desc">Distributed systems, microservices, event-driven architecture. Designed to scale from day one.</div>
+      </div>
+      <div class="skill-card">
+        <div class="fn-name">.deployInfra()</div>
+        <div class="fn-sig">(stack: CloudStack) => Infrastructure</div>
+        <div class="fn-desc">AWS, Docker, Kubernetes, Terraform. CI/CD pipelines and infrastructure as code.</div>
+      </div>
+      <div class="skill-card">
+        <div class="fn-name">.manageData()</div>
+        <div class="fn-sig">(schema: DataModel) => Database</div>
+        <div class="fn-desc">PostgreSQL, MongoDB, Redis. Data modeling, query optimization, and caching strategies.</div>
+      </div>
+      <div class="skill-card">
+        <div class="fn-name">.collaborate()</div>
+        <div class="fn-sig">(team: Team) => Velocity</div>
+        <div class="fn-desc">Code reviews, pair programming, mentoring. Multiplies team output through clear communication.</div>
+      </div>
+    </div>
+
+    <h2>package.json</h2>
+    <div class="pkg-json">{
+  <span style="color:var(--yellow)">"name"</span>: <span style="color:var(--yellow)">"anshull-garg"</span>,
+  <span style="color:var(--yellow)">"version"</span>: <span style="color:var(--yellow)">"4.2.0"</span>,
+  <span style="color:var(--yellow)">"description"</span>: <span style="color:var(--yellow)">"Software Developer building at scale"</span>,
+  <span style="color:var(--yellow)">"main"</span>: <span style="color:var(--yellow)">"./brain/index.ts"</span>,
+  <span style="color:var(--yellow)">"scripts"</span>: {
+    <span style="color:var(--yellow)">"dev"</span>: <span style="color:var(--yellow)">"think --watch"</span>,
+    <span style="color:var(--yellow)">"build"</span>: <span style="color:var(--yellow)">"learn && ship"</span>,
+    <span style="color:var(--yellow)">"test"</span>: <span style="color:var(--yellow)">"jest --coverage"</span>,
+    <span style="color:var(--yellow)">"lint"</span>: <span style="color:var(--yellow)">"review-own-code --strict"</span>,
+    <span style="color:var(--yellow)">"deploy"</span>: <span style="color:var(--yellow)">"push-to-prod --with-confidence"</span>
+  },
+  <span style="color:var(--yellow)">"dependencies"</span>: {
+    <span style="color:var(--yellow)">"react"</span>: <span style="color:var(--yellow)">"^18.2.0"</span>,
+    <span style="color:var(--yellow)">"next"</span>: <span style="color:var(--yellow)">"^14.0.4"</span>,
+    <span style="color:var(--yellow)">"typescript"</span>: <span style="color:var(--yellow)">"^5.3.0"</span>,
+    <span style="color:var(--yellow)">"node"</span>: <span style="color:var(--yellow)">"^20.10.0"</span>,
+    <span style="color:var(--yellow)">"express"</span>: <span style="color:var(--yellow)">"^4.18.0"</span>,
+    <span style="color:var(--yellow)">"aws-sdk"</span>: <span style="color:var(--yellow)">"^3.400.0"</span>,
+    <span style="color:var(--yellow)">"docker"</span>: <span style="color:var(--yellow)">"^24.0.7"</span>,
+    <span style="color:var(--yellow)">"kubernetes"</span>: <span style="color:var(--yellow)">"^1.28.0"</span>,
+    <span style="color:var(--yellow)">"postgresql"</span>: <span style="color:var(--yellow)">"^16.1.0"</span>,
+    <span style="color:var(--yellow)">"redis"</span>: <span style="color:var(--yellow)">"^7.2.0"</span>,
+    <span style="color:var(--yellow)">"graphql"</span>: <span style="color:var(--yellow)">"^16.8.0"</span>,
+    <span style="color:var(--yellow)">"tailwindcss"</span>: <span style="color:var(--yellow)">"^3.4.0"</span>,
+    <span style="color:var(--yellow)">"passion"</span>: <span style="color:var(--yellow)">"infinity"</span>
+  },
+  <span style="color:var(--yellow)">"peerDependencies"</span>: {
+    <span style="color:var(--yellow)">"coffee"</span>: <span style="color:var(--yellow)">">=3 cups/day"</span>,
+    <span style="color:var(--yellow)">"curiosity"</span>: <span style="color:var(--yellow)">"*"</span>,
+    <span style="color:var(--yellow)">"good-music"</span>: <span style="color:var(--yellow)">"latest"</span>
+  },
+  <span style="color:var(--yellow)">"license"</span>: <span style="color:var(--yellow)">"MIT"</span>
+}</div>
+
+    <h2>Changelog</h2>
+
+    <div class="changelog-entry">
+      <div>
+        <span class="version">[4.2.0]</span>
+        <span class="date">2024 - Present</span>
+        <span class="tag tag-added">current</span>
+      </div>
+      <div class="org">Walmart Global Tech - Software Developer</div>
+      <h3>Added</h3>
+      <ul>
+        <li>Checkout flow optimization reducing latency by <strong style="color:var(--green)">40%</strong></li>
+        <li>Shared component library adopted by <strong style="color:var(--green)">12+ teams</strong></li>
+        <li>Real-time inventory system serving millions of daily requests</li>
+        <li>Performance monitoring dashboards improving incident response</li>
+      </ul>
+      <h3>Improved</h3>
+      <ul>
+        <li>Core Web Vitals scores across customer-facing pages</li>
+        <li>CI/CD pipeline reducing deployment time by 60%</li>
+      </ul>
+    </div>
+
+    <div class="changelog-entry">
+      <div>
+        <span class="version">[3.0.0]</span>
+        <span class="date">2022 - 2024</span>
+        <span class="tag tag-improved">stable</span>
+      </div>
+      <div class="org">Previous Role - Full Stack Developer</div>
+      <h3>Added</h3>
+      <ul>
+        <li>Full-stack development with React and Node.js</li>
+        <li>RESTful and GraphQL API design and implementation</li>
+        <li>Database architecture with PostgreSQL and MongoDB</li>
+        <li>Cloud infrastructure on AWS (EC2, S3, Lambda, RDS)</li>
+      </ul>
+      <h3>Improved</h3>
+      <ul>
+        <li>Application test coverage from 45% to 92%</li>
+        <li>Page load performance by implementing code splitting and lazy loading</li>
+      </ul>
+    </div>
+
+    <div class="changelog-entry">
+      <div>
+        <span class="version">[2.0.0]</span>
+        <span class="date">2021 - 2022</span>
+      </div>
+      <div class="org">Growth Phase - Junior Developer</div>
+      <h3>Added</h3>
+      <ul>
+        <li>TypeScript adoption across all projects</li>
+        <li>First production Docker deployments</li>
+        <li>Unit and integration testing discipline</li>
+      </ul>
+    </div>
+
+    <div class="changelog-entry">
+      <div>
+        <span class="version">[1.0.0]</span>
+        <span class="date">2020</span>
+        <span class="tag tag-breaking">initial release</span>
+      </div>
+      <div class="org">First Release - The Beginning</div>
+      <h3>Added</h3>
+      <ul>
+        <li>Initial commit to the world of software development</li>
+        <li>Learned JavaScript, HTML, CSS fundamentals</li>
+        <li>Built first React application</li>
+        <li>Discovered the joy of making things with code</li>
+      </ul>
+    </div>
+
+    <h2>Contributing</h2>
+    <p>
+      Interested in collaborating? Here is how to get involved:
+    </p>
+
+    <div class="code-block">
+<span class="comment"># Step 1: Reach out</span>
+$ npm run contact
+
+<span class="comment"># Step 2: Let's discuss the opportunity</span>
+$ npm run interview --mode=conversation
+
+<span class="comment"># Step 3: Build something great together</span>
+$ npm run collaborate --with=your-team
+    </div>
+
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:anshullgarg@gmail.com">
+        <span class="icon">@</span>
+        <div>
+          <div class="label">Email</div>
+          <div class="value">anshullgarg@gmail.com</div>
+        </div>
+      </a>
+      <a class="contact-card" href="https://github.com/anshullgarg" target="_blank">
+        <span class="icon">&lt;/&gt;</span>
+        <div>
+          <div class="label">GitHub</div>
+          <div class="value">github.com/anshullgarg</div>
+        </div>
+      </a>
+      <a class="contact-card" href="https://linkedin.com/in/anshullgarg" target="_blank">
+        <span class="icon">in</span>
+        <div>
+          <div class="label">LinkedIn</div>
+          <div class="value">linkedin.com/in/anshullgarg</div>
+        </div>
+      </a>
+      <a class="contact-card" href="https://anshullgarg.dev" target="_blank">
+        <span class="icon">~</span>
+        <div>
+          <div class="label">Website</div>
+          <div class="value">anshullgarg.dev</div>
+        </div>
+      </a>
+    </div>
+
+    <h2>License</h2>
+    <p>
+      <span class="inline-code">MIT</span> -- Open to new opportunities, collaborations, and interesting problems.
+    </p>
+    <div class="code-block">
+<span class="comment">MIT License</span>
+
+Copyright (c) 2024 Anshull Garg
+
+Permission is granted to any person or organization to hire, collaborate
+with, or otherwise engage this developer, subject to the following:
+
+  1. Interesting problems are provided
+  2. Growth opportunities exist
+  3. The team values quality code
+
+THE DEVELOPER IS PROVIDED "AS IS", WITH A STRONG WORK ETHIC, GENUINE
+CURIOSITY, AND AN UNREASONABLE LOVE FOR CLEAN ARCHITECTURE.
+    </div>
+
+    <div style="text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid #1a1a28">
+      <p style="color:var(--text-dim);font-size:.8rem;">
+        Made with <span style="color:var(--red)">&lt;3</span> and an mass amounts of caffeine
+      </p>
+      <p style="color:var(--text-dim);font-size:.75rem;margin-top:4px;">
+        <span class="inline-code">npx anshull-garg --version</span> 4.2.0
+      </p>
+    </div>
+  `;
+
+  // Animate readme sections in
+  const sections = el.querySelectorAll('h1, h2, .code-block, .skill-card, .changelog-entry, .contact-card, .pkg-json, p, ul');
+  sections.forEach((sec, i) => {
+    sec.style.opacity = '0';
+    sec.style.transform = 'translateY(12px)';
+    sec.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    setTimeout(() => {
+      sec.style.opacity = '1';
+      sec.style.transform = 'translateY(0)';
+    }, 80 + i * 40);
+  });
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  bootSequence();
+});
+</script>
+</body>
+</html>

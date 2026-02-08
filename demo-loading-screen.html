@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Loading...</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --bg:#0A0A0F;
+    --bg-card:#111118;
+    --bg-card-hover:#16161f;
+    --green:#22C55E;
+    --green-dim:#22C55E66;
+    --white:#FFFFFF;
+    --gray:#9CA3AF;
+    --gray-dark:#4B5563;
+    --font-mono:'Courier New',Courier,monospace;
+    --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  html{scroll-behavior:smooth}
+
+  body{
+    background:var(--bg);
+    color:var(--white);
+    font-family:var(--font-mono);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ============================
+     LOADING SCREEN
+     ============================ */
+  #loading-screen{
+    position:fixed;inset:0;
+    background:var(--bg);
+    z-index:9999;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:2rem;
+    transition:opacity .8s ease,visibility .8s ease;
+  }
+  #loading-screen.hidden{
+    opacity:0;visibility:hidden;pointer-events:none;
+  }
+
+  .loader-container{
+    width:100%;max-width:680px;
+  }
+
+  .loader-header{
+    text-align:center;margin-bottom:3rem;
+  }
+  .loader-header h1{
+    font-size:clamp(1.2rem,3vw,1.6rem);
+    color:var(--green);
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    margin-bottom:.5rem;
+  }
+  .loader-header p{
+    color:var(--gray);
+    font-size:.85rem;
+  }
+
+  /* Terminal window */
+  .terminal{
+    background:#0D0D14;
+    border:1px solid #1E1E2A;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:2rem;
+    box-shadow:0 0 60px rgba(34,197,94,.06);
+  }
+  .terminal-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:12px 16px;
+    background:#12121A;
+    border-bottom:1px solid #1E1E2A;
+  }
+  .terminal-dot{
+    width:12px;height:12px;border-radius:50%;
+  }
+  .terminal-dot.r{background:#FF5F57}
+  .terminal-dot.y{background:#FEBC2E}
+  .terminal-dot.g{background:#28C840}
+  .terminal-title{
+    flex:1;text-align:center;
+    color:var(--gray-dark);font-size:.75rem;
+  }
+
+  .terminal-body{
+    padding:1.25rem;
+    height:340px;
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color:var(--green-dim) transparent;
+  }
+  .terminal-body::-webkit-scrollbar{width:4px}
+  .terminal-body::-webkit-scrollbar-track{background:transparent}
+  .terminal-body::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:2px}
+
+  .log-line{
+    font-size:clamp(.78rem,1.8vw,.88rem);
+    line-height:1.7;
+    opacity:0;
+    transform:translateY(6px);
+    animation:fadeInLine .35s ease forwards;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  @keyframes fadeInLine{
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .log-line .prefix{color:var(--green);margin-right:.25rem}
+  .log-line .timestamp{color:var(--gray-dark);margin-right:.5rem;font-size:.75rem}
+  .log-line .success{color:var(--green)}
+  .log-line .warning{color:#FBBF24}
+  .log-line .error{color:#EF4444}
+  .log-line .info{color:#60A5FA}
+  .log-line .muted{color:var(--gray)}
+  .log-line .highlight{color:#C084FC}
+
+  /* Progress bar */
+  .progress-section{
+    margin-bottom:1.5rem;
+  }
+  .progress-label{
+    display:flex;justify-content:space-between;
+    font-size:.75rem;color:var(--gray);
+    margin-bottom:.5rem;
+  }
+  .progress-track{
+    width:100%;height:6px;
+    background:#1E1E2A;
+    border-radius:3px;
+    overflow:hidden;
+    position:relative;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--green),#4ADE80);
+    border-radius:3px;
+    width:0%;
+    transition:width .6s cubic-bezier(.22,1,.36,1);
+    position:relative;
+  }
+  .progress-fill::after{
+    content:'';
+    position:absolute;right:0;top:0;bottom:0;width:30px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.25));
+    border-radius:0 3px 3px 0;
+  }
+
+  /* Phase indicator */
+  .phase-indicator{
+    text-align:center;
+    margin-bottom:1rem;
+  }
+  .phase-text{
+    font-size:.8rem;
+    color:var(--green);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    transition:opacity .3s;
+  }
+
+  /* Spinner */
+  .spinner-row{
+    display:flex;align-items:center;justify-content:center;gap:.6rem;
+    margin-top:.5rem;
+  }
+  .spinner{
+    width:16px;height:16px;
+    border:2px solid var(--green-dim);
+    border-top-color:var(--green);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner-text{
+    font-size:.75rem;color:var(--gray);
+  }
+
+  /* Cursor blink */
+  .cursor{
+    display:inline-block;
+    width:8px;height:1em;
+    background:var(--green);
+    margin-left:2px;
+    animation:blink 1s step-end infinite;
+    vertical-align:text-bottom;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  /* Skip button */
+  .skip-btn{
+    position:fixed;bottom:2rem;right:2rem;
+    background:transparent;
+    border:1px solid var(--gray-dark);
+    color:var(--gray);
+    padding:.5rem 1rem;
+    border-radius:6px;
+    font-family:var(--font-mono);
+    font-size:.75rem;
+    cursor:pointer;
+    transition:all .3s;
+    z-index:10000;
+  }
+  .skip-btn:hover{
+    border-color:var(--green);
+    color:var(--green);
+  }
+  .skip-btn.hidden{display:none}
+
+  /* ============================
+     PORTFOLIO SCREEN
+     ============================ */
+  #portfolio{
+    opacity:0;
+    transition:opacity 1s ease;
+    font-family:var(--font-sans);
+    min-height:100vh;
+  }
+  #portfolio.visible{
+    opacity:1;
+  }
+
+  /* Hero */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    text-align:center;
+    padding:2rem;
+    position:relative;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 30%,rgba(34,197,94,.08) 0%,transparent 60%);
+    pointer-events:none;
+  }
+  .hero-badge{
+    display:inline-block;
+    background:rgba(34,197,94,.1);
+    border:1px solid rgba(34,197,94,.2);
+    color:var(--green);
+    padding:.35rem 1rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-family:var(--font-mono);
+    margin-bottom:1.5rem;
+    letter-spacing:.05em;
+  }
+  .hero h1{
+    font-size:clamp(2.2rem,6vw,4rem);
+    font-weight:700;
+    line-height:1.1;
+    margin-bottom:1rem;
+    background:linear-gradient(135deg,var(--white) 0%,var(--gray) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .hero .subtitle{
+    font-size:clamp(1rem,2.5vw,1.3rem);
+    color:var(--gray);
+    max-width:520px;
+    line-height:1.6;
+    margin-bottom:2rem;
+  }
+  .hero-links{
+    display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
+  }
+  .hero-links a{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.65rem 1.5rem;
+    border-radius:8px;
+    font-size:.9rem;
+    font-family:var(--font-mono);
+    text-decoration:none;
+    transition:all .3s;
+  }
+  .btn-primary{
+    background:var(--green);color:var(--bg);font-weight:600;
+  }
+  .btn-primary:hover{
+    background:#16A34A;transform:translateY(-2px);
+    box-shadow:0 4px 20px rgba(34,197,94,.3);
+  }
+  .btn-secondary{
+    background:transparent;color:var(--white);
+    border:1px solid #2A2A35;
+  }
+  .btn-secondary:hover{
+    border-color:var(--green);color:var(--green);
+    transform:translateY(-2px);
+  }
+
+  /* Sections */
+  section{
+    max-width:960px;
+    margin:0 auto;
+    padding:5rem 2rem;
+  }
+  .section-label{
+    font-family:var(--font-mono);
+    font-size:.75rem;
+    color:var(--green);
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    margin-bottom:.75rem;
+  }
+  .section-title{
+    font-size:clamp(1.5rem,4vw,2.2rem);
+    font-weight:700;
+    margin-bottom:1rem;
+  }
+  .section-desc{
+    color:var(--gray);line-height:1.7;
+    max-width:600px;margin-bottom:3rem;
+    font-size:.95rem;
+  }
+
+  /* About */
+  .about-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2rem;
+  }
+  @media(max-width:640px){
+    .about-grid{grid-template-columns:1fr}
+  }
+  .about-text{
+    color:var(--gray);line-height:1.8;font-size:.95rem;
+  }
+  .about-stats{
+    display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;
+  }
+  .stat-card{
+    background:var(--bg-card);
+    border:1px solid #1E1E2A;
+    border-radius:10px;
+    padding:1.25rem;
+    transition:all .3s;
+  }
+  .stat-card:hover{
+    border-color:var(--green-dim);
+    background:var(--bg-card-hover);
+    transform:translateY(-2px);
+  }
+  .stat-number{
+    font-size:1.6rem;font-weight:700;
+    color:var(--green);
+    font-family:var(--font-mono);
+  }
+  .stat-label{
+    font-size:.78rem;color:var(--gray);
+    margin-top:.25rem;
+  }
+
+  /* Experience */
+  .exp-card{
+    background:var(--bg-card);
+    border:1px solid #1E1E2A;
+    border-radius:12px;
+    padding:2rem;
+    margin-bottom:1.5rem;
+    transition:all .3s;
+    position:relative;
+    overflow:hidden;
+  }
+  .exp-card::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:var(--green);
+    border-radius:0 2px 2px 0;
+  }
+  .exp-card:hover{
+    border-color:var(--green-dim);
+    transform:translateX(4px);
+  }
+  .exp-top{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;
+  }
+  .exp-role{font-size:1.15rem;font-weight:600}
+  .exp-company{color:var(--green);font-size:.9rem;margin-top:.2rem}
+  .exp-date{
+    font-family:var(--font-mono);font-size:.78rem;
+    color:var(--gray);white-space:nowrap;
+  }
+  .exp-bullets{list-style:none;padding:0}
+  .exp-bullets li{
+    color:var(--gray);font-size:.9rem;line-height:1.7;
+    padding-left:1.25rem;position:relative;
+    margin-bottom:.35rem;
+  }
+  .exp-bullets li::before{
+    content:'>';
+    position:absolute;left:0;
+    color:var(--green);
+    font-family:var(--font-mono);
+    font-weight:700;
+  }
+
+  /* Projects */
+  .projects-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:1.5rem;
+  }
+  .project-card{
+    background:var(--bg-card);
+    border:1px solid #1E1E2A;
+    border-radius:12px;
+    padding:1.75rem;
+    transition:all .3s;
+    display:flex;flex-direction:column;
+  }
+  .project-card:hover{
+    border-color:var(--green-dim);
+    transform:translateY(-4px);
+    box-shadow:0 8px 30px rgba(34,197,94,.08);
+  }
+  .project-icon{
+    width:44px;height:44px;
+    background:rgba(34,197,94,.1);
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;margin-bottom:1rem;
+  }
+  .project-card h3{
+    font-size:1.05rem;margin-bottom:.5rem;
+  }
+  .project-card p{
+    color:var(--gray);font-size:.85rem;
+    line-height:1.6;flex:1;
+    margin-bottom:1rem;
+  }
+  .project-tags{
+    display:flex;flex-wrap:wrap;gap:.4rem;
+  }
+  .tag{
+    font-family:var(--font-mono);
+    font-size:.68rem;
+    background:rgba(34,197,94,.08);
+    color:var(--green);
+    padding:.2rem .6rem;
+    border-radius:4px;
+    border:1px solid rgba(34,197,94,.15);
+  }
+
+  /* Skills */
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:1.5rem;
+  }
+  .skill-group h3{
+    font-size:.9rem;margin-bottom:1rem;
+    color:var(--green);
+    font-family:var(--font-mono);
+    font-size:.8rem;
+    letter-spacing:.05em;
+  }
+  .skill-list{list-style:none;padding:0}
+  .skill-list li{
+    color:var(--gray);
+    font-size:.88rem;
+    padding:.45rem 0;
+    border-bottom:1px solid #1A1A24;
+    display:flex;align-items:center;gap:.5rem;
+    transition:color .2s;
+  }
+  .skill-list li:hover{color:var(--white)}
+  .skill-list li::before{
+    content:'';
+    width:6px;height:6px;
+    background:var(--green);
+    border-radius:50%;
+    flex-shrink:0;
+  }
+
+  /* Contact */
+  .contact-section{
+    text-align:center;
+    padding:6rem 2rem;
+  }
+  .contact-section .section-desc{
+    margin-left:auto;margin-right:auto;
+  }
+  .contact-links{
+    display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;
+    margin-top:1.5rem;
+  }
+  .contact-link{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.6rem 1.25rem;
+    background:var(--bg-card);
+    border:1px solid #1E1E2A;
+    border-radius:8px;
+    color:var(--white);
+    text-decoration:none;
+    font-size:.88rem;
+    transition:all .3s;
+  }
+  .contact-link:hover{
+    border-color:var(--green);color:var(--green);
+    transform:translateY(-2px);
+  }
+
+  /* Replay button */
+  .replay-section{
+    text-align:center;
+    padding:3rem 2rem 5rem;
+  }
+  .replay-btn{
+    background:transparent;
+    border:1px solid #2A2A35;
+    color:var(--gray);
+    padding:.65rem 1.5rem;
+    border-radius:8px;
+    font-family:var(--font-mono);
+    font-size:.82rem;
+    cursor:pointer;
+    transition:all .3s;
+  }
+  .replay-btn:hover{
+    border-color:var(--green);color:var(--green);
+    transform:translateY(-2px);
+  }
+
+  /* Footer */
+  footer{
+    text-align:center;
+    padding:2rem;
+    border-top:1px solid #1E1E2A;
+    font-family:var(--font-mono);
+    font-size:.72rem;
+    color:var(--gray-dark);
+  }
+
+  /* Divider */
+  .divider{
+    max-width:960px;margin:0 auto;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#1E1E2A 20%,#1E1E2A 80%,transparent);
+  }
+
+  /* Fade-in on scroll */
+  .fade-up{
+    opacity:0;transform:translateY(30px);
+    transition:opacity .7s ease,transform .7s ease;
+  }
+  .fade-up.in-view{
+    opacity:1;transform:translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- ================================
+     LOADING SCREEN
+     ================================ -->
+<div id="loading-screen">
+  <div class="loader-container">
+    <div class="loader-header">
+      <h1>Anshull Garg</h1>
+      <p>Software Developer Portfolio v4.2.0</p>
+    </div>
+
+    <div class="phase-indicator">
+      <span class="phase-text" id="phase-text">Phase 1: Booting Up</span>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+        <div class="terminal-title">portfolio@anshull ~ /build</div>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <!-- Log lines injected here -->
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-label">
+        <span id="progress-status">Building...</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="spinner-row">
+      <div class="spinner"></div>
+      <span class="spinner-text" id="spinner-text">Please wait...</span>
+    </div>
+  </div>
+</div>
+
+<button class="skip-btn" id="skip-btn" aria-label="Skip loading animation">Skip intro &rarr;</button>
+
+<!-- ================================
+     PORTFOLIO
+     ================================ -->
+<div id="portfolio">
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-badge">// worth the wait?</div>
+    <h1>Here's the developer<br>behind all that.</h1>
+    <p class="subtitle">
+      I'm <strong style="color:var(--white)">Anshull Garg</strong>, a Software Developer at
+      <strong style="color:var(--green)">Walmart Global Tech</strong>.
+      I build things that scale, break things that don't, and occasionally remember to push before I leave.
+    </p>
+    <div class="hero-links">
+      <a href="#about" class="btn-primary">Learn More</a>
+      <a href="#contact" class="btn-secondary">Get In Touch</a>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- About -->
+  <section id="about" class="fade-up">
+    <div class="section-label">// about</div>
+    <div class="section-title">Who Am I?</div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm a software developer who enjoys building clean, performant systems
+          and user experiences. I currently work at Walmart Global Tech where I
+          focus on high-impact projects across checkout optimization, design systems,
+          and platform reliability.
+        </p>
+        <br>
+        <p>
+          When I'm not writing code, I'm probably debugging it. When I'm not
+          debugging it, I'm probably Googling why it works. My philosophy:
+          ship fast, test thoroughly, and never deploy on Fridays.
+        </p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-number">4+</div>
+          <div class="stat-label">Years of Experience</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">127</div>
+          <div class="stat-label">Production Deploys</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Teams Supported</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">847</div>
+          <div class="stat-label">Tests Passing</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Experience -->
+  <section id="experience" class="fade-up">
+    <div class="section-label">// experience</div>
+    <div class="section-title">Where I've Worked</div>
+    <div class="section-desc">Building at scale in the systems that millions depend on every day.</div>
+
+    <div class="exp-card">
+      <div class="exp-top">
+        <div>
+          <div class="exp-role">Software Developer</div>
+          <div class="exp-company">Walmart Global Tech</div>
+        </div>
+        <div class="exp-date">2021 &ndash; Present</div>
+      </div>
+      <ul class="exp-bullets">
+        <li>Optimized checkout pipeline reducing API latency by 40%, impacting millions of daily transactions</li>
+        <li>Architected and shipped a shared component library adopted by 12 engineering teams</li>
+        <li>Led migration of legacy services to modern microservice architecture on cloud infrastructure</li>
+        <li>Mentored junior developers and championed engineering best practices across the org</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Projects -->
+  <section id="projects" class="fade-up">
+    <div class="section-label">// projects</div>
+    <div class="section-title">Things I've Built</div>
+    <div class="section-desc">A selection of projects where I turned caffeine into code.</div>
+
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-icon">&#9889;</div>
+        <h3>Checkout Optimization</h3>
+        <p>Re-engineered the checkout pipeline to cut API latency by 40%. Because nobody should wait to give you their money.</p>
+        <div class="project-tags">
+          <span class="tag">React</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">Redis</span>
+          <span class="tag">Kafka</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-icon">&#128230;</div>
+        <h3>Component Library</h3>
+        <p>A design system and component library now used by 12 teams. Consistent UI without the tears.</p>
+        <div class="project-tags">
+          <span class="tag">TypeScript</span>
+          <span class="tag">React</span>
+          <span class="tag">Storybook</span>
+          <span class="tag">Figma</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-icon">&#128202;</div>
+        <h3>Real-Time Analytics</h3>
+        <p>Built a real-time dashboard for monitoring key business metrics across the platform.</p>
+        <div class="project-tags">
+          <span class="tag">D3.js</span>
+          <span class="tag">WebSockets</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-icon">&#127793;</div>
+        <h3>Microservice Migration</h3>
+        <p>Led the migration from monolith to microservices. 0 downtime. (We practiced the celebration beforehand.)</p>
+        <div class="project-tags">
+          <span class="tag">Java</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Kubernetes</span>
+          <span class="tag">CI/CD</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Skills -->
+  <section id="skills" class="fade-up">
+    <div class="section-label">// skills</div>
+    <div class="section-title">My Toolkit</div>
+    <div class="section-desc">The technologies I reach for when it's time to build something real.</div>
+
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h3>Frontend</h3>
+        <ul class="skill-list">
+          <li>React / Next.js</li>
+          <li>TypeScript</li>
+          <li>Tailwind CSS</li>
+          <li>HTML / CSS / JS</li>
+          <li>Storybook</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h3>Backend</h3>
+        <ul class="skill-list">
+          <li>Node.js / Express</li>
+          <li>Java / Spring Boot</li>
+          <li>Python</li>
+          <li>REST / GraphQL</li>
+          <li>Kafka</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h3>Data / Infra</h3>
+        <ul class="skill-list">
+          <li>PostgreSQL / MySQL</li>
+          <li>Redis / MongoDB</li>
+          <li>Docker / Kubernetes</li>
+          <li>AWS / GCP</li>
+          <li>CI/CD Pipelines</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h3>Practices</h3>
+        <ul class="skill-list">
+          <li>Test-Driven Development</li>
+          <li>Code Review Culture</li>
+          <li>Agile / Scrum</li>
+          <li>System Design</li>
+          <li>Mentoring</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Contact -->
+  <section id="contact" class="contact-section fade-up">
+    <div class="section-label">// contact</div>
+    <div class="section-title">Let's Connect</div>
+    <div class="section-desc">
+      Whether you have a role in mind, a project to discuss, or just want to
+      argue about tabs vs spaces -- I'd love to hear from you.
+    </div>
+    <div class="contact-links">
+      <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="contact-link">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="contact-link">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- Replay -->
+  <div class="replay-section">
+    <button class="replay-btn" id="replay-btn">
+      &#8634; Watch the loading screen again
+    </button>
+    <div style="margin-top:.75rem;font-size:.72rem;color:var(--gray-dark);font-family:var(--font-mono)">
+      (for those who want to re-read the jokes)
+    </div>
+  </div>
+
+  <footer>
+    <p>Built with patience, caffeine, and zero AI-generated divs.</p>
+    <p style="margin-top:.35rem">Anshull Garg &copy; 2025</p>
+  </footer>
+</div>
+
+<script>
+(function() {
+  // =====================
+  // LOADING MESSAGES
+  // =====================
+  const messages = [
+    // Phase 1: Booting Up
+    { phase: 'Phase 1: Booting Up', text: '<span class="prefix">$</span> Initializing portfolio...', delay: 1800 },
+    { text: '<span class="prefix">$</span> Loading developer profile... <span class="success">Found</span>', delay: 1600 },
+    { text: '<span class="prefix">$</span> Checking if developer knows how to center a div... <span class="success">Verified</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> Resolving 847 npm dependencies...', delay: 1800 },
+    { text: '<span class="muted">   npm WARN deprecated sanity@1.0.0: this package has trust issues</span>', delay: 1400 },
+    { text: '<span class="prefix">$</span> <span class="warning">4 vulnerabilities found</span> (3 moderate, 1 "works in production")', delay: 2400, progressBack: true },
+    { text: '<span class="prefix">$</span> Installing node_modules... <span class="muted">423MB (it\'s fine)</span>', delay: 2000 },
+
+    // Phase 2: Loading Skills
+    { phase: 'Phase 2: Loading Skills', text: '<span class="prefix">$</span> Compiling React components... <span class="success">Done</span> <span class="muted">(0.3s)</span>', delay: 1800 },
+    { text: '<span class="prefix">$</span> Starting Node.js server... <span class="info">Listening on port 3000</span>', delay: 1600 },
+    { text: '<span class="prefix">$</span> Connecting to PostgreSQL... <span class="success">Connected</span>', delay: 1400 },
+    { text: '<span class="prefix">$</span> Loading TypeScript... <span class="highlight">Strict mode enabled</span> <span class="muted">(because we\'re professionals)</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> Importing 47 unused packages... <span class="muted">(we\'ll need them eventually)</span>', delay: 2000 },
+    { text: '<span class="prefix">$</span> Configuring Webpack... <span class="warning">why is this still so complicated</span>', delay: 2000 },
+
+    // Phase 3: Loading Experience
+    { phase: 'Phase 3: Loading Experience', text: '<span class="prefix">$</span> Fetching Walmart Global Tech credentials... <span class="success">Verified</span>', delay: 2000 },
+    { text: '<span class="prefix">$</span> Calculating years of experience... <span class="info">4+</span> <span class="muted">(but feels like 40)</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> Counting production deployments... <span class="info">127</span> <span class="muted">(0 on Fridays)</span>', delay: 2000 },
+    { text: '<span class="prefix">$</span> Loading coffee consumption data...', delay: 1200 },
+    { text: '<span class="muted">   [==============================] 99.9%</span> <span class="warning">CRITICAL</span>', delay: 1800 },
+    { text: '<span class="prefix">$</span> Counting git commits... <span class="muted">let\'s just say "a lot"</span>', delay: 1800 },
+
+    // Phase 4: Loading Projects
+    { phase: 'Phase 4: Loading Projects', text: '<span class="prefix">$</span> Building checkout optimization... <span class="success">-40% latency achieved</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> Deploying component library... <span class="success">12 teams now happy</span>', delay: 2000 },
+    { text: '<span class="prefix">$</span> Running test suite... <span class="info">847 tests, 847 passed, 0 failed</span>', delay: 1800 },
+    { text: '<span class="muted">   (we don\'t talk about staging)</span>', delay: 1600, progressBack: true },
+    { text: '<span class="prefix">$</span> Spinning up microservices... <span class="success">All healthy</span> <span class="muted">(for now)</span>', delay: 2000 },
+
+    // Phase 5: Almost There
+    { phase: 'Phase 5: Almost There', text: '<span class="prefix">$</span> Googling "how to exit vim"... <span class="warning">Still searching...</span>', delay: 2400 },
+    { text: '<span class="prefix">$</span> Asking ChatGPT for help... <span class="muted">Just kidding, I can actually code</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> Copying from Stack Overflow... <span class="muted">Just kidding (mostly)</span>', delay: 2000 },
+    { text: '<span class="prefix">$</span> Checking if anyone is actually reading these... <span class="highlight">eyes detected</span>', delay: 2400 },
+    { text: '<span class="prefix">$</span> If you\'re still here, you might be the right hiring manager', delay: 2600 },
+
+    // Phase 6: Final Steps
+    { phase: 'Phase 6: Final Steps', text: '<span class="prefix">$</span> Building final bundle... <span class="muted">2.3MB (we tried)</span>', delay: 1800 },
+    { text: '<span class="prefix">$</span> Optimizing images... <span class="success">Done</span>', delay: 1400 },
+    { text: '<span class="prefix">$</span> Adding "AI-powered" to the resume... <span class="success">Buzzword deployed</span>', delay: 2000, progressBack: true },
+    { text: '<span class="prefix">$</span> <span class="success">Portfolio ready! Redirecting...</span>', delay: 2000 },
+    { text: '<span class="prefix">$</span> <span class="warning">Just kidding, one more thing...</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> Clearing browser cache of all other candidates... <span class="success">Done</span>', delay: 2200 },
+    { text: '<span class="prefix">$</span> <span class="highlight">OK for real this time...</span>', delay: 2000 },
+    { text: '', delay: 600 },
+    { text: '<span class="success">BUILD SUCCESSFUL</span> - Launching portfolio in 3... 2... 1...', delay: 2400 },
+  ];
+
+  const totalMessages = messages.length;
+  const terminalBody = document.getElementById('terminal-body');
+  const progressFill = document.getElementById('progress-fill');
+  const progressPct = document.getElementById('progress-pct');
+  const progressStatus = document.getElementById('progress-status');
+  const phaseText = document.getElementById('phase-text');
+  const spinnerText = document.getElementById('spinner-text');
+  const loadingScreen = document.getElementById('loading-screen');
+  const portfolio = document.getElementById('portfolio');
+  const skipBtn = document.getElementById('skip-btn');
+  const replayBtn = document.getElementById('replay-btn');
+
+  let currentIndex = 0;
+  let timeoutId = null;
+  let isRunning = false;
+
+  const spinnerMessages = [
+    'Please wait...',
+    'Almost there...',
+    'Compiling awesomeness...',
+    'Brewing coffee...',
+    'Reticulating splines...',
+    'Preparing pixels...',
+    'Aligning divs...',
+    'Crunching numbers...',
+    'Loading brilliance...',
+    'One moment...',
+  ];
+
+  function getTimestamp() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    return h + ':' + m + ':' + s;
+  }
+
+  function addLogLine(html) {
+    if (!html) return;
+    const div = document.createElement('div');
+    div.className = 'log-line';
+    div.innerHTML = '<span class="timestamp">[' + getTimestamp() + ']</span>' + html;
+    terminalBody.appendChild(div);
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+  }
+
+  function updateProgress(index) {
+    // Calculate base progress
+    let base = ((index + 1) / totalMessages) * 100;
+
+    // Occasionally go backward for humor
+    const msg = messages[index];
+    if (msg && msg.progressBack) {
+      base = Math.max(base - 8 - Math.random() * 7, 5);
+    }
+
+    const pct = Math.min(Math.round(base), 100);
+    progressFill.style.width = pct + '%';
+    progressPct.textContent = pct + '%';
+
+    // Update status text
+    if (pct < 25) progressStatus.textContent = 'Building...';
+    else if (pct < 50) progressStatus.textContent = 'Compiling...';
+    else if (pct < 75) progressStatus.textContent = 'Optimizing...';
+    else if (pct < 95) progressStatus.textContent = 'Finalizing...';
+    else progressStatus.textContent = 'Ready!';
+
+    // Rotate spinner text
+    spinnerText.textContent = spinnerMessages[index % spinnerMessages.length];
+  }
+
+  function showNextMessage() {
+    if (currentIndex >= totalMessages) {
+      finishLoading();
+      return;
+    }
+
+    const msg = messages[currentIndex];
+
+    // Update phase if present
+    if (msg.phase) {
+      phaseText.textContent = msg.phase;
+      phaseText.style.opacity = '0';
+      setTimeout(function() { phaseText.style.opacity = '1'; }, 100);
+    }
+
+    addLogLine(msg.text);
+    updateProgress(currentIndex);
+
+    currentIndex++;
+    timeoutId = setTimeout(showNextMessage, msg.delay);
+  }
+
+  function finishLoading() {
+    isRunning = false;
+
+    // Complete progress bar
+    progressFill.style.width = '100%';
+    progressPct.textContent = '100%';
+    progressStatus.textContent = 'Complete!';
+    spinnerText.textContent = 'Launching...';
+
+    setTimeout(function() {
+      loadingScreen.classList.add('hidden');
+      skipBtn.classList.add('hidden');
+      portfolio.classList.add('visible');
+      window.scrollTo(0, 0);
+    }, 1200);
+  }
+
+  function startLoading() {
+    // Reset state
+    currentIndex = 0;
+    isRunning = true;
+    terminalBody.innerHTML = '';
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+    progressStatus.textContent = 'Building...';
+    phaseText.textContent = 'Phase 1: Booting Up';
+    spinnerText.textContent = 'Please wait...';
+
+    loadingScreen.classList.remove('hidden');
+    portfolio.classList.remove('visible');
+    skipBtn.classList.remove('hidden');
+
+    // Small delay before first message
+    timeoutId = setTimeout(showNextMessage, 800);
+  }
+
+  function skipToPortfolio() {
+    if (timeoutId) clearTimeout(timeoutId);
+    isRunning = false;
+    finishLoading();
+  }
+
+  // Event listeners
+  skipBtn.addEventListener('click', skipToPortfolio);
+
+  replayBtn.addEventListener('click', function() {
+    window.scrollTo(0, 0);
+    startLoading();
+  });
+
+  // Keyboard shortcut: Escape to skip
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isRunning) {
+      skipToPortfolio();
+    }
+  });
+
+  // Scroll-triggered fade-in for portfolio sections
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // Start the show
+  startLoading();
+})();
+</script>
+</body>
+</html>
