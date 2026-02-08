@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transit Authority | Anshull Garg</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   TRANSIT AUTHORITY DESIGN SYSTEM
+   Inspired by Massimo Vignelli's NYC Subway
+   ======================================== */
+
+:root {
+  --transit-blue: #003366;
+  --line-red: #CC3333;
+  --warning-yellow: #F2C649;
+  --concrete: #EFEFEF;
+  --tunnel-dark: #2A2A2A;
+  --white: #FFFFFF;
+  --black: #111111;
+  --tile-white: #F8F8F6;
+  --steel: #B0B0B0;
+  --green-line: #00A65A;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--transit-blue) var(--tunnel-dark);
+}
+
+body {
+  font-family: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: var(--tunnel-dark);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================
+   WAYFINDING TYPOGRAPHY
+   ======================================== */
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.station-name {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ========================================
+   SERVICE STATUS BANNER (Top Ticker)
+   ======================================== */
+
+.service-banner {
+  background: var(--transit-blue);
+  color: var(--white);
+  padding: 10px 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-bottom: 3px solid var(--warning-yellow);
+}
+
+.service-banner-inner {
+  display: flex;
+  align-items: center;
+  animation: ticker 25s linear infinite;
+  white-space: nowrap;
+  width: max-content;
+}
+
+.service-banner .status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green-line);
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 8px;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.service-banner span {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 60px;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ========================================
+   MAIN HEADER / HERO
+   ======================================== */
+
+.hero {
+  margin-top: 43px;
+  background: var(--tunnel-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 49px,
+      rgba(255,255,255,0.02) 49px,
+      rgba(255,255,255,0.02) 50px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 49px,
+      rgba(255,255,255,0.02) 49px,
+      rgba(255,255,255,0.02) 50px
+    );
+  pointer-events: none;
+}
+
+.hero-mta-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--transit-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  border: 4px solid var(--white);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-mta-logo span {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--white);
+}
+
+.hero h1 {
+  font-size: clamp(42px, 7vw, 88px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  text-align: center;
+  line-height: 0.95;
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 .first-name {
+  display: block;
+  color: var(--white);
+}
+
+.hero h1 .last-name {
+  display: block;
+  color: var(--warning-yellow);
+}
+
+.hero-subtitle {
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--steel);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-role {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--transit-blue);
+  padding: 10px 24px;
+  border-radius: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-role span {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.line-bullets {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.line-bullet {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--white);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.line-bullet:hover { transform: scale(1.2); }
+.line-bullet.blue { background: var(--transit-blue); }
+.line-bullet.red { background: var(--line-red); }
+.line-bullet.yellow { background: var(--warning-yellow); color: var(--black); }
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.scroll-indicator span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--steel);
+}
+
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--warning-yellow);
+  border-bottom: 2px solid var(--warning-yellow);
+  transform: rotate(45deg);
+  animation: bounce-arrow 2s ease-in-out infinite;
+}
+
+@keyframes bounce-arrow {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(45deg) translateY(8px); }
+}
+
+/* ========================================
+   TRANSIT MAP (Primary Navigation)
+   ======================================== */
+
+.transit-map-section {
+  background: var(--tile-white);
+  color: var(--black);
+  padding: 80px 20px;
+  position: relative;
+}
+
+.section-header {
+  max-width: 900px;
+  margin: 0 auto 50px;
+}
+
+.section-header .line-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.section-header .line-label .dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--white);
+}
+
+.section-header .line-label span {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #888;
+}
+
+.section-header h2 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.transit-map-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.map-frame {
+  background: var(--white);
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.map-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--black);
+  margin-bottom: 20px;
+}
+
+.map-title-bar h3 {
+  font-size: 22px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.map-title-bar .map-edition {
+  font-size: 12px;
+  font-weight: 500;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* SVG Map */
+.transit-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.transit-svg .line-path {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.transit-svg .line-blue { stroke: var(--transit-blue); }
+.transit-svg .line-red { stroke: var(--line-red); }
+.transit-svg .line-yellow { stroke: var(--warning-yellow); }
+
+.transit-svg .station-circle {
+  fill: var(--white);
+  stroke-width: 3;
+  cursor: pointer;
+  transition: r 0.3s ease;
+}
+
+.transit-svg .station-circle:hover {
+  r: 12;
+}
+
+.transit-svg .station-circle.active {
+  fill: var(--warning-yellow);
+}
+
+.transit-svg .transfer-station {
+  fill: var(--white);
+  stroke: var(--black);
+  stroke-width: 2;
+}
+
+.transit-svg .station-label {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  fill: var(--black);
+  cursor: pointer;
+}
+
+.transit-svg .station-label:hover {
+  fill: var(--transit-blue);
+}
+
+/* Train Icon */
+.train-icon {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Map Legend */
+.map-legend {
+  display: flex;
+  gap: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-line {
+  width: 30px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.legend-line.blue { background: var(--transit-blue); }
+.legend-line.red { background: var(--line-red); }
+.legend-line.yellow { background: var(--warning-yellow); }
+
+.legend-item span {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666;
+}
+
+.legend-transfer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-transfer-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--black);
+  background: var(--white);
+}
+
+/* ========================================
+   FLIP CLOCK ARRIVALS BOARD
+   ======================================== */
+
+.arrivals-section {
+  background: var(--black);
+  padding: 80px 20px;
+  position: relative;
+}
+
+.arrivals-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--warning-yellow) 0px,
+    var(--warning-yellow) 20px,
+    var(--black) 20px,
+    var(--black) 40px
+  );
+}
+
+.arrivals-board {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.board-header {
+  background: var(--transit-blue);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.board-header h3 {
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--white);
+}
+
+.board-header .board-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--warning-yellow);
+}
+
+.board-columns {
+  display: grid;
+  grid-template-columns: 50px 1fr 120px 100px;
+  padding: 10px 24px;
+  border-bottom: 1px solid #333;
+  gap: 16px;
+}
+
+.board-columns span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #666;
+}
+
+.board-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 120px 100px;
+  padding: 14px 24px;
+  border-bottom: 1px solid #222;
+  gap: 16px;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.board-row:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.board-row .line-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--white);
+}
+
+.board-row .project-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.board-row .project-tech {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.board-row .project-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--steel);
+}
+
+/* Flip Clock Cells */
+.flip-cell-group {
+  display: flex;
+  gap: 2px;
+}
+
+.flip-cell {
+  width: 22px;
+  height: 30px;
+  background: #0a0a0a;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.flip-cell::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0,0,0,0.6);
+  z-index: 2;
+}
+
+.flip-cell span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--warning-yellow);
+  position: relative;
+  z-index: 1;
+}
+
+.flip-cell.flipping span {
+  animation: flip-letter 0.4s ease-in-out;
+}
+
+@keyframes flip-letter {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(-90deg); opacity: 0; }
+  51% { transform: rotateX(90deg); opacity: 0; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+
+.status-arriving {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green-line);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: blink-status 1.5s ease-in-out infinite;
+}
+
+@keyframes blink-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ========================================
+   STATION SECTIONS
+   ======================================== */
+
+.station-section {
+  padding: 100px 20px;
+  position: relative;
+}
+
+.station-section.dark {
+  background: var(--tunnel-dark);
+  color: var(--white);
+}
+
+.station-section.light {
+  background: var(--tile-white);
+  color: var(--black);
+}
+
+.station-section.blue-bg {
+  background: var(--transit-blue);
+  color: var(--white);
+}
+
+.station-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Station Sign */
+.station-sign {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--black);
+  padding: 12px 24px;
+  border-radius: 4px;
+  margin-bottom: 30px;
+}
+
+.light .station-sign {
+  background: var(--white);
+  border: 2px solid var(--black);
+}
+
+.station-sign .sign-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--white);
+  flex-shrink: 0;
+}
+
+.station-sign .sign-text {
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.light .station-sign .sign-text {
+  color: var(--black);
+}
+
+/* About Section */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.about-text p {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 16px;
+}
+
+.light .about-text p {
+  color: #444;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-card .stat-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--warning-yellow);
+  display: block;
+}
+
+.stat-card .stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 6px;
+  display: block;
+}
+
+/* Skills Section */
+.skills-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  margin-top: 30px;
+}
+
+.skill-track {
+  position: relative;
+}
+
+.skill-track-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.skill-track-header .track-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--white);
+}
+
+.skill-track-header h4 {
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.skill-stops {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  padding: 0 10px;
+}
+
+.skill-line {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  right: 10px;
+  height: 4px;
+  border-radius: 2px;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.skill-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.skill-stop .stop-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid;
+  transition: transform 0.2s;
+}
+
+.skill-stop:hover .stop-dot {
+  transform: scale(1.3);
+}
+
+.skill-stop .stop-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #444;
+}
+
+/* Experience Section */
+.timeline-track {
+  position: relative;
+  padding-left: 60px;
+  margin-top: 30px;
+}
+
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--transit-blue);
+  border-radius: 2px;
+}
+
+.timeline-stop {
+  position: relative;
+  margin-bottom: 40px;
+  padding: 24px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  transition: transform 0.3s, background 0.3s;
+}
+
+.timeline-stop:hover {
+  transform: translateX(6px);
+  background: rgba(255,255,255,0.07);
+}
+
+.timeline-stop::before {
+  content: '';
+  position: absolute;
+  left: -46px;
+  top: 28px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 4px solid var(--transit-blue);
+}
+
+.timeline-stop .stop-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--warning-yellow);
+  margin-bottom: 6px;
+}
+
+.timeline-stop h4 {
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.timeline-stop .stop-company {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--transit-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.dark .timeline-stop .stop-company {
+  color: var(--warning-yellow);
+}
+
+.timeline-stop p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.7);
+}
+
+.timeline-stop .stop-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.timeline-stop .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.project-card {
+  background: var(--white);
+  border: 2px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+}
+
+.project-card-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.project-card-header .card-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.project-card-header .card-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--white);
+}
+
+.project-card-header h4 {
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--black);
+}
+
+.project-card-body {
+  padding: 20px;
+}
+
+.project-card-body p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 14px;
+}
+
+.project-card-body .card-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-card-body .tech-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tech-tag.blue { background: rgba(0,51,102,0.1); color: var(--transit-blue); }
+.tech-tag.red { background: rgba(204,51,51,0.1); color: var(--line-red); }
+.tech-tag.yellow { background: rgba(242,198,73,0.2); color: #8B6914; }
+
+.project-card-footer {
+  padding: 14px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-card-footer .route-info {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.project-card-footer .arrow {
+  font-size: 18px;
+  color: var(--transit-blue);
+  transition: transform 0.3s;
+}
+
+.project-card:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* ========================================
+   CONTACT SECTION
+   ======================================== */
+
+.contact-section {
+  background: var(--transit-blue);
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.contact-section h2 {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.contact-section .contact-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  color: var(--white);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: all 0.3s;
+}
+
+.contact-link:hover {
+  background: var(--white);
+  color: var(--transit-blue);
+  border-color: var(--white);
+}
+
+.contact-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================
+   BOTTOM NEXT-TRAIN BAR
+   ======================================== */
+
+.next-train-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--black);
+  border-top: 3px solid var(--transit-blue);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 1000;
+}
+
+.next-train-bar .train-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--steel);
+}
+
+.next-train-bar .train-destination {
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--warning-yellow);
+}
+
+.next-train-bar .train-countdown {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  background: rgba(255,255,255,0.08);
+  padding: 4px 12px;
+  border-radius: 3px;
+}
+
+.next-train-bar .train-countdown .min-val {
+  color: var(--warning-yellow);
+}
+
+/* ========================================
+   ANIMATED TRAIN
+   ======================================== */
+
+.train-svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ========================================
+   SECTION REVEAL ANIMATION
+   ======================================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .board-columns,
+  .board-row {
+    grid-template-columns: 40px 1fr 80px;
+  }
+
+  .board-columns span:nth-child(3),
+  .board-row > *:nth-child(3) {
+    display: none;
+  }
+
+  .map-legend {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .timeline-track {
+    padding-left: 40px;
+  }
+
+  .timeline-track::before {
+    left: 14px;
+  }
+
+  .timeline-stop::before {
+    left: -34px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .next-train-bar {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .next-train-bar .train-label {
+    font-size: 10px;
+  }
+
+  .next-train-bar .train-destination {
+    font-size: 12px;
+  }
+
+  .contact-links {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .skill-stop .stop-name {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Footer padding for fixed bottom bar */
+body { padding-bottom: 52px; }
+
+</style>
+</head>
+<body>
+
+<!-- ======================================
+     SERVICE STATUS BANNER
+     ====================================== -->
+<div class="service-banner" role="marquee" aria-label="Service status">
+  <div class="service-banner-inner">
+    <span class="status-dot"></span>
+    <span>All lines running normally</span>
+    <span class="status-dot"></span>
+    <span>Available for hire -- accepting new passengers</span>
+    <span class="status-dot"></span>
+    <span>Software Developer at Walmart</span>
+    <span class="status-dot"></span>
+    <span>Frontend | Backend | DevOps</span>
+    <span class="status-dot"></span>
+    <span>All lines running normally</span>
+    <span class="status-dot"></span>
+    <span>Available for hire -- accepting new passengers</span>
+    <span class="status-dot"></span>
+    <span>Software Developer at Walmart</span>
+    <span class="status-dot"></span>
+    <span>Frontend | Backend | DevOps</span>
+  </div>
+</div>
+
+<!-- ======================================
+     HERO SECTION
+     ====================================== -->
+<section class="hero" id="home">
+  <div class="hero-mta-logo" aria-label="AG monogram">
+    <span>AG</span>
+  </div>
+  <h1>
+    <span class="first-name">Anshull</span>
+    <span class="last-name">Garg</span>
+  </h1>
+  <p class="hero-subtitle">Transit Authority Portfolio System</p>
+  <div class="hero-role">
+    <span>Software Developer</span>
+    <span style="color: var(--warning-yellow);">|</span>
+    <span>Walmart</span>
+  </div>
+  <div class="line-bullets" aria-label="Line indicators">
+    <div class="line-bullet blue" title="Frontend Line">F</div>
+    <div class="line-bullet red" title="Backend Line">B</div>
+    <div class="line-bullet yellow" title="DevOps Line">D</div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Enter Station</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ======================================
+     TRANSIT MAP SECTION
+     ====================================== -->
+<section class="transit-map-section" id="map">
+  <div class="section-header">
+    <div class="line-label">
+      <div class="dot" style="background: var(--transit-blue);">M</div>
+      <span>System Map</span>
+    </div>
+    <h2>Route Map</h2>
+  </div>
+
+  <div class="transit-map-container">
+    <div class="map-frame">
+      <div class="map-title-bar">
+        <h3>AG Transit System</h3>
+        <span class="map-edition mono">Edition 2025</span>
+      </div>
+
+      <svg class="transit-svg" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Transit map showing portfolio sections as subway stations">
+        <!-- Grid dots (subtle) -->
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="0.8" fill="#e0e0e0"/>
+          </pattern>
+        </defs>
+        <rect width="800" height="400" fill="url(#grid)"/>
+
+        <!-- BLUE LINE (Frontend) -->
+        <path class="line-path line-blue" d="M 60,200 L 200,200 L 320,120 L 500,120 L 620,200 L 740,200" id="blueLine"/>
+
+        <!-- RED LINE (Backend) -->
+        <path class="line-path line-red" d="M 60,280 L 200,280 L 320,200 L 500,200 L 620,280 L 740,280" id="redLine"/>
+
+        <!-- YELLOW LINE (DevOps) -->
+        <path class="line-path line-yellow" d="M 200,60 L 200,200 L 200,340" id="yellowLineV"/>
+        <path class="line-path line-yellow" d="M 500,60 L 500,120 L 500,200 L 500,340" id="yellowLineV2"/>
+
+        <!-- Transfer connectors -->
+        <line x1="200" y1="200" x2="200" y2="280" stroke="#ddd" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="500" y1="120" x2="500" y2="200" stroke="#ddd" stroke-width="1" stroke-dasharray="4"/>
+
+        <!-- STATIONS -->
+
+        <!-- About Central (Blue Line + Yellow Line transfer) -->
+        <circle class="station-circle" cx="200" cy="200" r="9" stroke="var(--transit-blue)" data-station="about" onclick="navigateToStation('about')"/>
+        <rect class="transfer-station" x="192" y="192" width="16" height="16" rx="2" data-station="about" onclick="navigateToStation('about')"/>
+        <text class="station-label" x="200" y="178" text-anchor="middle" onclick="navigateToStation('about')">About Central</text>
+
+        <!-- Skills Terminal (Blue Line) -->
+        <circle class="station-circle" cx="320" cy="120" r="9" stroke="var(--transit-blue)" data-station="skills" onclick="navigateToStation('skills')"/>
+        <text class="station-label" x="320" y="105" text-anchor="middle" onclick="navigateToStation('skills')">Skills Terminal</text>
+
+        <!-- Projects Junction (Blue + Yellow transfer) -->
+        <circle class="station-circle" cx="500" cy="120" r="9" stroke="var(--transit-blue)" data-station="projects" onclick="navigateToStation('projects')"/>
+        <rect class="transfer-station" x="492" y="112" width="16" height="16" rx="2" data-station="projects" onclick="navigateToStation('projects')"/>
+        <text class="station-label" x="500" y="105" text-anchor="middle" onclick="navigateToStation('projects')">Projects Junction</text>
+
+        <!-- Experience Park (Blue Line) -->
+        <circle class="station-circle" cx="620" cy="200" r="9" stroke="var(--transit-blue)" data-station="experience" onclick="navigateToStation('experience')"/>
+        <text class="station-label" x="620" y="222" text-anchor="middle" dy="12" onclick="navigateToStation('experience')">Experience Park</text>
+
+        <!-- Contact Square (Blue Line) -->
+        <circle class="station-circle" cx="740" cy="200" r="9" stroke="var(--transit-blue)" data-station="contact" onclick="navigateToStation('contact')"/>
+        <text class="station-label" x="740" y="222" text-anchor="middle" dy="12" onclick="navigateToStation('contact')">Contact Square</text>
+
+        <!-- Red Line stations -->
+        <circle class="station-circle" cx="60" cy="280" r="9" stroke="var(--line-red)" data-station="about"/>
+        <text class="station-label" x="60" y="302" text-anchor="middle" dy="4" style="font-size:9px">API Yard</text>
+
+        <circle class="station-circle" cx="320" cy="200" r="9" stroke="var(--line-red)" data-station="skills"/>
+        <text class="station-label" x="348" y="198" text-anchor="start" style="font-size:9px; fill: var(--line-red)">Data St</text>
+
+        <circle class="station-circle" cx="620" cy="280" r="9" stroke="var(--line-red)"/>
+        <text class="station-label" x="620" y="302" text-anchor="middle" dy="4" style="font-size:9px">Server Ave</text>
+
+        <circle class="station-circle" cx="740" cy="280" r="9" stroke="var(--line-red)"/>
+        <text class="station-label" x="740" y="302" text-anchor="middle" dy="4" style="font-size:9px">Cloud Pkwy</text>
+
+        <!-- Yellow Line stations -->
+        <circle class="station-circle" cx="200" cy="60" r="9" stroke="var(--warning-yellow)"/>
+        <text class="station-label" x="218" y="64" text-anchor="start" style="font-size:9px; fill: #8B6914">CI/CD Blvd</text>
+
+        <circle class="station-circle" cx="200" cy="340" r="9" stroke="var(--warning-yellow)"/>
+        <text class="station-label" x="218" y="344" text-anchor="start" style="font-size:9px; fill: #8B6914">Deploy Dock</text>
+
+        <circle class="station-circle" cx="500" cy="60" r="9" stroke="var(--warning-yellow)"/>
+        <text class="station-label" x="518" y="64" text-anchor="start" style="font-size:9px; fill: #8B6914">Monitor Hub</text>
+
+        <circle class="station-circle" cx="500" cy="340" r="9" stroke="var(--warning-yellow)"/>
+        <text class="station-label" x="518" y="344" text-anchor="start" style="font-size:9px; fill: #8B6914">Infra Lane</text>
+
+        <!-- Start station Blue -->
+        <circle class="station-circle" cx="60" cy="200" r="9" stroke="var(--transit-blue)"/>
+        <text class="station-label" x="60" y="185" text-anchor="middle" style="font-size:9px">Home St</text>
+
+        <!-- TRAIN ICON -->
+        <g class="train-icon" id="trainIcon" transform="translate(55, 190)">
+          <rect x="0" y="0" width="24" height="14" rx="4" fill="var(--warning-yellow)" class="train-svg"/>
+          <rect x="3" y="3" width="6" height="5" rx="1" fill="var(--black)" opacity="0.6"/>
+          <rect x="11" y="3" width="6" height="5" rx="1" fill="var(--black)" opacity="0.6"/>
+          <circle cx="5" cy="13" r="2" fill="var(--black)"/>
+          <circle cx="19" cy="13" r="2" fill="var(--black)"/>
+          <rect x="20" y="4" width="4" height="2" rx="1" fill="var(--line-red)"/>
+        </g>
+      </svg>
+
+      <div class="map-legend">
+        <div class="legend-item">
+          <div class="legend-line blue"></div>
+          <span>Frontend Line</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-line red"></div>
+          <span>Backend Line</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-line yellow"></div>
+          <span>DevOps Line</span>
+        </div>
+        <div class="legend-transfer">
+          <div class="legend-transfer-icon"></div>
+          <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#666;">Transfer Station</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     ARRIVALS BOARD
+     ====================================== -->
+<section class="arrivals-section" id="arrivals">
+  <div class="section-header" style="color: var(--white);">
+    <div class="line-label">
+      <div class="dot" style="background: var(--warning-yellow); color: var(--black);">A</div>
+      <span style="color: #888;">Arrivals</span>
+    </div>
+    <h2 style="color: var(--white);">Departures Board</h2>
+  </div>
+
+  <div class="arrivals-board">
+    <div class="board-header">
+      <h3>Recent Departures</h3>
+      <span class="board-time" id="boardTime">00:00:00</span>
+    </div>
+    <div class="board-columns">
+      <span>Line</span>
+      <span>Destination</span>
+      <span>Platform</span>
+      <span>Status</span>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="board-row" data-flip-row>
+      <div class="line-dot" style="background: var(--transit-blue);">F</div>
+      <div>
+        <div class="project-name" data-flip-target="E-Commerce Platform">
+          <div class="flip-cell-group" data-flip-text></div>
+        </div>
+        <div class="project-tech">React, Next.js, TypeScript</div>
+      </div>
+      <div class="project-year">2024</div>
+      <div class="status-arriving">On Time</div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="board-row" data-flip-row>
+      <div class="line-dot" style="background: var(--line-red);">B</div>
+      <div>
+        <div class="project-name" data-flip-target="Inventory API System">
+          <div class="flip-cell-group" data-flip-text></div>
+        </div>
+        <div class="project-tech">Node.js, Java, PostgreSQL</div>
+      </div>
+      <div class="project-year">2024</div>
+      <div class="status-arriving">Arriving</div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="board-row" data-flip-row>
+      <div class="line-dot" style="background: var(--warning-yellow); color: var(--black);">D</div>
+      <div>
+        <div class="project-name" data-flip-target="CI/CD Pipeline Infra">
+          <div class="flip-cell-group" data-flip-text></div>
+        </div>
+        <div class="project-tech">Docker, Kubernetes, Jenkins</div>
+      </div>
+      <div class="project-year">2023</div>
+      <div class="status-arriving">On Time</div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="board-row" data-flip-row>
+      <div class="line-dot" style="background: var(--transit-blue);">F</div>
+      <div>
+        <div class="project-name" data-flip-target="Analytics Dashboard">
+          <div class="flip-cell-group" data-flip-text></div>
+        </div>
+        <div class="project-tech">React, D3.js, GraphQL</div>
+      </div>
+      <div class="project-year">2023</div>
+      <div class="status-arriving" style="color: var(--warning-yellow); animation: none;">Delayed</div>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="board-row" data-flip-row>
+      <div class="line-dot" style="background: var(--line-red);">B</div>
+      <div>
+        <div class="project-name" data-flip-target="Auth Microservice">
+          <div class="flip-cell-group" data-flip-text></div>
+        </div>
+        <div class="project-tech">Spring Boot, OAuth, Redis</div>
+      </div>
+      <div class="project-year">2022</div>
+      <div class="status-arriving">On Time</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     ABOUT CENTRAL STATION
+     ====================================== -->
+<section class="station-section dark" id="about">
+  <div class="station-content reveal">
+    <div class="station-sign">
+      <div class="sign-dot" style="background: var(--transit-blue);">F</div>
+      <div class="sign-dot" style="background: var(--warning-yellow); color: var(--black);">D</div>
+      <span class="sign-text">About Central</span>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          Welcome aboard. I am Anshull Garg, a Software Developer at Walmart building
+          scalable systems that serve millions. My routes span the full stack -- from
+          pixel-perfect frontends to resilient backend architectures and the DevOps
+          pipelines that keep everything on schedule.
+        </p>
+        <p>
+          Like any good transit system, I believe in reliability, efficiency, and
+          elegant routing. Every line of code I write is engineered for performance
+          and maintainability, ensuring smooth service for all passengers.
+        </p>
+        <p>
+          Currently operating on the Walmart mainline, building commerce platforms
+          at scale. All systems nominal. On-time performance: exemplary.
+        </p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <span class="stat-number" data-count="5">0</span>
+          <span class="stat-label">Years of Service</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-count="20">0</span>
+          <span class="stat-label">Projects Shipped</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-count="3">0</span>
+          <span class="stat-label">Active Lines</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">99.9<span style="font-size: 18px;">%</span></span>
+          <span class="stat-label">Uptime Record</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     SKILLS TERMINAL STATION
+     ====================================== -->
+<section class="station-section light" id="skills">
+  <div class="station-content reveal">
+    <div class="station-sign">
+      <div class="sign-dot" style="background: var(--transit-blue);">F</div>
+      <span class="sign-text">Skills Terminal</span>
+    </div>
+
+    <div class="skills-tracks">
+      <!-- Frontend Line -->
+      <div class="skill-track">
+        <div class="skill-track-header">
+          <div class="track-color" style="background: var(--transit-blue);">F</div>
+          <h4>Frontend Line</h4>
+        </div>
+        <div class="skill-stops">
+          <div class="skill-line" style="background: var(--transit-blue);"></div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--transit-blue);"></div>
+            <span class="stop-name">React</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--transit-blue);"></div>
+            <span class="stop-name">Next.js</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--transit-blue);"></div>
+            <span class="stop-name">TypeScript</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--transit-blue);"></div>
+            <span class="stop-name">Tailwind</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--transit-blue);"></div>
+            <span class="stop-name">Redux</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--transit-blue);"></div>
+            <span class="stop-name">GraphQL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backend Line -->
+      <div class="skill-track">
+        <div class="skill-track-header">
+          <div class="track-color" style="background: var(--line-red);">B</div>
+          <h4>Backend Line</h4>
+        </div>
+        <div class="skill-stops">
+          <div class="skill-line" style="background: var(--line-red);"></div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--line-red);"></div>
+            <span class="stop-name">Node.js</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--line-red);"></div>
+            <span class="stop-name">Java</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--line-red);"></div>
+            <span class="stop-name">Spring Boot</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--line-red);"></div>
+            <span class="stop-name">PostgreSQL</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--line-red);"></div>
+            <span class="stop-name">Redis</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--line-red);"></div>
+            <span class="stop-name">MongoDB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DevOps Line -->
+      <div class="skill-track">
+        <div class="skill-track-header">
+          <div class="track-color" style="background: var(--warning-yellow); color: var(--black);">D</div>
+          <h4>DevOps Line</h4>
+        </div>
+        <div class="skill-stops">
+          <div class="skill-line" style="background: var(--warning-yellow);"></div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--warning-yellow);"></div>
+            <span class="stop-name">Docker</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--warning-yellow);"></div>
+            <span class="stop-name">Kubernetes</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--warning-yellow);"></div>
+            <span class="stop-name">Jenkins</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--warning-yellow);"></div>
+            <span class="stop-name">AWS</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--warning-yellow);"></div>
+            <span class="stop-name">Terraform</span>
+          </div>
+          <div class="skill-stop">
+            <div class="stop-dot" style="border-color: var(--warning-yellow);"></div>
+            <span class="stop-name">Git</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     PROJECTS JUNCTION STATION
+     ====================================== -->
+<section class="station-section dark" id="projects">
+  <div class="station-content reveal">
+    <div class="station-sign">
+      <div class="sign-dot" style="background: var(--transit-blue);">F</div>
+      <div class="sign-dot" style="background: var(--warning-yellow); color: var(--black);">D</div>
+      <span class="sign-text">Projects Junction</span>
+    </div>
+
+    <div class="projects-grid">
+      <!-- Project 1 -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background: var(--transit-blue);">F</div>
+            <div class="card-dot" style="background: var(--line-red);">B</div>
+          </div>
+          <h4>E-Commerce Platform</h4>
+        </div>
+        <div class="project-card-body">
+          <p>Full-stack commerce system handling 10M+ daily transactions. Built with React micro-frontends and Java microservices at Walmart scale.</p>
+          <div class="card-tech">
+            <span class="tech-tag blue">React</span>
+            <span class="tech-tag blue">Next.js</span>
+            <span class="tech-tag red">Java</span>
+            <span class="tech-tag red">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="project-card-footer">
+          <span class="route-info mono">F / B Express</span>
+          <span class="arrow">&rarr;</span>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background: var(--line-red);">B</div>
+          </div>
+          <h4>Inventory API System</h4>
+        </div>
+        <div class="project-card-body">
+          <p>Real-time inventory management API serving warehouse and store operations. Sub-50ms response times at 99.99% availability.</p>
+          <div class="card-tech">
+            <span class="tech-tag red">Node.js</span>
+            <span class="tech-tag red">Redis</span>
+            <span class="tech-tag red">Kafka</span>
+          </div>
+        </div>
+        <div class="project-card-footer">
+          <span class="route-info mono">B Local</span>
+          <span class="arrow">&rarr;</span>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background: var(--warning-yellow); color: var(--black);">D</div>
+            <div class="card-dot" style="background: var(--line-red);">B</div>
+          </div>
+          <h4>CI/CD Pipeline Infra</h4>
+        </div>
+        <div class="project-card-body">
+          <p>Automated deployment pipeline reducing release cycles from days to minutes. Multi-environment orchestration with zero-downtime deploys.</p>
+          <div class="card-tech">
+            <span class="tech-tag yellow">Docker</span>
+            <span class="tech-tag yellow">K8s</span>
+            <span class="tech-tag yellow">Jenkins</span>
+          </div>
+        </div>
+        <div class="project-card-footer">
+          <span class="route-info mono">D / B Transfer</span>
+          <span class="arrow">&rarr;</span>
+        </div>
+      </div>
+
+      <!-- Project 4 -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background: var(--transit-blue);">F</div>
+          </div>
+          <h4>Analytics Dashboard</h4>
+        </div>
+        <div class="project-card-body">
+          <p>Interactive data visualization platform for business intelligence. Real-time charts, custom reports, and drill-down capabilities.</p>
+          <div class="card-tech">
+            <span class="tech-tag blue">React</span>
+            <span class="tech-tag blue">D3.js</span>
+            <span class="tech-tag blue">GraphQL</span>
+          </div>
+        </div>
+        <div class="project-card-footer">
+          <span class="route-info mono">F Express</span>
+          <span class="arrow">&rarr;</span>
+        </div>
+      </div>
+
+      <!-- Project 5 -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background: var(--line-red);">B</div>
+            <div class="card-dot" style="background: var(--warning-yellow); color: var(--black);">D</div>
+          </div>
+          <h4>Auth Microservice</h4>
+        </div>
+        <div class="project-card-body">
+          <p>Centralized authentication and authorization service. OAuth 2.0, JWT tokens, and role-based access control for enterprise systems.</p>
+          <div class="card-tech">
+            <span class="tech-tag red">Spring Boot</span>
+            <span class="tech-tag red">OAuth</span>
+            <span class="tech-tag yellow">AWS</span>
+          </div>
+        </div>
+        <div class="project-card-footer">
+          <span class="route-info mono">B / D Transfer</span>
+          <span class="arrow">&rarr;</span>
+        </div>
+      </div>
+
+      <!-- Project 6 -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background: var(--transit-blue);">F</div>
+            <div class="card-dot" style="background: var(--line-red);">B</div>
+            <div class="card-dot" style="background: var(--warning-yellow); color: var(--black);">D</div>
+          </div>
+          <h4>Internal Dev Portal</h4>
+        </div>
+        <div class="project-card-body">
+          <p>Developer experience platform unifying documentation, service catalog, and deployment tools. Full-stack with automated infra provisioning.</p>
+          <div class="card-tech">
+            <span class="tech-tag blue">React</span>
+            <span class="tech-tag red">Node.js</span>
+            <span class="tech-tag yellow">Terraform</span>
+          </div>
+        </div>
+        <div class="project-card-footer">
+          <span class="route-info mono">F / B / D All Lines</span>
+          <span class="arrow">&rarr;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     EXPERIENCE PARK STATION
+     ====================================== -->
+<section class="station-section dark" id="experience" style="background: #1e1e1e;">
+  <div class="station-content reveal">
+    <div class="station-sign" style="background: var(--transit-blue);">
+      <div class="sign-dot" style="background: var(--white); color: var(--transit-blue);">F</div>
+      <span class="sign-text" style="color: var(--white);">Experience Park</span>
+    </div>
+
+    <div class="timeline-track">
+      <div class="timeline-stop">
+        <div class="stop-year mono">2022 -- Present</div>
+        <h4>Software Developer</h4>
+        <div class="stop-company">Walmart</div>
+        <p>Building next-generation commerce platforms at massive scale. Leading frontend architecture decisions, implementing microservices, and driving DevOps best practices across teams.</p>
+        <div class="stop-tags">
+          <span class="tag">React</span>
+          <span class="tag">Java</span>
+          <span class="tag">Kubernetes</span>
+          <span class="tag">GraphQL</span>
+          <span class="tag">CI/CD</span>
+        </div>
+      </div>
+
+      <div class="timeline-stop">
+        <div class="stop-year mono">2020 -- 2022</div>
+        <h4>Software Engineer</h4>
+        <div class="stop-company">Previous Company</div>
+        <p>Full-stack development on customer-facing web applications. Built RESTful APIs, implemented responsive UI components, and established automated testing frameworks.</p>
+        <div class="stop-tags">
+          <span class="tag">Node.js</span>
+          <span class="tag">React</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Docker</span>
+        </div>
+      </div>
+
+      <div class="timeline-stop">
+        <div class="stop-year mono">2019 -- 2020</div>
+        <h4>Junior Developer</h4>
+        <div class="stop-company">Startup</div>
+        <p>Launched initial product from zero to production. Wore multiple hats across frontend, backend, and infrastructure. Fast-paced environment with direct impact on product direction.</p>
+        <div class="stop-tags">
+          <span class="tag">JavaScript</span>
+          <span class="tag">Python</span>
+          <span class="tag">AWS</span>
+          <span class="tag">MongoDB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     CONTACT SQUARE STATION
+     ====================================== -->
+<section class="contact-section" id="contact">
+  <div class="station-content reveal">
+    <div class="station-sign" style="background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); display: inline-flex;">
+      <div class="sign-dot" style="background: var(--white); color: var(--transit-blue);">F</div>
+      <span class="sign-text" style="color: var(--white);">Contact Square</span>
+    </div>
+
+    <h2 style="margin-top: 30px;">End of the Line</h2>
+    <p class="contact-sub">
+      All trains terminate here. Whether you need a full-stack developer, a frontend
+      specialist, or someone to build your deployment pipeline -- the next departure
+      is whenever you are ready.
+    </p>
+
+    <div class="contact-links">
+      <a href="mailto:anshull.garg@email.com" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        Email
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+        </svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/anshullgarg" class="contact-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/>
+          <path d="M9 18c-4.51 2-5-2-7-2"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================
+     FOOTER
+     ====================================== -->
+<footer style="background: var(--black); padding: 30px 20px 70px; text-align: center; border-top: 1px solid #333;">
+  <p style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555;">
+    AG Transit Authority &middot; Est. 2019 &middot; All Lines Operational
+  </p>
+  <p style="font-size: 11px; color: #444; margin-top: 6px; font-family: 'JetBrains Mono', monospace;">
+    Designed in the Vignelli tradition. Built with vanilla HTML, CSS, and JS.
+  </p>
+</footer>
+
+<!-- ======================================
+     NEXT TRAIN BAR (Fixed Bottom)
+     ====================================== -->
+<div class="next-train-bar" aria-label="Next section indicator">
+  <span class="train-label">Next train to:</span>
+  <span class="train-destination" id="nextDest">About Central</span>
+  <span class="train-countdown mono">
+    <span class="min-val" id="countdownVal">1</span> min
+  </span>
+</div>
+
+
+<!-- ======================================
+     JAVASCRIPT
+     ====================================== -->
+<script>
+(function() {
+  'use strict';
+
+  // ========================================
+  // STATION DATA
+  // ========================================
+  const stations = [
+    { id: 'home', label: 'Home', x: 55, y: 190 },
+    { id: 'about', label: 'About Central', x: 190, y: 190 },
+    { id: 'skills', label: 'Skills Terminal', x: 310, y: 110 },
+    { id: 'projects', label: 'Projects Junction', x: 490, y: 110 },
+    { id: 'experience', label: 'Experience Park', x: 610, y: 190 },
+    { id: 'contact', label: 'Contact Square', x: 730, y: 190 }
+  ];
+
+  const trainIcon = document.getElementById('trainIcon');
+  let currentStationIndex = 0;
+
+  // ========================================
+  // TRAIN ANIMATION
+  // ========================================
+  function moveTrainToStation(index) {
+    if (index < 0 || index >= stations.length) return;
+    const station = stations[index];
+    trainIcon.setAttribute('transform', `translate(${station.x}, ${station.y})`);
+    currentStationIndex = index;
+
+    // Update active station circles
+    document.querySelectorAll('.station-circle').forEach(c => c.classList.remove('active'));
+    const stationEl = document.querySelector(`.station-circle[data-station="${station.id}"]`);
+    if (stationEl) stationEl.classList.add('active');
+  }
+
+  // Navigate to station and scroll
+  window.navigateToStation = function(stationId) {
+    const idx = stations.findIndex(s => s.id === stationId);
+    if (idx === -1) return;
+
+    // Animate train along intermediate stations
+    const start = currentStationIndex;
+    const end = idx;
+    const direction = end > start ? 1 : -1;
+    let current = start;
+
+    function stepTrain() {
+      current += direction;
+      moveTrainToStation(current);
+      if (current !== end) {
+        setTimeout(stepTrain, 300);
+      } else {
+        // Scroll to section
+        const section = document.getElementById(stationId);
+        if (section) {
+          setTimeout(() => {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 200);
+        }
+      }
+    }
+
+    if (start !== end) {
+      stepTrain();
+    } else {
+      const section = document.getElementById(stationId);
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // ========================================
+  // FLIP CLOCK ARRIVALS BOARD
+  // ========================================
+  function initFlipBoard() {
+    const rows = document.querySelectorAll('[data-flip-row]');
+    rows.forEach((row, rowIndex) => {
+      const target = row.querySelector('[data-flip-target]');
+      if (!target) return;
+      const text = target.getAttribute('data-flip-target');
+      const container = target.querySelector('[data-flip-text]');
+      if (!container) return;
+
+      // Create flip cells for each character
+      const chars = text.split('');
+      chars.forEach((char) => {
+        const cell = document.createElement('div');
+        cell.className = 'flip-cell';
+        const span = document.createElement('span');
+        span.textContent = ' ';
+        cell.appendChild(span);
+        container.appendChild(cell);
+      });
+
+      // Stagger the flip animation per row
+      setTimeout(() => flipInText(container, chars), rowIndex * 600 + 500);
+    });
+  }
+
+  function flipInText(container, chars) {
+    const cells = container.querySelectorAll('.flip-cell');
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 /-';
+
+    chars.forEach((targetChar, i) => {
+      const cell = cells[i];
+      if (!cell) return;
+      const span = cell.querySelector('span');
+      let flips = 0;
+      const totalFlips = Math.floor(Math.random() * 6) + 3;
+      const interval = 60;
+
+      setTimeout(() => {
+        cell.classList.add('flipping');
+        const flipInterval = setInterval(() => {
+          flips++;
+          if (flips < totalFlips) {
+            span.textContent = alphabet[Math.floor(Math.random() * alphabet.length)];
+          } else {
+            span.textContent = targetChar;
+            cell.classList.remove('flipping');
+            clearInterval(flipInterval);
+          }
+        }, interval);
+      }, i * 40);
+    });
+  }
+
+  // Re-flip periodically
+  function cycleFlipBoard() {
+    const rows = document.querySelectorAll('[data-flip-row]');
+    rows.forEach((row, rowIndex) => {
+      const target = row.querySelector('[data-flip-target]');
+      if (!target) return;
+      const text = target.getAttribute('data-flip-target');
+      const container = target.querySelector('[data-flip-text]');
+      if (!container) return;
+      const chars = text.split('');
+      setTimeout(() => flipInText(container, chars), rowIndex * 600);
+    });
+  }
+
+  setInterval(cycleFlipBoard, 12000);
+
+  // ========================================
+  // BOARD CLOCK
+  // ========================================
+  function updateBoardTime() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const el = document.getElementById('boardTime');
+    if (el) el.textContent = `${h}:${m}:${s}`;
+  }
+  setInterval(updateBoardTime, 1000);
+  updateBoardTime();
+
+  // ========================================
+  // NEXT TRAIN COUNTDOWN
+  // ========================================
+  const sectionIds = ['about', 'skills', 'projects', 'experience', 'contact'];
+  const sectionNames = {
+    about: 'About Central',
+    skills: 'Skills Terminal',
+    projects: 'Projects Junction',
+    experience: 'Experience Park',
+    contact: 'Contact Square'
+  };
+
+  let countdownValue = 1;
+  let countdownDir = 1;
+
+  function updateNextTrain() {
+    // Determine which section is next based on scroll position
+    const scrollY = window.scrollY + window.innerHeight / 2;
+    let nextSection = 'about';
+
+    for (let i = 0; i < sectionIds.length; i++) {
+      const el = document.getElementById(sectionIds[i]);
+      if (el && el.offsetTop > scrollY) {
+        nextSection = sectionIds[i];
+        break;
+      }
+      if (i === sectionIds.length - 1) {
+        nextSection = sectionIds[i];
+      }
+    }
+
+    document.getElementById('nextDest').textContent = sectionNames[nextSection] || nextSection;
+
+    // Animate countdown
+    countdownValue += countdownDir * 0.1;
+    if (countdownValue >= 3) countdownDir = -1;
+    if (countdownValue <= 0.5) countdownDir = 1;
+    document.getElementById('countdownVal').textContent = Math.max(1, Math.round(countdownValue));
+  }
+
+  window.addEventListener('scroll', updateNextTrain);
+  setInterval(updateNextTrain, 1000);
+
+  // ========================================
+  // SCROLL-BASED TRAIN POSITION
+  // ========================================
+  function updateTrainOnScroll() {
+    const scrollY = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = scrollY / docHeight;
+    const stationIndex = Math.min(
+      stations.length - 1,
+      Math.floor(scrollPercent * stations.length)
+    );
+
+    if (stationIndex !== currentStationIndex) {
+      moveTrainToStation(stationIndex);
+    }
+  }
+
+  window.addEventListener('scroll', updateTrainOnScroll);
+
+  // ========================================
+  // REVEAL ON SCROLL
+  // ========================================
+  function revealOnScroll() {
+    const reveals = document.querySelectorAll('.reveal');
+    reveals.forEach(el => {
+      const top = el.getBoundingClientRect().top;
+      if (top < window.innerHeight - 100) {
+        el.classList.add('visible');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', revealOnScroll);
+  revealOnScroll();
+
+  // ========================================
+  // STAT COUNTER ANIMATION
+  // ========================================
+  let statsAnimated = false;
+  function animateStats() {
+    if (statsAnimated) return;
+    const statCards = document.querySelectorAll('[data-count]');
+    const firstCard = statCards[0];
+    if (!firstCard) return;
+    const rect = firstCard.getBoundingClientRect();
+    if (rect.top > window.innerHeight) return;
+
+    statsAnimated = true;
+    statCards.forEach(el => {
+      const target = parseInt(el.getAttribute('data-count'));
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 30));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current + '+';
+      }, 50);
+    });
+  }
+
+  window.addEventListener('scroll', animateStats);
+
+  // ========================================
+  // INIT
+  // ========================================
+  initFlipBoard();
+  moveTrainToStation(0);
+
+})();
+</script>
+</body>
+</html>

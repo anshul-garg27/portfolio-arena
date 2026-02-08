@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herbarium Codex -- Anshull Garg</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --leather:#2C1810;
+  --parchment:#E8DCC8;
+  --parchment-light:#F2ECDF;
+  --fern:#4A6741;
+  --fern-dark:#3A5334;
+  --sepia:#8B4513;
+  --foxed:#C19A6B;
+  --ink:#1A0F08;
+  --rust:#6B3410;
+  --water-stain:rgba(139,115,85,0.08);
+}
+html{scroll-behavior:smooth;cursor:default}
+body{
+  background:var(--leather);
+  font-family:'Crimson Text',Georgia,serif;
+  color:var(--ink);
+  overflow-x:hidden;
+  line-height:1.7;
+}
+::selection{background:var(--foxed);color:var(--leather)}
+
+/* ===== MAGNIFYING GLASS CURSOR ===== */
+.magnifier{
+  position:fixed;
+  width:120px;height:120px;
+  border-radius:50%;
+  border:3px solid var(--foxed);
+  pointer-events:none;
+  z-index:10000;
+  opacity:0;
+  transition:opacity 0.3s ease;
+  background:radial-gradient(circle,rgba(255,255,240,0.15) 0%,transparent 70%);
+  box-shadow:
+    0 0 20px rgba(193,154,107,0.3),
+    inset 0 0 30px rgba(255,255,240,0.1);
+  transform:translate(-50%,-50%);
+  mix-blend-mode:screen;
+}
+.magnifier::after{
+  content:'';
+  position:absolute;
+  bottom:-25px;right:-15px;
+  width:4px;height:35px;
+  background:linear-gradient(to bottom,var(--foxed),var(--sepia));
+  border-radius:2px;
+  transform:rotate(-45deg);
+  transform-origin:top center;
+}
+.magnifier.active{opacity:1}
+
+/* ===== LEATHER COVER ===== */
+.cover{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  position:relative;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px),
+    repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,0,0,0.02) 3px,rgba(0,0,0,0.02) 5px),
+    radial-gradient(ellipse at 30% 20%,#3D2317 0%,transparent 50%),
+    radial-gradient(ellipse at 70% 80%,#3D2317 0%,transparent 50%),
+    var(--leather);
+  overflow:hidden;
+}
+.cover::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.cover-frame{
+  border:2px solid var(--foxed);
+  padding:60px 80px;
+  position:relative;
+  text-align:center;
+  max-width:700px;
+}
+.cover-frame::before,.cover-frame::after{
+  content:'';position:absolute;width:30px;height:30px;
+  border-color:var(--foxed);border-style:solid;
+}
+.cover-frame::before{top:-5px;left:-5px;border-width:2px 0 0 2px}
+.cover-frame::after{bottom:-5px;right:-5px;border-width:0 2px 2px 0}
+.cover-ornament{
+  font-family:'Cinzel',serif;
+  color:var(--foxed);
+  font-size:2rem;
+  letter-spacing:1em;
+  margin-bottom:20px;
+  opacity:0.6;
+}
+.cover h1{
+  font-family:'Cinzel',serif;
+  color:var(--parchment);
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:700;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  line-height:1.2;
+  margin-bottom:10px;
+  text-shadow:0 2px 4px rgba(0,0,0,0.5);
+}
+.cover h2{
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  color:var(--foxed);
+  font-size:clamp(1rem,2.5vw,1.4rem);
+  font-weight:400;
+  letter-spacing:0.3em;
+  margin-bottom:30px;
+}
+.cover-subtitle{
+  font-family:'Caveat',cursive;
+  color:var(--parchment);
+  opacity:0.5;
+  font-size:1.1rem;
+  margin-top:20px;
+}
+.cover-year{
+  font-family:'Cinzel',serif;
+  color:var(--foxed);
+  font-size:1.1rem;
+  letter-spacing:0.5em;
+  margin-top:30px;
+  opacity:0.7;
+}
+.cover-spine-left,.cover-spine-right{
+  position:absolute;top:0;bottom:0;width:40px;
+  background:linear-gradient(90deg,rgba(0,0,0,0.4),transparent);
+}
+.cover-spine-left{left:0}
+.cover-spine-right{right:0;background:linear-gradient(270deg,rgba(0,0,0,0.4),transparent)}
+
+.enter-btn{
+  margin-top:40px;
+  font-family:'Cinzel',serif;
+  font-size:0.85rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--foxed);
+  background:none;border:1px solid var(--foxed);
+  padding:12px 40px;
+  cursor:pointer;
+  transition:all 0.4s ease;
+  position:relative;
+}
+.enter-btn:hover{
+  background:var(--foxed);
+  color:var(--leather);
+}
+
+/* ===== NAVIGATION RIBBON ===== */
+.ribbon-nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:1000;
+  background:linear-gradient(180deg,var(--leather) 0%,rgba(44,24,16,0.95) 100%);
+  border-bottom:2px solid var(--foxed);
+  padding:12px 0;
+  transform:translateY(-100%);
+  transition:transform 0.5s ease;
+  backdrop-filter:blur(10px);
+}
+.ribbon-nav.visible{transform:translateY(0)}
+.ribbon-nav ul{
+  display:flex;justify-content:center;gap:40px;
+  list-style:none;
+}
+.ribbon-nav a{
+  font-family:'Cinzel',serif;
+  font-size:0.75rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--foxed);
+  text-decoration:none;
+  transition:color 0.3s;
+  position:relative;
+}
+.ribbon-nav a::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:0;
+  height:1px;background:var(--foxed);
+  transform:scaleX(0);transition:transform 0.3s;
+}
+.ribbon-nav a:hover{color:var(--parchment)}
+.ribbon-nav a:hover::after{transform:scaleX(1)}
+
+/* ===== PAGE / SECTION BASE ===== */
+.page{
+  position:relative;
+  max-width:1100px;
+  margin:0 auto;
+  padding:80px 60px;
+  background:var(--parchment);
+  min-height:100vh;
+}
+.page::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:1;
+}
+/* foxing spots */
+.page::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 8px 6px at 15% 25%,rgba(160,120,70,0.15),transparent),
+    radial-gradient(ellipse 5px 7px at 82% 18%,rgba(160,120,70,0.12),transparent),
+    radial-gradient(ellipse 10px 8px at 45% 72%,rgba(160,120,70,0.1),transparent),
+    radial-gradient(ellipse 6px 4px at 70% 55%,rgba(160,120,70,0.13),transparent),
+    radial-gradient(ellipse 4px 5px at 25% 88%,rgba(160,120,70,0.11),transparent),
+    radial-gradient(ellipse 7px 9px at 90% 80%,rgba(160,120,70,0.09),transparent),
+    radial-gradient(ellipse 12px 10px at 55% 15%,rgba(160,120,70,0.08),transparent),
+    radial-gradient(ellipse 3px 3px at 35% 45%,rgba(160,120,70,0.14),transparent),
+    radial-gradient(ellipse 6px 8px at 8% 60%,rgba(160,120,70,0.1),transparent);
+  pointer-events:none;z-index:1;
+}
+.page > *{position:relative;z-index:2}
+
+/* Water stain */
+.water-stain{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(139,115,85,0.06) 0%,rgba(139,115,85,0.03) 40%,transparent 70%);
+  pointer-events:none;z-index:1;
+}
+.water-stain-1{width:300px;height:250px;top:10%;right:5%;transform:rotate(15deg)}
+.water-stain-2{width:400px;height:350px;bottom:5%;left:-5%;transform:rotate(-20deg)}
+.water-stain-3{width:200px;height:180px;top:40%;left:10%;transform:rotate(35deg)}
+
+/* Deckled edge */
+.deckled-top,.deckled-bottom{
+  position:absolute;left:0;right:0;height:20px;z-index:3;
+}
+.deckled-top{
+  top:-1px;
+  background:var(--leather);
+  mask-image:url("data:image/svg+xml,%3Csvg width='1200' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 L1200,0 L1200,12 Q1180,18 1160,14 Q1140,10 1120,15 Q1100,20 1080,13 Q1060,8 1040,14 Q1020,19 1000,12 Q980,7 960,13 Q940,18 920,11 Q900,6 880,12 Q860,17 840,10 Q820,5 800,11 Q780,16 760,9 Q740,4 720,10 Q700,15 680,8 Q660,3 640,9 Q620,14 600,7 Q580,2 560,8 Q540,13 520,6 Q500,1 480,7 Q460,12 440,5 Q420,0 400,6 Q380,11 360,4 Q340,0 320,5 Q300,10 280,3 Q260,0 240,4 Q220,9 200,2 Q180,0 160,3 Q140,8 120,1 Q100,0 80,2 Q60,7 40,0 Q20,0 0,0 Z' fill='white'/%3E%3C/svg%3E");
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg width='1200' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 L1200,0 L1200,12 Q1180,18 1160,14 Q1140,10 1120,15 Q1100,20 1080,13 Q1060,8 1040,14 Q1020,19 1000,12 Q980,7 960,13 Q940,18 920,11 Q900,6 880,12 Q860,17 840,10 Q820,5 800,11 Q780,16 760,9 Q740,4 720,10 Q700,15 680,8 Q660,3 640,9 Q620,14 600,7 Q580,2 560,8 Q540,13 520,6 Q500,1 480,7 Q460,12 440,5 Q420,0 400,6 Q380,11 360,4 Q340,0 320,5 Q300,10 280,3 Q260,0 240,4 Q220,9 200,2 Q180,0 160,3 Q140,8 120,1 Q100,0 80,2 Q60,7 40,0 Q20,0 0,0 Z' fill='white'/%3E%3C/svg%3E");
+  mask-size:100% 100%;
+  -webkit-mask-size:100% 100%;
+}
+.deckled-bottom{
+  bottom:-1px;
+  background:var(--leather);
+  mask-image:url("data:image/svg+xml,%3Csvg width='1200' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,20 L1200,20 L1200,8 Q1180,2 1160,6 Q1140,10 1120,5 Q1100,0 1080,7 Q1060,12 1040,6 Q1020,1 1000,8 Q980,13 960,7 Q940,2 920,9 Q900,14 880,8 Q860,3 840,10 Q820,15 800,9 Q780,4 760,11 Q740,16 720,10 Q700,5 680,12 Q660,17 640,11 Q620,6 600,13 Q580,18 560,12 Q540,7 520,14 Q500,19 480,13 Q460,8 440,15 Q420,20 400,14 Q380,9 360,16 Q340,20 320,15 Q300,10 280,17 Q260,20 240,16 Q220,11 200,18 Q180,20 160,17 Q140,12 120,19 Q100,20 80,18 Q60,13 40,20 Q20,20 0,20 Z' fill='white'/%3E%3C/svg%3E");
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg width='1200' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,20 L1200,20 L1200,8 Q1180,2 1160,6 Q1140,10 1120,5 Q1100,0 1080,7 Q1060,12 1040,6 Q1020,1 1000,8 Q980,13 960,7 Q940,2 920,9 Q900,14 880,8 Q860,3 840,10 Q820,15 800,9 Q780,4 760,11 Q740,16 720,10 Q700,5 680,12 Q660,17 640,11 Q620,6 600,13 Q580,18 560,12 Q540,7 520,14 Q500,19 480,13 Q460,8 440,15 Q420,20 400,14 Q380,9 360,16 Q340,20 320,15 Q300,10 280,17 Q260,20 240,16 Q220,11 200,18 Q180,20 160,17 Q140,12 120,19 Q100,20 80,18 Q60,13 40,20 Q20,20 0,20 Z' fill='white'/%3E%3C/svg%3E");
+  mask-size:100% 100%;
+  -webkit-mask-size:100% 100%;
+}
+
+/* Page number */
+.page-number{
+  position:absolute;bottom:30px;
+  font-family:'Cinzel',serif;
+  font-size:0.8rem;
+  color:var(--sepia);
+  opacity:0.5;
+  z-index:5;
+}
+.page-number.left{left:60px}
+.page-number.right{right:60px}
+
+/* ===== SECTION HEADINGS ===== */
+.section-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  color:var(--leather);
+  text-align:center;
+  margin-bottom:10px;
+  letter-spacing:0.1em;
+  font-weight:700;
+}
+.section-latin{
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  font-size:1rem;
+  color:var(--sepia);
+  text-align:center;
+  margin-bottom:50px;
+  letter-spacing:0.15em;
+  opacity:0.7;
+}
+.section-rule{
+  width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--sepia),transparent);
+  margin:15px auto 20px;
+}
+.section-ornament{
+  text-align:center;
+  color:var(--sepia);
+  font-size:1.2rem;
+  margin-bottom:15px;
+  opacity:0.5;
+  letter-spacing:0.5em;
+}
+
+/* ===== INK BLOTS ===== */
+.ink-blot{
+  position:absolute;
+  pointer-events:none;
+  z-index:1;
+}
+.ink-blot svg{opacity:0.06}
+
+/* ===== SPECIMEN CARDS (PROJECTS) ===== */
+.specimens-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:60px;
+}
+.specimen{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:40px;
+  padding:40px;
+  position:relative;
+  border:1px solid rgba(139,69,19,0.15);
+  background:linear-gradient(135deg,rgba(255,255,250,0.4),rgba(232,220,200,0.2));
+  transition:all 0.5s ease;
+}
+.specimen:hover{
+  box-shadow:0 5px 30px rgba(44,24,16,0.1);
+  border-color:rgba(139,69,19,0.3);
+}
+.specimen::before{
+  content:'';position:absolute;top:10px;left:10px;right:10px;bottom:10px;
+  border:1px solid rgba(139,69,19,0.08);
+  pointer-events:none;
+}
+/* Tape strips */
+.specimen::after{
+  content:'';position:absolute;
+  top:-8px;left:50%;transform:translateX(-50%);
+  width:80px;height:20px;
+  background:rgba(232,220,200,0.6);
+  border:1px solid rgba(139,69,19,0.1);
+  box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+
+.specimen-illustration{
+  position:relative;
+  min-height:300px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.specimen-illustration svg{
+  width:100%;height:100%;
+  max-width:250px;
+  filter:sepia(0.2) saturate(0.8);
+  transition:filter 0.5s ease;
+}
+.specimen:hover .specimen-illustration svg{
+  filter:sepia(0) saturate(1.1);
+}
+
+.specimen-info{
+  display:flex;flex-direction:column;justify-content:center;
+}
+.specimen-classification{
+  font-family:'Cinzel',serif;
+  font-size:0.65rem;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--fern);
+  margin-bottom:8px;
+  opacity:0.8;
+}
+.specimen-latin{
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  font-size:1.6rem;
+  color:var(--sepia);
+  margin-bottom:4px;
+}
+.specimen-common{
+  font-family:'Cinzel',serif;
+  font-size:1.2rem;
+  color:var(--leather);
+  margin-bottom:15px;
+  letter-spacing:0.05em;
+}
+.specimen-description{
+  font-family:'Crimson Text',serif;
+  font-size:1.05rem;
+  color:var(--ink);
+  line-height:1.8;
+  margin-bottom:15px;
+}
+.specimen-field-note{
+  font-family:'Caveat',cursive;
+  font-size:1.1rem;
+  color:var(--sepia);
+  padding:10px 15px;
+  border-left:2px solid var(--foxed);
+  margin-top:10px;
+  transform:rotate(-0.5deg);
+  line-height:1.5;
+}
+.specimen-tags{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:15px;
+}
+.specimen-tag{
+  font-family:'Crimson Text',serif;
+  font-size:0.8rem;
+  font-style:italic;
+  color:var(--fern-dark);
+  border:1px solid rgba(74,103,65,0.3);
+  padding:3px 12px;
+  border-radius:2px;
+  background:rgba(74,103,65,0.04);
+}
+
+/* ===== FIELD NOTES (ABOUT) ===== */
+.field-notes-layout{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:50px;
+}
+.field-notes-main{
+  font-family:'Crimson Text',serif;
+  font-size:1.1rem;
+  line-height:2;
+  color:var(--ink);
+}
+.field-notes-main p{margin-bottom:20px}
+.field-notes-main .dropcap{
+  float:left;
+  font-family:'Cinzel',serif;
+  font-size:4rem;
+  line-height:0.8;
+  padding-right:10px;
+  padding-top:5px;
+  color:var(--sepia);
+}
+
+.field-notes-sidebar{
+  font-family:'Caveat',cursive;
+  padding:30px;
+  background:
+    linear-gradient(180deg,rgba(232,220,200,0.3),rgba(232,220,200,0.1));
+  border:1px solid rgba(139,69,19,0.1);
+  position:relative;
+}
+.field-notes-sidebar::before{
+  content:'Field Notes';
+  font-family:'Caveat',cursive;
+  font-size:1.4rem;
+  font-weight:700;
+  color:var(--sepia);
+  display:block;
+  margin-bottom:15px;
+  text-decoration:underline;
+  text-decoration-color:var(--foxed);
+  text-underline-offset:4px;
+}
+.field-note-entry{
+  margin-bottom:20px;
+  padding-bottom:15px;
+  border-bottom:1px dashed rgba(139,69,19,0.15);
+  font-size:1.15rem;
+  color:var(--sepia);
+  line-height:1.5;
+  transform:rotate(-0.3deg);
+}
+.field-note-entry:last-child{border-bottom:none}
+.field-note-date{
+  font-size:0.9rem;
+  opacity:0.5;
+  display:block;
+  margin-bottom:3px;
+}
+.field-note-arrow{
+  display:inline-block;
+  margin-right:5px;
+  color:var(--fern);
+}
+
+/* ===== CLASSIFICATION (SKILLS) ===== */
+.taxonomy-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:40px;
+}
+.taxonomy-family{
+  padding:30px;
+  border:1px solid rgba(139,69,19,0.12);
+  position:relative;
+  background:rgba(255,255,250,0.3);
+}
+.taxonomy-family::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--fern),var(--foxed));
+  opacity:0.4;
+}
+.taxonomy-family-name{
+  font-family:'Cinzel',serif;
+  font-size:1rem;
+  letter-spacing:0.15em;
+  color:var(--leather);
+  margin-bottom:5px;
+}
+.taxonomy-family-latin{
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  font-size:0.85rem;
+  color:var(--sepia);
+  margin-bottom:20px;
+  opacity:0.7;
+}
+.taxonomy-species{
+  list-style:none;
+}
+.taxonomy-species li{
+  font-family:'Crimson Text',serif;
+  font-size:1rem;
+  color:var(--ink);
+  padding:8px 0;
+  border-bottom:1px dotted rgba(139,69,19,0.1);
+  display:flex;align-items:center;gap:10px;
+  position:relative;
+}
+.taxonomy-species li::before{
+  content:'';
+  width:6px;height:6px;
+  background:var(--fern);
+  border-radius:50%;
+  flex-shrink:0;
+  opacity:0.6;
+}
+.skill-bar{
+  position:absolute;bottom:0;left:0;
+  height:2px;
+  background:linear-gradient(90deg,var(--fern),var(--foxed));
+  opacity:0.3;
+  transition:width 1s ease, opacity 0.3s ease;
+}
+.taxonomy-species li:hover .skill-bar{opacity:0.7}
+
+/* ===== CORRESPONDENCE (CONTACT) ===== */
+.correspondence{
+  max-width:700px;
+  margin:0 auto;
+  text-align:center;
+}
+.correspondence-intro{
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  font-size:1.2rem;
+  color:var(--sepia);
+  margin-bottom:40px;
+  line-height:1.8;
+}
+.correspondence-address{
+  font-family:'Caveat',cursive;
+  font-size:1.3rem;
+  color:var(--ink);
+  margin-bottom:40px;
+  line-height:2;
+}
+.correspondence-links{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:30px;
+}
+.correspondence-link{
+  font-family:'Cinzel',serif;
+  font-size:0.8rem;
+  letter-spacing:0.15em;
+  color:var(--sepia);
+  text-decoration:none;
+  padding:12px 30px;
+  border:1px solid var(--sepia);
+  transition:all 0.4s ease;
+  position:relative;
+}
+.correspondence-link::before{
+  content:'';position:absolute;inset:3px;
+  border:1px solid rgba(139,69,19,0.2);
+  pointer-events:none;
+}
+.correspondence-link:hover{
+  background:var(--sepia);
+  color:var(--parchment);
+}
+
+/* ===== COLOPHON ===== */
+.colophon{
+  background:var(--leather);
+  padding:60px 20px;
+  text-align:center;
+  color:var(--foxed);
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  font-size:0.9rem;
+  letter-spacing:0.1em;
+  opacity:0.6;
+}
+.colophon-ornament{
+  font-family:'Cinzel',serif;
+  letter-spacing:0.5em;
+  margin-bottom:15px;
+  font-size:0.8rem;
+}
+
+/* ===== BOTANICAL SVG ILLUSTRATIONS ===== */
+.botanical-svg{
+  transition:all 0.8s ease;
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal{
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ===== DETAIL REVEAL ON HOVER ===== */
+.specimen-detail{
+  opacity:0;
+  max-height:0;
+  overflow:hidden;
+  transition:all 0.5s ease;
+  font-family:'Caveat',cursive;
+  color:var(--fern-dark);
+  font-size:1.1rem;
+  padding:0 15px;
+}
+.specimen:hover .specimen-detail{
+  opacity:1;
+  max-height:100px;
+  padding:10px 15px;
+}
+
+/* ===== PRESSED SPECIMEN LABELS ===== */
+.specimen-label{
+  position:absolute;
+  bottom:10px;left:50%;transform:translateX(-50%);
+  font-family:'Caveat',cursive;
+  font-size:0.85rem;
+  color:var(--sepia);
+  white-space:nowrap;
+  opacity:0.6;
+  background:rgba(232,220,200,0.8);
+  padding:2px 10px;
+  border:1px solid rgba(139,69,19,0.1);
+}
+
+/* ===== BINDING SHADOW ===== */
+.binding-shadow{
+  position:relative;
+}
+.binding-shadow::before{
+  content:'';
+  position:absolute;top:0;bottom:0;left:0;width:60px;
+  background:linear-gradient(90deg,rgba(0,0,0,0.08),transparent);
+  pointer-events:none;
+  z-index:3;
+}
+
+/* ===== INK SPLATTER DECORATION ===== */
+.ink-splatter{
+  position:absolute;
+  pointer-events:none;
+  z-index:1;
+  opacity:0.04;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .page{padding:50px 30px}
+  .specimen{grid-template-columns:1fr;gap:20px}
+  .specimen-illustration{min-height:200px}
+  .field-notes-layout{grid-template-columns:1fr}
+  .taxonomy-grid{grid-template-columns:1fr}
+  .cover-frame{padding:40px 30px}
+  .ribbon-nav ul{gap:15px;flex-wrap:wrap;justify-content:center;padding:0 15px}
+  .ribbon-nav a{font-size:0.65rem}
+  .page-number.left{left:30px}
+  .page-number.right{right:30px}
+}
+@media(max-width:600px){
+  .page{padding:40px 20px}
+  .correspondence-links{flex-direction:column;align-items:center}
+  .cover-ornament{letter-spacing:0.3em;font-size:1.2rem}
+}
+
+/* ===== LOADING ANIMATION ===== */
+.page-turn{
+  animation:pageTurn 0.8s ease forwards;
+}
+@keyframes pageTurn{
+  0%{opacity:0;transform:rotateY(-5deg) scale(0.98)}
+  100%{opacity:1;transform:rotateY(0) scale(1)}
+}
+
+/* Pressed flower mounting lines */
+.mounting-lines{
+  position:absolute;
+  pointer-events:none;
+  z-index:0;
+}
+.mounting-lines line{
+  stroke:rgba(139,69,19,0.08);
+  stroke-width:0.5;
+  stroke-dasharray:4 3;
+}
+
+/* Wax seal */
+.wax-seal{
+  width:70px;height:70px;
+  background:radial-gradient(circle at 40% 40%,#8B2500,#6B1A00,#4A1200);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:30px auto 0;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.3),
+    inset 0 -2px 4px rgba(0,0,0,0.3),
+    inset 0 2px 4px rgba(255,255,255,0.1);
+  position:relative;
+}
+.wax-seal::before{
+  content:'AG';
+  font-family:'Cinzel',serif;
+  font-size:1rem;
+  font-weight:700;
+  color:rgba(255,255,255,0.2);
+  letter-spacing:0.1em;
+}
+.wax-seal::after{
+  content:'';position:absolute;inset:6px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.08);
+}
+</style>
+</head>
+<body>
+
+<!-- MAGNIFYING GLASS -->
+<div class="magnifier" id="magnifier"></div>
+
+<!-- ===== LEATHER COVER ===== -->
+<section class="cover" id="cover">
+  <div class="cover-spine-left"></div>
+  <div class="cover-spine-right"></div>
+  <div class="cover-frame">
+    <div class="cover-ornament">* * *</div>
+    <h1>Herbarium<br>Codex</h1>
+    <div class="section-rule" style="background:linear-gradient(90deg,transparent,var(--foxed),transparent);margin:20px auto"></div>
+    <h2>A Collection of Digital Specimens</h2>
+    <p style="font-family:'Crimson Text',serif;color:var(--parchment);opacity:0.6;font-style:italic;font-size:0.95rem;letter-spacing:0.05em;">
+      Catalogued &amp; Preserved by
+    </p>
+    <p style="font-family:'Cinzel',serif;color:var(--parchment);font-size:1.3rem;letter-spacing:0.2em;margin-top:5px;">
+      ANSHULL GARG
+    </p>
+    <p class="cover-subtitle">Software Developer &middot; Walmart</p>
+    <p class="cover-year">MMXXVI</p>
+    <button class="enter-btn" onclick="document.getElementById('specimens').scrollIntoView({behavior:'smooth'})">
+      Open the Codex
+    </button>
+  </div>
+</section>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="ribbon-nav" id="ribbonNav">
+  <ul>
+    <li><a href="#specimens">Specimen Catalog</a></li>
+    <li><a href="#fieldnotes">Field Notes</a></li>
+    <li><a href="#classification">Classification</a></li>
+    <li><a href="#correspondence">Correspondence</a></li>
+  </ul>
+</nav>
+
+<!-- ===== SECTION I: SPECIMEN CATALOG (PROJECTS) ===== -->
+<section class="page binding-shadow" id="specimens">
+  <div class="deckled-top"></div>
+  <div class="water-stain water-stain-1"></div>
+  <div class="water-stain water-stain-3"></div>
+
+  <!-- Ink blot decoration -->
+  <div class="ink-splatter" style="top:5%;right:8%">
+    <svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="25" fill="#1A0F08"/><circle cx="55" cy="30" r="8" fill="#1A0F08"/><circle cx="28" cy="52" r="6" fill="#1A0F08"/><ellipse cx="48" cy="55" rx="10" ry="5" fill="#1A0F08"/></svg>
+  </div>
+
+  <div class="section-ornament reveal">--- I ---</div>
+  <h2 class="section-title reveal">Specimen Catalog</h2>
+  <p class="section-latin reveal">Catalogus Speciminum Digitalium</p>
+  <div class="section-rule"></div>
+
+  <div class="specimens-grid">
+
+    <!-- SPECIMEN 1 -->
+    <article class="specimen reveal">
+      <div class="specimen-illustration">
+        <svg viewBox="0 0 200 280" class="botanical-svg">
+          <!-- Fern frond -->
+          <g fill="none" stroke="#4A6741" stroke-width="1.5" opacity="0.85">
+            <path d="M100,270 Q100,200 100,50" stroke-width="2.5" stroke="#3A5334"/>
+            <!-- Left leaflets -->
+            <path d="M100,250 Q70,240 55,230 Q70,235 80,228 Q65,225 50,210 Q70,218 85,215"/>
+            <path d="M100,220 Q65,210 45,195 Q65,200 78,193 Q58,188 40,170 Q62,180 80,175"/>
+            <path d="M100,190 Q60,178 38,160 Q62,168 76,160 Q55,153 35,132 Q58,145 78,138"/>
+            <path d="M100,160 Q58,146 32,125 Q58,135 74,125 Q52,118 30,95 Q55,110 76,102"/>
+            <path d="M100,130 Q62,116 38,92 Q60,102 74,92 Q55,84 38,60 Q58,76 76,68"/>
+            <path d="M100,100 Q68,88 50,65 Q66,74 76,66 Q62,56 50,35 Q64,50 78,42"/>
+            <path d="M100,75 Q78,65 65,48 Q76,54 82,46 Q72,38 65,22 Q74,34 84,28"/>
+            <!-- Right leaflets (mirrored) -->
+            <path d="M100,250 Q130,240 145,230 Q130,235 120,228 Q135,225 150,210 Q130,218 115,215"/>
+            <path d="M100,220 Q135,210 155,195 Q135,200 122,193 Q142,188 160,170 Q138,180 120,175"/>
+            <path d="M100,190 Q140,178 162,160 Q138,168 124,160 Q145,153 165,132 Q142,145 122,138"/>
+            <path d="M100,160 Q142,146 168,125 Q142,135 126,125 Q148,118 170,95 Q145,110 124,102"/>
+            <path d="M100,130 Q138,116 162,92 Q140,102 126,92 Q145,84 162,60 Q142,76 124,68"/>
+            <path d="M100,100 Q132,88 150,65 Q134,74 124,66 Q138,56 150,35 Q136,50 122,42"/>
+            <path d="M100,75 Q122,65 135,48 Q124,54 118,46 Q128,38 135,22 Q126,34 116,28"/>
+          </g>
+          <!-- Tip curl -->
+          <path d="M100,50 Q102,35 95,22" fill="none" stroke="#4A6741" stroke-width="2" opacity="0.6"/>
+        </svg>
+        <span class="specimen-label">Plate I</span>
+      </div>
+      <div class="specimen-info">
+        <span class="specimen-classification">Order: Commercium &middot; Family: Scalaridae</span>
+        <h3 class="specimen-latin">Projectus Scalabilis</h3>
+        <h4 class="specimen-common">E-Commerce Platform Architecture</h4>
+        <p class="specimen-description">
+          A robust specimen of distributed systems design, this project exhibits remarkable
+          resilience under high-traffic conditions. Observed handling millions of concurrent
+          requests with graceful degradation patterns reminiscent of the hardiest perennials.
+        </p>
+        <div class="specimen-field-note">
+          "Particularly noteworthy: the microservices root system allows independent scaling
+          of each component -- a truly elegant adaptation."
+        </div>
+        <div class="specimen-tags">
+          <span class="specimen-tag">React</span>
+          <span class="specimen-tag">Node.js</span>
+          <span class="specimen-tag">Microservices</span>
+          <span class="specimen-tag">Redis</span>
+        </div>
+        <div class="specimen-detail">
+          Collected during tenure at Walmart. Thrives in production environments.
+        </div>
+      </div>
+    </article>
+
+    <!-- SPECIMEN 2 -->
+    <article class="specimen reveal">
+      <div class="specimen-illustration">
+        <svg viewBox="0 0 200 280" class="botanical-svg">
+          <!-- Oak leaf cluster -->
+          <g fill="#4A6741" fill-opacity="0.15" stroke="#4A6741" stroke-width="1.2" opacity="0.85">
+            <path d="M100,270 L100,120" stroke-width="2.5" fill="none" stroke="#3A5334"/>
+            <!-- Main leaf -->
+            <path d="M100,180 Q80,175 65,165 Q75,158 68,145 Q80,148 72,130
+                     Q85,138 80,118 Q92,130 90,105 Q100,120 100,100
+                     Q100,120 110,105 Q108,130 120,118 Q115,138 128,130
+                     Q120,148 132,145 Q125,158 135,165 Q120,175 100,180Z"/>
+            <!-- Second leaf -->
+            <path d="M100,230 Q85,225 75,218 Q82,212 76,202 Q85,205 80,190
+                     Q90,198 88,180 Q96,192 96,170 Q100,185 104,170
+                     Q104,192 112,180 Q110,198 120,190 Q115,205 124,202
+                     Q118,212 125,218 Q115,225 100,230Z" transform="rotate(8,100,200)"/>
+            <!-- Acorn -->
+            <ellipse cx="135" cy="240" rx="8" ry="12" fill="#8B4513" fill-opacity="0.3" stroke="#8B4513" stroke-width="1"/>
+            <path d="M127,235 Q131,230 135,228 Q139,230 143,235" fill="#8B4513" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8"/>
+          </g>
+        </svg>
+        <span class="specimen-label">Plate II</span>
+      </div>
+      <div class="specimen-info">
+        <span class="specimen-classification">Order: Analyticum &middot; Family: Intelligentiae</span>
+        <h3 class="specimen-latin">Datum Intelligentia</h3>
+        <h4 class="specimen-common">Real-Time Analytics Dashboard</h4>
+        <p class="specimen-description">
+          This specimen demonstrates extraordinary phototropism toward data streams,
+          processing and visualizing terabytes of information with the efficiency of
+          a mature oak converting sunlight. Its branching visualization patterns
+          reveal insights hidden deep within complex datasets.
+        </p>
+        <div class="specimen-field-note">
+          "The real-time data ingestion pipeline is reminiscent of root absorption --
+          constant, efficient, and vital to the organism's survival."
+        </div>
+        <div class="specimen-tags">
+          <span class="specimen-tag">TypeScript</span>
+          <span class="specimen-tag">D3.js</span>
+          <span class="specimen-tag">Apache Kafka</span>
+          <span class="specimen-tag">PostgreSQL</span>
+        </div>
+        <div class="specimen-detail">
+          First observed processing 2M+ events per second in controlled conditions.
+        </div>
+      </div>
+    </article>
+
+    <!-- SPECIMEN 3 -->
+    <article class="specimen reveal">
+      <div class="specimen-illustration">
+        <svg viewBox="0 0 200 280" class="botanical-svg">
+          <!-- Wildflower -->
+          <g opacity="0.85">
+            <!-- Stem -->
+            <path d="M100,270 Q98,220 95,180 Q92,150 100,100" fill="none" stroke="#3A5334" stroke-width="2"/>
+            <!-- Side stems -->
+            <path d="M95,200 Q75,185 60,175" fill="none" stroke="#4A6741" stroke-width="1.2"/>
+            <path d="M97,170 Q115,155 130,150" fill="none" stroke="#4A6741" stroke-width="1.2"/>
+            <!-- Leaves -->
+            <path d="M95,210 Q80,200 70,195 Q82,192 95,200" fill="#4A6741" fill-opacity="0.2" stroke="#4A6741" stroke-width="0.8"/>
+            <path d="M97,185 Q112,175 125,172 Q115,178 97,185" fill="#4A6741" fill-opacity="0.2" stroke="#4A6741" stroke-width="0.8"/>
+            <!-- Main flower -->
+            <g transform="translate(100,80)">
+              <ellipse cx="0" cy="-20" rx="8" ry="18" fill="#C19A6B" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-20" rx="8" ry="18" fill="#C19A6B" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8" transform="rotate(60)"/>
+              <ellipse cx="0" cy="-20" rx="8" ry="18" fill="#C19A6B" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8" transform="rotate(120)"/>
+              <ellipse cx="0" cy="-20" rx="8" ry="18" fill="#C19A6B" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8" transform="rotate(180)"/>
+              <ellipse cx="0" cy="-20" rx="8" ry="18" fill="#C19A6B" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8" transform="rotate(240)"/>
+              <ellipse cx="0" cy="-20" rx="8" ry="18" fill="#C19A6B" fill-opacity="0.2" stroke="#8B4513" stroke-width="0.8" transform="rotate(300)"/>
+              <circle cx="0" cy="0" r="6" fill="#8B4513" fill-opacity="0.3" stroke="#8B4513" stroke-width="0.8"/>
+            </g>
+            <!-- Side flower bud -->
+            <g transform="translate(60,165)">
+              <ellipse cx="0" cy="-8" rx="4" ry="10" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(-15)"/>
+              <ellipse cx="0" cy="-8" rx="4" ry="10" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(45)"/>
+              <ellipse cx="0" cy="-8" rx="4" ry="10" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(105)"/>
+              <circle cx="0" cy="0" r="3" fill="#8B4513" fill-opacity="0.2"/>
+            </g>
+            <!-- Side flower -->
+            <g transform="translate(130,142)">
+              <ellipse cx="0" cy="-10" rx="5" ry="12" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-10" rx="5" ry="12" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(72)"/>
+              <ellipse cx="0" cy="-10" rx="5" ry="12" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(144)"/>
+              <ellipse cx="0" cy="-10" rx="5" ry="12" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(216)"/>
+              <ellipse cx="0" cy="-10" rx="5" ry="12" fill="#C19A6B" fill-opacity="0.15" stroke="#8B4513" stroke-width="0.6" transform="rotate(288)"/>
+              <circle cx="0" cy="0" r="4" fill="#8B4513" fill-opacity="0.25"/>
+            </g>
+          </g>
+        </svg>
+        <span class="specimen-label">Plate III</span>
+      </div>
+      <div class="specimen-info">
+        <span class="specimen-classification">Order: Optimizatum &middot; Family: Performidae</span>
+        <h3 class="specimen-latin">Projectus Optimizus</h3>
+        <h4 class="specimen-common">Performance Optimization Engine</h4>
+        <p class="specimen-description">
+          Perhaps the most delicate specimen in the collection, this project required
+          careful cultivation of algorithms that bloom under computational pressure.
+          Load times reduced by 60%, like pruning excess growth to reveal the
+          essential architecture beneath.
+        </p>
+        <div class="specimen-field-note">
+          "Magnificent specimen! The lazy-loading mechanism operates much like
+          deciduous dormancy -- conserving resources until the moment of need."
+        </div>
+        <div class="specimen-tags">
+          <span class="specimen-tag">JavaScript</span>
+          <span class="specimen-tag">Webpack</span>
+          <span class="specimen-tag">Web Workers</span>
+          <span class="specimen-tag">Service Workers</span>
+        </div>
+        <div class="specimen-detail">
+          Core Web Vitals improved across 200+ pages. A perennial favorite.
+        </div>
+      </div>
+    </article>
+
+    <!-- SPECIMEN 4 -->
+    <article class="specimen reveal">
+      <div class="specimen-illustration">
+        <svg viewBox="0 0 200 280" class="botanical-svg">
+          <!-- Ivy / vine -->
+          <g opacity="0.85">
+            <!-- Main vine -->
+            <path d="M100,270 Q105,240 95,210 Q85,180 100,150 Q115,120 100,90 Q85,60 95,30"
+                  fill="none" stroke="#3A5334" stroke-width="2.5"/>
+            <!-- Tendrils -->
+            <path d="M95,210 Q80,205 70,198" fill="none" stroke="#4A6741" stroke-width="1"/>
+            <path d="M100,150 Q120,145 135,140" fill="none" stroke="#4A6741" stroke-width="1"/>
+            <path d="M100,90 Q78,82 65,78" fill="none" stroke="#4A6741" stroke-width="1"/>
+            <!-- Heart-shaped ivy leaves -->
+            <path d="M80,200 Q70,188 72,175 Q78,180 82,175 Q88,180 92,175 Q90,188 80,200Z"
+                  fill="#4A6741" fill-opacity="0.2" stroke="#4A6741" stroke-width="0.8"/>
+            <path d="M130,138 Q140,125 138,112 Q132,118 128,112 Q122,118 118,112 Q120,125 130,138Z"
+                  fill="#4A6741" fill-opacity="0.2" stroke="#4A6741" stroke-width="0.8" transform="rotate(15,130,125)"/>
+            <path d="M72,78 Q62,65 64,52 Q70,58 74,52 Q80,58 84,52 Q82,65 72,78Z"
+                  fill="#4A6741" fill-opacity="0.2" stroke="#4A6741" stroke-width="0.8" transform="rotate(-10,72,65)"/>
+            <!-- More leaves along vine -->
+            <path d="M108,240 Q118,228 116,215 Q110,220 106,215 Q100,220 96,215 Q98,228 108,240Z"
+                  fill="#4A6741" fill-opacity="0.15" stroke="#4A6741" stroke-width="0.8" transform="rotate(20,108,228)"/>
+            <path d="M88,168 Q78,155 80,142 Q86,148 90,142 Q96,148 100,142 Q98,155 88,168Z"
+                  fill="#4A6741" fill-opacity="0.18" stroke="#4A6741" stroke-width="0.8" transform="rotate(-5,88,155)"/>
+            <path d="M112,108 Q122,95 120,82 Q114,88 110,82 Q104,88 100,82 Q102,95 112,108Z"
+                  fill="#4A6741" fill-opacity="0.15" stroke="#4A6741" stroke-width="0.8" transform="rotate(10,112,95)"/>
+            <!-- Small berries -->
+            <circle cx="65" cy="195" r="3" fill="#2C1810" fill-opacity="0.3"/>
+            <circle cx="62" cy="190" r="2.5" fill="#2C1810" fill-opacity="0.25"/>
+            <circle cx="68" cy="191" r="2" fill="#2C1810" fill-opacity="0.2"/>
+          </g>
+        </svg>
+        <span class="specimen-label">Plate IV</span>
+      </div>
+      <div class="specimen-info">
+        <span class="specimen-classification">Order: Automaticum &middot; Family: Deployidae</span>
+        <h3 class="specimen-latin">Autonoma Deploymentia</h3>
+        <h4 class="specimen-common">CI/CD Pipeline Automation</h4>
+        <p class="specimen-description">
+          Like ivy climbing a trellis, this automation system extends its tendrils
+          through every stage of the development lifecycle. Self-healing deployments
+          propagate with the unstoppable determination of a creeping vine, reducing
+          manual intervention by 85%.
+        </p>
+        <div class="specimen-field-note">
+          "The self-propagating nature of this pipeline is extraordinary --
+          once established, it requires minimal tending, much like a mature ivy."
+        </div>
+        <div class="specimen-tags">
+          <span class="specimen-tag">Docker</span>
+          <span class="specimen-tag">Kubernetes</span>
+          <span class="specimen-tag">Jenkins</span>
+          <span class="specimen-tag">Terraform</span>
+        </div>
+        <div class="specimen-detail">
+          Deployment frequency increased from weekly to 50+ daily releases.
+        </div>
+      </div>
+    </article>
+
+    <!-- SPECIMEN 5 -->
+    <article class="specimen reveal">
+      <div class="specimen-illustration">
+        <svg viewBox="0 0 200 280" class="botanical-svg">
+          <!-- Dandelion / seed head -->
+          <g opacity="0.85">
+            <!-- Stem -->
+            <path d="M100,270 Q98,230 100,180 Q102,140 100,100" fill="none" stroke="#3A5334" stroke-width="2"/>
+            <!-- Leaf at base -->
+            <path d="M100,260 Q80,250 65,248 Q72,244 62,238 Q70,236 60,228 Q68,228 58,220 Q68,222 65,215
+                     Q75,220 80,212 Q85,222 90,218 Q90,228 95,225 Q95,240 100,250Z"
+                  fill="#4A6741" fill-opacity="0.15" stroke="#4A6741" stroke-width="0.8"/>
+            <!-- Seed head (dandelion puff) -->
+            <g transform="translate(100,80)">
+              <circle cx="0" cy="0" r="4" fill="#8B4513" fill-opacity="0.3"/>
+              <!-- Seed lines radiating out -->
+              <line x1="0" y1="0" x2="0" y2="-35" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="18" y2="-30" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="30" y2="-18" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="35" y2="0" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="30" y2="18" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="18" y2="30" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-18" y2="-30" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-30" y2="-18" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-35" y2="0" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-30" y2="18" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-18" y2="30" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="10" y2="-34" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-10" y2="-34" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="25" y2="-25" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-25" y2="-25" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="34" y2="-10" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-34" y2="-10" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="34" y2="10" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="-34" y2="10" stroke="#8B4513" stroke-width="0.4" opacity="0.4"/>
+              <line x1="0" y1="0" x2="0" y2="30" stroke="#8B4513" stroke-width="0.4" opacity="0.3"/>
+              <!-- Tiny seed tufts at ends -->
+              <circle cx="0" cy="-35" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="18" cy="-30" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="30" cy="-18" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="35" cy="0" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="-35" cy="0" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="-30" cy="-18" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="-18" cy="-30" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="30" cy="18" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="-30" cy="18" r="3" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="10" cy="-34" r="2.5" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+              <circle cx="-10" cy="-34" r="2.5" fill="none" stroke="#C19A6B" stroke-width="0.3" opacity="0.3"/>
+            </g>
+            <!-- Floating seeds -->
+            <g opacity="0.25" fill="none" stroke="#8B4513" stroke-width="0.4">
+              <line x1="145" y1="45" x2="145" y2="30"/>
+              <circle cx="145" cy="28" r="2.5" stroke="#C19A6B" stroke-width="0.3"/>
+              <line x1="155" y1="65" x2="158" y2="50"/>
+              <circle cx="159" cy="48" r="2" stroke="#C19A6B" stroke-width="0.3"/>
+              <line x1="50" y1="55" x2="47" y2="40"/>
+              <circle cx="46" cy="38" r="2" stroke="#C19A6B" stroke-width="0.3"/>
+            </g>
+          </g>
+        </svg>
+        <span class="specimen-label">Plate V</span>
+      </div>
+      <div class="specimen-info">
+        <span class="specimen-classification">Order: Designatum &middot; Family: Componentae</span>
+        <h3 class="specimen-latin">Designus Systematica</h3>
+        <h4 class="specimen-common">Design System Library</h4>
+        <p class="specimen-description">
+          Like dandelion seeds carried on the wind, this design system disseminates
+          consistent UI patterns across dozens of applications. Each component,
+          though small, carries the complete genetic blueprint of the visual
+          language -- ensuring every new growth matches the parent specimen.
+        </p>
+        <div class="specimen-field-note">
+          "Remarkable dispersal mechanism! A single seed (component) can take
+          root in any application and produce identical offspring."
+        </div>
+        <div class="specimen-tags">
+          <span class="specimen-tag">React</span>
+          <span class="specimen-tag">Storybook</span>
+          <span class="specimen-tag">Figma API</span>
+          <span class="specimen-tag">CSS Modules</span>
+        </div>
+        <div class="specimen-detail">
+          Adopted across 12 product teams. 200+ reusable specimens catalogued.
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <span class="page-number right">-- i --</span>
+  <div class="deckled-bottom"></div>
+</section>
+
+<!-- ===== SECTION II: FIELD NOTES (ABOUT) ===== -->
+<section class="page binding-shadow" id="fieldnotes">
+  <div class="deckled-top"></div>
+  <div class="water-stain water-stain-2"></div>
+
+  <div class="ink-splatter" style="bottom:12%;left:5%">
+    <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="18" fill="#1A0F08"/><circle cx="42" cy="22" r="6" fill="#1A0F08"/><ellipse cx="20" cy="40" rx="8" ry="4" fill="#1A0F08" transform="rotate(-20,20,40)"/></svg>
+  </div>
+
+  <div class="section-ornament reveal">--- II ---</div>
+  <h2 class="section-title reveal">Field Notes</h2>
+  <p class="section-latin reveal">Notae de Campo -- Observationes Personales</p>
+  <div class="section-rule"></div>
+
+  <div class="field-notes-layout reveal">
+    <div class="field-notes-main">
+      <p>
+        <span class="dropcap">I</span>n the manner of the great naturalists who preceded me --
+        those patient observers who spent decades cataloguing the living world -- I have
+        devoted my career to the careful study and cultivation of digital systems. As a
+        <strong>Software Developer at Walmart</strong>, I tend to ecosystems of code that
+        serve millions of users daily, each interaction a pollination event in our vast
+        digital garden.
+      </p>
+      <p>
+        My methodology draws from the botanical tradition: observe first, hypothesize,
+        experiment with care, and document everything. Every system I build begins as a
+        seedling -- a small proof of concept nurtured with clean architecture and tested
+        thoroughly before being transplanted into production soil.
+      </p>
+      <p>
+        I have particular expertise in cultivating <em>frontend specimens</em> using
+        React and TypeScript, engineering <em>resilient root systems</em> with Node.js
+        and cloud infrastructure, and cross-pollinating ideas across teams to create
+        hybrid vigor in our technical solutions. My field studies have taken me through
+        the domains of e-commerce, supply chain optimization, and developer experience.
+      </p>
+      <p>
+        Like any diligent naturalist, I believe the finest specimens are those that thrive
+        not in isolation, but as part of a greater ecosystem -- robust, interconnected,
+        and beautiful in their functional elegance.
+      </p>
+    </div>
+    <aside class="field-notes-sidebar">
+      <div class="field-note-entry">
+        <span class="field-note-date">Current Station:</span>
+        <span class="field-note-arrow">&rarr;</span> Walmart, Software Developer
+      </div>
+      <div class="field-note-entry">
+        <span class="field-note-date">Primary Habitat:</span>
+        <span class="field-note-arrow">&rarr;</span> Full-stack development, with deep roots in frontend ecosystems
+      </div>
+      <div class="field-note-entry">
+        <span class="field-note-date">Observation Period:</span>
+        <span class="field-note-arrow">&rarr;</span> Years of patient study in software cultivation
+      </div>
+      <div class="field-note-entry">
+        <span class="field-note-date">Research Interests:</span>
+        <span class="field-note-arrow">&rarr;</span> Scalable architecture, performance optimization, design systems, developer tooling
+      </div>
+      <div class="field-note-entry">
+        <span class="field-note-date">Personal Note:</span>
+        <span class="field-note-arrow">&rarr;</span> "The best code, like the finest botanical illustration, reveals complexity through clarity."
+      </div>
+    </aside>
+  </div>
+
+  <span class="page-number left">-- ii --</span>
+  <div class="deckled-bottom"></div>
+</section>
+
+<!-- ===== SECTION III: CLASSIFICATION (SKILLS) ===== -->
+<section class="page binding-shadow" id="classification">
+  <div class="deckled-top"></div>
+  <div class="water-stain water-stain-1"></div>
+  <div class="water-stain" style="width:250px;height:220px;top:60%;right:15%;transform:rotate(-10deg)"></div>
+
+  <div class="section-ornament reveal">--- III ---</div>
+  <h2 class="section-title reveal">Classification</h2>
+  <p class="section-latin reveal">Taxonomia Artium -- Systema Competentiae</p>
+  <div class="section-rule"></div>
+
+  <div class="taxonomy-grid">
+
+    <div class="taxonomy-family reveal">
+      <h3 class="taxonomy-family-name">Frontend Canopy</h3>
+      <p class="taxonomy-family-latin">Familia: Interfacium Viridis</p>
+      <ul class="taxonomy-species">
+        <li>React / Next.js<div class="skill-bar" style="width:95%"></div></li>
+        <li>TypeScript<div class="skill-bar" style="width:92%"></div></li>
+        <li>JavaScript (ES2024+)<div class="skill-bar" style="width:96%"></div></li>
+        <li>HTML5 / CSS3 / Tailwind<div class="skill-bar" style="width:94%"></div></li>
+        <li>Redux / Zustand<div class="skill-bar" style="width:88%"></div></li>
+        <li>Web Performance<div class="skill-bar" style="width:90%"></div></li>
+      </ul>
+    </div>
+
+    <div class="taxonomy-family reveal">
+      <h3 class="taxonomy-family-name">Backend Root System</h3>
+      <p class="taxonomy-family-latin">Familia: Servicum Profundus</p>
+      <ul class="taxonomy-species">
+        <li>Node.js / Express<div class="skill-bar" style="width:90%"></div></li>
+        <li>Python / FastAPI<div class="skill-bar" style="width:82%"></div></li>
+        <li>RESTful & GraphQL APIs<div class="skill-bar" style="width:88%"></div></li>
+        <li>PostgreSQL / MongoDB<div class="skill-bar" style="width:85%"></div></li>
+        <li>Redis / Caching<div class="skill-bar" style="width:84%"></div></li>
+        <li>Microservices Architecture<div class="skill-bar" style="width:86%"></div></li>
+      </ul>
+    </div>
+
+    <div class="taxonomy-family reveal">
+      <h3 class="taxonomy-family-name">Infrastructure Soil</h3>
+      <p class="taxonomy-family-latin">Familia: Fundamentum Terrae</p>
+      <ul class="taxonomy-species">
+        <li>AWS / GCP Cloud<div class="skill-bar" style="width:85%"></div></li>
+        <li>Docker / Kubernetes<div class="skill-bar" style="width:82%"></div></li>
+        <li>CI/CD Pipelines<div class="skill-bar" style="width:88%"></div></li>
+        <li>Terraform / IaC<div class="skill-bar" style="width:78%"></div></li>
+        <li>Monitoring & Observability<div class="skill-bar" style="width:80%"></div></li>
+        <li>Git / Version Control<div class="skill-bar" style="width:94%"></div></li>
+      </ul>
+    </div>
+
+    <div class="taxonomy-family reveal">
+      <h3 class="taxonomy-family-name">Cultivar Methods</h3>
+      <p class="taxonomy-family-latin">Familia: Methodus Culturae</p>
+      <ul class="taxonomy-species">
+        <li>Agile / Scrum<div class="skill-bar" style="width:90%"></div></li>
+        <li>System Design<div class="skill-bar" style="width:86%"></div></li>
+        <li>Testing (Jest, Cypress)<div class="skill-bar" style="width:88%"></div></li>
+        <li>Code Review & Mentoring<div class="skill-bar" style="width:92%"></div></li>
+        <li>Technical Documentation<div class="skill-bar" style="width:85%"></div></li>
+        <li>Accessibility (WCAG)<div class="skill-bar" style="width:84%"></div></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <span class="page-number right">-- iii --</span>
+  <div class="deckled-bottom"></div>
+</section>
+
+<!-- ===== SECTION IV: CORRESPONDENCE (CONTACT) ===== -->
+<section class="page binding-shadow" id="correspondence">
+  <div class="deckled-top"></div>
+  <div class="water-stain water-stain-2"></div>
+
+  <div class="section-ornament reveal">--- IV ---</div>
+  <h2 class="section-title reveal">Correspondence</h2>
+  <p class="section-latin reveal">Epistulae -- Pro Communicatione</p>
+  <div class="section-rule"></div>
+
+  <div class="correspondence reveal">
+    <p class="correspondence-intro">
+      "Should the reader wish to discuss any specimen herein, propose a collaborative
+      expedition, or commission the cultivation of new digital flora, the author
+      welcomes all manner of correspondence."
+    </p>
+
+    <div class="correspondence-address">
+      Anshull Garg<br>
+      Software Developer<br>
+      Walmart<br><br>
+      Available for consultation,<br>
+      collaboration, & new expeditions
+    </div>
+
+    <div class="correspondence-links">
+      <a href="mailto:anshull.garg@example.com" class="correspondence-link">
+        Send a Letter
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" class="correspondence-link" target="_blank" rel="noopener">
+        LinkedIn Registry
+      </a>
+      <a href="https://github.com/anshullgarg" class="correspondence-link" target="_blank" rel="noopener">
+        GitHub Herbarium
+      </a>
+    </div>
+
+    <div class="wax-seal"></div>
+
+    <p style="font-family:'Caveat',cursive;color:var(--sepia);margin-top:30px;font-size:1.2rem;opacity:0.6;transform:rotate(-2deg)">
+      "Every great collection begins with a single specimen."
+    </p>
+  </div>
+
+  <span class="page-number left">-- iv --</span>
+  <div class="deckled-bottom"></div>
+</section>
+
+<!-- ===== COLOPHON ===== -->
+<footer class="colophon">
+  <div class="colophon-ornament">* * *</div>
+  <p>
+    This Herbarium was typeset in Cinzel, Crimson Text &amp; Caveat.<br>
+    All specimens digitally preserved &amp; catalogued by Anshull Garg.<br>
+    &copy; MMXXVI &mdash; All rights reserved.
+  </p>
+</footer>
+
+<script>
+/* ===== MAGNIFYING GLASS ===== */
+const magnifier = document.getElementById('magnifier');
+let magnifierActive = false;
+
+document.querySelectorAll('.page').forEach(page => {
+  page.addEventListener('mouseenter', () => { magnifierActive = true; });
+  page.addEventListener('mouseleave', () => {
+    magnifierActive = false;
+    magnifier.classList.remove('active');
+  });
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (magnifierActive) {
+    magnifier.style.left = e.clientX + 'px';
+    magnifier.style.top = e.clientY + 'px';
+    magnifier.classList.add('active');
+  }
+});
+
+/* Hide magnifier over interactive elements */
+document.querySelectorAll('a, button, .specimen').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    magnifier.style.transition = 'opacity 0.15s ease';
+    magnifier.style.opacity = '0.3';
+  });
+  el.addEventListener('mouseleave', () => {
+    magnifier.style.transition = 'opacity 0.3s ease';
+    magnifier.style.opacity = '';
+  });
+});
+
+/* ===== NAVIGATION RIBBON ===== */
+const ribbonNav = document.getElementById('ribbonNav');
+const cover = document.getElementById('cover');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) {
+      ribbonNav.classList.add('visible');
+    } else {
+      ribbonNav.classList.remove('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+navObserver.observe(cover);
+
+/* ===== SCROLL REVEAL ===== */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+});
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ===== SKILL BAR ANIMATION ===== */
+const skillObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const bars = entry.target.querySelectorAll('.skill-bar');
+      bars.forEach((bar, i) => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+          bar.style.width = width;
+        }, i * 100 + 200);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.taxonomy-family').forEach(el => skillObserver.observe(el));
+
+/* ===== PARALLAX WATER STAINS ===== */
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  document.querySelectorAll('.water-stain').forEach((stain, i) => {
+    const speed = 0.02 + (i * 0.01);
+    const page = stain.closest('.page');
+    if (page) {
+      const rect = page.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        stain.style.transform += '';
+        const offset = (rect.top * speed);
+        stain.style.marginTop = offset + 'px';
+      }
+    }
+  });
+});
+
+/* ===== DYNAMIC FOXING SPOTS ===== */
+document.querySelectorAll('.page').forEach(page => {
+  const numSpots = 15 + Math.floor(Math.random() * 10);
+  for (let i = 0; i < numSpots; i++) {
+    const spot = document.createElement('div');
+    const size = 2 + Math.random() * 6;
+    spot.style.cssText = `
+      position:absolute;
+      width:${size}px;
+      height:${size * (0.8 + Math.random() * 0.4)}px;
+      border-radius:50%;
+      background:rgba(160,120,70,${0.04 + Math.random() * 0.08});
+      top:${Math.random() * 100}%;
+      left:${Math.random() * 100}%;
+      pointer-events:none;
+      z-index:1;
+    `;
+    page.appendChild(spot);
+  }
+});
+
+/* ===== AGED LINE DECORATIONS ===== */
+document.querySelectorAll('.specimen').forEach((spec, idx) => {
+  // Add mounting lines SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'mounting-lines');
+  svg.setAttribute('width', '100%');
+  svg.setAttribute('height', '100%');
+  svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:0;';
+
+  const positions = [
+    { x1: '10%', y1: '20%', x2: '35%', y2: '20%' },
+    { x1: '10%', y1: '80%', x2: '35%', y2: '80%' },
+  ];
+
+  positions.forEach(pos => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    Object.entries(pos).forEach(([k, v]) => line.setAttribute(k, v));
+    line.setAttribute('stroke', 'rgba(139,69,19,0.08)');
+    line.setAttribute('stroke-width', '0.5');
+    line.setAttribute('stroke-dasharray', '4 3');
+    svg.appendChild(line);
+  });
+
+  spec.appendChild(svg);
+});
+
+/* ===== SMOOTH SCROLL FOR NAV ===== */
+document.querySelectorAll('.ribbon-nav a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* ===== COVER PARALLAX ===== */
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const coverFrame = document.querySelector('.cover-frame');
+  if (coverFrame && scrollY < window.innerHeight) {
+    coverFrame.style.transform = `translateY(${scrollY * 0.15}px)`;
+    coverFrame.style.opacity = 1 - (scrollY / window.innerHeight) * 0.8;
+  }
+});
+
+/* ===== TYPEWRITER EFFECT FOR COVER SUBTITLE ===== */
+const subtitle = document.querySelector('.cover-subtitle');
+if (subtitle) {
+  const text = subtitle.textContent;
+  subtitle.textContent = '';
+  subtitle.style.opacity = '0.5';
+  let charIndex = 0;
+  const typeInterval = setInterval(() => {
+    if (charIndex < text.length) {
+      subtitle.textContent += text[charIndex];
+      charIndex++;
+    } else {
+      clearInterval(typeInterval);
+    }
+  }, 80);
+}
+</script>
+
+</body>
+</html>
