@@ -1,0 +1,2467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORTUNE PORTFOLIO | Anshull Garg - Software Developer</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. Crack open fortune cookies to discover your portfolio destiny.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   CUSTOM PROPERTIES
+   ================================================================ */
+:root {
+  --red-deep: #8B0000;
+  --red-rich: #A52A2A;
+  --red-accent: #CC2936;
+  --red-lantern: #E63946;
+  --red-bright: #FF4444;
+  --gold: #D4A853;
+  --gold-light: #F0D68A;
+  --gold-dark: #B8860B;
+  --gold-brown: #D4A76A;
+  --cookie-light: #E8C88A;
+  --cookie-mid: #D4A76A;
+  --cookie-dark: #B8860B;
+  --cookie-shadow: #8B6914;
+  --paper-white: #FFF8F0;
+  --paper-aged: #F5E6D0;
+  --text-fortune: #8B0000;
+  --bg-dark: #1A0505;
+  --bg-surface: #2D0A0A;
+
+  --font-display: 'Cinzel', serif;
+  --font-fortune: 'Crimson Text', serif;
+  --font-body: 'Inter', sans-serif;
+
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-crack: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--red-deep);
+  color: #F0E6D8;
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+::selection {
+  background: rgba(212, 168, 83, 0.4);
+  color: #FFF;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================================
+   BACKGROUND PATTERN - CHINESE CLOUD MOTIF
+   ================================================================ */
+.bg-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-pattern::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80px 50px at 10% 15%, rgba(180,30,30,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 60px 40px at 30% 25%, rgba(180,30,30,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 90px 55px at 55% 10%, rgba(180,30,30,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 70px 45px at 75% 20%, rgba(180,30,30,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 85px 50px at 90% 12%, rgba(180,30,30,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 60px 40px at 20% 80%, rgba(180,30,30,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 75px 48px at 45% 85%, rgba(180,30,30,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 80px 50px at 70% 75%, rgba(180,30,30,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 65px 42px at 85% 90%, rgba(180,30,30,0.15) 0%, transparent 70%);
+  opacity: 0.8;
+}
+
+.bg-pattern::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 98px,
+    rgba(212, 168, 83, 0.03) 98px,
+    rgba(212, 168, 83, 0.03) 100px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 98px,
+    rgba(212, 168, 83, 0.03) 98px,
+    rgba(212, 168, 83, 0.03) 100px
+  );
+}
+
+/* Cloud SVG pattern overlay */
+.cloud-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cpath d='M40 100 Q40 70 60 60 Q55 40 75 35 Q85 20 105 30 Q115 20 130 30 Q150 25 155 45 Q170 50 165 70 Q175 85 160 95 Q165 110 148 112 Q140 125 120 118 Q110 130 95 120 Q80 128 72 115 Q55 120 50 108 Q35 110 40 100Z' fill='%23D4A853' /%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ================================================================
+   GOLD BORDER FRAME
+   ================================================================ */
+.gold-frame {
+  position: fixed;
+  inset: 8px;
+  border: 2px solid rgba(212, 168, 83, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.gold-frame::before,
+.gold-frame::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+
+.gold-frame::before {
+  top: -2px;
+  left: -2px;
+  border-width: 3px 0 0 3px;
+}
+
+.gold-frame::after {
+  bottom: -2px;
+  right: -2px;
+  border-width: 0 3px 3px 0;
+}
+
+.gold-corner-tr,
+.gold-corner-bl {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border-color: var(--gold);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.gold-corner-tr {
+  top: 6px;
+  right: 6px;
+  border-width: 3px 3px 0 0;
+}
+
+.gold-corner-bl {
+  bottom: 6px;
+  left: 6px;
+  border-width: 0 0 3px 3px;
+}
+
+/* ================================================================
+   RED LANTERNS
+   ================================================================ */
+.lanterns {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 60px;
+}
+
+.lantern {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: lanternSway 4s ease-in-out infinite;
+}
+
+.lantern:nth-child(2) { animation-delay: -1s; }
+.lantern:nth-child(3) { animation-delay: -2s; }
+.lantern:nth-child(4) { animation-delay: -0.5s; }
+
+@keyframes lanternSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.lantern-string {
+  width: 2px;
+  height: 30px;
+  background: var(--gold-dark);
+}
+
+.lantern-top {
+  width: 24px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.lantern-body {
+  width: 40px;
+  height: 52px;
+  background: radial-gradient(ellipse at center, #FF3333, #CC0000, #880000);
+  border-radius: 50% / 40%;
+  position: relative;
+  box-shadow: 0 0 20px rgba(255, 50, 50, 0.4), inset 0 0 15px rgba(255, 100, 100, 0.3);
+}
+
+.lantern-body::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 1px;
+  background: var(--gold-dark);
+  box-shadow: 0 8px 0 var(--gold-dark), 0 -8px 0 var(--gold-dark);
+}
+
+.lantern-bottom {
+  width: 24px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.lantern-tassel {
+  width: 2px;
+  height: 18px;
+  background: linear-gradient(var(--gold), var(--gold-dark));
+  position: relative;
+}
+
+.lantern-tassel::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 10px;
+  background: var(--gold);
+  border-radius: 0 0 50% 50%;
+}
+
+/* ================================================================
+   LUCKY CAT (MANEKI NEKO)
+   ================================================================ */
+.lucky-cat {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 100;
+  width: 70px;
+  height: 90px;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.cat-body {
+  position: absolute;
+  bottom: 0;
+  width: 60px;
+  height: 65px;
+  background: linear-gradient(135deg, #FFF5E0, #F5E0B8);
+  border-radius: 50% 50% 45% 45%;
+  left: 5px;
+  border: 2px solid #E0C890;
+}
+
+.cat-head {
+  position: absolute;
+  top: 0;
+  left: 5px;
+  width: 60px;
+  height: 50px;
+  background: linear-gradient(135deg, #FFF5E0, #F5E0B8);
+  border-radius: 50%;
+  border: 2px solid #E0C890;
+  z-index: 2;
+}
+
+.cat-ear-l, .cat-ear-r {
+  position: absolute;
+  top: 2px;
+  width: 18px;
+  height: 18px;
+  background: #FFF5E0;
+  border: 2px solid #E0C890;
+  border-radius: 50% 50% 0 0;
+  z-index: 1;
+}
+
+.cat-ear-l {
+  left: 6px;
+  transform: rotate(-30deg);
+}
+
+.cat-ear-r {
+  right: 6px;
+  transform: rotate(30deg);
+}
+
+.cat-ear-l::after, .cat-ear-r::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  background: #FFB6C1;
+  border-radius: 50% 50% 0 0;
+}
+
+.cat-face {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 30px;
+  z-index: 3;
+}
+
+.cat-eye {
+  position: absolute;
+  top: 4px;
+  width: 6px;
+  height: 6px;
+  background: #333;
+  border-radius: 50%;
+}
+
+.cat-eye.left { left: 6px; }
+.cat-eye.right { right: 6px; }
+
+.cat-nose {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 4px;
+  background: #FF9999;
+  border-radius: 50%;
+}
+
+.cat-mouth {
+  position: absolute;
+  top: 17px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 6px;
+  border-bottom: 2px solid #CC8888;
+  border-radius: 0 0 50% 50%;
+}
+
+.cat-collar {
+  position: absolute;
+  bottom: 38px;
+  left: 12px;
+  width: 46px;
+  height: 10px;
+  background: var(--red-accent);
+  border-radius: 0 0 10px 10px;
+  z-index: 3;
+}
+
+.cat-bell {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  z-index: 4;
+}
+
+.cat-bell::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 3px;
+  background: var(--gold-dark);
+  border-radius: 0 0 50% 50%;
+}
+
+.cat-paw {
+  position: absolute;
+  top: 22px;
+  right: -4px;
+  width: 16px;
+  height: 35px;
+  background: linear-gradient(135deg, #FFF5E0, #F5E0B8);
+  border: 2px solid #E0C890;
+  border-radius: 40% 60% 50% 50%;
+  z-index: 5;
+  transform-origin: top center;
+  animation: pawWave 1s ease-in-out infinite;
+}
+
+@keyframes pawWave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-25deg); }
+}
+
+.cat-spot {
+  position: absolute;
+  background: #F4A460;
+  border-radius: 50%;
+}
+
+.cat-spot-1 {
+  top: 8px;
+  left: 14px;
+  width: 16px;
+  height: 12px;
+  z-index: 3;
+}
+
+.cat-spot-2 {
+  bottom: 20px;
+  left: 14px;
+  width: 20px;
+  height: 14px;
+}
+
+/* ================================================================
+   MAIN CONTENT
+   ================================================================ */
+main {
+  position: relative;
+  z-index: 5;
+}
+
+/* ================================================================
+   HERO SECTION
+   ================================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.hero-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212, 168, 83, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 40px rgba(212, 168, 83, 0.3), 0 2px 4px rgba(0,0,0,0.5);
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.hero-title::before,
+.hero-title::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: clamp(30px, 6vw, 80px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.hero-title::before { right: 100%; margin-right: 20px; }
+.hero-title::after { left: 100%; margin-left: 20px; }
+
+.hero-subtitle {
+  font-family: var(--font-fortune);
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-style: italic;
+  color: var(--gold-light);
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.hero-name {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(240, 214, 138, 0.5);
+  margin-bottom: 50px;
+}
+
+.hero-instruction {
+  font-family: var(--font-fortune);
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  animation: instructPulse 3s ease-in-out infinite;
+}
+
+@keyframes instructPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+/* ================================================================
+   COOKIE PLATE
+   ================================================================ */
+.plate-area {
+  position: relative;
+  width: clamp(320px, 70vw, 600px);
+  height: clamp(320px, 70vw, 600px);
+  margin: 0 auto 40px;
+}
+
+.plate {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 35%, #F5F0E8, #E8E0D0 40%, #D8D0C0 70%, #C0B8A8);
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.4),
+    inset 0 2px 10px rgba(255,255,255,0.3),
+    inset 0 -4px 15px rgba(0,0,0,0.1),
+    0 20px 60px rgba(0,0,0,0.3);
+  border: 3px solid rgba(212, 168, 83, 0.3);
+}
+
+.plate::before {
+  content: '';
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+}
+
+.plate::after {
+  content: '';
+  position: absolute;
+  inset: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 83, 0.1);
+}
+
+/* Chopsticks */
+.chopsticks {
+  position: absolute;
+  bottom: -20px;
+  right: -30px;
+  z-index: 3;
+  transform: rotate(-25deg);
+}
+
+.chopstick {
+  position: absolute;
+  width: 160px;
+  height: 5px;
+  border-radius: 1px 3px 3px 1px;
+  background: linear-gradient(90deg, #8B6914, #D4A76A 20%, #C49A5C 80%, #F5E0B8);
+  transform-origin: right center;
+}
+
+.chopstick:first-child {
+  transform: rotate(4deg);
+}
+
+.chopstick:last-child {
+  top: 10px;
+  transform: rotate(-4deg);
+}
+
+.chopstick::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -1px;
+  width: 40px;
+  height: 7px;
+  background: var(--red-deep);
+  border-radius: 1px;
+}
+
+/* ================================================================
+   FORTUNE COOKIES
+   ================================================================ */
+.cookie-wrapper {
+  position: absolute;
+  width: 80px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.3s var(--ease-bounce);
+  /* Center within plate and offset by angle */
+  top: 50%;
+  left: 50%;
+}
+
+.cookie-wrapper:hover {
+  transform: translate(-50%, -50%) scale(1.15) !important;
+  z-index: 20;
+}
+
+.cookie-wrapper.cracked {
+  pointer-events: none;
+}
+
+/* Cookie shape via CSS */
+.cookie {
+  position: relative;
+  width: 80px;
+  height: 50px;
+  transition: all 0.6s var(--ease-crack);
+}
+
+.cookie-half {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition: all 0.8s var(--ease-crack);
+}
+
+.cookie-half-left {
+  left: 0;
+  background: radial-gradient(ellipse at 60% 40%, var(--cookie-light), var(--cookie-mid) 50%, var(--cookie-dark));
+  clip-path: ellipse(50% 40% at 70% 50%);
+  box-shadow: inset -2px 0 4px rgba(139,105,20,0.3);
+}
+
+.cookie-half-right {
+  right: 0;
+  background: radial-gradient(ellipse at 40% 40%, var(--cookie-light), var(--cookie-mid) 50%, var(--cookie-dark));
+  clip-path: ellipse(50% 40% at 30% 50%);
+  box-shadow: inset 2px 0 4px rgba(139,105,20,0.3);
+}
+
+/* Center fold line */
+.cookie-fold {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 42px;
+  background: linear-gradient(90deg, var(--cookie-dark), var(--cookie-shadow), var(--cookie-dark));
+  border-radius: 50%;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+/* Cookie shadow on plate */
+.cookie-shadow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 10px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 50%;
+  transition: all 0.8s var(--ease-crack);
+}
+
+/* Cracked state */
+.cookie-wrapper.cracked .cookie-half-left {
+  transform: translate(-25px, 10px) rotate(-35deg);
+  opacity: 0.7;
+}
+
+.cookie-wrapper.cracked .cookie-half-right {
+  transform: translate(25px, 10px) rotate(35deg);
+  opacity: 0.7;
+}
+
+.cookie-wrapper.cracked .cookie-fold {
+  opacity: 0;
+}
+
+.cookie-wrapper.cracked .cookie-shadow {
+  width: 120px;
+  opacity: 0.08;
+}
+
+/* Cookie label */
+.cookie-label {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-fortune);
+  font-size: 0.65rem;
+  color: rgba(212, 168, 83, 0.6);
+  white-space: nowrap;
+  text-align: center;
+  transition: opacity 0.3s;
+  letter-spacing: 0.05em;
+}
+
+.cookie-wrapper:hover .cookie-label {
+  color: var(--gold-light);
+}
+
+.cookie-wrapper.cracked .cookie-label {
+  opacity: 0;
+}
+
+/* Crumbs */
+.crumb {
+  position: absolute;
+  width: 4px;
+  height: 3px;
+  background: var(--cookie-mid);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cookie-wrapper.cracked .crumb {
+  animation: crumbFall 0.8s var(--ease-smooth) forwards;
+}
+
+@keyframes crumbFall {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--cx), var(--cy)) scale(0.3); }
+}
+
+/* ================================================================
+   FORTUNE PAPER
+   ================================================================ */
+.fortune-paper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(0);
+  width: 200px;
+  min-height: 28px;
+  background: var(--paper-white);
+  border-radius: 2px;
+  padding: 8px 14px;
+  z-index: 15;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: transform 0.6s var(--ease-bounce) 0.3s, opacity 0.4s ease 0.3s;
+  opacity: 0;
+  transform-origin: center center;
+}
+
+.cookie-wrapper.cracked .fortune-paper {
+  transform: translate(-50%, -60px) scaleX(1);
+  opacity: 1;
+}
+
+.fortune-text {
+  font-family: var(--font-fortune);
+  font-size: 0.75rem;
+  color: var(--text-fortune);
+  line-height: 1.4;
+  text-align: center;
+  font-style: italic;
+  overflow: hidden;
+}
+
+.fortune-lucky {
+  font-family: var(--font-body);
+  font-size: 0.55rem;
+  color: rgba(139, 0, 0, 0.5);
+  text-align: center;
+  margin-top: 4px;
+  border-top: 1px solid rgba(139, 0, 0, 0.1);
+  padding-top: 3px;
+}
+
+.fortune-chinese {
+  font-size: 0.55rem;
+  color: rgba(139, 0, 0, 0.4);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ================================================================
+   PROGRESS TRACKER
+   ================================================================ */
+.progress-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(26, 5, 5, 0.9);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  border-radius: 30px;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.progress-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(212, 168, 83, 0.2);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  transition: all 0.4s var(--ease-bounce);
+}
+
+.progress-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 8px rgba(212, 168, 83, 0.5);
+}
+
+.progress-text {
+  font-family: var(--font-fortune);
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+
+.progress-bar.all-done {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px rgba(212, 168, 83, 0.3);
+}
+
+/* ================================================================
+   CONTENT SECTIONS
+   ================================================================ */
+.content-area {
+  padding: 0 20px 120px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.fortune-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s var(--ease-smooth);
+  margin-bottom: 60px;
+  pointer-events: none;
+}
+
+.fortune-section.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.section-fortune-quote {
+  text-align: center;
+  padding: 30px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.section-fortune-quote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.section-fortune-quote blockquote {
+  font-family: var(--font-fortune);
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-style: italic;
+  color: var(--gold-light);
+  line-height: 1.5;
+}
+
+.section-fortune-quote .lucky-numbers {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: rgba(212, 168, 83, 0.4);
+  margin-top: 12px;
+  letter-spacing: 0.15em;
+}
+
+.section-content {
+  background: rgba(26, 5, 5, 0.6);
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: 12px;
+  padding: clamp(24px, 4vw, 40px);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.5;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+
+.section-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #D8C8B8;
+}
+
+.section-text a {
+  color: var(--gold-light);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(212, 168, 83, 0.3);
+  transition: border-color 0.3s;
+}
+
+.section-text a:hover {
+  border-color: var(--gold);
+}
+
+/* ================================================================
+   ABOUT SECTION SPECIFICS
+   ================================================================ */
+.about-card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.about-avatar {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--red-deep);
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.3);
+}
+
+.about-info h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--gold-light);
+  margin-bottom: 4px;
+}
+
+.about-info .role {
+  font-family: var(--font-fortune);
+  font-size: 1rem;
+  color: var(--gold);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+/* ================================================================
+   SKILLS
+   ================================================================ */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.skill-category h4 {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-tag {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  background: rgba(212, 168, 83, 0.1);
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: 20px;
+  color: var(--gold-light);
+  transition: all 0.3s;
+}
+
+.skill-tag:hover {
+  background: rgba(212, 168, 83, 0.2);
+  border-color: var(--gold);
+}
+
+/* ================================================================
+   EXPERIENCE TIMELINE
+   ================================================================ */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+  margin-top: 16px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), rgba(212,168,83,0.1));
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 3px solid var(--red-deep);
+  box-shadow: 0 0 10px rgba(212,168,83,0.4);
+}
+
+.timeline-item h4 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--gold-light);
+  margin-bottom: 2px;
+}
+
+.timeline-item .period {
+  font-size: 0.75rem;
+  color: var(--gold);
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.timeline-item p {
+  font-size: 0.9rem;
+  color: #C8B8A8;
+  line-height: 1.6;
+}
+
+/* ================================================================
+   PROJECTS
+   ================================================================ */
+.project-card {
+  margin-top: 16px;
+}
+
+.project-card h4 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.project-tech span {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  background: rgba(204, 41, 54, 0.15);
+  border: 1px solid rgba(204, 41, 54, 0.3);
+  border-radius: 20px;
+  color: #FF8888;
+}
+
+/* ================================================================
+   STATS GRID
+   ================================================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px;
+  background: rgba(212, 168, 83, 0.05);
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: 8px;
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(212,168,83,0.3);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(212,168,83,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* ================================================================
+   CONTACT
+   ================================================================ */
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(212, 168, 83, 0.1);
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  border-radius: 8px;
+  color: var(--gold-light);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+}
+
+.contact-link:hover {
+  background: rgba(212, 168, 83, 0.2);
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 168, 83, 0.2);
+}
+
+.contact-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ================================================================
+   PHILOSOPHY
+   ================================================================ */
+.philosophy-list {
+  list-style: none;
+  margin-top: 16px;
+}
+
+.philosophy-list li {
+  position: relative;
+  padding: 12px 0 12px 30px;
+  border-bottom: 1px solid rgba(212,168,83,0.08);
+  font-size: 0.95rem;
+  color: #D0C0B0;
+}
+
+.philosophy-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+}
+
+.philosophy-list li:last-child {
+  border-bottom: none;
+}
+
+/* ================================================================
+   ALL DONE CELEBRATION
+   ================================================================ */
+.celebration {
+  text-align: center;
+  padding: 60px 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s var(--ease-smooth);
+}
+
+.celebration.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.celebration h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.celebration p {
+  font-family: var(--font-fortune);
+  font-size: 1.2rem;
+  color: var(--gold-light);
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ================================================================
+   SCROLL CUE
+   ================================================================ */
+.scroll-cue {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.scroll-cue.visible {
+  opacity: 1;
+}
+
+.scroll-cue-text {
+  font-family: var(--font-fortune);
+  font-size: 0.8rem;
+  color: var(--gold);
+  font-style: italic;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ================================================================
+   SPARKLE / PARTICLE EFFECTS
+   ================================================================ */
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 30;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  .lanterns { padding: 0 30px; }
+  .lantern-body { width: 30px; height: 40px; }
+  .lantern-top, .lantern-bottom { width: 18px; }
+
+  .plate-area {
+    width: 300px;
+    height: 300px;
+  }
+
+  .cookie-wrapper {
+    width: 60px;
+    height: 40px;
+  }
+
+  .cookie {
+    width: 60px;
+    height: 40px;
+  }
+
+  .cookie-half {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cookie-fold {
+    width: 15px;
+    height: 32px;
+  }
+
+  .fortune-paper {
+    width: 160px;
+  }
+
+  .lucky-cat {
+    width: 50px;
+    height: 65px;
+    bottom: 20px;
+    right: 15px;
+  }
+
+  .cat-body { width: 42px; height: 46px; left: 4px; }
+  .cat-head { width: 42px; height: 35px; left: 4px; }
+  .cat-ear-l, .cat-ear-r { width: 13px; height: 13px; }
+  .cat-paw { width: 12px; height: 25px; }
+
+  .chopsticks { display: none; }
+
+  .about-card { flex-direction: column; align-items: center; text-align: center; }
+
+  .progress-bar {
+    padding: 8px 16px;
+    gap: 8px;
+  }
+  .progress-dot { width: 8px; height: 8px; }
+  .progress-text { font-size: 0.7rem; }
+}
+
+@media (max-width: 480px) {
+  .plate-area {
+    width: 260px;
+    height: 260px;
+  }
+
+  .cookie-wrapper {
+    width: 50px;
+    height: 35px;
+  }
+
+  .cookie {
+    width: 50px;
+    height: 35px;
+  }
+
+  .cookie-half {
+    width: 35px;
+    height: 35px;
+  }
+
+  .fortune-paper {
+    width: 130px;
+    padding: 6px 10px;
+  }
+
+  .fortune-text { font-size: 0.65rem; }
+
+  .cookie-label { font-size: 0.55rem; bottom: -18px; }
+
+  .gold-frame { inset: 4px; }
+
+  .lanterns { display: none; }
+}
+
+/* ================================================================
+   ACCESSIBILITY
+   ================================================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+.cookie-wrapper:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.cookie-wrapper:focus-visible .cookie-label {
+  color: var(--gold-light);
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative layers -->
+<div class="bg-pattern" aria-hidden="true"></div>
+<div class="cloud-pattern" aria-hidden="true"></div>
+<div class="gold-frame" aria-hidden="true"></div>
+<div class="gold-corner-tr" aria-hidden="true"></div>
+<div class="gold-corner-bl" aria-hidden="true"></div>
+
+<!-- Lanterns -->
+<div class="lanterns" aria-hidden="true">
+  <div class="lantern">
+    <div class="lantern-string"></div>
+    <div class="lantern-top"></div>
+    <div class="lantern-body"></div>
+    <div class="lantern-bottom"></div>
+    <div class="lantern-tassel"></div>
+  </div>
+  <div class="lantern">
+    <div class="lantern-string"></div>
+    <div class="lantern-top"></div>
+    <div class="lantern-body"></div>
+    <div class="lantern-bottom"></div>
+    <div class="lantern-tassel"></div>
+  </div>
+  <div class="lantern">
+    <div class="lantern-string"></div>
+    <div class="lantern-top"></div>
+    <div class="lantern-body"></div>
+    <div class="lantern-bottom"></div>
+    <div class="lantern-tassel"></div>
+  </div>
+  <div class="lantern">
+    <div class="lantern-string"></div>
+    <div class="lantern-top"></div>
+    <div class="lantern-body"></div>
+    <div class="lantern-bottom"></div>
+    <div class="lantern-tassel"></div>
+  </div>
+</div>
+
+<!-- Lucky Cat -->
+<div class="lucky-cat" aria-hidden="true" title="Lucky Cat">
+  <div class="cat-ear-l"></div>
+  <div class="cat-ear-r"></div>
+  <div class="cat-head">
+    <div class="cat-face">
+      <div class="cat-eye left"></div>
+      <div class="cat-eye right"></div>
+      <div class="cat-nose"></div>
+      <div class="cat-mouth"></div>
+    </div>
+    <div class="cat-spot cat-spot-1"></div>
+  </div>
+  <div class="cat-body">
+    <div class="cat-spot cat-spot-2"></div>
+  </div>
+  <div class="cat-collar"></div>
+  <div class="cat-bell"></div>
+  <div class="cat-paw"></div>
+</div>
+
+<!-- Main Content -->
+<main>
+  <section class="hero" aria-label="Fortune Cookie Portfolio">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <h1 class="hero-title">FORTUNE PORTFOLIO</h1>
+    <p class="hero-subtitle">Crack a cookie to discover your fortune</p>
+    <p class="hero-name">Anshull Garg &mdash; Software Developer at Walmart</p>
+
+    <div class="plate-area" role="list" aria-label="Fortune cookies - click each to reveal portfolio content">
+      <div class="plate" aria-hidden="true"></div>
+
+      <!-- Chopsticks -->
+      <div class="chopsticks" aria-hidden="true">
+        <div class="chopstick"></div>
+        <div class="chopstick"></div>
+      </div>
+
+      <!-- 8 Cookies arranged in a circle -->
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="0" aria-label="Your Name - click to reveal about information">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Your Name</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:-20px;--cy:15px;left:30%;top:40%"></div>
+        <div class="crumb" style="--cx:25px;--cy:20px;left:60%;top:35%"></div>
+        <div class="crumb" style="--cx:-15px;--cy:25px;left:40%;top:50%"></div>
+        <div class="crumb" style="--cx:20px;--cy:10px;left:55%;top:45%"></div>
+        <div class="crumb" style="--cx:-10px;--cy:30px;left:45%;top:30%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="1" aria-label="Your Destiny - click to reveal career path">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Your Destiny</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:22px;--cy:18px;left:50%;top:40%"></div>
+        <div class="crumb" style="--cx:-18px;--cy:22px;left:35%;top:35%"></div>
+        <div class="crumb" style="--cx:12px;--cy:28px;left:65%;top:50%"></div>
+        <div class="crumb" style="--cx:-25px;--cy:12px;left:40%;top:45%"></div>
+        <div class="crumb" style="--cx:15px;--cy:32px;left:55%;top:30%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="2" aria-label="Hidden Talent - click to reveal skills">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Hidden Talent</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:-22px;--cy:20px;left:45%;top:42%"></div>
+        <div class="crumb" style="--cx:28px;--cy:15px;left:55%;top:38%"></div>
+        <div class="crumb" style="--cx:-12px;--cy:25px;left:38%;top:48%"></div>
+        <div class="crumb" style="--cx:18px;--cy:30px;left:62%;top:32%"></div>
+        <div class="crumb" style="--cx:-20px;--cy:18px;left:48%;top:55%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="3" aria-label="Great Works - click to reveal project">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Great Works</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:20px;--cy:22px;left:52%;top:40%"></div>
+        <div class="crumb" style="--cx:-24px;--cy:14px;left:42%;top:36%"></div>
+        <div class="crumb" style="--cx:16px;--cy:28px;left:58%;top:50%"></div>
+        <div class="crumb" style="--cx:-18px;--cy:20px;left:36%;top:44%"></div>
+        <div class="crumb" style="--cx:22px;--cy:16px;left:64%;top:34%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="4" aria-label="More Great Works - click to reveal another project">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">More Works</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:-16px;--cy:24px;left:44%;top:42%"></div>
+        <div class="crumb" style="--cx:26px;--cy:18px;left:56%;top:36%"></div>
+        <div class="crumb" style="--cx:-20px;--cy:30px;left:38%;top:50%"></div>
+        <div class="crumb" style="--cx:14px;--cy:22px;left:62%;top:44%"></div>
+        <div class="crumb" style="--cx:-22px;--cy:16px;left:50%;top:34%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="5" aria-label="Wisdom - click to reveal philosophy">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Wisdom</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:18px;--cy:26px;left:48%;top:38%"></div>
+        <div class="crumb" style="--cx:-20px;--cy:16px;left:40%;top:44%"></div>
+        <div class="crumb" style="--cx:24px;--cy:20px;left:58%;top:48%"></div>
+        <div class="crumb" style="--cx:-14px;--cy:28px;left:34%;top:36%"></div>
+        <div class="crumb" style="--cx:16px;--cy:14px;left:54%;top:52%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="6" aria-label="Lucky Numbers - click to reveal stats">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Lucky Numbers</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:-24px;--cy:18px;left:46%;top:40%"></div>
+        <div class="crumb" style="--cx:20px;--cy:24px;left:54%;top:44%"></div>
+        <div class="crumb" style="--cx:-16px;--cy:22px;left:40%;top:48%"></div>
+        <div class="crumb" style="--cx:28px;--cy:14px;left:60%;top:36%"></div>
+        <div class="crumb" style="--cx:-12px;--cy:30px;left:50%;top:52%"></div>
+      </div>
+
+      <div class="cookie-wrapper" role="listitem" tabindex="0" data-cookie="7" aria-label="Your Future - click to reveal contact info">
+        <div class="cookie">
+          <div class="cookie-half cookie-half-left"></div>
+          <div class="cookie-fold"></div>
+          <div class="cookie-half cookie-half-right"></div>
+        </div>
+        <div class="cookie-shadow"></div>
+        <div class="cookie-label">Your Future</div>
+        <div class="fortune-paper" aria-hidden="true">
+          <div class="fortune-text"></div>
+          <div class="fortune-lucky"></div>
+          <div class="fortune-chinese"></div>
+        </div>
+        <div class="crumb" style="--cx:22px;--cy:20px;left:50%;top:42%"></div>
+        <div class="crumb" style="--cx:-18px;--cy:26px;left:42%;top:38%"></div>
+        <div class="crumb" style="--cx:14px;--cy:16px;left:58%;top:46%"></div>
+        <div class="crumb" style="--cx:-26px;--cy:22px;left:36%;top:50%"></div>
+        <div class="crumb" style="--cx:20px;--cy:28px;left:56%;top:34%"></div>
+      </div>
+    </div>
+
+    <p class="hero-instruction">Click or tap a cookie to crack it open</p>
+  </section>
+
+  <!-- Content Sections (revealed when cookies are cracked) -->
+  <div class="content-area">
+
+    <!-- 0: About -->
+    <section class="fortune-section" data-section="0" aria-label="About Anshull Garg">
+      <div class="section-fortune-quote">
+        <blockquote>"The one who seeks knowledge shall find Anshull Garg, a builder of digital fortunes."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 7 - 14 - 22 - 38 - 42</div>
+      </div>
+      <div class="section-content">
+        <div class="about-card">
+          <div class="about-avatar" aria-hidden="true">AG</div>
+          <div class="about-info">
+            <h3>Anshull Garg</h3>
+            <p class="role">Software Developer at Walmart</p>
+            <p class="section-text">
+              A passionate software developer who thrives on building scalable systems
+              that serve millions. With a deep love for clean architecture, elegant code,
+              and solving problems that matter, Anshull brings both technical rigor and
+              creative thinking to every project. Based in the intersection of engineering
+              excellence and user empathy, he crafts software that is as robust as it is
+              thoughtful.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1: Experience -->
+    <section class="fortune-section" data-section="1" aria-label="Career Experience">
+      <div class="section-fortune-quote">
+        <blockquote>"Your destiny has been shaped by great endeavors. The path behind you illuminates the road ahead."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 3 - 11 - 29 - 33 - 47</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">THE PATH</h3>
+        <div class="timeline">
+          <div class="timeline-item">
+            <h4>Software Developer - Walmart</h4>
+            <div class="period">Present</div>
+            <p>Building and scaling enterprise systems that power one of the world's largest
+               retailers. Working on high-impact services processing millions of transactions,
+               driving performance optimizations, and contributing to platforms used by
+               customers and associates globally.</p>
+          </div>
+          <div class="timeline-item">
+            <h4>Software Engineering Journey</h4>
+            <div class="period">The Foundation Years</div>
+            <p>Cultivated deep expertise in full-stack development through progressively
+               challenging roles. Built microservices, designed APIs, optimized databases,
+               and developed frontends that deliver seamless user experiences across devices
+               and platforms.</p>
+          </div>
+          <div class="timeline-item">
+            <h4>Academic Foundation</h4>
+            <div class="period">Computer Science</div>
+            <p>Grounded in fundamentals of algorithms, data structures, distributed systems,
+               and software engineering principles that form the bedrock of every solution
+               built since.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2: Skills -->
+    <section class="fortune-section" data-section="2" aria-label="Technical Skills">
+      <div class="section-fortune-quote">
+        <blockquote>"A master of many tools, your hidden talents run deeper than the ocean. The wise developer never stops learning."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 8 - 16 - 24 - 36 - 48</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">HIDDEN TALENTS</h3>
+        <div class="skills-grid">
+          <div class="skill-category">
+            <h4>LANGUAGES</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">Java</span>
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">SQL</span>
+              <span class="skill-tag">Go</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h4>FRONTEND</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">HTML/CSS</span>
+              <span class="skill-tag">Tailwind</span>
+              <span class="skill-tag">Redux</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h4>BACKEND</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Spring Boot</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">GraphQL</span>
+              <span class="skill-tag">Microservices</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h4>INFRASTRUCTURE</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">AWS</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Kubernetes</span>
+              <span class="skill-tag">CI/CD</span>
+              <span class="skill-tag">Kafka</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h4>DATA</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">Elasticsearch</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h4>PRACTICES</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">System Design</span>
+              <span class="skill-tag">Agile</span>
+              <span class="skill-tag">TDD</span>
+              <span class="skill-tag">Code Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3: Project 1 -->
+    <section class="fortune-section" data-section="3" aria-label="Project - Scale Engine">
+      <div class="section-fortune-quote">
+        <blockquote>"Great works await those who dare to build. Your code shall serve millions and stand the test of time."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 5 - 13 - 27 - 35 - 49</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">GREAT WORKS I</h3>
+        <div class="project-card">
+          <h4>Enterprise Scale Platform</h4>
+          <p class="section-text">
+            Architected and built a high-throughput data processing platform handling
+            millions of events per day at Walmart scale. Designed the service mesh,
+            implemented fault-tolerant processing pipelines, and optimized latency
+            from seconds to milliseconds. The platform serves as critical infrastructure
+            for real-time inventory and pricing decisions across thousands of stores.
+          </p>
+          <div class="project-tech">
+            <span>Java</span>
+            <span>Spring Boot</span>
+            <span>Kafka</span>
+            <span>Kubernetes</span>
+            <span>Redis</span>
+            <span>PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4: Project 2 -->
+    <section class="fortune-section" data-section="4" aria-label="Project - Frontend Experience">
+      <div class="section-fortune-quote">
+        <blockquote>"The craftsman builds twice: once for function, once for beauty. Your second great work harmonizes both."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 2 - 18 - 26 - 34 - 44</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">GREAT WORKS II</h3>
+        <div class="project-card">
+          <h4>Customer Experience Platform</h4>
+          <p class="section-text">
+            Led the frontend architecture for a customer-facing platform that delivers
+            personalized shopping experiences to millions of users. Built a component
+            library from scratch, implemented server-side rendering for optimal
+            performance, and created an A/B testing framework that drives measurable
+            business outcomes. Achieved 40% improvement in page load times and
+            significantly boosted conversion rates.
+          </p>
+          <div class="project-tech">
+            <span>React</span>
+            <span>Next.js</span>
+            <span>TypeScript</span>
+            <span>GraphQL</span>
+            <span>Node.js</span>
+            <span>AWS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5: Philosophy -->
+    <section class="fortune-section" data-section="5" aria-label="Engineering Philosophy">
+      <div class="section-fortune-quote">
+        <blockquote>"Wisdom is not in the code you write, but in the problems you choose to solve and the grace with which you solve them."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 1 - 9 - 21 - 37 - 45</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">WISDOM</h3>
+        <ul class="philosophy-list">
+          <li><strong>Simplicity is sophistication.</strong> The best code is the code that does not need to exist. Reduce complexity relentlessly.</li>
+          <li><strong>Build for the user, not the resume.</strong> Technology choices should serve the problem, not the other way around.</li>
+          <li><strong>Scale is a mindset.</strong> Think in millions from day one. Design systems that grow gracefully.</li>
+          <li><strong>Code is communication.</strong> Write for the human who reads it next, not the machine that runs it.</li>
+          <li><strong>Ship, learn, iterate.</strong> Perfect is the enemy of shipped. Get feedback early, improve constantly.</li>
+          <li><strong>Lift others as you climb.</strong> Mentoring, code reviews, and knowledge sharing multiply your impact.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6: Stats -->
+    <section class="fortune-section" data-section="6" aria-label="Career Statistics">
+      <div class="section-fortune-quote">
+        <blockquote>"The numbers do not lie. Count your blessings and your commits, for both reveal the richness of your journey."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 4 - 12 - 28 - 40 - 50</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">LUCKY NUMBERS</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" data-target="3">0</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="2000">0</div>
+            <div class="stat-label">Commits</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="15">0</div>
+            <div class="stat-label">Projects Shipped</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="1000000">0</div>
+            <div class="stat-label">Users Served</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="50">0</div>
+            <div class="stat-label">Code Reviews</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="99">0</div>
+            <div class="stat-label">Uptime %</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7: Contact -->
+    <section class="fortune-section" data-section="7" aria-label="Contact Information">
+      <div class="section-fortune-quote">
+        <blockquote>"Your future holds a conversation that could change everything. Reach out to the fortune-bearer and begin."</blockquote>
+        <div class="lucky-numbers">Lucky Numbers: 6 - 15 - 23 - 39 - 46</div>
+      </div>
+      <div class="section-content">
+        <h3 class="section-title">YOUR FUTURE</h3>
+        <p class="section-text" style="margin-bottom: 20px;">
+          Every great collaboration starts with a simple hello. Whether you have a project
+          in mind, a problem to solve, or just want to connect -- the fortune smiles upon
+          those who reach out.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Email
+          </a>
+          <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            LinkedIn
+          </a>
+          <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+            GitHub
+          </a>
+          <a href="https://twitter.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M22.46 6c-.85.38-1.78.64-2.73.76 1-.6 1.76-1.54 2.12-2.67-.93.55-1.96.95-3.06 1.17-.88-.94-2.13-1.53-3.51-1.53-2.66 0-4.81 2.16-4.81 4.81 0 .38.04.75.13 1.1-4-.2-7.58-2.11-9.96-5.02-.42.72-.66 1.56-.66 2.46 0 1.68.85 3.16 2.14 4.02-.79-.02-1.53-.24-2.18-.6v.06c0 2.35 1.67 4.31 3.88 4.76-.4.1-.83.16-1.27.16-.31 0-.62-.03-.92-.08.63 1.96 2.45 3.39 4.61 3.43-1.69 1.32-3.83 2.1-6.15 2.1-.4 0-.8-.02-1.19-.07 2.19 1.4 4.78 2.22 7.57 2.22 9.07 0 14.02-7.52 14.02-14.02 0-.21 0-.42-.01-.63.96-.69 1.79-1.56 2.45-2.55z"/></svg>
+            Twitter
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Celebration -->
+    <div class="celebration" id="celebration">
+      <h2>ALL FORTUNES REVEALED</h2>
+      <p>"The greatest fortune is the journey itself. May your code compile on the first try."</p>
+    </div>
+  </div>
+</main>
+
+<!-- Scroll Cue -->
+<div class="scroll-cue" id="scrollCue" aria-hidden="true">
+  <span class="scroll-cue-text">Scroll down to read your fortune</span>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" role="status" aria-live="polite" aria-label="Fortune cookies progress">
+  <div class="progress-dots">
+    <div class="progress-dot" data-dot="0"></div>
+    <div class="progress-dot" data-dot="1"></div>
+    <div class="progress-dot" data-dot="2"></div>
+    <div class="progress-dot" data-dot="3"></div>
+    <div class="progress-dot" data-dot="4"></div>
+    <div class="progress-dot" data-dot="5"></div>
+    <div class="progress-dot" data-dot="6"></div>
+    <div class="progress-dot" data-dot="7"></div>
+  </div>
+  <span class="progress-text" id="progressText">Cookies cracked: 0/8</span>
+</div>
+
+<script>
+/* ================================================================
+   FORTUNE DATA
+   ================================================================ */
+const fortunes = [
+  {
+    text: "The one who seeks shall find Anshull Garg, builder of fortunes.",
+    lucky: "7 - 14 - 22 - 38 - 42",
+    chinese: "Developer: Kaifa zhe"
+  },
+  {
+    text: "Your path was written in code long ago. Destiny favors the bold engineer.",
+    lucky: "3 - 11 - 29 - 33 - 47",
+    chinese: "Destiny: Mingyun"
+  },
+  {
+    text: "Hidden talents lie in every language mastered and every framework conquered.",
+    lucky: "8 - 16 - 24 - 36 - 48",
+    chinese: "Talent: Caineng"
+  },
+  {
+    text: "Great works are built not in a day, but in a million well-placed keystrokes.",
+    lucky: "5 - 13 - 27 - 35 - 49",
+    chinese: "Creation: Chuangzao"
+  },
+  {
+    text: "The craftsman builds twice: once for function, once for beauty.",
+    lucky: "2 - 18 - 26 - 34 - 44",
+    chinese: "Craft: Gongyi"
+  },
+  {
+    text: "Simplicity is the ultimate sophistication. Ship, learn, iterate.",
+    lucky: "1 - 9 - 21 - 37 - 45",
+    chinese: "Wisdom: Zhihui"
+  },
+  {
+    text: "Count your commits as you count your blessings -- both bring fortune.",
+    lucky: "4 - 12 - 28 - 40 - 50",
+    chinese: "Numbers: Shuzi"
+  },
+  {
+    text: "Your future holds a conversation that changes everything. Reach out.",
+    lucky: "6 - 15 - 23 - 39 - 46",
+    chinese: "Future: Weilai"
+  }
+];
+
+/* ================================================================
+   STATE
+   ================================================================ */
+let crackedCount = 0;
+const crackedSet = new Set();
+
+/* ================================================================
+   POSITION COOKIES IN CIRCLE
+   ================================================================ */
+function positionCookies() {
+  const cookies = document.querySelectorAll('.cookie-wrapper');
+  const plateArea = document.querySelector('.plate-area');
+  const w = plateArea.offsetWidth;
+  const h = plateArea.offsetHeight;
+  const radius = Math.min(w, h) * 0.33;
+
+  cookies.forEach((cookie, i) => {
+    const angle = (i / cookies.length) * Math.PI * 2 - Math.PI / 2;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    const rotation = (angle * 180 / Math.PI) + 90 + (Math.random() * 20 - 10);
+    cookie.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${rotation}deg)`;
+    cookie.dataset.origTransform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${rotation}deg)`;
+  });
+}
+
+/* ================================================================
+   CRACK A COOKIE
+   ================================================================ */
+function crackCookie(index) {
+  if (crackedSet.has(index)) return;
+
+  const wrapper = document.querySelector(`.cookie-wrapper[data-cookie="${index}"]`);
+  if (!wrapper || wrapper.classList.contains('cracked')) return;
+
+  crackedSet.add(index);
+  crackedCount++;
+
+  // Add cracked class
+  wrapper.classList.add('cracked');
+
+  // Play crack sound effect (Web Audio)
+  playCrackSound();
+
+  // Populate fortune paper
+  const fortune = fortunes[index];
+  const textEl = wrapper.querySelector('.fortune-text');
+  const luckyEl = wrapper.querySelector('.fortune-lucky');
+  const chineseEl = wrapper.querySelector('.fortune-chinese');
+
+  // Typewriter effect for fortune text
+  typewriter(textEl, fortune.text, 30);
+
+  setTimeout(() => {
+    luckyEl.textContent = 'Lucky Numbers: ' + fortune.lucky;
+    chineseEl.textContent = fortune.chinese;
+  }, fortune.text.length * 30 + 200);
+
+  // Spawn sparkles
+  spawnSparkles(wrapper);
+
+  // Update progress
+  updateProgress();
+
+  // Reveal corresponding section
+  setTimeout(() => {
+    const section = document.querySelector(`.fortune-section[data-section="${index}"]`);
+    if (section) {
+      section.classList.add('revealed');
+
+      // Animate stats if it's the stats section
+      if (index === 6) {
+        setTimeout(() => animateStats(section), 400);
+      }
+
+      // Show scroll cue
+      const scrollCue = document.getElementById('scrollCue');
+      scrollCue.classList.add('visible');
+      setTimeout(() => scrollCue.classList.remove('visible'), 3000);
+
+      // Smooth scroll to section after a delay
+      setTimeout(() => {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 800);
+    }
+  }, 600);
+
+  // Check if all done
+  if (crackedCount === 8) {
+    setTimeout(() => {
+      document.getElementById('celebration').classList.add('visible');
+      document.getElementById('progressBar').classList.add('all-done');
+      celebrationBurst();
+    }, 1500);
+  }
+}
+
+/* ================================================================
+   TYPEWRITER EFFECT
+   ================================================================ */
+function typewriter(el, text, speed) {
+  el.textContent = '';
+  let i = 0;
+  function type() {
+    if (i < text.length) {
+      el.textContent += text.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    }
+  }
+  setTimeout(type, 400); // delay for paper unfurl
+}
+
+/* ================================================================
+   SPARKLE EFFECTS
+   ================================================================ */
+function spawnSparkles(wrapper) {
+  const rect = wrapper.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  for (let i = 0; i < 12; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.left = cx + 'px';
+    sparkle.style.top = cy + 'px';
+    sparkle.style.position = 'fixed';
+    sparkle.style.zIndex = '9999';
+
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = 30 + Math.random() * 40;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    const size = 2 + Math.random() * 4;
+
+    sparkle.style.width = size + 'px';
+    sparkle.style.height = size + 'px';
+    sparkle.style.animation = `sparkle 0.6s ease-out forwards`;
+    sparkle.style.animationDelay = (Math.random() * 0.2) + 's';
+
+    document.body.appendChild(sparkle);
+
+    // Animate position
+    sparkle.animate([
+      { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
+    ], {
+      duration: 600 + Math.random() * 400,
+      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      fill: 'forwards'
+    });
+
+    setTimeout(() => sparkle.remove(), 1200);
+  }
+}
+
+/* ================================================================
+   CELEBRATION BURST
+   ================================================================ */
+function celebrationBurst() {
+  const colors = ['#D4A853', '#F0D68A', '#CC2936', '#FF4444', '#E63946'];
+  for (let i = 0; i < 40; i++) {
+    setTimeout(() => {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.position = 'fixed';
+      sparkle.style.zIndex = '9999';
+      sparkle.style.left = (window.innerWidth * 0.3 + Math.random() * window.innerWidth * 0.4) + 'px';
+      sparkle.style.top = (window.innerHeight * 0.3 + Math.random() * window.innerHeight * 0.4) + 'px';
+      sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+      sparkle.style.width = (3 + Math.random() * 6) + 'px';
+      sparkle.style.height = sparkle.style.width;
+      sparkle.style.borderRadius = '50%';
+
+      document.body.appendChild(sparkle);
+
+      const dx = (Math.random() - 0.5) * 200;
+      const dy = (Math.random() - 0.5) * 200;
+
+      sparkle.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: 1000 + Math.random() * 500,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        fill: 'forwards'
+      });
+
+      setTimeout(() => sparkle.remove(), 1600);
+    }, i * 50);
+  }
+}
+
+/* ================================================================
+   UPDATE PROGRESS
+   ================================================================ */
+function updateProgress() {
+  const dots = document.querySelectorAll('.progress-dot');
+  let filled = 0;
+  dots.forEach((dot, i) => {
+    if (crackedSet.has(i)) {
+      dot.classList.add('filled');
+      filled++;
+    }
+  });
+
+  const text = document.getElementById('progressText');
+  if (filled === 8) {
+    text.textContent = 'All fortunes revealed!';
+  } else {
+    text.textContent = `Cookies cracked: ${filled}/8`;
+  }
+}
+
+/* ================================================================
+   ANIMATE STATS COUNTER
+   ================================================================ */
+function animateStats(section) {
+  const statNumbers = section.querySelectorAll('.stat-number');
+  statNumbers.forEach(el => {
+    const target = parseInt(el.dataset.target);
+    const duration = 2000;
+    const start = performance.now();
+
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+
+      if (target >= 1000000) {
+        el.textContent = (current / 1000000).toFixed(1) + 'M+';
+      } else if (target >= 1000) {
+        el.textContent = current.toLocaleString() + '+';
+      } else if (el.closest('.stat-item').querySelector('.stat-label').textContent.includes('Uptime')) {
+        el.textContent = current + '.9%';
+      } else {
+        el.textContent = current + '+';
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    requestAnimationFrame(update);
+  });
+}
+
+/* ================================================================
+   CRACK SOUND (Web Audio API)
+   ================================================================ */
+function playCrackSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Crack noise
+    const bufferSize = ctx.sampleRate * 0.15;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / bufferSize;
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 3) * 0.3;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2000;
+    filter.Q.value = 0.5;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+
+    // Also a brief click
+    const clickOsc = ctx.createOscillator();
+    clickOsc.frequency.value = 800;
+    const clickGain = ctx.createGain();
+    clickGain.gain.setValueAtTime(0.2, ctx.currentTime);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    clickOsc.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    clickOsc.start();
+    clickOsc.stop(ctx.currentTime + 0.05);
+
+    setTimeout(() => ctx.close(), 500);
+  } catch (e) {
+    // Audio not available, fail silently
+  }
+}
+
+/* ================================================================
+   EVENT LISTENERS
+   ================================================================ */
+document.querySelectorAll('.cookie-wrapper').forEach(wrapper => {
+  wrapper.addEventListener('click', () => {
+    crackCookie(parseInt(wrapper.dataset.cookie));
+  });
+
+  wrapper.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      crackCookie(parseInt(wrapper.dataset.cookie));
+    }
+  });
+
+  // Hover sound hint
+  wrapper.addEventListener('mouseenter', () => {
+    if (!wrapper.classList.contains('cracked')) {
+      wrapper.style.filter = 'brightness(1.15) drop-shadow(0 0 8px rgba(212,168,83,0.4))';
+    }
+  });
+
+  wrapper.addEventListener('mouseleave', () => {
+    wrapper.style.filter = '';
+  });
+});
+
+/* ================================================================
+   INITIALIZE
+   ================================================================ */
+window.addEventListener('load', () => {
+  positionCookies();
+});
+
+window.addEventListener('resize', () => {
+  // Reposition only uncracked cookies
+  const cookies = document.querySelectorAll('.cookie-wrapper:not(.cracked)');
+  const plateArea = document.querySelector('.plate-area');
+  const w = plateArea.offsetWidth;
+  const h = plateArea.offsetHeight;
+  const radius = Math.min(w, h) * 0.33;
+  const allCookies = document.querySelectorAll('.cookie-wrapper');
+
+  allCookies.forEach((cookie, i) => {
+    if (!cookie.classList.contains('cracked')) {
+      const angle = (i / allCookies.length) * Math.PI * 2 - Math.PI / 2;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      const rotation = (angle * 180 / Math.PI) + 90 + (Math.random() * 20 - 10);
+      cookie.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${rotation}deg)`;
+    }
+  });
+});
+
+// Lucky cat click easter egg
+document.querySelector('.lucky-cat').addEventListener('click', () => {
+  const messages = [
+    'Meow! Good luck!',
+    'Fortune favors the brave!',
+    'Click more cookies!',
+    'Nyan~',
+    'Prosperity awaits!'
+  ];
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 130px;
+    right: 20px;
+    background: rgba(26,5,5,0.95);
+    border: 1px solid rgba(212,168,83,0.4);
+    color: #F0D68A;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    z-index: 9999;
+    animation: toastIn 0.3s var(--ease-bounce);
+    pointer-events: none;
+  `;
+  document.body.appendChild(toast);
+
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => { toast.remove(); style.remove(); }, 300);
+  }, 2000);
+});
+</script>
+</body>
+</html>
