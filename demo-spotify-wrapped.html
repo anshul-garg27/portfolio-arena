@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - 2025 Developer Wrapped</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --card-transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: #000;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+
+  /* ---- Progress Bar ---- */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    z-index: 1000;
+    display: flex;
+    gap: 4px;
+    padding: 0 4px;
+    background: transparent;
+  }
+  .progress-seg {
+    flex: 1;
+    height: 100%;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-seg .fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%; width: 0%;
+    background: #fff;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-seg.done .fill { width: 100%; }
+  .progress-seg.active .fill {
+    width: 100%;
+    transition: width 5s linear;
+  }
+
+  /* ---- Card Container ---- */
+  #card-container {
+    position: relative;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  .card {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 30px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+    transition: opacity var(--card-transition), transform var(--card-transition);
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .card.active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+    z-index: 10;
+  }
+  .card.exit-left {
+    opacity: 0;
+    transform: scale(0.88) translateX(-60px);
+  }
+  .card.exit-right {
+    opacity: 0;
+    transform: scale(0.88) translateX(60px);
+  }
+
+  /* ---- Gradient Backgrounds ---- */
+  .card-0  { background: linear-gradient(135deg, #1DB954, #191414, #1DB954); background-size: 400% 400%; animation: gradShift 6s ease infinite; }
+  .card-1  { background: linear-gradient(135deg, #FF6B6B, #6B2FA0, #FF6B6B); background-size: 400% 400%; animation: gradShift 8s ease infinite; }
+  .card-2  { background: linear-gradient(135deg, #3178C6, #0D1B3E, #6C63FF); background-size: 400% 400%; animation: gradShift 7s ease infinite; }
+  .card-3  { background: linear-gradient(135deg, #61DAFB, #20232A, #764ABC); background-size: 400% 400%; animation: gradShift 7s ease infinite; }
+  .card-4  { background: linear-gradient(135deg, #FF9A56, #FF3CAC, #784BA0); background-size: 400% 400%; animation: gradShift 6s ease infinite; }
+  .card-5  { background: linear-gradient(135deg, #0F9B8E, #0B3D91, #1DB954); background-size: 400% 400%; animation: gradShift 9s ease infinite; }
+  .card-6  { background: linear-gradient(135deg, #E040FB, #FF6D00, #FFD600); background-size: 400% 400%; animation: gradShift 7s ease infinite; }
+  .card-7  { background: linear-gradient(135deg, #00C9FF, #92FE9D, #00C9FF); background-size: 400% 400%; animation: gradShift 8s ease infinite; }
+  .card-8  { background: linear-gradient(135deg, #A855F7, #EC4899, #F97316); background-size: 400% 400%; animation: gradShift 6s ease infinite; }
+  .card-9  { background: linear-gradient(135deg, #1DB954, #1ED760, #15883E); background-size: 400% 400%; animation: gradShift 7s ease infinite; }
+
+  @keyframes gradShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ---- Typography ---- */
+  .card-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 16px;
+  }
+  .card-big-number {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: clamp(48px, 12vw, 120px);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 52px);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .card-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: clamp(14px, 2.5vw, 20px);
+    opacity: 0.8;
+    max-width: 480px;
+    line-height: 1.6;
+  }
+  .card-subtitle em {
+    font-style: normal;
+    opacity: 0.6;
+  }
+
+  /* ---- Spotify Logo ---- */
+  .spotify-badge {
+    position: fixed;
+    top: 20px; left: 24px;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.3px;
+  }
+  .spotify-badge svg { width: 24px; height: 24px; }
+
+  /* ---- Navigation Hint ---- */
+  .nav-hint {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.5;
+    letter-spacing: 0.5px;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  /* Auto-play toggle */
+  #autoplay-toggle {
+    position: fixed;
+    top: 20px; right: 24px;
+    z-index: 1001;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.3s, transform 0.2s;
+    letter-spacing: 0.5px;
+  }
+  #autoplay-toggle:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+  #autoplay-toggle.active { background: #1DB954; border-color: #1DB954; }
+
+  /* ---- Card-specific Styles ---- */
+
+  /* Card 0 - Title */
+  .title-year {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: clamp(80px, 20vw, 200px);
+    line-height: 0.9;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .title-wrapped {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: clamp(32px, 6vw, 64px);
+    letter-spacing: -1px;
+    margin-top: 8px;
+  }
+  .title-name {
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: 500;
+    opacity: 0.7;
+    margin-top: 20px;
+  }
+  .title-role {
+    font-size: clamp(13px, 2vw, 16px);
+    font-weight: 400;
+    opacity: 0.45;
+    margin-top: 6px;
+  }
+
+  /* Floating particles on title card */
+  .particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* Card 2 - TS Icon */
+  .ts-icon {
+    width: 100px; height: 100px;
+    background: #3178C6;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: 48px;
+    margin-bottom: 24px;
+    box-shadow: 0 20px 60px rgba(49,120,198,0.4);
+  }
+
+  /* Card 3 - React */
+  .react-logo {
+    width: 100px; height: 100px;
+    margin-bottom: 24px;
+    animation: spin 8s linear infinite;
+    opacity: 0.9;
+  }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  /* Card 4 - Rocket */
+  .rocket {
+    font-size: 64px;
+    animation: rocketBounce 2s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes rocketBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-16px); }
+  }
+
+  /* Card 5 - Timeline */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+    max-width: 400px;
+    width: 100%;
+    margin-top: 24px;
+  }
+  .tl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    padding-bottom: 28px;
+  }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-dot-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-width: 20px;
+  }
+  .tl-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    flex-shrink: 0;
+    z-index: 2;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  }
+  .tl-line {
+    width: 2px;
+    flex: 1;
+    background: rgba(255,255,255,0.25);
+    position: absolute;
+    top: 14px;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .tl-item:last-child .tl-line { display: none; }
+  .tl-content { text-align: left; }
+  .tl-year-label {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    opacity: 0.9;
+  }
+  .tl-desc {
+    font-size: 13px;
+    opacity: 0.6;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* Card 6 - Top Projects (Tracks) */
+  .track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 24px;
+  }
+  .track {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 18px;
+    backdrop-filter: blur(6px);
+    text-align: left;
+    transition: background 0.3s;
+  }
+  .track:hover { background: rgba(255,255,255,0.14); }
+  .track-num {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    opacity: 0.35;
+    min-width: 36px;
+  }
+  .track-art {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .track-info { flex: 1; }
+  .track-name {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .track-artist {
+    font-size: 12px;
+    opacity: 0.55;
+    margin-top: 2px;
+  }
+
+  /* Card 7 - Playlist (Skills) */
+  .playlist {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 500px;
+    margin-top: 24px;
+  }
+  .skill-chip {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 18px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    transition: transform 0.3s, background 0.3s;
+    cursor: default;
+  }
+  .skill-chip:hover {
+    transform: scale(1.08);
+    background: rgba(255,255,255,0.22);
+  }
+
+  /* Card 8 - Personality */
+  .personality-badge {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 3px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    margin-bottom: 20px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); }
+    50% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+  }
+  .traits {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .trait {
+    text-align: center;
+  }
+  .trait-val {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+  }
+  .trait-label {
+    font-size: 12px;
+    opacity: 0.55;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Card 9 - Share */
+  .social-links {
+    display: flex;
+    gap: 16px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 24px;
+    border-radius: 32px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    color: #fff;
+    transition: background 0.3s, transform 0.2s;
+    cursor: pointer;
+  }
+  .social-link:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+  .share-btn {
+    margin-top: 24px;
+    background: #1DB954;
+    border: none;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 16px 48px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    letter-spacing: 0.5px;
+  }
+  .share-btn:hover { transform: scale(1.06); box-shadow: 0 8px 30px rgba(29,185,84,0.4); }
+
+  /* ---- Animated counter ---- */
+  .counter { display: inline-block; }
+
+  /* ---- Percentage bar ---- */
+  .pct-bar-wrap {
+    width: 100%;
+    max-width: 320px;
+    height: 8px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  .pct-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: #fff;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 600px) {
+    .card { padding: 60px 20px 40px; }
+    .ts-icon { width: 72px; height: 72px; font-size: 34px; border-radius: 12px; }
+    .react-logo { width: 72px; height: 72px; }
+    .personality-badge { width: 100px; height: 100px; font-size: 40px; }
+    .traits { gap: 14px; }
+    .trait-val { font-size: 22px; }
+    .track { padding: 10px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Spotify Badge -->
+<div class="spotify-badge">
+  <svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+  <span>Wrapped</span>
+</div>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Auto-play Toggle -->
+<button id="autoplay-toggle" onclick="toggleAutoplay()">Auto-Play</button>
+
+<!-- Card Container -->
+<div id="card-container">
+
+  <!-- Card 0: Title -->
+  <div class="card card-0" data-index="0">
+    <div class="particles" id="particles"></div>
+    <div class="card-label">Anshull Garg presents</div>
+    <div class="title-wrapped">YOUR</div>
+    <div class="title-year">2025</div>
+    <div class="title-wrapped">DEVELOPER WRAPPED</div>
+    <div class="title-name">Anshull Garg</div>
+    <div class="title-role">Software Developer @ Walmart</div>
+  </div>
+
+  <!-- Card 1: Lines of Code -->
+  <div class="card card-1" data-index="1">
+    <div class="card-label">This year, you wrote</div>
+    <div class="card-big-number"><span class="counter" data-target="147283" data-suffix="">0</span></div>
+    <div class="card-title">lines of code</div>
+    <div class="card-subtitle">That's like writing <strong>War & Peace</strong>... 3 times.<br><em>Your fingers deserve a vacation.</em></div>
+  </div>
+
+  <!-- Card 2: Top Language -->
+  <div class="card card-2" data-index="2">
+    <div class="card-label">Your #1 Language</div>
+    <div class="ts-icon">TS</div>
+    <div class="card-big-number">TypeScript</div>
+    <div class="card-subtitle">You used it in <strong>89%</strong> of your projects.</div>
+    <div class="pct-bar-wrap"><div class="pct-bar-fill" data-pct="89"></div></div>
+    <div class="card-subtitle" style="margin-top:16px"><em>Types aren't optional. They're a lifestyle.</em></div>
+  </div>
+
+  <!-- Card 3: Top Framework -->
+  <div class="card card-3" data-index="3">
+    <div class="card-label">Your Top Framework</div>
+    <svg class="react-logo" viewBox="-11.5 -10.232 23 20.463" fill="#61DAFB">
+      <circle r="2.05"/><g stroke="#61DAFB" fill="none" stroke-width="1"><ellipse rx="11" ry="4.2"/><ellipse rx="11" ry="4.2" transform="rotate(60)"/><ellipse rx="11" ry="4.2" transform="rotate(120)"/></g>
+    </svg>
+    <div class="card-big-number">React</div>
+    <div class="card-subtitle"><strong>1,847 hours</strong> of component rendering.<br><em>You rendered more components than a 3D studio.</em></div>
+  </div>
+
+  <!-- Card 4: Features Shipped -->
+  <div class="card card-4" data-index="4">
+    <div class="card-label">You shipped</div>
+    <div class="rocket">&#x1F680;</div>
+    <div class="card-big-number"><span class="counter" data-target="23" data-suffix="">0</span></div>
+    <div class="card-title">features to production</div>
+    <div class="card-subtitle">Zero rollbacks. Okay, maybe one.<br><em>But who's counting?</em></div>
+  </div>
+
+  <!-- Card 5: Career Journey -->
+  <div class="card card-5" data-index="5">
+    <div class="card-label">Your Career Journey</div>
+    <div class="card-title">The Road So Far</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year-label">2021 - Started Coding</div>
+          <div class="tl-desc">First "Hello World" moment. No turning back.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year-label">2022 - Open Source</div>
+          <div class="tl-desc">Contributed to projects. PRs merged worldwide.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year-label">2023 - First Role</div>
+          <div class="tl-desc">Joined the industry. Production code on day one.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year-label">2024 - Walmart</div>
+          <div class="tl-desc">Software Developer at scale. Millions of users.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot"></div></div>
+        <div class="tl-content">
+          <div class="tl-year-label">2025 - Leveling Up</div>
+          <div class="tl-desc">Leading features. Mentoring. Building at scale.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 6: Top Projects -->
+  <div class="card card-6" data-index="6">
+    <div class="card-label">Your Top Projects</div>
+    <div class="card-title">Most Played</div>
+    <div class="track-list">
+      <div class="track">
+        <div class="track-num">1</div>
+        <div class="track-art" style="background:linear-gradient(135deg,#FF6B6B,#6B2FA0);">&#9889;</div>
+        <div class="track-info">
+          <div class="track-name">E-Commerce Platform Revamp</div>
+          <div class="track-artist">React, TypeScript, Node.js -- 342 commits</div>
+        </div>
+      </div>
+      <div class="track">
+        <div class="track-num">2</div>
+        <div class="track-art" style="background:linear-gradient(135deg,#00C9FF,#92FE9D);">&#x1F4CA;</div>
+        <div class="track-info">
+          <div class="track-name">Internal Analytics Dashboard</div>
+          <div class="track-artist">Next.js, D3, GraphQL -- 189 commits</div>
+        </div>
+      </div>
+      <div class="track">
+        <div class="track-num">3</div>
+        <div class="track-art" style="background:linear-gradient(135deg,#F97316,#EC4899);">&#x1F916;</div>
+        <div class="track-info">
+          <div class="track-name">AI-Powered Search Module</div>
+          <div class="track-artist">Python, React, OpenAI API -- 127 commits</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 7: Skills Playlist -->
+  <div class="card card-7" data-index="7">
+    <div class="card-label">Your Skills Playlist</div>
+    <div class="card-title" style="color:#000;">Now Playing</div>
+    <div class="playlist">
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">JavaScript</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">TypeScript</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">React</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Next.js</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Node.js</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Python</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">GraphQL</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">PostgreSQL</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Docker</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">AWS</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">CI/CD</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Redis</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Tailwind CSS</div>
+      <div class="skill-chip" style="color:#000;border-color:rgba(0,0,0,0.15);">Git</div>
+    </div>
+    <div class="card-subtitle" style="margin-top:20px;color:rgba(0,0,0,0.5);"><em>14 tracks -- 2,000+ hours of listening</em></div>
+  </div>
+
+  <!-- Card 8: Developer Personality -->
+  <div class="card card-8" data-index="8">
+    <div class="card-label">Your Developer Personality</div>
+    <div class="personality-badge">&#x1F3D7;&#xFE0F;</div>
+    <div class="card-big-number" style="font-size:clamp(36px,8vw,72px);">The Architect</div>
+    <div class="card-subtitle">You see systems where others see code. You think in schemas, design for scale, and refactor for joy.</div>
+    <div class="traits">
+      <div class="trait"><div class="trait-val">97%</div><div class="trait-label">Systems Thinking</div></div>
+      <div class="trait"><div class="trait-val">91%</div><div class="trait-label">Clean Code</div></div>
+      <div class="trait"><div class="trait-val">88%</div><div class="trait-label">Collaboration</div></div>
+      <div class="trait"><div class="trait-val">94%</div><div class="trait-label">Problem Solving</div></div>
+    </div>
+  </div>
+
+  <!-- Card 9: Share -->
+  <div class="card card-9" data-index="9">
+    <div class="card-label">That's a wrap!</div>
+    <div class="card-title">Share Your Wrapped</div>
+    <div class="card-subtitle">Thanks for scrolling through my 2025 Developer Wrapped. Let's connect and build something great together.</div>
+    <div class="social-links">
+      <a class="social-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a class="social-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a class="social-link" href="mailto:anshull.garg@example.com">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        Email
+      </a>
+    </div>
+    <button class="share-btn" onclick="shareWrapped()">Share Your Wrapped</button>
+  </div>
+
+</div>
+
+<!-- Navigation Hint -->
+<div class="nav-hint" id="nav-hint">Tap or use arrow keys to navigate</div>
+
+<script>
+  // ---- State ----
+  const TOTAL_CARDS = 10;
+  let currentCard = 0;
+  let isTransitioning = false;
+  let autoplay = false;
+  let autoplayTimer = null;
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  // ---- DOM refs ----
+  const cards = document.querySelectorAll('.card');
+  const container = document.getElementById('card-container');
+  const progressBar = document.getElementById('progress-bar');
+  const navHint = document.getElementById('nav-hint');
+  const autoplayBtn = document.getElementById('autoplay-toggle');
+
+  // ---- Build progress bar ----
+  for (let i = 0; i < TOTAL_CARDS; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'progress-seg';
+    seg.innerHTML = '<div class="fill"></div>';
+    seg.dataset.index = i;
+    progressBar.appendChild(seg);
+  }
+  const progressSegs = document.querySelectorAll('.progress-seg');
+
+  // ---- Build particles for title card ----
+  (function buildParticles() {
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 6) + 's';
+      p.style.width = p.style.height = (3 + Math.random() * 5) + 'px';
+      particleContainer.appendChild(p);
+    }
+  })();
+
+  // ---- Navigate ----
+  function goToCard(index, direction) {
+    if (isTransitioning || index < 0 || index >= TOTAL_CARDS || index === currentCard) return;
+    isTransitioning = true;
+
+    const oldCard = cards[currentCard];
+    const newCard = cards[index];
+
+    // Exit old card
+    oldCard.classList.remove('active');
+    oldCard.classList.add(direction === 'next' ? 'exit-left' : 'exit-right');
+    setTimeout(() => {
+      oldCard.classList.remove('exit-left', 'exit-right');
+    }, 600);
+
+    // Enter new card
+    newCard.style.transform = direction === 'next'
+      ? 'scale(0.92) translateX(60px)'
+      : 'scale(0.92) translateX(-60px)';
+    newCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      newCard.classList.add('active');
+      newCard.style.transform = '';
+      newCard.style.opacity = '';
+    });
+
+    currentCard = index;
+    updateProgress();
+    triggerCardAnimations(index);
+
+    setTimeout(() => { isTransitioning = false; }, 600);
+
+    // Restart autoplay timer
+    if (autoplay) startAutoplayTimer();
+
+    // Hide nav hint after first navigation
+    navHint.style.opacity = '0';
+  }
+
+  function nextCard() { goToCard(currentCard + 1, 'next'); }
+  function prevCard() { goToCard(currentCard - 1, 'prev'); }
+
+  // ---- Progress ----
+  function updateProgress() {
+    progressSegs.forEach((seg, i) => {
+      seg.classList.remove('done', 'active');
+      if (i < currentCard) seg.classList.add('done');
+      else if (i === currentCard) seg.classList.add('active');
+    });
+  }
+
+  // ---- Counter Animation ----
+  function animateCounters(cardEl) {
+    const counters = cardEl.querySelectorAll('.counter');
+    counters.forEach(c => {
+      const target = parseInt(c.dataset.target);
+      const suffix = c.dataset.suffix || '';
+      const duration = 1800;
+      const start = performance.now();
+      c.textContent = '0';
+
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+        c.textContent = current.toLocaleString() + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    });
+  }
+
+  // ---- Percentage bar animation ----
+  function animateBars(cardEl) {
+    const bars = cardEl.querySelectorAll('.pct-bar-fill');
+    bars.forEach(bar => {
+      bar.style.width = '0%';
+      setTimeout(() => {
+        bar.style.width = bar.dataset.pct + '%';
+      }, 300);
+    });
+  }
+
+  // ---- Skills stagger animation ----
+  function animateSkills(cardEl) {
+    const chips = cardEl.querySelectorAll('.skill-chip');
+    chips.forEach((chip, i) => {
+      chip.style.opacity = '0';
+      chip.style.transform = 'translateY(12px) scale(0.9)';
+      chip.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      setTimeout(() => {
+        chip.style.opacity = '1';
+        chip.style.transform = 'translateY(0) scale(1)';
+      }, 100 + i * 60);
+    });
+  }
+
+  // ---- Track stagger animation ----
+  function animateTracks(cardEl) {
+    const tracks = cardEl.querySelectorAll('.track');
+    tracks.forEach((track, i) => {
+      track.style.opacity = '0';
+      track.style.transform = 'translateX(-20px)';
+      track.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      setTimeout(() => {
+        track.style.opacity = '1';
+        track.style.transform = 'translateX(0)';
+      }, 200 + i * 150);
+    });
+  }
+
+  // ---- Timeline stagger ----
+  function animateTimeline(cardEl) {
+    const items = cardEl.querySelectorAll('.tl-item');
+    items.forEach((item, i) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(16px)';
+      item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      setTimeout(() => {
+        item.style.opacity = '1';
+        item.style.transform = 'translateY(0)';
+      }, 200 + i * 180);
+    });
+  }
+
+  // ---- Traits stagger ----
+  function animateTraits(cardEl) {
+    const traits = cardEl.querySelectorAll('.trait');
+    traits.forEach((trait, i) => {
+      trait.style.opacity = '0';
+      trait.style.transform = 'scale(0.8)';
+      trait.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      setTimeout(() => {
+        trait.style.opacity = '1';
+        trait.style.transform = 'scale(1)';
+      }, 400 + i * 120);
+    });
+  }
+
+  function triggerCardAnimations(index) {
+    const cardEl = cards[index];
+    setTimeout(() => {
+      animateCounters(cardEl);
+      animateBars(cardEl);
+      if (index === 5) animateTimeline(cardEl);
+      if (index === 6) animateTracks(cardEl);
+      if (index === 7) animateSkills(cardEl);
+      if (index === 8) animateTraits(cardEl);
+    }, 200);
+  }
+
+  // ---- Autoplay ----
+  function toggleAutoplay() {
+    autoplay = !autoplay;
+    autoplayBtn.classList.toggle('active', autoplay);
+    autoplayBtn.textContent = autoplay ? 'Auto-Play ON' : 'Auto-Play';
+    if (autoplay) startAutoplayTimer();
+    else clearTimeout(autoplayTimer);
+  }
+
+  function startAutoplayTimer() {
+    clearTimeout(autoplayTimer);
+    autoplayTimer = setTimeout(() => {
+      if (currentCard < TOTAL_CARDS - 1) nextCard();
+      else {
+        autoplay = false;
+        autoplayBtn.classList.remove('active');
+        autoplayBtn.textContent = 'Auto-Play';
+      }
+    }, 5000);
+  }
+
+  // ---- Event Listeners ----
+
+  // Click: left half = prev, right half = next
+  container.addEventListener('click', (e) => {
+    if (e.target.closest('a') || e.target.closest('button')) return;
+    const x = e.clientX;
+    if (x < window.innerWidth * 0.35) prevCard();
+    else nextCard();
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextCard(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevCard(); }
+  });
+
+  // Touch swipe
+  container.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  container.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) nextCard();
+      else prevCard();
+    }
+  }, { passive: true });
+
+  // Mouse wheel
+  let wheelDebounce = false;
+  document.addEventListener('wheel', (e) => {
+    if (wheelDebounce) return;
+    wheelDebounce = true;
+    if (e.deltaY > 0 || e.deltaX > 0) nextCard();
+    else if (e.deltaY < 0 || e.deltaX < 0) prevCard();
+    setTimeout(() => { wheelDebounce = false; }, 800);
+  }, { passive: true });
+
+  // ---- Share ----
+  function shareWrapped() {
+    const text = "Check out my 2025 Developer Wrapped! - Anshull Garg, Software Developer @ Walmart";
+    if (navigator.share) {
+      navigator.share({ title: '2025 Developer Wrapped', text: text, url: window.location.href });
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text + ' ' + window.location.href).then(() => {
+        const btn = document.querySelector('.share-btn');
+        btn.textContent = 'Link Copied!';
+        setTimeout(() => { btn.textContent = 'Share Your Wrapped'; }, 2000);
+      });
+    }
+  }
+
+  // ---- Init ----
+  cards[0].classList.add('active');
+  updateProgress();
+  triggerCardAnimations(0);
+</script>
+
+</body>
+</html>
