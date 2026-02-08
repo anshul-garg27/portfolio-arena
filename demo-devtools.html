@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevTools - Anshull Garg Portfolio</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#1e1e1e;--surface:#252526;--tabs:#2d2d2d;--border:#3c3c3c;
+--text:#d4d4d4;--text-dim:#808080;--green:#4ec9b0;--blue:#569cd6;
+--orange:#ce9178;--yellow:#dcdcaa;--purple:#c586c0;--red:#f44747;
+--warn-bg:#332b00;--error-bg:#2b1616;--info-bg:#1a2733;
+--active-tab:#1e1e1e;--tab-line:#528bff;
+}
+html,body{height:100%;overflow:hidden;background:#0d0d0d;font-family:'Menlo','Consolas','Courier New',monospace;color:var(--text);font-size:13px}
+#app{display:flex;flex-direction:column;height:100vh;max-width:1400px;margin:0 auto;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+
+/* === TITLE BAR === */
+.title-bar{background:#323233;display:flex;align-items:center;padding:0 12px;height:32px;border-bottom:1px solid var(--border);gap:8px;flex-shrink:0}
+.title-bar .dots{display:flex;gap:6px}
+.title-bar .dot{width:10px;height:10px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.title-bar span{color:var(--text-dim);font-size:12px;margin-left:8px}
+
+/* === TAB BAR === */
+.tab-bar{display:flex;background:var(--tabs);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+.tab-bar button{background:none;border:none;color:var(--text-dim);padding:8px 16px;font-family:inherit;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
+.tab-bar button:hover{color:var(--text)}
+.tab-bar button.active{color:var(--text);background:var(--active-tab);border-bottom-color:var(--tab-line)}
+
+/* === PANELS === */
+.panel{display:none;flex:1;overflow:hidden}
+.panel.active{display:flex;flex-direction:column}
+
+/* === CONSOLE === */
+.console-panel{flex-direction:column}
+.console-filter{display:flex;align-items:center;gap:8px;padding:4px 8px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.console-filter .icon{color:var(--red);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:3px}
+.console-filter .icon:hover{background:var(--border)}
+.console-filter input{flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:3px 8px;border-radius:3px;font-family:inherit;font-size:12px;outline:none}
+.console-filter input:focus{border-color:var(--tab-line)}
+.console-filter .badges{display:flex;gap:4px}
+.console-filter .badge{padding:2px 8px;border-radius:3px;font-size:11px;cursor:pointer;border:1px solid var(--border)}
+.badge.err{color:var(--red)}.badge.warn{color:#e6db74}.badge.info{color:var(--blue)}
+
+.console-output{flex:1;overflow-y:auto;padding:0}
+.console-output::-webkit-scrollbar{width:8px}
+.console-output::-webkit-scrollbar-track{background:var(--bg)}
+.console-output::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.console-output::-webkit-scrollbar-thumb:hover{background:#555}
+
+.log-line{padding:4px 12px;border-bottom:1px solid #2a2a2a;display:flex;align-items:flex-start;gap:8px;animation:fadeInLine .3s ease}
+.log-line .gutter{color:var(--text-dim);min-width:16px;user-select:none;padding-top:1px}
+.log-line .content{flex:1;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.log-line.warn{background:var(--warn-bg);border-left:3px solid #e6db74}
+.log-line.error{background:var(--error-bg);border-left:3px solid var(--red)}
+.log-line.info{background:var(--info-bg);border-left:3px solid var(--blue)}
+.log-line.input-echo{color:var(--blue)}
+.log-line.input-echo .gutter{color:var(--blue)}
+.log-line.result{color:var(--text-dim)}
+
+.str{color:var(--orange)}.kw{color:var(--blue)}.fn{color:var(--yellow)}.num{color:var(--green)}.ctrl{color:var(--purple)}.cmt{color:var(--text-dim);font-style:italic}.prop{color:#9cdcfe}
+
+.console-table{border-collapse:collapse;margin:4px 0;font-size:12px}
+.console-table th,.console-table td{border:1px solid var(--border);padding:3px 12px;text-align:left}
+.console-table th{background:var(--tabs);color:var(--text-dim)}
+.console-table td{color:var(--orange)}
+
+.console-input-bar{display:flex;align-items:center;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;padding:0 8px}
+.console-input-bar .prompt{color:var(--blue);padding:8px 4px;user-select:none}
+.console-input-bar input{flex:1;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:13px;padding:8px 4px;outline:none}
+
+@keyframes fadeInLine{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* === ELEMENTS === */
+.elements-panel{flex-direction:row}
+.elements-tree{flex:1;overflow:auto;padding:12px;border-right:1px solid var(--border)}
+.elements-tree::-webkit-scrollbar{width:8px}
+.elements-tree::-webkit-scrollbar-track{background:var(--bg)}
+.elements-tree::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.tree-node{padding:2px 0;cursor:pointer;line-height:1.7}
+.tree-node:hover{background:rgba(255,255,255,.04)}
+.tree-node .tag{color:var(--blue)}.tree-node .attr{color:#9cdcfe}.tree-node .attr-val{color:var(--orange)}
+.tree-node .bracket{color:var(--text-dim)}
+.tree-node .toggle{display:inline-block;width:16px;color:var(--text-dim);user-select:none;cursor:pointer;text-align:center}
+.tree-children{display:none}
+.tree-children.open{display:block}
+
+.elements-styles{width:320px;overflow-y:auto;padding:12px;flex-shrink:0}
+.elements-styles::-webkit-scrollbar{width:8px}
+.elements-styles::-webkit-scrollbar-track{background:var(--bg)}
+.elements-styles::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.style-section{margin-bottom:16px}
+.style-section h3{font-size:11px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;letter-spacing:.5px}
+.style-block{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:10px;margin-bottom:8px;font-size:12px;line-height:1.8}
+.style-selector{color:var(--yellow);margin-bottom:4px}
+.style-prop{color:#9cdcfe;margin-left:16px}
+.style-val{color:var(--orange)}
+.style-block .bracket{color:var(--text-dim)}
+.checkbox-line{display:flex;align-items:center;gap:6px;margin-left:12px}
+.checkbox-line input[type=checkbox]{accent-color:var(--tab-line)}
+
+/* === NETWORK === */
+.network-panel{flex-direction:column}
+.network-toolbar{display:flex;align-items:center;gap:8px;padding:4px 8px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.network-toolbar .record-dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.network-toolbar .clear-btn{background:none;border:1px solid var(--border);color:var(--text-dim);padding:2px 8px;border-radius:3px;cursor:pointer;font-family:inherit;font-size:11px}
+.network-toolbar .clear-btn:hover{background:var(--border)}
+.network-summary{color:var(--text-dim);font-size:11px;margin-left:auto}
+
+.network-header,.network-row{display:grid;grid-template-columns:2.5fr 80px 80px 80px 1fr;align-items:center;padding:4px 12px;font-size:12px;border-bottom:1px solid #2a2a2a}
+.network-header{background:var(--tabs);color:var(--text-dim);font-weight:600;position:sticky;top:0;z-index:1}
+.network-rows{flex:1;overflow-y:auto}
+.network-rows::-webkit-scrollbar{width:8px}
+.network-rows::-webkit-scrollbar-track{background:var(--bg)}
+.network-rows::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.network-row{cursor:pointer;transition:background .15s}
+.network-row:hover{background:rgba(255,255,255,.04)}
+.network-row.selected{background:var(--tab-line);color:#fff}
+.network-row .name{color:var(--blue);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.network-row .status.s200{color:var(--green)}.network-row .status.s202{color:var(--yellow)}.network-row .status.s404{color:var(--red)}
+.network-row .method{color:var(--purple)}
+.waterfall-bar{height:10px;border-radius:2px;margin:2px 0;position:relative}
+.wf-dns{background:#7986cb}.wf-connect{background:#4db6ac}.wf-send{background:#81c784}.wf-wait{background:#ffb74d}.wf-receive{background:#64b5f6}
+.waterfall-container{display:flex;align-items:center;gap:2px;height:18px}
+
+.network-detail{background:var(--surface);border-top:1px solid var(--border);padding:12px;max-height:200px;overflow-y:auto;font-size:12px;flex-shrink:0}
+.network-detail::-webkit-scrollbar{width:8px}
+.network-detail::-webkit-scrollbar-track{background:var(--bg)}
+.network-detail::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.network-detail h4{color:var(--yellow);margin-bottom:8px}
+.network-detail pre{color:var(--green);line-height:1.6;white-space:pre-wrap}
+
+/* === SOURCES === */
+.sources-panel{flex-direction:row}
+.file-tree{width:220px;border-right:1px solid var(--border);overflow-y:auto;padding:8px 0;flex-shrink:0}
+.file-tree::-webkit-scrollbar{width:6px}
+.file-tree::-webkit-scrollbar-track{background:var(--bg)}
+.file-tree::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.ft-item{padding:3px 8px 3px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);white-space:nowrap}
+.ft-item:hover{background:rgba(255,255,255,.06)}
+.ft-item.active{background:rgba(82,139,255,.2);color:var(--text)}
+.ft-item .icon{font-size:14px}
+.ft-folder{padding:3px 8px;font-size:12px;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:4px}
+.ft-folder:hover{background:rgba(255,255,255,.04)}
+.ft-children{padding-left:16px}
+.ft-children.collapsed{display:none}
+
+.source-editor{flex:1;overflow:auto;position:relative}
+.source-editor::-webkit-scrollbar{width:8px}
+.source-editor::-webkit-scrollbar-track{background:var(--bg)}
+.source-editor::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.editor-file-tabs{display:flex;background:var(--tabs);border-bottom:1px solid var(--border)}
+.editor-file-tab{padding:6px 16px;font-size:12px;color:var(--text-dim);cursor:pointer;border-right:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.editor-file-tab.active{background:var(--bg);color:var(--text)}
+.editor-file-tab .close{font-size:14px;opacity:0;transition:opacity .15s}
+.editor-file-tab:hover .close{opacity:1}
+
+.code-view{counter-reset:line-num}
+.code-line{display:flex;line-height:1.7;font-size:13px;position:relative}
+.code-line:hover{background:rgba(255,255,255,.03)}
+.code-line .line-gutter{width:50px;text-align:right;padding-right:12px;color:var(--text-dim);user-select:none;flex-shrink:0;font-size:12px}
+.code-line .line-content{flex:1;padding-left:8px;white-space:pre;overflow-x:auto}
+.code-line .bp{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--red);opacity:0;cursor:pointer}
+.code-line:hover .bp{opacity:.3}
+.code-line .bp.active{opacity:1}
+.code-line.highlighted{background:rgba(254,188,46,.08)}
+
+/* === PERF / MEMORY / APP (placeholder) === */
+.placeholder-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-dim)}
+.placeholder-panel .big-icon{font-size:48px;opacity:.3}
+.placeholder-panel p{font-size:13px}
+.placeholder-panel a{color:var(--tab-line);text-decoration:none}
+.placeholder-panel a:hover{text-decoration:underline}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+.elements-panel{flex-direction:column}
+.elements-styles{width:100%;border-top:1px solid var(--border);border-right:none}
+.elements-tree{border-right:none}
+.sources-panel{flex-direction:column}
+.file-tree{width:100%;max-height:150px;border-right:none;border-bottom:1px solid var(--border)}
+.tab-bar button{padding:8px 10px;font-size:11px}
+.network-header,.network-row{grid-template-columns:2fr 60px 60px 60px 1fr;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+    <span>DevTools - anshullgarg.dev</span>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar" id="tabBar">
+    <button class="active" data-tab="console">Console</button>
+    <button data-tab="elements">Elements</button>
+    <button data-tab="sources">Sources</button>
+    <button data-tab="network">Network</button>
+    <button data-tab="performance">Performance</button>
+    <button data-tab="memory">Memory</button>
+    <button data-tab="application">Application</button>
+  </div>
+
+  <!-- CONSOLE PANEL -->
+  <div class="panel console-panel active" id="panel-console">
+    <div class="console-filter">
+      <span class="icon" title="Clear console" id="clearConsole">&#x1F6AB;</span>
+      <input type="text" placeholder="Filter" id="consoleFilter">
+      <div class="badges">
+        <span class="badge err">Errors</span>
+        <span class="badge warn">Warnings</span>
+        <span class="badge info">Info</span>
+      </div>
+    </div>
+    <div class="console-output" id="consoleOutput"></div>
+    <div class="console-input-bar">
+      <span class="prompt">></span>
+      <input type="text" id="consoleInput" placeholder="Type help() and press Enter..." autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
+  <!-- ELEMENTS PANEL -->
+  <div class="panel elements-panel" id="panel-elements">
+    <div class="elements-tree" id="elementsTree"></div>
+    <div class="elements-styles" id="elementsStyles"></div>
+  </div>
+
+  <!-- SOURCES PANEL -->
+  <div class="panel sources-panel" id="panel-sources">
+    <div class="file-tree" id="fileTree"></div>
+    <div class="source-editor" id="sourceEditor"></div>
+  </div>
+
+  <!-- NETWORK PANEL -->
+  <div class="panel network-panel" id="panel-network">
+    <div class="network-toolbar">
+      <div class="record-dot"></div>
+      <button class="clear-btn">Clear</button>
+      <span class="network-summary" id="networkSummary">5 requests | 12.4 KB transferred | 45 ms</span>
+    </div>
+    <div class="network-header">
+      <span>Name</span><span>Method</span><span>Status</span><span>Size</span><span>Waterfall</span>
+    </div>
+    <div class="network-rows" id="networkRows"></div>
+    <div class="network-detail" id="networkDetail" style="display:none"></div>
+  </div>
+
+  <!-- PERFORMANCE -->
+  <div class="panel placeholder-panel" id="panel-performance">
+    <div class="big-icon">&#9201;</div>
+    <p>Performance optimized. No bottlenecks detected.</p>
+    <p>Load time: <span style="color:var(--green)">0.8s</span> | FCP: <span style="color:var(--green)">0.4s</span> | LCP: <span style="color:var(--green)">0.9s</span></p>
+    <p style="margin-top:12px"><a href="mailto:anshullgarg@gmail.com">Reach out to see this developer in action</a></p>
+  </div>
+
+  <!-- MEMORY -->
+  <div class="panel placeholder-panel" id="panel-memory">
+    <div class="big-icon">&#128200;</div>
+    <p>Heap snapshot: <span style="color:var(--green)">Efficient</span></p>
+    <p>Retained skills: <span style="color:var(--yellow)">React, Node.js, TypeScript, AWS, Python, SQL</span></p>
+    <p>Memory leaks: <span style="color:var(--green)">0 detected</span></p>
+  </div>
+
+  <!-- APPLICATION -->
+  <div class="panel placeholder-panel" id="panel-application">
+    <div class="big-icon">&#128230;</div>
+    <p>Service Worker: <span style="color:var(--green)">Active</span></p>
+    <p>localStorage.getItem("developer") = <span style="color:var(--orange)">"Anshull Garg"</span></p>
+    <p>sessionStorage.getItem("status") = <span style="color:var(--orange)">"Open to opportunities"</span></p>
+    <p style="margin-top:12px"><a href="https://linkedin.com/in/anshullgarg" target="_blank">View on LinkedIn</a></p>
+  </div>
+</div>
+
+<script>
+/* ========================================
+   TAB SWITCHING
+======================================== */
+const tabBar = document.getElementById('tabBar');
+const panels = document.querySelectorAll('.panel');
+const tabs = tabBar.querySelectorAll('button');
+
+tabBar.addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const id = btn.dataset.tab;
+  tabs.forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  panels.forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+});
+
+/* ========================================
+   CONSOLE PANEL
+======================================== */
+const consoleOutput = document.getElementById('consoleOutput');
+const consoleInput = document.getElementById('consoleInput');
+const clearConsoleBtn = document.getElementById('clearConsole');
+const consoleFilter = document.getElementById('consoleFilter');
+
+function htmlEsc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addLog(html, type = 'log') {
+  const div = document.createElement('div');
+  div.className = 'log-line ' + type;
+  const icons = {log:'', warn:'&#9888;&#65039;', error:'&#10060;', info:'&#9432;&#65039;'};
+  div.innerHTML = `<span class="gutter">${type === 'log' ? '' : (icons[type]||'')}</span><span class="content">${html}</span>`;
+  consoleOutput.appendChild(div);
+  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+  return div;
+}
+
+function addInputEcho(text) {
+  const div = document.createElement('div');
+  div.className = 'log-line input-echo';
+  div.innerHTML = `<span class="gutter" style="color:var(--blue)">&lt;</span><span class="content"><span class="fn">${htmlEsc(text)}</span></span>`;
+  consoleOutput.appendChild(div);
+}
+
+function addResult(html) {
+  const div = document.createElement('div');
+  div.className = 'log-line result';
+  div.innerHTML = `<span class="gutter" style="color:var(--text-dim)">&larr;</span><span class="content">${html}</span>`;
+  consoleOutput.appendChild(div);
+  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function addTable(data) {
+  let headers = Object.keys(data[0] || {});
+  let html = '<table class="console-table"><thead><tr><th>(index)</th>';
+  headers.forEach(h => html += `<th>${htmlEsc(h)}</th>`);
+  html += '</tr></thead><tbody>';
+  data.forEach((row, i) => {
+    html += `<tr><td>${i}</td>`;
+    headers.forEach(h => html += `<td>${htmlEsc(String(row[h]))}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  addLog(html);
+}
+
+// Startup sequence
+const startupLogs = [
+  { delay: 300, fn: () => addLog(`<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hey! I'm Anshull Garg"</span>)`) },
+  { delay: 800, fn: () => addLog(`<span class="str">"Hey! I'm Anshull Garg"</span>`) },
+  { delay: 1400, fn: () => addLog(`<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Software Developer at Walmart"</span>)`) },
+  { delay: 1800, fn: () => addLog(`<span class="str">"Software Developer at Walmart"</span>`) },
+  { delay: 2500, fn: () => addLog(`<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Skills:"</span>, [<span class="str">"React"</span>, <span class="str">"Node.js"</span>, <span class="str">"TypeScript"</span>, <span class="str">"Python"</span>, <span class="str">"AWS"</span>])`) },
+  { delay: 2900, fn: () => addLog(`(<span class="num">5</span>) [<span class="str">"React"</span>, <span class="str">"Node.js"</span>, <span class="str">"TypeScript"</span>, <span class="str">"Python"</span>, <span class="str">"AWS"</span>]`) },
+  { delay: 3700, fn: () => addLog(`<span class="fn">console</span>.<span class="fn">table</span>({<span class="prop">role</span>: <span class="str">"SDE"</span>, <span class="prop">company</span>: <span class="str">"Walmart"</span>, <span class="prop">years</span>: <span class="str">"4+"</span>})`) },
+  { delay: 4100, fn: () => addTable([{Property:'role',Value:'SDE'},{Property:'company',Value:'Walmart'},{Property:'years',Value:'4+'}]) },
+  { delay: 5000, fn: () => addLog(`<span class="str">"Warning: This developer might be exactly what you're looking for"</span>`, 'warn') },
+  { delay: 6000, fn: () => addLog(`<span class="str">"Error: Position 'vacant' is deprecated. Use contact('Anshull') instead"</span>`, 'error') },
+  { delay: 7000, fn: () => addLog(`<span class="cmt">// Type <span class="fn">help()</span> in the console below to explore more commands</span>`) },
+];
+
+startupLogs.forEach(l => setTimeout(l.fn, l.delay));
+
+// Console commands
+const commands = {
+  help: () => {
+    addResult(`<span class="cmt">Available commands:</span>
+  <span class="fn">about()</span>    <span class="cmt">- Learn about Anshull</span>
+  <span class="fn">skills()</span>   <span class="cmt">- View technical skills</span>
+  <span class="fn">projects()</span> <span class="cmt">- Browse projects</span>
+  <span class="fn">experience()</span> <span class="cmt">- Work experience</span>
+  <span class="fn">contact()</span>  <span class="cmt">- Get in touch</span>
+  <span class="fn">hire()</span>     <span class="cmt">- Why you should hire me</span>
+  <span class="fn">clear()</span>    <span class="cmt">- Clear console</span>
+  <span class="fn">resume()</span>   <span class="cmt">- Download resume</span>`);
+  },
+  about: () => {
+    addResult(`<span class="kw">const</span> <span class="prop">anshull</span> = {
+  <span class="prop">name</span>: <span class="str">"Anshull Garg"</span>,
+  <span class="prop">title</span>: <span class="str">"Software Developer"</span>,
+  <span class="prop">company</span>: <span class="str">"Walmart"</span>,
+  <span class="prop">location</span>: <span class="str">"India"</span>,
+  <span class="prop">education</span>: <span class="str">"B.Tech Computer Science"</span>,
+  <span class="prop">passions</span>: [<span class="str">"Building scalable systems"</span>, <span class="str">"Clean code"</span>, <span class="str">"Open source"</span>],
+  <span class="prop">motto</span>: <span class="str">"Code that makes a difference at scale"</span>
+};`);
+  },
+  skills: () => {
+    addResult(`<span class="kw">const</span> <span class="prop">skills</span> = {`);
+    addResult(`  <span class="prop">frontend</span>: [<span class="str">"React"</span>, <span class="str">"Next.js"</span>, <span class="str">"TypeScript"</span>, <span class="str">"Tailwind CSS"</span>, <span class="str">"Redux"</span>],`);
+    addResult(`  <span class="prop">backend</span>: [<span class="str">"Node.js"</span>, <span class="str">"Express"</span>, <span class="str">"Python"</span>, <span class="str">"Java"</span>, <span class="str">"GraphQL"</span>],`);
+    addResult(`  <span class="prop">database</span>: [<span class="str">"PostgreSQL"</span>, <span class="str">"MongoDB"</span>, <span class="str">"Redis"</span>, <span class="str">"Elasticsearch"</span>],`);
+    addResult(`  <span class="prop">cloud</span>: [<span class="str">"AWS"</span>, <span class="str">"GCP"</span>, <span class="str">"Docker"</span>, <span class="str">"Kubernetes"</span>, <span class="str">"CI/CD"</span>],`);
+    addResult(`  <span class="prop">tools</span>: [<span class="str">"Git"</span>, <span class="str">"Webpack"</span>, <span class="str">"Jest"</span>, <span class="str">"Figma"</span>, <span class="str">"Jira"</span>]`);
+    addResult(`};`);
+  },
+  projects: () => {
+    addTable([
+      { Project: 'Walmart Checkout', Tech: 'React, Node.js', Impact: '10M+ users/day' },
+      { Project: 'Inventory System', Tech: 'Python, AWS', Impact: '40% faster sync' },
+      { Project: 'Search Platform', Tech: 'Elasticsearch', Impact: '60% better relevance' }
+    ]);
+  },
+  experience: () => {
+    addResult(`<span class="fn">timeline</span>([`);
+    addResult(`  { <span class="prop">period</span>: <span class="str">"2020 - Present"</span>, <span class="prop">role</span>: <span class="str">"Software Developer"</span>, <span class="prop">at</span>: <span class="str">"Walmart"</span> },`);
+    addResult(`  <span class="cmt">// Built and maintained high-traffic e-commerce features</span>`);
+    addResult(`  <span class="cmt">// Led migration of legacy systems to modern React stack</span>`);
+    addResult(`  <span class="cmt">// Optimized API performance, reducing latency by 35%</span>`);
+    addResult(`  <span class="cmt">// Mentored junior developers and conducted code reviews</span>`);
+    addResult(`]);`);
+  },
+  contact: () => {
+    addResult(`<span class="kw">const</span> <span class="prop">contact</span> = {
+  <span class="prop">email</span>: <span class="str">"anshullgarg@gmail.com"</span>,
+  <span class="prop">linkedin</span>: <span class="str">"linkedin.com/in/anshullgarg"</span>,
+  <span class="prop">github</span>: <span class="str">"github.com/anshullgarg"</span>,
+  <span class="prop">status</span>: <span class="green">"Open to opportunities"</span>
+};`);
+  },
+  hire: () => {
+    addLog(`<span class="str">"Initiating hire sequence..."</span>`, 'info');
+    setTimeout(() => addLog(`<span class="green">+++ REASONS TO HIRE ANSHULL +++</span>`), 300);
+    setTimeout(() => addResult(`<span class="num">1.</span> <span class="str">"4+ years building production systems at scale (Walmart)"</span>`), 500);
+    setTimeout(() => addResult(`<span class="num">2.</span> <span class="str">"Full-stack expertise: React to AWS infrastructure"</span>`), 700);
+    setTimeout(() => addResult(`<span class="num">3.</span> <span class="str">"Track record of shipping features used by millions"</span>`), 900);
+    setTimeout(() => addResult(`<span class="num">4.</span> <span class="str">"Strong communicator who thrives in cross-functional teams"</span>`), 1100);
+    setTimeout(() => addResult(`<span class="num">5.</span> <span class="str">"Passionate about clean code, testing, and best practices"</span>`), 1300);
+    setTimeout(() => addLog(`<span class="fn">hire</span>(<span class="str">"Anshull"</span>) <span class="cmt">// Returns: Promise&lt;GreatDecision&gt; { status: "resolved" }</span>`, 'info'), 1600);
+  },
+  clear: () => {
+    consoleOutput.innerHTML = '';
+    addLog(`<span class="cmt">Console was cleared</span>`);
+  },
+  resume: () => {
+    addLog(`<span class="str">"Preparing resume download..."</span>`, 'info');
+    setTimeout(() => addResult(`<span class="cmt">// Resume would download in a production build.</span>`), 400);
+    setTimeout(() => addResult(`<span class="cmt">// For now, reach out at <span class="str">anshullgarg@gmail.com</span></span>`), 600);
+  }
+};
+
+// Command history
+let cmdHistory = [];
+let historyIndex = -1;
+
+consoleInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const val = consoleInput.value.trim();
+    if (!val) return;
+    cmdHistory.unshift(val);
+    historyIndex = -1;
+    addInputEcho(val);
+    const cmdName = val.replace(/[();\s]/g, '').toLowerCase();
+    if (commands[cmdName]) {
+      commands[cmdName]();
+    } else {
+      addLog(`<span class="red" style="color:var(--red)">Uncaught ReferenceError: ${htmlEsc(cmdName)} is not defined</span>
+  <span class="cmt">Type <span class="fn">help()</span> to see available commands</span>`, 'error');
+    }
+    consoleInput.value = '';
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (historyIndex < cmdHistory.length - 1) {
+      historyIndex++;
+      consoleInput.value = cmdHistory[historyIndex];
+    }
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (historyIndex > 0) {
+      historyIndex--;
+      consoleInput.value = cmdHistory[historyIndex];
+    } else {
+      historyIndex = -1;
+      consoleInput.value = '';
+    }
+  }
+});
+
+clearConsoleBtn.addEventListener('click', () => commands.clear());
+
+consoleFilter.addEventListener('input', () => {
+  const f = consoleFilter.value.toLowerCase();
+  consoleOutput.querySelectorAll('.log-line').forEach(line => {
+    line.style.display = line.textContent.toLowerCase().includes(f) || !f ? '' : 'none';
+  });
+});
+
+/* ========================================
+   ELEMENTS PANEL
+======================================== */
+function buildElementsTree() {
+  const tree = document.getElementById('elementsTree');
+  tree.innerHTML = buildNode('html', {lang:'en'}, [
+    buildNode('head', {}, [
+      buildLeaf('meta', {charset:'UTF-8'}),
+      buildLeaf('title', {}, 'Anshull Garg | Portfolio'),
+    ]),
+    buildNode('body', {class:'developer-portfolio'}, [
+      buildNode('header', {class:'hero'}, [
+        buildLeaf('h1', {class:'name'}, 'Anshull Garg'),
+        buildLeaf('p', {class:'role'}, 'Software Developer at Walmart'),
+      ]),
+      buildNode('section', {id:'skills', class:'skills-grid'}, [
+        buildNode('div', {class:'skill-category frontend'}, [
+          buildLeaf('span', {class:'tech'}, 'React'),
+          buildLeaf('span', {class:'tech'}, 'TypeScript'),
+          buildLeaf('span', {class:'tech'}, 'Next.js'),
+          buildLeaf('span', {class:'tech'}, 'Tailwind CSS'),
+        ]),
+        buildNode('div', {class:'skill-category backend'}, [
+          buildLeaf('span', {class:'tech'}, 'Node.js'),
+          buildLeaf('span', {class:'tech'}, 'Python'),
+          buildLeaf('span', {class:'tech'}, 'Java'),
+          buildLeaf('span', {class:'tech'}, 'GraphQL'),
+        ]),
+        buildNode('div', {class:'skill-category cloud'}, [
+          buildLeaf('span', {class:'tech'}, 'AWS'),
+          buildLeaf('span', {class:'tech'}, 'Docker'),
+          buildLeaf('span', {class:'tech'}, 'Kubernetes'),
+          buildLeaf('span', {class:'tech'}, 'CI/CD'),
+        ]),
+      ]),
+      buildNode('section', {id:'projects'}, [
+        buildLeaf('article', {class:'project', 'data-name':'checkout'}, 'Walmart Checkout System'),
+        buildLeaf('article', {class:'project', 'data-name':'inventory'}, 'Inventory Sync Platform'),
+        buildLeaf('article', {class:'project', 'data-name':'search'}, 'Search Relevance Engine'),
+      ]),
+      buildNode('footer', {class:'contact'}, [
+        buildLeaf('a', {href:'mailto:anshullgarg@gmail.com'}, 'Email'),
+        buildLeaf('a', {href:'https://linkedin.com/in/anshullgarg'}, 'LinkedIn'),
+        buildLeaf('a', {href:'https://github.com/anshullgarg'}, 'GitHub'),
+      ]),
+    ]),
+  ], true);
+}
+
+function attrsStr(attrs) {
+  return Object.entries(attrs).map(([k,v]) => ` <span class="attr">${k}</span>=<span class="attr-val">"${htmlEsc(v)}"</span>`).join('');
+}
+
+function buildNode(tag, attrs={}, children=[], startOpen=false) {
+  const id = 'tn_' + Math.random().toString(36).slice(2,8);
+  const openClass = startOpen ? 'open' : '';
+  const arrow = startOpen ? '&#9660;' : '&#9654;';
+  let html = `<div class="tree-node" data-toggle="${id}">`;
+  html += `<span class="toggle" data-toggle="${id}">${arrow}</span>`;
+  html += `<span class="bracket">&lt;</span><span class="tag">${tag}</span>${attrsStr(attrs)}<span class="bracket">&gt;</span>`;
+  html += `</div>`;
+  html += `<div class="tree-children ${openClass}" id="${id}" style="padding-left:20px">`;
+  children.forEach(c => html += c);
+  html += `<div class="tree-node"><span class="toggle" style="visibility:hidden">.</span><span class="bracket">&lt;/</span><span class="tag">${tag}</span><span class="bracket">&gt;</span></div>`;
+  html += `</div>`;
+  return html;
+}
+
+function buildLeaf(tag, attrs={}, text='') {
+  let html = `<div class="tree-node">`;
+  html += `<span class="toggle" style="visibility:hidden">.</span>`;
+  html += `<span class="bracket">&lt;</span><span class="tag">${tag}</span>${attrsStr(attrs)}<span class="bracket">&gt;</span>`;
+  if (text) html += `<span style="color:var(--text)">${htmlEsc(text)}</span>`;
+  html += `<span class="bracket">&lt;/</span><span class="tag">${tag}</span><span class="bracket">&gt;</span>`;
+  html += `</div>`;
+  return html;
+}
+
+document.getElementById('elementsTree').addEventListener('click', e => {
+  const toggler = e.target.closest('[data-toggle]');
+  if (!toggler) return;
+  const target = document.getElementById(toggler.dataset.toggle);
+  if (!target) return;
+  target.classList.toggle('open');
+  const arrow = toggler.closest('.tree-node').querySelector('.toggle');
+  if (arrow) arrow.innerHTML = target.classList.contains('open') ? '&#9660;' : '&#9654;';
+});
+
+function buildElementsStyles() {
+  const styles = document.getElementById('elementsStyles');
+  styles.innerHTML = `
+    <div class="style-section">
+      <h3>Styles</h3>
+      <div class="style-block">
+        <div class="style-selector">.developer-portfolio</div>
+        <div class="bracket">{</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">experience</span>: <span class="style-val">4+ years</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">passion</span>: <span class="style-val">infinite</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">availability</span>: <span class="style-val">open-to-work</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">problem-solving</span>: <span class="style-val">expert</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">team-player</span>: <span class="style-val">true</span>;</div>
+        <div class="bracket">}</div>
+      </div>
+      <div class="style-block">
+        <div class="style-selector">.skills-grid</div>
+        <div class="bracket">{</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">display</span>: <span class="style-val">grid</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">grid-template-columns</span>: <span class="style-val">repeat(auto-fit, minmax(200px, 1fr))</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">gap</span>: <span class="style-val">continuous-learning</span>;</div>
+        <div class="bracket">}</div>
+      </div>
+      <div class="style-block">
+        <div class="style-selector">.hero .name</div>
+        <div class="bracket">{</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">font-weight</span>: <span class="style-val">bold</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">color</span>: <span class="style-val">#4EC9B0</span>;</div>
+        <div class="checkbox-line"><input type="checkbox" checked><span class="style-prop">text-transform</span>: <span class="style-val">capitalize</span>;</div>
+        <div class="bracket">}</div>
+      </div>
+    </div>
+    <div class="style-section">
+      <h3>Computed</h3>
+      <div class="style-block">
+        <div class="checkbox-line"><span class="style-prop">width</span>: <span class="style-val">full-stack</span></div>
+        <div class="checkbox-line"><span class="style-prop">height</span>: <span class="style-val">senior-level</span></div>
+        <div class="checkbox-line"><span class="style-prop">position</span>: <span class="style-val">available</span></div>
+        <div class="checkbox-line"><span class="style-prop">visibility</span>: <span class="style-val">highly-visible</span></div>
+        <div class="checkbox-line"><span class="style-prop">z-index</span>: <span class="style-val">9999</span></div>
+        <div class="checkbox-line"><span class="style-prop">overflow</span>: <span class="style-val">hidden-potential</span></div>
+      </div>
+    </div>`;
+}
+
+buildElementsTree();
+buildElementsStyles();
+
+/* ========================================
+   NETWORK PANEL
+======================================== */
+const networkData = [
+  {
+    name: '/api/about',
+    method: 'GET',
+    status: 200,
+    statusText: '200 OK',
+    size: '2.1 KB',
+    time: 12,
+    waterfall: [10,5,2,8,12],
+    response: `{
+  "name": "Anshull Garg",
+  "title": "Software Developer",
+  "company": "Walmart",
+  "location": "India",
+  "bio": "Passionate software developer with 4+ years of experience building scalable web applications at Walmart. Focused on creating high-performance, user-centric products that serve millions.",
+  "education": "B.Tech in Computer Science"
+}`
+  },
+  {
+    name: '/api/skills',
+    method: 'GET',
+    status: 200,
+    statusText: '200 OK',
+    size: '1.8 KB',
+    time: 8,
+    waterfall: [8,4,1,6,8],
+    response: `{
+  "frontend": ["React", "Next.js", "TypeScript", "Redux", "Tailwind CSS"],
+  "backend": ["Node.js", "Express", "Python", "Java", "GraphQL"],
+  "database": ["PostgreSQL", "MongoDB", "Redis", "Elasticsearch"],
+  "cloud": ["AWS (S3, Lambda, EC2)", "GCP", "Docker", "Kubernetes"],
+  "tools": ["Git", "Webpack", "Jest", "Jenkins", "Figma"]
+}`
+  },
+  {
+    name: '/api/projects',
+    method: 'GET',
+    status: 200,
+    statusText: '200 OK',
+    size: '4.3 KB',
+    time: 15,
+    waterfall: [6,8,2,12,15],
+    response: `[
+  {
+    "name": "Walmart Checkout System",
+    "tech": ["React", "Node.js", "Redis"],
+    "impact": "Serves 10M+ users daily",
+    "description": "Rebuilt checkout flow reducing cart abandonment by 18%"
+  },
+  {
+    "name": "Inventory Sync Platform",
+    "tech": ["Python", "AWS Lambda", "DynamoDB"],
+    "impact": "40% faster data synchronization",
+    "description": "Real-time inventory system across 4,700+ stores"
+  },
+  {
+    "name": "Search Relevance Engine",
+    "tech": ["Elasticsearch", "Python", "React"],
+    "impact": "60% improvement in search relevance",
+    "description": "ML-powered search ranking for e-commerce catalog"
+  }
+]`
+  },
+  {
+    name: '/api/experience',
+    method: 'GET',
+    status: 200,
+    statusText: '200 OK',
+    size: '3.1 KB',
+    time: 10,
+    waterfall: [5,6,2,8,10],
+    response: `[
+  {
+    "company": "Walmart",
+    "role": "Software Developer",
+    "period": "2020 - Present",
+    "highlights": [
+      "Built and shipped features used by millions of customers",
+      "Led frontend migration from legacy to modern React stack",
+      "Reduced API latency by 35% through caching strategies",
+      "Mentored 5+ junior developers through code reviews"
+    ]
+  }
+]`
+  },
+  {
+    name: '/api/contact',
+    method: 'POST',
+    status: 202,
+    statusText: '202 Accepted',
+    size: '0.4 KB',
+    time: 5,
+    waterfall: [3,2,1,4,5],
+    response: `{
+  "message": "Thanks for reaching out! I'll get back to you soon.",
+  "email": "anshullgarg@gmail.com",
+  "linkedin": "linkedin.com/in/anshullgarg",
+  "github": "github.com/anshullgarg",
+  "response_time": "< 24 hours"
+}`
+  }
+];
+
+function renderNetwork() {
+  const rows = document.getElementById('networkRows');
+  rows.innerHTML = '';
+  networkData.forEach((req, i) => {
+    const row = document.createElement('div');
+    row.className = 'network-row';
+    row.dataset.index = i;
+    const statusClass = req.status === 200 ? 's200' : req.status === 202 ? 's202' : 's404';
+    const maxW = Math.max(...req.waterfall);
+    const wfHtml = req.waterfall.map((w, j) => {
+      const classes = ['wf-dns','wf-connect','wf-send','wf-wait','wf-receive'];
+      const pct = (w / 20) * 100;
+      return `<div class="waterfall-bar ${classes[j]}" style="width:${pct}%;min-width:2px"></div>`;
+    }).join('');
+    row.innerHTML = `
+      <span class="name">${htmlEsc(req.name)}</span>
+      <span class="method">${req.method}</span>
+      <span class="status ${statusClass}">${req.statusText}</span>
+      <span>${req.size}</span>
+      <div class="waterfall-container">${wfHtml}<span style="font-size:10px;color:var(--text-dim);margin-left:4px">${req.time}ms</span></div>
+    `;
+    row.addEventListener('click', () => {
+      rows.querySelectorAll('.network-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      showNetworkDetail(i);
+    });
+    rows.appendChild(row);
+  });
+}
+
+function showNetworkDetail(index) {
+  const detail = document.getElementById('networkDetail');
+  const req = networkData[index];
+  detail.style.display = 'block';
+  detail.innerHTML = `
+    <h4>${req.method} ${htmlEsc(req.name)} - Response</h4>
+    <pre>${htmlEsc(req.response)}</pre>
+  `;
+}
+
+renderNetwork();
+
+/* ========================================
+   SOURCES PANEL
+======================================== */
+const sourceFiles = {
+  'package.json': {
+    lang: 'json',
+    code: `{
+  "name": "anshull-garg-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio of Anshull Garg - SDE at Walmart",
+  "main": "src/index.tsx",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest --coverage",
+    "lint": "eslint src/ --fix"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "next": "^14.0.0",
+    "typescript": "^5.3.0",
+    "tailwindcss": "^3.4.0",
+    "@reduxjs/toolkit": "^2.0.0",
+    "framer-motion": "^10.0.0"
+  },
+  "author": "Anshull Garg",
+  "license": "MIT"
+}`
+  },
+  'src/App.tsx': {
+    lang: 'tsx',
+    code: `import React from 'react';
+import { Hero } from './components/Hero';
+import { Skills } from './components/Skills';
+import { Projects } from './components/Projects';
+import { Contact } from './components/Contact';
+import { ThemeProvider } from './context/ThemeContext';
+
+// Main Application Component
+// Author: Anshull Garg | SDE @ Walmart
+
+export default function App() {
+  const [isLoaded, setIsLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    // Initialize analytics and performance monitoring
+    performance.mark('app-start');
+    setIsLoaded(true);
+
+    return () => {
+      performance.mark('app-end');
+      performance.measure('app-lifecycle', 'app-start', 'app-end');
+    };
+  }, []);
+
+  if (!isLoaded) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <ThemeProvider>
+      <main className="min-h-screen bg-gradient-dark">
+        <Hero
+          name="Anshull Garg"
+          title="Software Developer"
+          company="Walmart"
+        />
+        <Skills categories={SKILL_CATEGORIES} />
+        <Projects items={PROJECT_DATA} />
+        <Contact email="anshullgarg@gmail.com" />
+      </main>
+    </ThemeProvider>
+  );
+}`
+  },
+  'src/components/Hero.tsx': {
+    lang: 'tsx',
+    code: `import React from 'react';
+import { motion } from 'framer-motion';
+
+interface HeroProps {
+  name: string;
+  title: string;
+  company: string;
+}
+
+// Hero section with animated introduction
+export const Hero: React.FC<HeroProps> = ({ name, title, company }) => {
+  return (
+    <motion.section
+      className="hero-section"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="container mx-auto px-6 py-24">
+        <motion.h1
+          className="text-6xl font-bold text-white mb-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          {name}
+        </motion.h1>
+
+        <motion.p
+          className="text-2xl text-emerald-400"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {title} at {company}
+        </motion.p>
+
+        <motion.div
+          className="mt-8 flex gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <a href="#projects" className="btn-primary">
+            View Projects
+          </a>
+          <a href="#contact" className="btn-secondary">
+            Get In Touch
+          </a>
+        </motion.div>
+      </div>
+    </motion.section>
+  );
+};`
+  },
+  'src/components/Projects.tsx': {
+    lang: 'tsx',
+    code: `import React from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+
+interface Project {
+  name: string;
+  description: string;
+  tech: string[];
+  impact: string;
+  link?: string;
+}
+
+interface ProjectsProps {
+  items: Project[];
+}
+
+export const Projects: React.FC<ProjectsProps> = ({ items }) => {
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  return (
+    <section id="projects" ref={ref} className="py-20">
+      <div className="container mx-auto px-6">
+        <h2 className="text-4xl font-bold mb-12">
+          Featured Projects
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {items.map((project, index) => (
+            <motion.article
+              key={project.name}
+              className="project-card bg-surface rounded-xl p-6"
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: index * 0.15, duration: 0.5 }}
+            >
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {project.name}
+              </h3>
+              <p className="text-gray-400 mb-4">
+                {project.description}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.tech.map(t => (
+                  <span key={t} className="tech-badge">
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <p className="text-emerald-400 text-sm font-medium">
+                Impact: {project.impact}
+              </p>
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};`
+  },
+  'src/hooks/useAnalytics.ts': {
+    lang: 'ts',
+    code: `import { useEffect, useCallback } from 'react';
+
+interface AnalyticsEvent {
+  name: string;
+  properties?: Record<string, unknown>;
+  timestamp: number;
+}
+
+/**
+ * Custom hook for tracking user interactions
+ * Used across Walmart's frontend applications
+ * Author: Anshull Garg
+ */
+export function useAnalytics(componentName: string) {
+  const track = useCallback((eventName: string, props?: Record<string, unknown>) => {
+    const event: AnalyticsEvent = {
+      name: \`\${componentName}.\${eventName}\`,
+      properties: {
+        ...props,
+        environment: process.env.NODE_ENV,
+        version: process.env.APP_VERSION,
+      },
+      timestamp: Date.now(),
+    };
+
+    // Send to analytics service
+    if (typeof window !== 'undefined') {
+      window.requestIdleCallback?.(() => {
+        navigator.sendBeacon('/api/analytics', JSON.stringify(event));
+      });
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Analytics]', event);
+    }
+  }, [componentName]);
+
+  useEffect(() => {
+    track('mounted');
+    return () => track('unmounted');
+  }, [track]);
+
+  return { track };
+}`
+  }
+};
+
+const breakpoints = {
+  'src/App.tsx': [11, 14, 17],
+  'src/components/Hero.tsx': [14, 26],
+  'src/components/Projects.tsx': [33, 42],
+  'src/hooks/useAnalytics.ts': [15, 27],
+};
+
+let activeFile = 'src/App.tsx';
+
+function buildFileTree() {
+  const tree = document.getElementById('fileTree');
+  const structure = {
+    'src': {
+      'components': ['Hero.tsx', 'Projects.tsx'],
+      'hooks': ['useAnalytics.ts'],
+      '_files': ['App.tsx']
+    },
+    '_root': ['package.json']
+  };
+
+  let html = '';
+
+  // src folder
+  html += `<div class="ft-folder" data-folder="src"><span>&#9660;</span> src/</div>`;
+  html += `<div class="ft-children" id="folder-src">`;
+
+  // components
+  html += `<div class="ft-folder" data-folder="components" style="padding-left:16px"><span>&#9660;</span> components/</div>`;
+  html += `<div class="ft-children" id="folder-components">`;
+  html += `<div class="ft-item" data-file="src/components/Hero.tsx" style="padding-left:32px"><span class="icon" style="color:#3b82f6">TS</span> Hero.tsx</div>`;
+  html += `<div class="ft-item" data-file="src/components/Projects.tsx" style="padding-left:32px"><span class="icon" style="color:#3b82f6">TS</span> Projects.tsx</div>`;
+  html += `</div>`;
+
+  // hooks
+  html += `<div class="ft-folder" data-folder="hooks" style="padding-left:16px"><span>&#9660;</span> hooks/</div>`;
+  html += `<div class="ft-children" id="folder-hooks">`;
+  html += `<div class="ft-item" data-file="src/hooks/useAnalytics.ts" style="padding-left:32px"><span class="icon" style="color:#3b82f6">TS</span> useAnalytics.ts</div>`;
+  html += `</div>`;
+
+  // App.tsx
+  html += `<div class="ft-item" data-file="src/App.tsx" style="padding-left:16px"><span class="icon" style="color:#3b82f6">TS</span> App.tsx</div>`;
+  html += `</div>`;
+
+  // package.json
+  html += `<div class="ft-item" data-file="package.json"><span class="icon" style="color:#f59e0b">{}</span> package.json</div>`;
+
+  tree.innerHTML = html;
+
+  // Folder toggle
+  tree.querySelectorAll('.ft-folder').forEach(folder => {
+    folder.addEventListener('click', () => {
+      const id = 'folder-' + folder.dataset.folder;
+      const children = document.getElementById(id);
+      if (children) {
+        children.classList.toggle('collapsed');
+        folder.querySelector('span').innerHTML = children.classList.contains('collapsed') ? '&#9654;' : '&#9660;';
+      }
+    });
+  });
+
+  // File click
+  tree.querySelectorAll('.ft-item').forEach(item => {
+    item.addEventListener('click', () => {
+      tree.querySelectorAll('.ft-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      activeFile = item.dataset.file;
+      renderSourceEditor();
+    });
+  });
+
+  // Set initial active
+  tree.querySelector(`[data-file="src/App.tsx"]`).classList.add('active');
+}
+
+function highlightCode(code, lang) {
+  let lines = code.split('\n');
+  return lines.map(line => {
+    let escaped = htmlEsc(line);
+
+    // Comments
+    escaped = escaped.replace(/(\/\/.*)$/gm, '<span class="cmt">$1</span>');
+    escaped = escaped.replace(/(\/\*\*[\s\S]*?\*\/)/g, '<span class="cmt">$1</span>');
+    escaped = escaped.replace(/(\* .*)$/gm, '<span class="cmt">$1</span>');
+
+    // Strings
+    escaped = escaped.replace(/(&quot;[^&]*?&quot;|&#39;[^&]*?&#39;|`[^`]*?`)/g, '<span class="str">$1</span>');
+
+    // Keywords
+    const keywords = ['import','from','export','default','function','const','let','var','return','if','else','interface','type','typeof','new','async','await','class','extends','implements','throw','try','catch','finally','switch','case','break','continue','for','while','do','of','in'];
+    keywords.forEach(kw => {
+      const re = new RegExp(`\\b(${kw})\\b`, 'g');
+      escaped = escaped.replace(re, '<span class="kw">$1</span>');
+    });
+
+    // Types / React
+    escaped = escaped.replace(/\b(React|string|number|boolean|void|null|undefined|true|false|Record|unknown)\b/g, '<span class="green" style="color:var(--green)">$1</span>');
+
+    // Functions
+    escaped = escaped.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g, '<span class="fn">$1</span>');
+
+    return escaped;
+  });
+}
+
+function renderSourceEditor() {
+  const editor = document.getElementById('sourceEditor');
+  const file = sourceFiles[activeFile];
+  if (!file) return;
+
+  const fileBps = breakpoints[activeFile] || [];
+  const highlightedLines = highlightCode(file.code, file.lang);
+
+  // File tabs
+  let tabsHtml = '';
+  Object.keys(sourceFiles).forEach(fname => {
+    const shortName = fname.split('/').pop();
+    const isActive = fname === activeFile ? 'active' : '';
+    tabsHtml += `<div class="editor-file-tab ${isActive}" data-file="${fname}"><span class="icon" style="color:${fname.endsWith('.json') ? '#f59e0b' : '#3b82f6'};font-size:10px">${fname.endsWith('.json') ? '{}' : 'TS'}</span> ${shortName}<span class="close">&times;</span></div>`;
+  });
+
+  let codeHtml = '';
+  highlightedLines.forEach((line, i) => {
+    const lineNum = i + 1;
+    const hasBp = fileBps.includes(lineNum);
+    const isHighlighted = hasBp ? 'highlighted' : '';
+    codeHtml += `<div class="code-line ${isHighlighted}"><div class="bp ${hasBp ? 'active' : ''}" data-line="${lineNum}"></div><span class="line-gutter">${lineNum}</span><span class="line-content">${line}</span></div>`;
+  });
+
+  editor.innerHTML = `
+    <div class="editor-file-tabs">${tabsHtml}</div>
+    <div class="code-view">${codeHtml}</div>
+  `;
+
+  // Tab clicks
+  editor.querySelectorAll('.editor-file-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      activeFile = tab.dataset.file;
+      document.getElementById('fileTree').querySelectorAll('.ft-item').forEach(i => {
+        i.classList.toggle('active', i.dataset.file === activeFile);
+      });
+      renderSourceEditor();
+    });
+  });
+
+  // Breakpoint toggle
+  editor.querySelectorAll('.bp').forEach(bp => {
+    bp.addEventListener('click', () => {
+      bp.classList.toggle('active');
+      bp.closest('.code-line').classList.toggle('highlighted');
+    });
+  });
+}
+
+buildFileTree();
+renderSourceEditor();
+</script>
+</body>
+</html>
