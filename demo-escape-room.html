@@ -1,0 +1,2347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE ESCAPE ROOM - Anshull Garg Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0D0D1A;
+  --bg-panel: #1A1A2E;
+  --bg-panel-light: #25253E;
+  --cyan: #00F5FF;
+  --magenta: #FF00FF;
+  --gold: #FFD700;
+  --red: #FF3333;
+  --green: #00FF88;
+  --text: #E0E0F0;
+  --text-dim: #6B6B8D;
+  --text-bright: #FFFFFF;
+  --glow-cyan: 0 0 20px rgba(0,245,255,0.5), 0 0 40px rgba(0,245,255,0.2);
+  --glow-magenta: 0 0 20px rgba(255,0,255,0.5), 0 0 40px rgba(255,0,255,0.2);
+  --glow-gold: 0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ===== BRICK WALL TEXTURE ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 48px,
+      #2a2a40 48px,
+      #2a2a40 50px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 98px,
+      #2a2a40 98px,
+      #2a2a40 100px
+    );
+  background-size: 100px 50px;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      #2a2a40 23px,
+      #2a2a40 25px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 48px,
+      #2a2a40 48px,
+      #2a2a40 50px
+    );
+  background-size: 50px 25px;
+  background-position: 50px 25px;
+}
+
+/* ===== SCANLINE OVERLAY ===== */
+.scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9998;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+}
+
+/* ===== VIGNETTE ===== */
+.vignette {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ===== TOP HUD BAR ===== */
+.hud-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  z-index: 9000;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(13,13,26,0.95) 0%, rgba(13,13,26,0.8) 80%, transparent 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,245,255,0.1);
+  font-family: 'Orbitron', monospace;
+}
+
+.hud-timer {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  letter-spacing: 3px;
+}
+
+.hud-timer.warning { color: var(--gold); text-shadow: var(--glow-gold); }
+.hud-timer.critical { color: var(--red); animation: timerPulse 0.5s infinite; }
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hud-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-progress-label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hud-progress-bar {
+  width: 200px;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hud-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 0 10px rgba(0,245,255,0.5);
+}
+
+.hud-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold);
+  text-shadow: var(--glow-gold);
+}
+
+/* ===== MAIN CONTAINER ===== */
+.main-container {
+  position: relative;
+  z-index: 2;
+  padding-top: 60px;
+}
+
+/* ===== ENTRY SCREEN ===== */
+.entry-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  position: relative;
+}
+
+.spotlight {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0,245,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  animation: spotlightPulse 4s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.entry-lock {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 40px;
+  position: relative;
+  cursor: pointer;
+}
+
+.entry-lock svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 30px rgba(0,245,255,0.4));
+}
+
+.entry-lock.shake {
+  animation: lockShake 0.6s ease-in-out;
+}
+
+@keyframes lockShake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  15% { transform: translateX(-12px) rotate(-5deg); }
+  30% { transform: translateX(10px) rotate(3deg); }
+  45% { transform: translateX(-8px) rotate(-3deg); }
+  60% { transform: translateX(6px) rotate(2deg); }
+  75% { transform: translateX(-4px) rotate(-1deg); }
+}
+
+.entry-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 8px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--cyan), var(--magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.3); }
+}
+
+.entry-subtitle {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--text-dim);
+  max-width: 600px;
+  line-height: 1.8;
+  margin-bottom: 40px;
+}
+
+.entry-subtitle strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.entry-status {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  padding: 12px 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: rgba(26,26,46,0.5);
+  backdrop-filter: blur(10px);
+}
+
+.entry-begin {
+  margin-top: 40px;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  padding: 16px 48px;
+  background: transparent;
+  border: 2px solid var(--cyan);
+  color: var(--cyan);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.entry-begin::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,245,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.entry-begin:hover::before { left: 100%; }
+.entry-begin:hover {
+  background: rgba(0,245,255,0.1);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+/* ===== PUZZLE SECTIONS ===== */
+.puzzle-section {
+  min-height: 100vh;
+  padding: 80px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s, transform 0.8s;
+}
+
+.puzzle-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.puzzle-section.locked .puzzle-content-reveal {
+  display: none;
+}
+
+/* ===== PUZZLE CARD ===== */
+.puzzle-card {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(26,26,46,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 40px;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.puzzle-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--gold));
+}
+
+.puzzle-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.puzzle-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text-bright);
+}
+
+.puzzle-title .accent-cyan { color: var(--cyan); text-shadow: var(--glow-cyan); }
+.puzzle-title .accent-magenta { color: var(--magenta); text-shadow: var(--glow-magenta); }
+.puzzle-title .accent-gold { color: var(--gold); text-shadow: var(--glow-gold); }
+
+.puzzle-clue {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  padding: 16px 20px;
+  background: rgba(0,0,0,0.3);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 8px 8px 0;
+}
+
+.puzzle-clue code {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ===== PUZZLE CONTROLS (shared) ===== */
+.puzzle-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.btn-submit {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--cyan), #00B8FF);
+  color: var(--bg);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.btn-submit:hover {
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+.btn-hint {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding: 12px 24px;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.btn-hint:hover {
+  background: rgba(255,215,0,0.1);
+  border-color: var(--gold);
+}
+
+.btn-skip {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-skip:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.hint-display {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255,215,0,0.05);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--gold);
+  display: none;
+}
+
+.hint-display.visible { display: block; animation: fadeIn 0.3s; }
+
+/* ===== CODE LOCK (Puzzle 1) ===== */
+.code-lock {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.digit-wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.digit-btn {
+  width: 60px;
+  height: 36px;
+  background: rgba(0,245,255,0.1);
+  border: 1px solid rgba(0,245,255,0.2);
+  color: var(--cyan);
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.digit-btn:first-child { border-radius: 8px 8px 0 0; }
+.digit-btn:last-child { border-radius: 0 0 8px 8px; }
+
+.digit-btn:hover {
+  background: rgba(0,245,255,0.2);
+  box-shadow: inset 0 0 10px rgba(0,245,255,0.2);
+}
+
+.digit-display {
+  width: 60px;
+  height: 72px;
+  background: rgba(0,0,0,0.5);
+  border: 2px solid rgba(0,245,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  user-select: none;
+}
+
+/* ===== CIPHER WHEEL (Puzzle 2) ===== */
+.cipher-area {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.encrypted-msg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem;
+  letter-spacing: 6px;
+  color: var(--magenta);
+  text-shadow: var(--glow-magenta);
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255,0,255,0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255,0,255,0.2);
+}
+
+.cipher-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.cipher-shift-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,0,255,0.1);
+  border: 2px solid rgba(255,0,255,0.3);
+  color: var(--magenta);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', monospace;
+}
+
+.cipher-shift-btn:hover {
+  background: rgba(255,0,255,0.2);
+  box-shadow: var(--glow-magenta);
+}
+
+.cipher-shift-display {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  color: var(--text-bright);
+  min-width: 120px;
+}
+
+.cipher-shift-display span {
+  color: var(--magenta);
+  text-shadow: var(--glow-magenta);
+}
+
+.decoded-msg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem;
+  letter-spacing: 4px;
+  color: var(--text);
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== SEQUENCE (Puzzle 3) ===== */
+.sequence-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 32px 0;
+}
+
+.seq-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: var(--glow-gold);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 8px;
+}
+
+.seq-comma {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem;
+  color: var(--text-dim);
+}
+
+.seq-input {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  width: 56px;
+  height: 56px;
+  text-align: center;
+  background: rgba(0,0,0,0.4);
+  border: 2px solid rgba(255,215,0,0.3);
+  border-radius: 8px;
+  color: var(--gold);
+  outline: none;
+  transition: all 0.3s;
+}
+
+.seq-input:focus {
+  border-color: var(--gold);
+  box-shadow: var(--glow-gold);
+}
+
+.seq-q {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  color: var(--text-dim);
+}
+
+/* ===== WIRING PUZZLE (Puzzle 4) ===== */
+.wiring-area {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 24px auto;
+  padding: 20px 0;
+}
+
+.wiring-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.wiring-columns {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  position: relative;
+}
+
+.wiring-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.wire-dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 3;
+  border: 2px solid;
+  user-select: none;
+}
+
+.wire-dot:hover {
+  transform: scale(1.15);
+}
+
+.wire-dot.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px currentColor;
+}
+
+.wire-dot.connected {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.wire-dot[data-color="red"] { color: #FF4444; border-color: #FF4444; background: rgba(255,68,68,0.15); }
+.wire-dot[data-color="blue"] { color: #4488FF; border-color: #4488FF; background: rgba(68,136,255,0.15); }
+.wire-dot[data-color="green"] { color: #44FF88; border-color: #44FF88; background: rgba(68,255,136,0.15); }
+.wire-dot[data-color="yellow"] { color: #FFDD44; border-color: #FFDD44; background: rgba(255,221,68,0.15); }
+
+.wiring-instructions {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+/* ===== RIDDLE (Puzzle 5) ===== */
+.riddle-text {
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.8;
+  color: var(--text);
+  text-align: center;
+  margin: 24px 0;
+  padding: 24px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255,215,0,0.15);
+  position: relative;
+}
+
+.riddle-text::before {
+  content: '"';
+  font-family: 'Orbitron', monospace;
+  font-size: 4rem;
+  position: absolute;
+  top: -10px; left: 16px;
+  color: rgba(255,215,0,0.2);
+  line-height: 1;
+}
+
+.riddle-input {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.riddle-input input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  padding: 12px 20px;
+  background: rgba(0,0,0,0.4);
+  border: 2px solid rgba(0,245,255,0.3);
+  border-radius: 8px;
+  color: var(--text-bright);
+  outline: none;
+  width: 200px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.riddle-input input:focus {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ===== UNLOCK ANIMATION ===== */
+.unlock-flash {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.unlock-flash.active {
+  animation: flashUnlock 0.8s ease-out;
+}
+
+@keyframes flashUnlock {
+  0% { opacity: 0; background: rgba(0,245,255,0.3); }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ===== ERROR SHAKE ===== */
+.error-shake {
+  animation: errorShake 0.5s;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.error-flash {
+  animation: errorFlash 0.3s;
+}
+
+@keyframes errorFlash {
+  0%, 100% { border-color: rgba(255,255,255,0.08); }
+  50% { border-color: var(--red); box-shadow: inset 0 0 40px rgba(255,0,0,0.1); }
+}
+
+/* ===== REVEALED CONTENT ===== */
+.puzzle-content-reveal {
+  margin-top: 48px;
+  width: 100%;
+  max-width: 800px;
+  animation: contentReveal 0.8s ease-out;
+}
+
+@keyframes contentReveal {
+  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.content-card {
+  background: rgba(26,26,46,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 40px;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+}
+
+.content-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--green);
+  background: rgba(0,255,136,0.1);
+  border: 1px solid rgba(0,255,136,0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.content-badge.skipped {
+  color: var(--gold);
+  background: rgba(255,215,0,0.1);
+  border-color: rgba(255,215,0,0.2);
+}
+
+.content-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 20px;
+}
+
+.content-body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.content-body p { margin-bottom: 16px; }
+
+.content-body strong {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+/* ===== SKILLS GRID ===== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.skill-category {
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.skill-category h4 {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--magenta);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.skill-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin: 3px;
+  border: 1px solid rgba(255,255,255,0.08);
+  animation: decryptTag 0.5s ease-out both;
+}
+
+@keyframes decryptTag {
+  0% { opacity: 0; transform: translateY(10px); color: var(--magenta); }
+  50% { color: var(--magenta); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== PROJECTS GRID ===== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.project-card {
+  padding: 24px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.3s;
+}
+
+.project-card:hover {
+  border-color: rgba(255,215,0,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.project-card h4 {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.project-card p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.project-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.project-tags span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(0,245,255,0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(0,245,255,0.15);
+}
+
+/* ===== TIMELINE ===== */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin-top: 24px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--cyan), var(--magenta));
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px rgba(0,245,255,0.5);
+  border: 2px solid var(--bg);
+}
+
+.timeline-item h4 {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+
+.timeline-item .role {
+  font-size: 0.85rem;
+  color: var(--cyan);
+  margin-bottom: 8px;
+}
+
+.timeline-item .period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.timeline-item p {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ===== CONTACT ===== */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.contact-link:hover {
+  border-color: rgba(0,245,255,0.3);
+  background: rgba(0,245,255,0.05);
+  transform: translateY(-2px);
+}
+
+.contact-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.contact-link .label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+.contact-link .value {
+  font-size: 0.85rem;
+  color: var(--text-bright);
+  margin-top: 2px;
+}
+
+/* ===== ESCAPE COMPLETE ===== */
+.escape-complete {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 20px;
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+
+.escape-complete.visible { opacity: 1; }
+
+.escape-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--cyan), var(--magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+  letter-spacing: 4px;
+}
+
+.escape-time {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(0,255,136,0.5);
+  margin-bottom: 24px;
+}
+
+.escape-message {
+  font-size: 1.1rem;
+  color: var(--text);
+  max-width: 500px;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+/* ===== CONFETTI ===== */
+.confetti-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -20px;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===== SOLVED BADGE ===== */
+.solved-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,255,136,0.03);
+  pointer-events: none;
+  border-radius: 16px;
+  display: none;
+}
+
+.puzzle-card.solved .solved-overlay { display: block; }
+.puzzle-card.solved { border-color: rgba(0,255,136,0.2); }
+
+.puzzle-solved-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--green);
+  background: rgba(0,255,136,0.1);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,255,136,0.2);
+  display: none;
+}
+
+.puzzle-card.solved .puzzle-solved-badge { display: block; }
+.puzzle-card.skipped .puzzle-solved-badge { display: block; color: var(--gold); background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.2); }
+
+/* ===== DOOR ANIMATION ===== */
+.door-container {
+  perspective: 800px;
+  width: 200px;
+  height: 280px;
+  margin: 24px auto;
+  position: relative;
+}
+
+.door {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #2a2a3e, #1a1a2e);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  transform-origin: left center;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.door.open {
+  transform: rotateY(-105deg);
+}
+
+.door-handle {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: var(--glow-gold);
+}
+
+.door-light {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(0,245,255,0.1), rgba(255,0,255,0.1));
+  border-radius: 8px 8px 0 0;
+  opacity: 0;
+  transition: opacity 1s 0.3s;
+}
+
+.door.open + .door-light,
+.door.open ~ .door-light { opacity: 1; }
+
+/* ===== GENERAL ANIMATIONS ===== */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hud-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+  .hud-progress-bar { width: 120px; }
+  .hud-timer { font-size: 1rem; }
+  .puzzle-card { padding: 24px; }
+  .code-lock { gap: 8px; }
+  .digit-display { width: 50px; height: 60px; font-size: 1.8rem; }
+  .digit-btn { width: 50px; height: 32px; }
+  .encrypted-msg { font-size: 1.1rem; letter-spacing: 3px; }
+  .seq-num, .seq-input { width: 44px; height: 44px; font-size: 1.2rem; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .wiring-area { max-width: 320px; }
+  .wire-dot { width: 40px; height: 40px; font-size: 0.6rem; }
+  .content-card { padding: 24px; }
+  .door-container { width: 160px; height: 220px; }
+}
+
+@media (max-width: 480px) {
+  .hud-progress-bar { width: 80px; }
+  .puzzle-card { padding: 20px; }
+  .code-lock { gap: 6px; }
+  .digit-display { width: 44px; height: 52px; font-size: 1.5rem; }
+  .digit-btn { width: 44px; height: 28px; font-size: 0.8rem; }
+  .sequence-display { gap: 6px; }
+  .seq-num, .seq-input { width: 38px; height: 38px; font-size: 1rem; }
+}
+
+/* ===== SCROLL INDICATOR ===== */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  animation: scrollBounce 2s infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--text-dim);
+  border-bottom: 2px solid var(--text-dim);
+  transform: rotate(45deg);
+}
+
+/* ===== LOCKED SECTION INDICATOR ===== */
+.locked-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+
+.locked-indicator svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== NEON BORDER ANIMATION ===== */
+.neon-border {
+  position: relative;
+}
+
+.neon-border::after {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  right: -1px; bottom: -1px;
+  border-radius: 16px;
+  background: linear-gradient(45deg, var(--cyan), var(--magenta), var(--gold), var(--cyan));
+  background-size: 300% 300%;
+  z-index: -1;
+  animation: neonBorderMove 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.neon-border:hover::after { opacity: 0.5; }
+
+@keyframes neonBorderMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Disable puzzle interaction after solve */
+.puzzle-card.solved .puzzle-interaction,
+.puzzle-card.skipped .puzzle-interaction {
+  pointer-events: none;
+  opacity: 0.4;
+}
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="unlock-flash" id="unlockFlash"></div>
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- HUD BAR -->
+<div class="hud-bar">
+  <div class="hud-timer" id="hudTimer">10:00</div>
+  <div class="hud-progress">
+    <span class="hud-progress-label">PROGRESS</span>
+    <div class="hud-progress-bar">
+      <div class="hud-progress-fill" id="hudProgressFill" style="width: 0%"></div>
+    </div>
+    <span class="hud-count" id="hudCount">0/5</span>
+  </div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="main-container" id="mainContainer">
+
+  <!-- ===== ENTRY SCREEN ===== -->
+  <section class="entry-screen" id="entryScreen">
+    <div class="spotlight"></div>
+    <div class="entry-lock" id="entryLock" title="Solve puzzles to unlock">
+      <svg viewBox="0 0 100 120" fill="none">
+        <rect x="10" y="50" width="80" height="60" rx="8" fill="#1A1A2E" stroke="#00F5FF" stroke-width="2"/>
+        <path d="M30 50 V35 C30 18 70 18 70 35 V50" stroke="#00F5FF" stroke-width="3" fill="none" stroke-linecap="round" id="lockShackle"/>
+        <circle cx="50" cy="75" r="8" fill="#00F5FF" opacity="0.8"/>
+        <rect x="48" y="78" width="4" height="14" rx="2" fill="#00F5FF" opacity="0.6"/>
+      </svg>
+    </div>
+    <h1 class="entry-title">YOU ARE LOCKED IN</h1>
+    <p class="entry-subtitle">
+      Welcome to the Escape Room. Solve coding puzzles and riddles to unlock
+      the portfolio of <strong>Anshull Garg</strong>, Software Developer at Walmart.
+      <br><br>
+      The timer is ticking. Can you escape?
+    </p>
+    <div class="entry-status" id="entryStatus">SECTIONS UNLOCKED: 0 / 5</div>
+    <button class="entry-begin" id="beginBtn" onclick="beginEscape()">BEGIN ESCAPE</button>
+    <div class="scroll-indicator" id="scrollHint" style="display:none;">
+      <span>SCROLL DOWN</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ===== PUZZLE 1: THE CODE LOCK ===== -->
+  <section class="puzzle-section locked" id="puzzle1Section">
+    <div class="puzzle-card neon-border" id="puzzle1Card">
+      <div class="solved-overlay"></div>
+      <div class="puzzle-solved-badge" id="puzzle1Badge">UNLOCKED</div>
+      <div class="puzzle-number">PUZZLE 01 / 05</div>
+      <h2 class="puzzle-title">THE <span class="accent-cyan">CODE LOCK</span></h2>
+      <div class="puzzle-clue">
+        Crack the combination to unlock the <strong>ABOUT</strong> section.<br><br>
+        <strong>CLUE:</strong> What year was <code>React</code> first released to the public? <em>(Hint: It's in the 2010s)</em>
+      </div>
+
+      <div class="puzzle-interaction">
+        <div class="code-lock" id="codeLock">
+          <div class="digit-wheel">
+            <button class="digit-btn" onclick="adjustDigit(0, 1)">&#9650;</button>
+            <div class="digit-display" id="digit0">0</div>
+            <button class="digit-btn" onclick="adjustDigit(0, -1)">&#9660;</button>
+          </div>
+          <div class="digit-wheel">
+            <button class="digit-btn" onclick="adjustDigit(1, 1)">&#9650;</button>
+            <div class="digit-display" id="digit1">0</div>
+            <button class="digit-btn" onclick="adjustDigit(1, -1)">&#9660;</button>
+          </div>
+          <div class="digit-wheel">
+            <button class="digit-btn" onclick="adjustDigit(2, 1)">&#9650;</button>
+            <div class="digit-display" id="digit2">0</div>
+            <button class="digit-btn" onclick="adjustDigit(2, -1)">&#9660;</button>
+          </div>
+          <div class="digit-wheel">
+            <button class="digit-btn" onclick="adjustDigit(3, 1)">&#9650;</button>
+            <div class="digit-display" id="digit3">0</div>
+            <button class="digit-btn" onclick="adjustDigit(3, -1)">&#9660;</button>
+          </div>
+        </div>
+
+        <div class="puzzle-actions">
+          <button class="btn-submit" onclick="checkPuzzle1()">UNLOCK</button>
+          <button class="btn-hint" onclick="showHint(1)">HINT (<span id="hint1Count">3</span>)</button>
+          <button class="btn-skip" onclick="skipPuzzle(1)">Skip Puzzle</button>
+        </div>
+        <div class="hint-display" id="hint1Display"></div>
+      </div>
+    </div>
+
+    <!-- ABOUT content (revealed on solve) -->
+    <div class="puzzle-content-reveal" id="puzzle1Content">
+      <div class="content-card">
+        <span class="content-badge" id="puzzle1ContentBadge">&#9632; SECTION DECRYPTED</span>
+        <h3 class="content-title">ABOUT</h3>
+        <div class="content-body">
+          <p>
+            I'm <strong>Anshull Garg</strong>, a Software Engineer at <strong>Walmart Global Tech</strong>,
+            where I build the systems that power digital commerce for millions of customers every day.
+          </p>
+          <p>
+            My day-to-day involves architecting scalable APIs, optimizing frontend performance, and
+            collaborating with cross-functional teams to ship features that matter at Fortune 1 scale.
+            I think in systems, ship in sprints, and believe the best code is the code someone else
+            can read, understand, and extend.
+          </p>
+          <p>
+            I care about <strong>clean architecture</strong>, <strong>deep user empathy</strong>,
+            and <strong>relentless iteration</strong>. When I'm not writing code, I'm usually
+            exploring new technologies, contributing to open source, or trying to automate something
+            that probably doesn't need automating.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PUZZLE 2: THE CIPHER ===== -->
+  <section class="puzzle-section locked" id="puzzle2Section">
+    <div class="puzzle-card neon-border" id="puzzle2Card">
+      <div class="solved-overlay"></div>
+      <div class="puzzle-solved-badge" id="puzzle2Badge">UNLOCKED</div>
+      <div class="puzzle-number">PUZZLE 02 / 05</div>
+      <h2 class="puzzle-title">THE <span class="accent-magenta">CIPHER</span></h2>
+      <div class="puzzle-clue">
+        An encrypted message has been intercepted. Decode it using a <strong>Caesar cipher</strong> to unlock the <strong>SKILLS</strong> section.<br><br>
+        <strong>ENCRYPTED:</strong> Use the shift wheel to rotate the alphabet until the message makes sense.
+      </div>
+
+      <div class="puzzle-interaction">
+        <div class="cipher-area">
+          <div class="encrypted-msg" id="encryptedMsg">FXVYY FGNPX</div>
+          <div class="cipher-control">
+            <button class="cipher-shift-btn" onclick="adjustShift(-1)">&#8592;</button>
+            <div class="cipher-shift-display">SHIFT: <span id="shiftValue">0</span></div>
+            <button class="cipher-shift-btn" onclick="adjustShift(1)">&#8594;</button>
+          </div>
+          <div class="decoded-msg" id="decodedMsg">FXVYY FGNPX</div>
+        </div>
+
+        <div class="puzzle-actions">
+          <button class="btn-submit" onclick="checkPuzzle2()">DECODE</button>
+          <button class="btn-hint" onclick="showHint(2)">HINT (<span id="hint2Count">3</span>)</button>
+          <button class="btn-skip" onclick="skipPuzzle(2)">Skip Puzzle</button>
+        </div>
+        <div class="hint-display" id="hint2Display"></div>
+      </div>
+    </div>
+
+    <!-- SKILLS content -->
+    <div class="puzzle-content-reveal" id="puzzle2Content">
+      <div class="content-card">
+        <span class="content-badge" id="puzzle2ContentBadge">&#9632; DATA DECRYPTED</span>
+        <h3 class="content-title">SKILL STACK</h3>
+        <div class="content-body">
+          <div class="skills-grid" id="skillsGrid">
+            <div class="skill-category">
+              <h4>Frontend</h4>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Tailwind CSS</span>
+              <span class="skill-tag">Framer Motion</span>
+              <span class="skill-tag">Redux</span>
+            </div>
+            <div class="skill-category">
+              <h4>Backend</h4>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Express</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">GraphQL</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">Java</span>
+            </div>
+            <div class="skill-category">
+              <h4>Data & Cloud</h4>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">AWS</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Kubernetes</span>
+            </div>
+            <div class="skill-category">
+              <h4>Practices</h4>
+              <span class="skill-tag">CI/CD</span>
+              <span class="skill-tag">TDD</span>
+              <span class="skill-tag">Agile/Scrum</span>
+              <span class="skill-tag">System Design</span>
+              <span class="skill-tag">Code Review</span>
+              <span class="skill-tag">Performance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PUZZLE 3: THE PATTERN ===== -->
+  <section class="puzzle-section locked" id="puzzle3Section">
+    <div class="puzzle-card neon-border" id="puzzle3Card">
+      <div class="solved-overlay"></div>
+      <div class="puzzle-solved-badge" id="puzzle3Badge">UNLOCKED</div>
+      <div class="puzzle-number">PUZZLE 03 / 05</div>
+      <h2 class="puzzle-title">THE <span class="accent-gold">PATTERN</span></h2>
+      <div class="puzzle-clue">
+        Complete the sequence to decrypt the <strong>PROJECTS</strong> files.<br><br>
+        <strong>SEQUENCE:</strong> Identify the pattern and fill in the next two numbers.
+      </div>
+
+      <div class="puzzle-interaction">
+        <div class="sequence-display">
+          <div class="seq-num">1</div>
+          <span class="seq-comma">,</span>
+          <div class="seq-num">1</div>
+          <span class="seq-comma">,</span>
+          <div class="seq-num">2</div>
+          <span class="seq-comma">,</span>
+          <div class="seq-num">3</div>
+          <span class="seq-comma">,</span>
+          <div class="seq-num">5</div>
+          <span class="seq-comma">,</span>
+          <div class="seq-num">8</div>
+          <span class="seq-comma">,</span>
+          <input class="seq-input" id="seqInput1" type="text" maxlength="2" placeholder="?" />
+          <span class="seq-comma">,</span>
+          <input class="seq-input" id="seqInput2" type="text" maxlength="2" placeholder="?" />
+        </div>
+
+        <div class="puzzle-actions">
+          <button class="btn-submit" onclick="checkPuzzle3()">DECRYPT</button>
+          <button class="btn-hint" onclick="showHint(3)">HINT (<span id="hint3Count">3</span>)</button>
+          <button class="btn-skip" onclick="skipPuzzle(3)">Skip Puzzle</button>
+        </div>
+        <div class="hint-display" id="hint3Display"></div>
+      </div>
+    </div>
+
+    <!-- PROJECTS content -->
+    <div class="puzzle-content-reveal" id="puzzle3Content">
+      <div class="content-card">
+        <span class="content-badge" id="puzzle3ContentBadge">&#9632; FILES DECRYPTED</span>
+        <h3 class="content-title">PROJECTS</h3>
+        <div class="content-body">
+          <div class="projects-grid">
+            <div class="project-card">
+              <h4>SCALECART</h4>
+              <p>High-performance e-commerce platform handling 50K+ concurrent users with optimistic UI updates, real-time inventory sync, and sub-200ms TTI.</p>
+              <div class="project-tags">
+                <span>React</span><span>Node.js</span><span>Redis</span><span>PostgreSQL</span>
+              </div>
+            </div>
+            <div class="project-card">
+              <h4>DEVFLOW</h4>
+              <p>Internal developer tooling platform used by 500+ engineers. Automated CI/CD pipelines, reducing deployment time from 2 hours to 8 minutes.</p>
+              <div class="project-tags">
+                <span>TypeScript</span><span>Docker</span><span>GitHub Actions</span><span>AWS</span>
+              </div>
+            </div>
+            <div class="project-card">
+              <h4>INSIGHTDASH</h4>
+              <p>Real-time analytics dashboard processing 10M+ events daily with intelligent caching and data aggregation pipelines.</p>
+              <div class="project-tags">
+                <span>Next.js</span><span>GraphQL</span><span>D3.js</span><span>Kafka</span>
+              </div>
+            </div>
+            <div class="project-card">
+              <h4>ACCESSKIT</h4>
+              <p>Open-source accessibility testing library for React components. Automated WCAG 2.1 compliance checks integrated into CI pipelines.</p>
+              <div class="project-tags">
+                <span>React</span><span>Jest</span><span>Playwright</span><span>NPM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PUZZLE 4: THE WIRING ===== -->
+  <section class="puzzle-section locked" id="puzzle4Section">
+    <div class="puzzle-card neon-border" id="puzzle4Card">
+      <div class="solved-overlay"></div>
+      <div class="puzzle-solved-badge" id="puzzle4Badge">UNLOCKED</div>
+      <div class="puzzle-number">PUZZLE 04 / 05</div>
+      <h2 class="puzzle-title">THE <span class="accent-cyan">WIRING</span></h2>
+      <div class="puzzle-clue">
+        Connect matching colored nodes to defuse the lock and reveal the <strong>EXPERIENCE</strong> timeline.<br><br>
+        <strong>INSTRUCTIONS:</strong> Click a node on the left, then click its matching color on the right. Connect all 4 pairs.
+      </div>
+
+      <div class="puzzle-interaction">
+        <p class="wiring-instructions">Connections made: <span id="wireCount">0</span> / 4</p>
+        <div class="wiring-area" id="wiringArea">
+          <svg class="wiring-svg" id="wiringSvg"></svg>
+          <div class="wiring-columns">
+            <div class="wiring-col" id="wiringLeft">
+              <div class="wire-dot" data-side="left" data-color="red" onclick="handleWireClick(this)">RED</div>
+              <div class="wire-dot" data-side="left" data-color="blue" onclick="handleWireClick(this)">BLU</div>
+              <div class="wire-dot" data-side="left" data-color="green" onclick="handleWireClick(this)">GRN</div>
+              <div class="wire-dot" data-side="left" data-color="yellow" onclick="handleWireClick(this)">YLW</div>
+            </div>
+            <div class="wiring-col" id="wiringRight">
+              <div class="wire-dot" data-side="right" data-color="green" onclick="handleWireClick(this)">GRN</div>
+              <div class="wire-dot" data-side="right" data-color="yellow" onclick="handleWireClick(this)">YLW</div>
+              <div class="wire-dot" data-side="right" data-color="red" onclick="handleWireClick(this)">RED</div>
+              <div class="wire-dot" data-side="right" data-color="blue" onclick="handleWireClick(this)">BLU</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="puzzle-actions">
+          <button class="btn-hint" onclick="showHint(4)">HINT (<span id="hint4Count">3</span>)</button>
+          <button class="btn-skip" onclick="skipPuzzle(4)">Skip Puzzle</button>
+        </div>
+        <div class="hint-display" id="hint4Display"></div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE content -->
+    <div class="puzzle-content-reveal" id="puzzle4Content">
+      <div class="content-card">
+        <span class="content-badge" id="puzzle4ContentBadge">&#9632; TIMELINE UNLOCKED</span>
+        <h3 class="content-title">EXPERIENCE</h3>
+        <div class="content-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <h4>Walmart Global Tech</h4>
+              <div class="role">Software Engineer</div>
+              <div class="period">2023 - Present</div>
+              <p>Architecting scalable full-stack applications serving millions of customers across Walmart's digital retail platform. Reduced API latency by 35% across 12 downstream services. Built internal tooling used by 500+ engineers. Led cross-functional initiatives spanning 4 engineering teams.</p>
+            </div>
+            <div class="timeline-item">
+              <h4>Open Source Contributions</h4>
+              <div class="role">Contributor & Maintainer</div>
+              <div class="period">2022 - Present</div>
+              <p>Active contributor to React ecosystem tools. Maintained AccessKit -- an accessibility testing library adopted by 200+ projects. Published technical articles reaching 50K+ developers.</p>
+            </div>
+            <div class="timeline-item">
+              <h4>University Projects & Internships</h4>
+              <div class="role">Full-Stack Developer</div>
+              <div class="period">2020 - 2023</div>
+              <p>Built production applications during internships and academic projects. Developed foundational expertise in system design, algorithms, and software engineering principles.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PUZZLE 5: THE FINAL DOOR ===== -->
+  <section class="puzzle-section locked" id="puzzle5Section">
+    <div class="puzzle-card neon-border" id="puzzle5Card">
+      <div class="solved-overlay"></div>
+      <div class="puzzle-solved-badge" id="puzzle5Badge">UNLOCKED</div>
+      <div class="puzzle-number">PUZZLE 05 / 05 -- FINAL</div>
+      <h2 class="puzzle-title">THE <span class="accent-gold">FINAL DOOR</span></h2>
+      <div class="puzzle-clue">
+        One last riddle stands between you and the <strong>CONTACT</strong> information. Solve it to escape.<br><br>
+        <strong>THE RIDDLE:</strong>
+      </div>
+
+      <div class="puzzle-interaction">
+        <div class="riddle-text">
+          I am not alive, but I grow;<br>
+          I don't have lungs, but I need air;<br>
+          I don't have a mouth, but water kills me.<br>
+          <strong>What am I?</strong>
+        </div>
+
+        <div class="door-container" id="doorContainer">
+          <div class="door" id="finalDoor">
+            <div class="door-handle"></div>
+          </div>
+          <div class="door-light" id="doorLight"></div>
+        </div>
+
+        <div class="riddle-input">
+          <input type="text" id="riddleInput" placeholder="Your answer..." onkeydown="if(event.key==='Enter')checkPuzzle5()" />
+          <button class="btn-submit" onclick="checkPuzzle5()">OPEN DOOR</button>
+        </div>
+
+        <div class="puzzle-actions" style="justify-content:center;">
+          <button class="btn-hint" onclick="showHint(5)">HINT (<span id="hint5Count">3</span>)</button>
+          <button class="btn-skip" onclick="skipPuzzle(5)">Skip Puzzle</button>
+        </div>
+        <div class="hint-display" id="hint5Display"></div>
+      </div>
+    </div>
+
+    <!-- CONTACT content -->
+    <div class="puzzle-content-reveal" id="puzzle5Content">
+      <div class="content-card">
+        <span class="content-badge" id="puzzle5ContentBadge">&#9632; DOOR OPENED</span>
+        <h3 class="content-title">CONTACT</h3>
+        <div class="content-body">
+          <p>You escaped. You proved you're <strong>curious</strong>, <strong>persistent</strong>, and <strong>smart</strong>. Those are exactly the qualities I value in collaborators. Let's talk.</p>
+          <div class="contact-grid">
+            <a class="contact-link" href="mailto:anshullgarg@gmail.com">
+              <div class="contact-icon" style="background:rgba(0,245,255,0.1); color:var(--cyan);">&#9993;</div>
+              <div>
+                <div class="label">EMAIL</div>
+                <div class="value">anshullgarg@gmail.com</div>
+              </div>
+            </a>
+            <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank">
+              <div class="contact-icon" style="background:rgba(0,119,181,0.15); color:#0077B5;">in</div>
+              <div>
+                <div class="label">LINKEDIN</div>
+                <div class="value">linkedin.com/in/anshullgarg</div>
+              </div>
+            </a>
+            <a class="contact-link" href="https://github.com/anshullgarg" target="_blank">
+              <div class="contact-icon" style="background:rgba(255,255,255,0.08); color:#E0E0F0;">&#60;/&#62;</div>
+              <div>
+                <div class="label">GITHUB</div>
+                <div class="value">github.com/anshullgarg</div>
+              </div>
+            </a>
+            <a class="contact-link" href="#" onclick="return false;">
+              <div class="contact-icon" style="background:rgba(255,215,0,0.1); color:var(--gold);">&#9742;</div>
+              <div>
+                <div class="label">AVAILABILITY</div>
+                <div class="value">Open to opportunities</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ESCAPE COMPLETE ===== -->
+  <section class="escape-complete" id="escapeComplete">
+    <h2 class="escape-title">YOU ESCAPED</h2>
+    <div class="escape-time" id="escapeTime">TIME: --:--</div>
+    <p class="escape-message">
+      You solved all 5 puzzles and unlocked the complete portfolio of Anshull Garg.
+      You've proven you're curious, persistent, and smart. Let's build something together.
+    </p>
+    <button class="entry-begin" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+      BACK TO TOP
+    </button>
+  </section>
+
+</div>
+
+<script>
+// ===== STATE =====
+const state = {
+  started: false,
+  timerSeconds: 600,
+  timerInterval: null,
+  solved: [false, false, false, false, false],
+  skipped: [false, false, false, false, false],
+  digits: [0, 0, 0, 0],
+  cipherShift: 0,
+  hintCounts: [3, 3, 3, 3, 3],
+  wireSelected: null,
+  wireConnections: 0,
+  wireConnected: { red: false, blue: false, green: false, yellow: false },
+  escapeTimeStr: ''
+};
+
+// ===== HINTS =====
+const hints = {
+  1: [
+    "Think about when Facebook open-sourced their JavaScript library...",
+    "It was released in the year between 2012 and 2014.",
+    "The answer is 2013. React was released by Facebook in May 2013."
+  ],
+  2: [
+    "A Caesar cipher shifts each letter by a fixed number. Try different shift values...",
+    "The original message was shifted forward by 13 positions (ROT13). Try shifting 13 to decode it.",
+    "Shift the alphabet by 13. The decoded message reads SKILL STACK."
+  ],
+  3: [
+    "Look at how each number relates to the two numbers before it...",
+    "This is a famous mathematical sequence. Each number is the sum of the two preceding ones.",
+    "It's the Fibonacci sequence: 8 + 5 = 13, and 8 + 13 = 21."
+  ],
+  4: [
+    "Match colors: click a node on the left, then click the same color on the right.",
+    "The colors on the right side are shuffled. RED on the left connects to RED on the right, regardless of position.",
+    "Just click each colored dot on the left, then find and click the same color on the right side."
+  ],
+  5: [
+    "Think about something that can grow in size but is not a living thing...",
+    "It needs oxygen to exist and water extinguishes it...",
+    "The answer is FIRE. Fire grows, needs air, and water kills it."
+  ]
+};
+
+// ===== TIMER =====
+function startTimer() {
+  state.timerInterval = setInterval(() => {
+    if (state.timerSeconds > 0) {
+      state.timerSeconds--;
+    }
+    const mins = Math.floor(state.timerSeconds / 60);
+    const secs = state.timerSeconds % 60;
+    const timerEl = document.getElementById('hudTimer');
+    timerEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+    if (state.timerSeconds <= 60) {
+      timerEl.className = 'hud-timer critical';
+    } else if (state.timerSeconds <= 180) {
+      timerEl.className = 'hud-timer warning';
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(state.timerInterval);
+  const elapsed = 600 - state.timerSeconds;
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  state.escapeTimeStr = `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+// ===== BEGIN =====
+function beginEscape() {
+  state.started = true;
+  startTimer();
+  document.getElementById('scrollHint').style.display = 'flex';
+  document.getElementById('beginBtn').style.display = 'none';
+
+  // Show all puzzle sections
+  const sections = document.querySelectorAll('.puzzle-section');
+  sections.forEach((s, i) => {
+    setTimeout(() => {
+      s.classList.add('visible');
+    }, (i + 1) * 300);
+  });
+}
+
+// ===== UPDATE PROGRESS =====
+function updateProgress() {
+  const solvedCount = state.solved.filter(Boolean).length;
+  document.getElementById('hudCount').textContent = `${solvedCount}/5`;
+  document.getElementById('hudProgressFill').style.width = `${(solvedCount / 5) * 100}%`;
+  document.getElementById('entryStatus').textContent = `SECTIONS UNLOCKED: ${solvedCount} / 5`;
+
+  if (solvedCount === 5) {
+    stopTimer();
+    setTimeout(() => {
+      const esc = document.getElementById('escapeComplete');
+      esc.classList.add('visible');
+      document.getElementById('escapeTime').textContent = `ESCAPED IN ${state.escapeTimeStr}`;
+      launchConfetti();
+      esc.scrollIntoView({ behavior: 'smooth' });
+    }, 800);
+  }
+}
+
+// ===== FLASH EFFECTS =====
+function flashUnlock() {
+  const flash = document.getElementById('unlockFlash');
+  flash.classList.remove('active');
+  void flash.offsetWidth;
+  flash.classList.add('active');
+}
+
+function flashError(cardId) {
+  const card = document.getElementById(cardId);
+  card.classList.add('error-flash');
+  setTimeout(() => card.classList.remove('error-flash'), 500);
+}
+
+function shakeElement(elId) {
+  const el = document.getElementById(elId);
+  el.classList.add('error-shake');
+  setTimeout(() => el.classList.remove('error-shake'), 500);
+}
+
+// ===== SOLVE / SKIP =====
+function solvePuzzle(num, wasSkipped) {
+  if (state.solved[num - 1]) return;
+  state.solved[num - 1] = true;
+  state.skipped[num - 1] = wasSkipped;
+
+  const card = document.getElementById(`puzzle${num}Card`);
+  const content = document.getElementById(`puzzle${num}Content`);
+  const badge = document.getElementById(`puzzle${num}Badge`);
+  const contentBadge = document.getElementById(`puzzle${num}ContentBadge`);
+
+  if (wasSkipped) {
+    card.classList.add('skipped');
+    badge.textContent = 'SKIPPED';
+    contentBadge.classList.add('skipped');
+    contentBadge.innerHTML = '&#9888; SKIPPED -- SECTION REVEALED';
+  } else {
+    card.classList.add('solved');
+    flashUnlock();
+  }
+
+  const section = document.getElementById(`puzzle${num}Section`);
+  section.classList.remove('locked');
+
+  // Scroll to revealed content
+  setTimeout(() => {
+    content.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+
+  updateProgress();
+}
+
+function skipPuzzle(num) {
+  if (state.solved[num - 1]) return;
+  solvePuzzle(num, true);
+}
+
+// ===== HINTS =====
+function showHint(num) {
+  const idx = num - 1;
+  const remaining = state.hintCounts[idx];
+  if (remaining <= 0) return;
+
+  state.hintCounts[idx]--;
+  const hintIdx = 2 - state.hintCounts[idx]; // 0, 1, 2
+  const display = document.getElementById(`hint${num}Display`);
+  const countEl = document.getElementById(`hint${num}Count`);
+
+  display.textContent = hints[num][hintIdx];
+  display.classList.add('visible');
+  countEl.textContent = state.hintCounts[idx];
+}
+
+// ===== PUZZLE 1: CODE LOCK =====
+function adjustDigit(index, direction) {
+  state.digits[index] = (state.digits[index] + direction + 10) % 10;
+  document.getElementById(`digit${index}`).textContent = state.digits[index];
+}
+
+function checkPuzzle1() {
+  const code = state.digits.join('');
+  if (code === '2013') {
+    solvePuzzle(1, false);
+  } else {
+    shakeElement('codeLock');
+    flashError('puzzle1Card');
+  }
+}
+
+// ===== PUZZLE 2: CIPHER =====
+function caesarShift(text, shift) {
+  return text.split('').map(ch => {
+    if (ch >= 'A' && ch <= 'Z') {
+      return String.fromCharCode(((ch.charCodeAt(0) - 65 + shift + 26) % 26) + 65);
+    }
+    if (ch >= 'a' && ch <= 'z') {
+      return String.fromCharCode(((ch.charCodeAt(0) - 97 + shift + 26) % 26) + 97);
+    }
+    return ch;
+  }).join('');
+}
+
+function adjustShift(dir) {
+  state.cipherShift = ((state.cipherShift + dir) % 26 + 26) % 26;
+  document.getElementById('shiftValue').textContent = state.cipherShift;
+  const original = 'FXVYY FGNPX';
+  const decoded = caesarShift(original, state.cipherShift);
+  document.getElementById('decodedMsg').textContent = decoded;
+}
+
+function checkPuzzle2() {
+  const decoded = document.getElementById('decodedMsg').textContent.trim().toUpperCase();
+  if (decoded === 'SKILL STACK') {
+    solvePuzzle(2, false);
+    animateSkillTags();
+  } else {
+    shakeElement('encryptedMsg');
+    flashError('puzzle2Card');
+  }
+}
+
+function animateSkillTags() {
+  const tags = document.querySelectorAll('.skill-tag');
+  tags.forEach((tag, i) => {
+    tag.style.animationDelay = `${i * 0.05}s`;
+  });
+}
+
+// ===== PUZZLE 3: PATTERN =====
+function checkPuzzle3() {
+  const v1 = document.getElementById('seqInput1').value.trim();
+  const v2 = document.getElementById('seqInput2').value.trim();
+  if (v1 === '13' && v2 === '21') {
+    solvePuzzle(3, false);
+  } else {
+    shakeElement('seqInput1');
+    shakeElement('seqInput2');
+    flashError('puzzle3Card');
+  }
+}
+
+// ===== PUZZLE 4: WIRING =====
+function handleWireClick(dot) {
+  if (dot.classList.contains('connected')) return;
+  if (state.solved[3]) return;
+
+  const side = dot.dataset.side;
+  const color = dot.dataset.color;
+
+  if (!state.wireSelected) {
+    // First selection
+    state.wireSelected = { side, color, el: dot };
+    dot.classList.add('active');
+  } else {
+    // Second selection
+    if (state.wireSelected.side === side) {
+      // Same side -- switch selection
+      state.wireSelected.el.classList.remove('active');
+      state.wireSelected = { side, color, el: dot };
+      dot.classList.add('active');
+      return;
+    }
+
+    if (state.wireSelected.color === color) {
+      // Correct match
+      state.wireSelected.el.classList.remove('active');
+      state.wireSelected.el.classList.add('connected');
+      dot.classList.add('connected');
+      drawWireLine(state.wireSelected.el, dot, color);
+      state.wireConnected[color] = true;
+      state.wireConnections++;
+      document.getElementById('wireCount').textContent = state.wireConnections;
+
+      if (state.wireConnections === 4) {
+        setTimeout(() => solvePuzzle(4, false), 500);
+      }
+    } else {
+      // Wrong match -- flash
+      state.wireSelected.el.classList.remove('active');
+      dot.classList.add('error-shake');
+      setTimeout(() => dot.classList.remove('error-shake'), 500);
+      flashError('puzzle4Card');
+    }
+    state.wireSelected = null;
+  }
+}
+
+function drawWireLine(el1, el2, color) {
+  const svg = document.getElementById('wiringSvg');
+  const area = document.getElementById('wiringArea');
+  const areaRect = area.getBoundingClientRect();
+
+  const r1 = el1.getBoundingClientRect();
+  const r2 = el2.getBoundingClientRect();
+
+  const x1 = r1.left + r1.width / 2 - areaRect.left;
+  const y1 = r1.top + r1.height / 2 - areaRect.top;
+  const x2 = r2.left + r2.width / 2 - areaRect.left;
+  const y2 = r2.top + r2.height / 2 - areaRect.top;
+
+  const colorMap = {
+    red: '#FF4444',
+    blue: '#4488FF',
+    green: '#44FF88',
+    yellow: '#FFDD44'
+  };
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', x1);
+  line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2);
+  line.setAttribute('y2', y2);
+  line.setAttribute('stroke', colorMap[color]);
+  line.setAttribute('stroke-width', '3');
+  line.setAttribute('stroke-linecap', 'round');
+  line.setAttribute('opacity', '0.7');
+
+  // Animate line drawing
+  const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  line.setAttribute('stroke-dasharray', length);
+  line.setAttribute('stroke-dashoffset', length);
+  line.style.transition = 'stroke-dashoffset 0.5s ease-out';
+
+  svg.appendChild(line);
+
+  requestAnimationFrame(() => {
+    line.setAttribute('stroke-dashoffset', '0');
+  });
+}
+
+// ===== PUZZLE 5: RIDDLE =====
+function checkPuzzle5() {
+  const answer = document.getElementById('riddleInput').value.trim().toLowerCase();
+  if (answer === 'fire') {
+    document.getElementById('finalDoor').classList.add('open');
+    document.getElementById('doorLight').style.opacity = '1';
+    setTimeout(() => solvePuzzle(5, false), 800);
+  } else {
+    shakeElement('riddleInput');
+    flashError('puzzle5Card');
+  }
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#00F5FF', '#FF00FF', '#FFD700', '#00FF88', '#FF4444', '#4488FF'];
+
+  for (let i = 0; i < 150; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (Math.random() * 8 + 4) + 'px';
+    piece.style.height = (Math.random() * 8 + 4) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.animationDelay = (Math.random() * 1) + 's';
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => {
+    container.innerHTML = '';
+  }, 5000);
+}
+
+// ===== ENTRY LOCK SHAKE =====
+document.getElementById('entryLock').addEventListener('click', function () {
+  if (!state.started) {
+    this.classList.add('shake');
+    setTimeout(() => this.classList.remove('shake'), 600);
+  }
+});
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    // Focus check for puzzle inputs
+    if (document.activeElement === document.getElementById('seqInput1') ||
+        document.activeElement === document.getElementById('seqInput2')) {
+      checkPuzzle3();
+    }
+  }
+});
+
+// ===== SET SVG SIZE ON RESIZE =====
+function resizeWiringSvg() {
+  const area = document.getElementById('wiringArea');
+  const svg = document.getElementById('wiringSvg');
+  if (area && svg) {
+    svg.setAttribute('width', area.offsetWidth);
+    svg.setAttribute('height', area.offsetHeight);
+    svg.setAttribute('viewBox', `0 0 ${area.offsetWidth} ${area.offsetHeight}`);
+  }
+}
+
+window.addEventListener('resize', resizeWiringSvg);
+window.addEventListener('load', () => {
+  setTimeout(resizeWiringSvg, 100);
+});
+
+// ===== INTERSECTION OBSERVER FOR SECTIONS =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && state.started) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.puzzle-section').forEach(s => observer.observe(s));
+
+// ===== AMBIENT PARTICLES =====
+(function initParticles() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0.4;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  let particles = [];
+  const PARTICLE_COUNT = 50;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createParticle() {
+    return {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 2 + 0.5,
+      alpha: Math.random() * 0.5 + 0.1,
+      color: ['#00F5FF', '#FF00FF', '#FFD700'][Math.floor(Math.random() * 3)]
+    };
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(createParticle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+
+    // Draw connections
+    ctx.globalAlpha = 0.05;
+    ctx.strokeStyle = '#00F5FF';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          ctx.globalAlpha = 0.03 * (1 - dist / 150);
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+
+</body>
+</html>

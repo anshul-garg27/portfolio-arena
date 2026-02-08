@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GARG SPACE CENTER | Mission Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --space-black: #050510;
+  --deep-space: #0a0a20;
+  --nasa-blue: #1B3A6B;
+  --nasa-blue-light: #2a5599;
+  --alert-red: #FF3333;
+  --status-green: #33FF66;
+  --amber: #FFB000;
+  --panel-bg: rgba(8, 12, 30, 0.92);
+  --panel-border: rgba(27, 58, 107, 0.6);
+  --text-primary: #e0e8f0;
+  --text-dim: #667799;
+  --text-bright: #ffffff;
+  --hud-cyan: #00d4ff;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--space-black);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ============================================
+   STARFIELD BACKGROUND
+   ============================================ */
+#starfield {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
+
+/* ============================================
+   CRT SCANLINE OVERLAY
+   ============================================ */
+.crt-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* ============================================
+   MAIN LAYOUT
+   ============================================ */
+.mission-control {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 42px 1fr 36px;
+  grid-template-columns: 240px 1fr 280px;
+  height: 100vh;
+  gap: 2px;
+}
+
+/* ============================================
+   TOP BAR
+   ============================================ */
+.top-bar {
+  grid-column: 1 / -1;
+  background: linear-gradient(180deg, rgba(27, 58, 107, 0.4) 0%, rgba(8, 12, 30, 0.95) 100%);
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: relative;
+}
+
+.top-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--nasa-blue-light), var(--hud-cyan), var(--nasa-blue-light), transparent);
+}
+
+.agency-name {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--text-bright);
+  text-transform: uppercase;
+}
+
+.agency-name span {
+  color: var(--hud-cyan);
+}
+
+.top-bar-center {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.top-bar-center .status-chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  padding: 2px 10px;
+  border: 1px solid;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-chip.nominal {
+  border-color: var(--status-green);
+  color: var(--status-green);
+}
+
+.mission-clock {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  color: var(--hud-cyan);
+  letter-spacing: 2px;
+}
+
+.met-clock {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 1px;
+}
+
+.met-clock span { color: var(--text-dim); }
+
+/* ============================================
+   PANELS - SHARED
+   ============================================ */
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before,
+.panel::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--nasa-blue-light);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.panel::before {
+  top: 4px; left: 4px;
+  border-right: none; border-bottom: none;
+}
+
+.panel::after {
+  bottom: 4px; right: 4px;
+  border-left: none; border-top: none;
+}
+
+.panel-header {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--hud-cyan);
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--panel-border);
+  background: linear-gradient(180deg, rgba(27, 58, 107, 0.15) 0%, transparent 100%);
+}
+
+/* ============================================
+   LEFT PANEL - MISSION SELECT
+   ============================================ */
+.left-panel {
+  grid-row: 2;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mission-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.mission-list::-webkit-scrollbar { width: 4px; }
+.mission-list::-webkit-scrollbar-track { background: transparent; }
+.mission-list::-webkit-scrollbar-thumb { background: var(--nasa-blue); border-radius: 2px; }
+
+.mission-item {
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.mission-item:hover {
+  background: rgba(27, 58, 107, 0.2);
+  border-color: var(--panel-border);
+}
+
+.mission-item.active {
+  background: rgba(27, 58, 107, 0.35);
+  border-color: var(--hud-cyan);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
+}
+
+.mission-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.status-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-led.green {
+  background: var(--status-green);
+  box-shadow: 0 0 6px var(--status-green), 0 0 12px rgba(51, 255, 102, 0.3);
+  animation: led-blink-green 3s ease-in-out infinite;
+}
+
+.status-led.amber {
+  background: var(--amber);
+  box-shadow: 0 0 6px var(--amber), 0 0 12px rgba(255, 176, 0, 0.3);
+  animation: led-blink-amber 2s ease-in-out infinite;
+}
+
+.status-led.red {
+  background: var(--alert-red);
+  box-shadow: 0 0 6px var(--alert-red);
+  animation: led-blink-red 1s ease-in-out infinite;
+}
+
+@keyframes led-blink-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+@keyframes led-blink-amber {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes led-blink-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.mission-item-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: 1px;
+}
+
+.mission-item-desc {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  padding-left: 16px;
+}
+
+.mission-item-orbit {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--nasa-blue-light);
+  padding-left: 16px;
+  margin-top: 2px;
+}
+
+/* Navigation links */
+.nav-section {
+  border-top: 1px solid var(--panel-border);
+  padding: 8px 6px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+.nav-link:hover {
+  color: var(--hud-cyan);
+  background: rgba(0, 212, 255, 0.05);
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+.nav-link.active {
+  color: var(--hud-cyan);
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.nav-link-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+/* ============================================
+   CENTER - MAIN DISPLAY
+   ============================================ */
+.main-display {
+  grid-row: 2;
+  grid-column: 2;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, rgba(10, 10, 32, 1) 0%, var(--space-black) 100%);
+  border: 1px solid var(--panel-border);
+}
+
+/* HUD corners for main display */
+.main-display .hud-corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-corner.tl { top: 0; left: 0; border-top: 2px solid var(--hud-cyan); border-left: 2px solid var(--hud-cyan); }
+.hud-corner.tr { top: 0; right: 0; border-top: 2px solid var(--hud-cyan); border-right: 2px solid var(--hud-cyan); }
+.hud-corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--hud-cyan); border-left: 2px solid var(--hud-cyan); }
+.hud-corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--hud-cyan); border-right: 2px solid var(--hud-cyan); }
+
+/* Views container */
+.view-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.view {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+
+.view.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Static transition */
+.static-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.03) 1px,
+    rgba(255, 255, 255, 0.03) 2px
+  );
+  transition: opacity 0.15s;
+}
+
+.static-overlay.active {
+  opacity: 1;
+  animation: static-noise 0.1s steps(5) 3;
+}
+
+@keyframes static-noise {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(-2px); }
+  40% { transform: translateY(1px); }
+  60% { transform: translateY(-1px); }
+  80% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+
+/* ============================================
+   ORBIT VIEW
+   ============================================ */
+.orbit-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+
+#orbitCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.orbit-info-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.orbit-mission-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.orbit-mission-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--hud-cyan);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.orbit-data-top {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 5;
+  text-align: right;
+  pointer-events: none;
+}
+
+.orbit-data-row {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.orbit-data-row .val {
+  color: var(--status-green);
+}
+
+.orbit-data-row .label {
+  color: var(--nasa-blue-light);
+}
+
+/* ============================================
+   LAUNCH SEQUENCE VIEW
+   ============================================ */
+.launch-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.launch-countdown {
+  font-family: 'Orbitron', monospace;
+  font-size: 140px;
+  font-weight: 900;
+  color: var(--text-bright);
+  text-shadow: 0 0 40px rgba(0, 212, 255, 0.6), 0 0 80px rgba(0, 212, 255, 0.3);
+  line-height: 1;
+  transition: all 0.15s;
+}
+
+.launch-status-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: var(--amber);
+  margin-top: 20px;
+}
+
+.launch-confirmed {
+  font-family: 'Orbitron', monospace;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--status-green);
+  text-shadow: 0 0 30px rgba(51, 255, 102, 0.7);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.4s ease-out;
+}
+
+.launch-confirmed.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.launch-flash {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, 2px); }
+  20% { transform: translate(2px, -3px); }
+  30% { transform: translate(-2px, 1px); }
+  40% { transform: translate(3px, -2px); }
+  50% { transform: translate(-1px, 3px); }
+  60% { transform: translate(2px, -1px); }
+  70% { transform: translate(-3px, 2px); }
+  80% { transform: translate(1px, -2px); }
+  90% { transform: translate(-2px, 3px); }
+}
+
+.shaking {
+  animation: screen-shake 0.4s ease-in-out;
+}
+
+/* Rocket for launch */
+.launch-rocket {
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  transition: bottom 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 5;
+  filter: drop-shadow(0 0 20px rgba(255, 176, 0, 0.8));
+}
+
+.launch-rocket.launched {
+  bottom: 110%;
+}
+
+.rocket-flame {
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 40px;
+  background: linear-gradient(180deg, var(--amber), var(--alert-red), transparent);
+  border-radius: 0 0 50% 50%;
+  opacity: 0;
+  animation: flame-flicker 0.1s ease-in-out infinite alternate;
+}
+
+.rocket-flame.active {
+  opacity: 1;
+}
+
+@keyframes flame-flicker {
+  0% { height: 35px; opacity: 0.8; }
+  100% { height: 45px; opacity: 1; }
+}
+
+/* ============================================
+   CREW MANIFEST VIEW
+   ============================================ */
+.crew-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+}
+
+.crew-card {
+  max-width: 600px;
+  width: 100%;
+  background: rgba(8, 12, 30, 0.8);
+  border: 1px solid var(--panel-border);
+  padding: 0;
+  position: relative;
+}
+
+.crew-card::before, .crew-card::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--hud-cyan);
+  pointer-events: none;
+}
+
+.crew-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.crew-card::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.crew-card-header {
+  background: linear-gradient(90deg, rgba(27, 58, 107, 0.3), transparent);
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crew-card-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--hud-cyan);
+}
+
+.crew-classification {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  padding: 2px 8px;
+  letter-spacing: 1px;
+}
+
+.crew-card-body {
+  padding: 24px;
+}
+
+.crew-avatar-section {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.crew-avatar {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--nasa-blue-light);
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--nasa-blue), var(--deep-space));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.crew-avatar-icon {
+  font-size: 48px;
+  filter: grayscale(0.3);
+}
+
+.crew-avatar-scan {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--hud-cyan), transparent);
+  animation: avatar-scan 3s linear infinite;
+}
+
+@keyframes avatar-scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.crew-info h2 {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.crew-info .rank {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.crew-info .assignment {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.crew-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.crew-stat {
+  background: rgba(27, 58, 107, 0.1);
+  border: 1px solid rgba(27, 58, 107, 0.3);
+  padding: 10px 14px;
+  border-radius: 2px;
+}
+
+.crew-stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.crew-stat-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--status-green);
+}
+
+.crew-bio {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 16px;
+}
+
+.crew-bio-header {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--nasa-blue-light);
+  margin-bottom: 8px;
+}
+
+.crew-bio p {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+/* ============================================
+   EQUIPMENT BAY VIEW
+   ============================================ */
+.equipment-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+}
+
+.equipment-grid {
+  max-width: 700px;
+  width: 100%;
+}
+
+.equipment-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--hud-cyan);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.equipment-category {
+  margin-bottom: 20px;
+}
+
+.equipment-category-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--amber);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 176, 0, 0.2);
+}
+
+.equipment-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.equipment-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(27, 58, 107, 0.1);
+  border: 1px solid rgba(27, 58, 107, 0.2);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.equipment-item:hover {
+  background: rgba(27, 58, 107, 0.2);
+  border-color: var(--panel-border);
+}
+
+.equipment-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-green);
+  box-shadow: 0 0 4px var(--status-green);
+  animation: led-blink-green 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.equipment-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.equipment-system {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ============================================
+   COMMS VIEW
+   ============================================ */
+.comms-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+}
+
+.comms-panel {
+  max-width: 550px;
+  width: 100%;
+}
+
+.comms-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--hud-cyan);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.comms-subtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.comms-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.comms-channel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: rgba(27, 58, 107, 0.1);
+  border: 1px solid rgba(27, 58, 107, 0.25);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.comms-channel:hover {
+  background: rgba(27, 58, 107, 0.25);
+  border-color: var(--hud-cyan);
+  transform: translateX(4px);
+}
+
+.comms-freq {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber);
+  min-width: 80px;
+}
+
+.comms-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.comms-signal {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.comms-signal-bar {
+  width: 3px;
+  background: var(--status-green);
+  border-radius: 1px;
+}
+
+.comms-form-header {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--nasa-blue-light);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.comms-form-group {
+  margin-bottom: 12px;
+}
+
+.comms-form-group label {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.comms-form-group input,
+.comms-form-group textarea {
+  width: 100%;
+  background: rgba(5, 5, 16, 0.8);
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  padding: 10px 12px;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.comms-form-group input:focus,
+.comms-form-group textarea:focus {
+  border-color: var(--hud-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.15);
+}
+
+.comms-form-group textarea {
+  height: 80px;
+  resize: none;
+}
+
+.comms-send-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(27, 58, 107, 0.5), rgba(27, 58, 107, 0.3));
+  border: 1px solid var(--nasa-blue-light);
+  color: var(--hud-cyan);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.comms-send-btn:hover {
+  background: linear-gradient(135deg, rgba(27, 58, 107, 0.7), rgba(27, 58, 107, 0.5));
+  border-color: var(--hud-cyan);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+   MISSION DETAIL VIEW
+   ============================================ */
+.mission-detail-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 30px 40px;
+}
+
+.mission-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.mission-detail-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+.mission-detail-subtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  color: var(--hud-cyan);
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+.mission-status-badge {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding: 6px 16px;
+  border: 1px solid;
+  border-radius: 2px;
+}
+
+.mission-status-badge.operational {
+  color: var(--status-green);
+  border-color: var(--status-green);
+  box-shadow: 0 0 10px rgba(51, 255, 102, 0.2);
+}
+
+.mission-status-badge.active {
+  color: var(--amber);
+  border-color: var(--amber);
+  box-shadow: 0 0 10px rgba(255, 176, 0, 0.2);
+}
+
+.mission-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.mission-detail-stat {
+  background: rgba(27, 58, 107, 0.1);
+  border: 1px solid rgba(27, 58, 107, 0.25);
+  padding: 16px;
+  border-radius: 2px;
+  position: relative;
+}
+
+.mission-detail-stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--nasa-blue-light);
+}
+
+.mission-detail-stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mission-detail-stat-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.mission-telemetry-section {
+  flex: 1;
+  background: rgba(5, 5, 16, 0.6);
+  border: 1px solid var(--panel-border);
+  border-radius: 2px;
+  padding: 16px;
+  position: relative;
+}
+
+.mission-telemetry-header {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--hud-cyan);
+  margin-bottom: 12px;
+}
+
+.mission-telemetry-data {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--status-green);
+  line-height: 2;
+}
+
+.mission-telemetry-data .key {
+  color: var(--text-dim);
+}
+
+.mission-payload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.payload-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  padding: 4px 12px;
+  background: rgba(27, 58, 107, 0.2);
+  border: 1px solid var(--nasa-blue-light);
+  color: var(--hud-cyan);
+  border-radius: 2px;
+  letter-spacing: 1px;
+}
+
+/* ============================================
+   RIGHT PANEL - TELEMETRY
+   ============================================ */
+.right-panel {
+  grid-row: 2;
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetry-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.telemetry-feed::-webkit-scrollbar { width: 4px; }
+.telemetry-feed::-webkit-scrollbar-track { background: transparent; }
+.telemetry-feed::-webkit-scrollbar-thumb { background: var(--nasa-blue); border-radius: 2px; }
+
+.telemetry-line {
+  opacity: 0;
+  animation: telemetry-appear 0.3s forwards;
+}
+
+@keyframes telemetry-appear {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.telemetry-line .timestamp {
+  color: var(--text-dim);
+}
+
+.telemetry-line .sys {
+  color: var(--hud-cyan);
+}
+
+.telemetry-line .ok {
+  color: var(--status-green);
+}
+
+.telemetry-line .warn {
+  color: var(--amber);
+}
+
+.telemetry-line .err {
+  color: var(--alert-red);
+}
+
+.telemetry-line .data {
+  color: var(--text-primary);
+}
+
+/* Signal strength indicator in right panel */
+.signal-section {
+  border-top: 1px solid var(--panel-border);
+  padding: 10px 14px;
+}
+
+.signal-header {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.signal-bars {
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+  height: 24px;
+}
+
+.signal-bar {
+  width: 8px;
+  background: var(--status-green);
+  border-radius: 1px;
+  animation: signal-pulse 2s ease-in-out infinite;
+}
+
+.signal-bar:nth-child(1) { height: 6px; animation-delay: 0s; }
+.signal-bar:nth-child(2) { height: 10px; animation-delay: 0.1s; }
+.signal-bar:nth-child(3) { height: 14px; animation-delay: 0.2s; }
+.signal-bar:nth-child(4) { height: 18px; animation-delay: 0.3s; }
+.signal-bar:nth-child(5) { height: 22px; animation-delay: 0.4s; }
+
+@keyframes signal-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* System vitals */
+.vitals-section {
+  border-top: 1px solid var(--panel-border);
+  padding: 10px 14px;
+}
+
+.vital-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.vital-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.vital-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--status-green);
+}
+
+.vital-bar {
+  width: 60px;
+  height: 4px;
+  background: rgba(27, 58, 107, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-left: 8px;
+}
+
+.vital-bar-fill {
+  height: 100%;
+  background: var(--status-green);
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+/* ============================================
+   BOTTOM BAR
+   ============================================ */
+.bottom-bar {
+  grid-column: 1 / -1;
+  background: linear-gradient(0deg, rgba(27, 58, 107, 0.3) 0%, rgba(8, 12, 30, 0.95) 100%);
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  position: relative;
+}
+
+.bottom-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--nasa-blue-light), var(--hud-cyan), var(--nasa-blue-light), transparent);
+}
+
+.bottom-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.bottom-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.bottom-status .dot.green {
+  background: var(--status-green);
+  box-shadow: 0 0 4px var(--status-green);
+}
+
+.bottom-status .dot.amber {
+  background: var(--amber);
+  box-shadow: 0 0 4px var(--amber);
+}
+
+.bottom-comm-log {
+  flex: 1;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.comm-log-text {
+  display: inline-block;
+  animation: comm-scroll 30s linear infinite;
+}
+
+@keyframes comm-scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.bottom-coords {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--nasa-blue-light);
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+
+<div class="mission-control" id="missionControl">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="agency-name">GARG SPACE CENTER <span>|</span> MISSION CONTROL</div>
+    <div class="top-bar-center">
+      <div class="status-chip nominal">ALL SYSTEMS NOMINAL</div>
+      <div class="mission-clock" id="missionClock">00:00:00</div>
+    </div>
+    <div class="met-clock"><span>MET </span><span id="metClock">T+000:00:00:00</span></div>
+  </div>
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel panel">
+    <div class="panel-header">MISSION SELECT</div>
+    <div class="mission-list" id="missionList"></div>
+    <div class="nav-section">
+      <div class="nav-link" data-view="crew">
+        <div class="nav-link-icon">&#9787;</div>
+        CREW MANIFEST
+      </div>
+      <div class="nav-link" data-view="equipment">
+        <div class="nav-link-icon">&#9881;</div>
+        EQUIPMENT BAY
+      </div>
+      <div class="nav-link" data-view="comms">
+        <div class="nav-link-icon">&#9991;</div>
+        COMMS CHANNEL
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN DISPLAY -->
+  <div class="main-display" id="mainDisplay">
+    <div class="hud-corner tl"></div>
+    <div class="hud-corner tr"></div>
+    <div class="hud-corner bl"></div>
+    <div class="hud-corner br"></div>
+    <div class="static-overlay" id="staticOverlay"></div>
+
+    <div class="view-container">
+      <!-- ORBIT VIEW -->
+      <div class="view active" id="orbitView">
+        <div class="orbit-view">
+          <canvas id="orbitCanvas"></canvas>
+          <div class="orbit-info-overlay">
+            <div class="orbit-mission-label" id="orbitMissionLabel">MISSION ALPHA</div>
+            <div class="orbit-mission-sub" id="orbitMissionSub">CHECKOUT OPTIMIZATION // LEO</div>
+          </div>
+          <div class="orbit-data-top">
+            <div class="orbit-data-row"><span class="label">ALT: </span><span class="val" id="orbitAlt">408 km</span></div>
+            <div class="orbit-data-row"><span class="label">VEL: </span><span class="val" id="orbitVel">7.66 km/s</span></div>
+            <div class="orbit-data-row"><span class="label">INC: </span><span class="val" id="orbitInc">51.6 deg</span></div>
+            <div class="orbit-data-row"><span class="label">PER: </span><span class="val" id="orbitPer">92.4 min</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAUNCH VIEW -->
+      <div class="view" id="launchView">
+        <div class="launch-view">
+          <div class="launch-flash" id="launchFlash"></div>
+          <div class="launch-countdown" id="launchCountdown">10</div>
+          <div class="launch-status-text" id="launchStatusText">LAUNCH SEQUENCE INITIATED</div>
+          <div class="launch-confirmed" id="launchConfirmed">LAUNCH CONFIRMED</div>
+          <div class="launch-rocket" id="launchRocket">
+            &#9650;
+            <div class="rocket-flame" id="rocketFlame"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MISSION DETAIL VIEW -->
+      <div class="view" id="missionDetailView">
+        <div class="mission-detail-view" id="missionDetailContent"></div>
+      </div>
+
+      <!-- CREW MANIFEST VIEW -->
+      <div class="view" id="crewView">
+        <div class="crew-view">
+          <div class="crew-card">
+            <div class="crew-card-header">
+              <div class="crew-card-title">CREW MANIFEST // PERSONNEL FILE</div>
+              <div class="crew-classification">CLEARANCE: LEVEL 5</div>
+            </div>
+            <div class="crew-card-body">
+              <div class="crew-avatar-section">
+                <div class="crew-avatar">
+                  <div class="crew-avatar-icon">&#128104;&#8205;&#128640;</div>
+                  <div class="crew-avatar-scan"></div>
+                </div>
+                <div class="crew-info">
+                  <h2>ANSHULL GARG</h2>
+                  <div class="rank">MISSION COMMANDER</div>
+                  <div class="assignment">ASSIGNED: WALMART GLOBAL TECH</div>
+                  <div class="assignment" style="margin-top:2px;">STATION: SOFTWARE ENGINEERING</div>
+                </div>
+              </div>
+              <div class="crew-stats">
+                <div class="crew-stat">
+                  <div class="crew-stat-label">FLIGHT HOURS</div>
+                  <div class="crew-stat-value">4+ YEARS</div>
+                </div>
+                <div class="crew-stat">
+                  <div class="crew-stat-label">MISSIONS COMPLETED</div>
+                  <div class="crew-stat-value">15+</div>
+                </div>
+                <div class="crew-stat">
+                  <div class="crew-stat-label">SYSTEMS MASTERED</div>
+                  <div class="crew-stat-value">12+</div>
+                </div>
+                <div class="crew-stat">
+                  <div class="crew-stat-label">DEPLOYMENT RECORD</div>
+                  <div class="crew-stat-value">99.9%</div>
+                </div>
+              </div>
+              <div class="crew-bio">
+                <div class="crew-bio-header">MISSION BRIEFING // PERSONNEL BACKGROUND</div>
+                <p>Mission Commander Garg is a seasoned software engineer stationed at Walmart Global Tech. Specializing in full-stack development with extensive EVA experience in React ecosystems, distributed systems architecture, and high-performance web applications. Commander Garg has successfully led multiple critical missions from concept through deployment, maintaining nominal operations across all assigned projects. Known for exceptional problem-solving under pressure and clean, maintainable code that keeps systems running at peak efficiency.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EQUIPMENT BAY VIEW -->
+      <div class="view" id="equipmentView">
+        <div class="equipment-view">
+          <div class="equipment-grid">
+            <div class="equipment-title">EQUIPMENT BAY // SYSTEMS INVENTORY</div>
+            <div class="equipment-category">
+              <div class="equipment-category-label">NAVIGATION SYSTEMS [FRONTEND]</div>
+              <div class="equipment-items">
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">React / Next.js</span><span class="equipment-system">NAV-01</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">TypeScript</span><span class="equipment-system">NAV-02</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Tailwind CSS</span><span class="equipment-system">NAV-03</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Redux / Zustand</span><span class="equipment-system">NAV-04</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Storybook</span><span class="equipment-system">NAV-05</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">HTML / CSS / JS</span><span class="equipment-system">NAV-06</span></div>
+              </div>
+            </div>
+            <div class="equipment-category">
+              <div class="equipment-category-label">LIFE SUPPORT [BACKEND]</div>
+              <div class="equipment-items">
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Node.js</span><span class="equipment-system">LSS-01</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Python</span><span class="equipment-system">LSS-02</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Java</span><span class="equipment-system">LSS-03</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">PostgreSQL / Redis</span><span class="equipment-system">LSS-04</span></div>
+              </div>
+            </div>
+            <div class="equipment-category">
+              <div class="equipment-category-label">COMMUNICATIONS [APIs & INFRA]</div>
+              <div class="equipment-items">
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">GraphQL / REST</span><span class="equipment-system">COM-01</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">AWS / GCP</span><span class="equipment-system">COM-02</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Docker / K8s</span><span class="equipment-system">COM-03</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Kafka</span><span class="equipment-system">COM-04</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">CI/CD Pipelines</span><span class="equipment-system">COM-05</span></div>
+                <div class="equipment-item"><div class="equipment-led"></div><span class="equipment-name">Git / GitHub</span><span class="equipment-system">COM-06</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMS VIEW -->
+      <div class="view" id="commsView">
+        <div class="comms-view">
+          <div class="comms-panel">
+            <div class="comms-title">OPEN COMMUNICATION CHANNEL</div>
+            <div class="comms-subtitle">// Houston, we have a portfolio.</div>
+            <div class="comms-channels">
+              <a class="comms-channel" href="mailto:anshull.garg@example.com" target="_blank">
+                <span class="comms-freq">143.625</span>
+                <span class="comms-label">EMAIL // Primary Channel</span>
+                <div class="comms-signal">
+                  <div class="comms-signal-bar" style="height:6px;"></div>
+                  <div class="comms-signal-bar" style="height:10px;"></div>
+                  <div class="comms-signal-bar" style="height:14px;"></div>
+                  <div class="comms-signal-bar" style="height:18px;"></div>
+                </div>
+              </a>
+              <a class="comms-channel" href="https://linkedin.com/in/anshullgarg" target="_blank">
+                <span class="comms-freq">259.700</span>
+                <span class="comms-label">LINKEDIN // Professional Network</span>
+                <div class="comms-signal">
+                  <div class="comms-signal-bar" style="height:6px;"></div>
+                  <div class="comms-signal-bar" style="height:10px;"></div>
+                  <div class="comms-signal-bar" style="height:14px;"></div>
+                  <div class="comms-signal-bar" style="height:18px;"></div>
+                </div>
+              </a>
+              <a class="comms-channel" href="https://github.com/anshullgarg" target="_blank">
+                <span class="comms-freq">296.800</span>
+                <span class="comms-label">GITHUB // Source Repository</span>
+                <div class="comms-signal">
+                  <div class="comms-signal-bar" style="height:6px;"></div>
+                  <div class="comms-signal-bar" style="height:10px;"></div>
+                  <div class="comms-signal-bar" style="height:14px;"></div>
+                  <div class="comms-signal-bar" style="height:18px;"></div>
+                </div>
+              </a>
+            </div>
+            <div class="comms-form-header">TRANSMIT MESSAGE</div>
+            <div class="comms-form-group">
+              <label>CALLSIGN (NAME)</label>
+              <input type="text" placeholder="Enter your callsign...">
+            </div>
+            <div class="comms-form-group">
+              <label>FREQUENCY (EMAIL)</label>
+              <input type="email" placeholder="Enter return frequency...">
+            </div>
+            <div class="comms-form-group">
+              <label>TRANSMISSION</label>
+              <textarea placeholder="Begin transmission..."></textarea>
+            </div>
+            <button class="comms-send-btn">TRANSMIT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel panel">
+    <div class="panel-header">TELEMETRY FEED</div>
+    <div class="telemetry-feed" id="telemetryFeed"></div>
+    <div class="signal-section">
+      <div class="signal-header">SIGNAL STRENGTH</div>
+      <div class="signal-bars">
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+      </div>
+    </div>
+    <div class="vitals-section">
+      <div class="vital-row">
+        <span class="vital-label">CPU</span>
+        <span class="vital-value" id="vitalCpu">23%</span>
+        <div class="vital-bar"><div class="vital-bar-fill" id="vitalCpuBar" style="width:23%"></div></div>
+      </div>
+      <div class="vital-row">
+        <span class="vital-label">MEM</span>
+        <span class="vital-value" id="vitalMem">47%</span>
+        <div class="vital-bar"><div class="vital-bar-fill" id="vitalMemBar" style="width:47%"></div></div>
+      </div>
+      <div class="vital-row">
+        <span class="vital-label">NET</span>
+        <span class="vital-value" id="vitalNet">98%</span>
+        <div class="vital-bar"><div class="vital-bar-fill" id="vitalNetBar" style="width:98%;background:var(--status-green);"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <div class="bottom-status">
+      <div class="dot green"></div>
+      GROUND CONTROL: ONLINE
+    </div>
+    <div class="bottom-status">
+      <div class="dot green"></div>
+      TRACKING: ACTIVE
+    </div>
+    <div class="bottom-status">
+      <div class="dot amber"></div>
+      SOLAR ACTIVITY: MODERATE
+    </div>
+    <div class="bottom-comm-log">
+      <span class="comm-log-text" id="commLogText">
+        [GROUND] Roger that, Commander. All systems nominal. Standing by for mission select. | [CAPCOM] Telemetry is strong on all channels. | [FLIGHT] Go for orbit. Godspeed, Commander Garg. | [EECOM] Power systems green across the board. | [GNC] Guidance is go. Navigation confirmed.
+      </span>
+    </div>
+    <div class="bottom-coords">LAT 37.3861 LON -122.0839</div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// MISSION DATA
+// ============================================
+const missions = [
+  {
+    id: 'alpha',
+    name: 'MISSION ALPHA',
+    codename: 'Checkout Optimization',
+    orbit: 'LEO',
+    orbitFull: 'Low Earth Orbit',
+    payload: ['React', 'Node.js', 'Redis', 'TypeScript'],
+    launch: '2024',
+    status: 'operational',
+    statusLabel: 'OPERATIONAL',
+    altitude: '408 km',
+    velocity: '7.66 km/s',
+    inclination: '51.6 deg',
+    period: '92.4 min',
+    telemetry: 'Latency: 45ms | Uptime: 99.99% | Throughput: 12k req/s',
+    description: 'Optimized the checkout flow for Walmart\'s e-commerce platform, reducing load times by 40% and improving conversion rates. Implemented real-time inventory validation and Redis-based session caching for seamless user experience at scale.',
+    orbitRadius: 0.3,
+    orbitSpeed: 0.008,
+    color: '#33FF66'
+  },
+  {
+    id: 'beta',
+    name: 'MISSION BETA',
+    codename: 'Component Library',
+    orbit: 'GEO',
+    orbitFull: 'Geostationary Orbit',
+    payload: ['React', 'Storybook', 'Tailwind', 'TypeScript'],
+    launch: '2023',
+    status: 'operational',
+    statusLabel: 'OPERATIONAL',
+    altitude: '35,786 km',
+    velocity: '3.07 km/s',
+    inclination: '0.0 deg',
+    period: '24.0 hrs',
+    telemetry: 'Components: 120+ | Coverage: 94% | Bundle: 48kb gzip',
+    description: 'Built a comprehensive design system and component library used across multiple Walmart product teams. Established accessibility standards, visual regression testing, and automated documentation generation via Storybook.',
+    orbitRadius: 0.55,
+    orbitSpeed: 0.003,
+    color: '#00d4ff'
+  },
+  {
+    id: 'gamma',
+    name: 'MISSION GAMMA',
+    codename: 'Analytics Platform',
+    orbit: 'MEO',
+    orbitFull: 'Medium Earth Orbit',
+    payload: ['Python', 'AWS', 'Kafka', 'PostgreSQL'],
+    launch: '2024',
+    status: 'active',
+    statusLabel: 'ACTIVE',
+    altitude: '20,200 km',
+    velocity: '3.87 km/s',
+    inclination: '55.0 deg',
+    period: '12.0 hrs',
+    telemetry: 'Events/sec: 50k | Latency: 12ms | Data: 2.4TB/day',
+    description: 'Architected a real-time analytics platform processing millions of events daily. Built streaming data pipelines with Kafka, serverless compute on AWS Lambda, and interactive dashboards for business intelligence teams.',
+    orbitRadius: 0.42,
+    orbitSpeed: 0.005,
+    color: '#FFB000'
+  }
+];
+
+let currentMission = missions[0];
+let currentView = 'orbit';
+let missionElapsedTime = 0;
+let launchInProgress = false;
+
+// ============================================
+// STARFIELD
+// ============================================
+const starCanvas = document.getElementById('starfield');
+const starCtx = starCanvas.getContext('2d');
+let stars = [];
+
+function initStarfield() {
+  starCanvas.width = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+  stars = [];
+  const count = Math.floor((starCanvas.width * starCanvas.height) / 2000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * starCanvas.width,
+      y: Math.random() * starCanvas.height,
+      size: Math.random() * 1.5 + 0.3,
+      brightness: Math.random(),
+      twinkleSpeed: Math.random() * 0.02 + 0.005,
+      twinklePhase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStarfield(time) {
+  starCtx.fillStyle = '#050510';
+  starCtx.fillRect(0, 0, starCanvas.width, starCanvas.height);
+
+  stars.forEach(s => {
+    const twinkle = 0.4 + 0.6 * Math.sin(time * s.twinkleSpeed + s.twinklePhase);
+    const alpha = s.brightness * twinkle;
+    starCtx.fillStyle = `rgba(200, 220, 255, ${alpha})`;
+    starCtx.beginPath();
+    starCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    starCtx.fill();
+  });
+
+  requestAnimationFrame(drawStarfield);
+}
+
+initStarfield();
+requestAnimationFrame(drawStarfield);
+window.addEventListener('resize', () => {
+  initStarfield();
+  resizeOrbitCanvas();
+});
+
+// ============================================
+// ORBIT CANVAS
+// ============================================
+const orbitCanvas = document.getElementById('orbitCanvas');
+const orbitCtx = orbitCanvas.getContext('2d');
+let orbitAngle = 0;
+
+function resizeOrbitCanvas() {
+  const rect = orbitCanvas.parentElement.getBoundingClientRect();
+  orbitCanvas.width = rect.width;
+  orbitCanvas.height = rect.height;
+}
+
+function drawOrbit(time) {
+  if (!orbitCanvas.width) resizeOrbitCanvas();
+
+  const w = orbitCanvas.width;
+  const h = orbitCanvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const baseRadius = Math.min(w, h) * 0.18;
+
+  orbitCtx.clearRect(0, 0, w, h);
+
+  // Draw subtle background stars on orbit canvas
+  for (let i = 0; i < 40; i++) {
+    const sx = (Math.sin(i * 127.1 + 311.7) * 0.5 + 0.5) * w;
+    const sy = (Math.sin(i * 269.5 + 183.3) * 0.5 + 0.5) * h;
+    const alpha = 0.1 + 0.15 * Math.sin(time * 0.001 + i);
+    orbitCtx.fillStyle = `rgba(150, 180, 255, ${alpha})`;
+    orbitCtx.beginPath();
+    orbitCtx.arc(sx, sy, 0.8, 0, Math.PI * 2);
+    orbitCtx.fill();
+  }
+
+  // Draw Earth
+  const earthRadius = baseRadius * 0.65;
+  const earthGrad = orbitCtx.createRadialGradient(cx - earthRadius * 0.3, cy - earthRadius * 0.3, 0, cx, cy, earthRadius);
+  earthGrad.addColorStop(0, '#2a6dd4');
+  earthGrad.addColorStop(0.3, '#1a4a8a');
+  earthGrad.addColorStop(0.6, '#0d2d5e');
+  earthGrad.addColorStop(1, '#061530');
+
+  orbitCtx.beginPath();
+  orbitCtx.arc(cx, cy, earthRadius, 0, Math.PI * 2);
+  orbitCtx.fillStyle = earthGrad;
+  orbitCtx.fill();
+
+  // Earth atmosphere glow
+  const glowGrad = orbitCtx.createRadialGradient(cx, cy, earthRadius * 0.9, cx, cy, earthRadius * 1.3);
+  glowGrad.addColorStop(0, 'rgba(50, 130, 255, 0.15)');
+  glowGrad.addColorStop(1, 'rgba(50, 130, 255, 0)');
+  orbitCtx.beginPath();
+  orbitCtx.arc(cx, cy, earthRadius * 1.3, 0, Math.PI * 2);
+  orbitCtx.fillStyle = glowGrad;
+  orbitCtx.fill();
+
+  // Draw "land masses" on Earth
+  orbitCtx.save();
+  orbitCtx.beginPath();
+  orbitCtx.arc(cx, cy, earthRadius, 0, Math.PI * 2);
+  orbitCtx.clip();
+
+  const landColor = 'rgba(34, 120, 60, 0.35)';
+  // continent shapes (simplified blobs)
+  [[cx - earthRadius*0.2, cy - earthRadius*0.15, earthRadius*0.25],
+   [cx + earthRadius*0.15, cy + earthRadius*0.1, earthRadius*0.2],
+   [cx - earthRadius*0.35, cy + earthRadius*0.3, earthRadius*0.15],
+   [cx + earthRadius*0.3, cy - earthRadius*0.25, earthRadius*0.12]
+  ].forEach(([lx, ly, lr]) => {
+    orbitCtx.fillStyle = landColor;
+    orbitCtx.beginPath();
+    orbitCtx.ellipse(lx, ly, lr, lr * 0.7, 0.3, 0, Math.PI * 2);
+    orbitCtx.fill();
+  });
+  orbitCtx.restore();
+
+  // Draw orbits for all missions
+  missions.forEach((m, idx) => {
+    const orbitR = Math.min(w, h) * m.orbitRadius;
+    const eccentricity = 0.15;
+    const rx = orbitR;
+    const ry = orbitR * (1 - eccentricity);
+    const tilt = idx * 0.3 - 0.15;
+
+    // Dotted orbit path
+    orbitCtx.save();
+    orbitCtx.translate(cx, cy);
+    orbitCtx.rotate(tilt);
+    orbitCtx.setLineDash([4, 6]);
+    orbitCtx.strokeStyle = m === currentMission ? `${m.color}44` : 'rgba(27, 58, 107, 0.25)';
+    orbitCtx.lineWidth = m === currentMission ? 1.5 : 0.8;
+    orbitCtx.beginPath();
+    orbitCtx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+    orbitCtx.stroke();
+    orbitCtx.setLineDash([]);
+    orbitCtx.restore();
+
+    // Satellite
+    const angle = time * m.orbitSpeed * 0.06 + idx * 2.1;
+    orbitCtx.save();
+    orbitCtx.translate(cx, cy);
+    orbitCtx.rotate(tilt);
+    const satX = Math.cos(angle) * rx;
+    const satY = Math.sin(angle) * ry;
+
+    // Satellite glow
+    if (m === currentMission) {
+      const satGlow = orbitCtx.createRadialGradient(satX, satY, 0, satX, satY, 12);
+      satGlow.addColorStop(0, `${m.color}66`);
+      satGlow.addColorStop(1, 'transparent');
+      orbitCtx.fillStyle = satGlow;
+      orbitCtx.beginPath();
+      orbitCtx.arc(satX, satY, 12, 0, Math.PI * 2);
+      orbitCtx.fill();
+    }
+
+    // Satellite body
+    orbitCtx.fillStyle = m === currentMission ? m.color : 'rgba(100, 130, 180, 0.6)';
+    // Draw a small cross/satellite shape
+    const ss = m === currentMission ? 4 : 2.5;
+    orbitCtx.fillRect(satX - ss, satY - 1, ss * 2, 2);
+    orbitCtx.fillRect(satX - 1, satY - ss, 2, ss * 2);
+
+    // Solar panels
+    if (m === currentMission) {
+      orbitCtx.fillStyle = `${m.color}88`;
+      orbitCtx.fillRect(satX - ss * 2, satY - 1.5, ss * 0.8, 3);
+      orbitCtx.fillRect(satX + ss * 1.2, satY - 1.5, ss * 0.8, 3);
+    }
+
+    orbitCtx.restore();
+  });
+
+  // Orbit labels
+  missions.forEach((m, idx) => {
+    if (m === currentMission) return;
+    const orbitR = Math.min(w, h) * m.orbitRadius;
+    const labelAngle = -0.6 + idx * 0.15;
+    const tilt = idx * 0.3 - 0.15;
+    const lx = cx + Math.cos(labelAngle + tilt) * orbitR;
+    const ly = cy + Math.sin(labelAngle + tilt) * (orbitR * 0.85);
+    orbitCtx.font = '9px "Space Mono", monospace';
+    orbitCtx.fillStyle = 'rgba(100, 130, 180, 0.4)';
+    orbitCtx.fillText(m.orbit, lx + 8, ly + 3);
+  });
+
+  // HUD elements: crosshair at center
+  orbitCtx.strokeStyle = 'rgba(0, 212, 255, 0.1)';
+  orbitCtx.lineWidth = 0.5;
+  orbitCtx.beginPath();
+  orbitCtx.moveTo(cx - 20, cy);
+  orbitCtx.lineTo(cx + 20, cy);
+  orbitCtx.moveTo(cx, cy - 20);
+  orbitCtx.lineTo(cx, cy + 20);
+  orbitCtx.stroke();
+
+  requestAnimationFrame(drawOrbit);
+}
+
+setTimeout(() => {
+  resizeOrbitCanvas();
+  requestAnimationFrame(drawOrbit);
+}, 100);
+
+// ============================================
+// MISSION LIST
+// ============================================
+function renderMissionList() {
+  const container = document.getElementById('missionList');
+  container.innerHTML = missions.map((m, i) => `
+    <div class="mission-item ${m === currentMission ? 'active' : ''}" data-mission="${m.id}" onclick="selectMission('${m.id}')">
+      <div class="mission-item-header">
+        <div class="status-led ${m.status === 'operational' ? 'green' : m.status === 'active' ? 'amber' : 'red'}"></div>
+        <div class="mission-item-name">${m.name}</div>
+      </div>
+      <div class="mission-item-desc">${m.codename}</div>
+      <div class="mission-item-orbit">ORBIT: ${m.orbit} // ${m.statusLabel}</div>
+    </div>
+  `).join('');
+}
+
+renderMissionList();
+
+// ============================================
+// VIEW SWITCHING
+// ============================================
+function showView(viewId) {
+  const staticOverlay = document.getElementById('staticOverlay');
+  staticOverlay.classList.add('active');
+
+  setTimeout(() => {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+
+    // Update nav link active states
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    const navMap = { crewView: 'crew', equipmentView: 'equipment', commsView: 'comms' };
+    const navKey = navMap[viewId];
+    if (navKey) {
+      document.querySelector(`.nav-link[data-view="${navKey}"]`)?.classList.add('active');
+    } else {
+      // Deselect nav links for mission views
+    }
+
+    setTimeout(() => {
+      staticOverlay.classList.remove('active');
+    }, 200);
+  }, 150);
+
+  currentView = viewId;
+}
+
+// Nav link clicks
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const view = link.dataset.view;
+    const viewMap = { crew: 'crewView', equipment: 'equipmentView', comms: 'commsView' };
+    // Deselect missions
+    document.querySelectorAll('.mission-item').forEach(m => m.classList.remove('active'));
+    showView(viewMap[view]);
+  });
+});
+
+// ============================================
+// MISSION SELECTION & LAUNCH SEQUENCE
+// ============================================
+function selectMission(missionId) {
+  if (launchInProgress) return;
+
+  const mission = missions.find(m => m.id === missionId);
+  if (!mission) return;
+
+  const isNew = mission !== currentMission;
+  currentMission = mission;
+
+  // Update active states
+  renderMissionList();
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+
+  // Update orbit overlay info
+  document.getElementById('orbitMissionLabel').textContent = mission.name;
+  document.getElementById('orbitMissionSub').textContent = `${mission.codename.toUpperCase()} // ${mission.orbit}`;
+  document.getElementById('orbitAlt').textContent = mission.altitude;
+  document.getElementById('orbitVel').textContent = mission.velocity;
+  document.getElementById('orbitInc').textContent = mission.inclination;
+  document.getElementById('orbitPer').textContent = mission.period;
+
+  if (isNew) {
+    launchSequence(mission);
+  } else {
+    showView('orbitView');
+  }
+}
+
+function launchSequence(mission) {
+  launchInProgress = true;
+
+  const countdown = document.getElementById('launchCountdown');
+  const statusText = document.getElementById('launchStatusText');
+  const confirmed = document.getElementById('launchConfirmed');
+  const flash = document.getElementById('launchFlash');
+  const rocket = document.getElementById('launchRocket');
+  const flame = document.getElementById('rocketFlame');
+
+  // Reset
+  countdown.style.display = 'block';
+  confirmed.classList.remove('show');
+  rocket.classList.remove('launched');
+  rocket.style.bottom = '-80px';
+  flame.classList.remove('active');
+  statusText.style.display = 'block';
+  statusText.textContent = 'LAUNCH SEQUENCE INITIATED';
+  statusText.style.color = 'var(--amber)';
+
+  showView('launchView');
+
+  addTelemetry('FLIGHT', 'ok', `LAUNCH SEQUENCE INITIATED FOR ${mission.name}`);
+
+  let count = 5;
+  countdown.textContent = count;
+
+  const interval = setInterval(() => {
+    count--;
+
+    if (count > 0) {
+      countdown.textContent = count;
+      countdown.style.transform = 'scale(1.1)';
+      setTimeout(() => countdown.style.transform = 'scale(1)', 100);
+
+      if (count === 3) {
+        addTelemetry('PROP', 'warn', 'MAIN ENGINE START');
+        flame.classList.add('active');
+      }
+      if (count === 2) {
+        addTelemetry('GNC', 'ok', 'GUIDANCE IS GO');
+      }
+      if (count === 1) {
+        addTelemetry('CAPCOM', 'ok', 'ALL SYSTEMS GO FOR LAUNCH');
+        statusText.textContent = 'ALL SYSTEMS GO';
+        statusText.style.color = 'var(--status-green)';
+      }
+    } else {
+      clearInterval(interval);
+
+      // LAUNCH!
+      countdown.style.display = 'none';
+      statusText.style.display = 'none';
+
+      // Flash
+      flash.style.opacity = '0.8';
+      setTimeout(() => { flash.style.opacity = '0'; }, 200);
+
+      // Shake
+      document.getElementById('mainDisplay').classList.add('shaking');
+      setTimeout(() => document.getElementById('mainDisplay').classList.remove('shaking'), 400);
+
+      // Rocket launch
+      rocket.classList.add('launched');
+
+      // Confirmed text
+      setTimeout(() => {
+        confirmed.classList.add('show');
+        addTelemetry('FLIGHT', 'ok', `LAUNCH CONFIRMED // ${mission.name} IS GO`);
+        addTelemetry('TRACK', 'ok', `ACQUIRING ${mission.orbit} TRAJECTORY`);
+      }, 500);
+
+      // Transition to orbit view
+      setTimeout(() => {
+        showView('orbitView');
+        launchInProgress = false;
+        addTelemetry('GNC', 'ok', `${mission.orbit} ORBIT ACHIEVED // ${mission.altitude}`);
+      }, 2500);
+    }
+  }, 600);
+}
+
+// ============================================
+// MISSION DETAIL RENDERING
+// ============================================
+function showMissionDetail(mission) {
+  const container = document.getElementById('missionDetailContent');
+  container.innerHTML = `
+    <div class="mission-detail-header">
+      <div>
+        <div class="mission-detail-title">${mission.name}</div>
+        <div class="mission-detail-subtitle">${mission.codename} // ${mission.orbitFull}</div>
+      </div>
+      <div class="mission-status-badge ${mission.status}">${mission.statusLabel}</div>
+    </div>
+    <div class="mission-detail-grid">
+      <div class="mission-detail-stat">
+        <div class="mission-detail-stat-label">ORBITAL ALTITUDE</div>
+        <div class="mission-detail-stat-value">${mission.altitude}</div>
+      </div>
+      <div class="mission-detail-stat">
+        <div class="mission-detail-stat-label">VELOCITY</div>
+        <div class="mission-detail-stat-value">${mission.velocity}</div>
+      </div>
+      <div class="mission-detail-stat">
+        <div class="mission-detail-stat-label">LAUNCH YEAR</div>
+        <div class="mission-detail-stat-value">${mission.launch}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--hud-cyan);margin-bottom:8px;">MISSION BRIEF</div>
+      <p style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-primary);line-height:1.8;">${mission.description}</p>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--hud-cyan);margin-bottom:8px;">PAYLOAD MANIFEST</div>
+      <div class="mission-payload">
+        ${mission.payload.map(p => `<span class="payload-tag">${p}</span>`).join('')}
+      </div>
+    </div>
+    <div class="mission-telemetry-section">
+      <div class="mission-telemetry-header">LIVE TELEMETRY</div>
+      <div class="mission-telemetry-data">${mission.telemetry}</div>
+    </div>
+  `;
+  showView('missionDetailView');
+}
+
+// ============================================
+// TELEMETRY FEED
+// ============================================
+const telemetryMessages = [
+  { sys: 'SYS_CHECK', type: 'ok', msg: 'ALL NOMINAL' },
+  { sys: 'PAYLOAD', type: 'data', msg: 'REACT v18.2.0 LOADED' },
+  { sys: 'ORBIT_ALT', type: 'ok', msg: '{alt} STABLE' },
+  { sys: 'COMMS', type: 'ok', msg: 'SIGNAL STRONG' },
+  { sys: 'THERMAL', type: 'ok', msg: 'TEMP 21.4C NOMINAL' },
+  { sys: 'POWER', type: 'ok', msg: 'SOLAR ARRAYS TRACKING' },
+  { sys: 'GUIDANCE', type: 'ok', msg: 'ATTITUDE NOMINAL' },
+  { sys: 'PAYLOAD', type: 'data', msg: 'TYPESCRIPT COMPILER ACTIVE' },
+  { sys: 'NETWORK', type: 'ok', msg: 'LATENCY 12MS' },
+  { sys: 'SYS_CHECK', type: 'ok', msg: 'HEARTBEAT RECEIVED' },
+  { sys: 'ORBIT_VEL', type: 'ok', msg: '{vel} CONFIRMED' },
+  { sys: 'DATA_LINK', type: 'ok', msg: 'BANDWIDTH 98.7% UTILIZED' },
+  { sys: 'PAYLOAD', type: 'data', msg: 'NODE.JS v20 RUNTIME ACTIVE' },
+  { sys: 'REACTION', type: 'ok', msg: 'WHEELS NOMINAL' },
+  { sys: 'GROUND', type: 'ok', msg: 'TRACKING STATION LOCK' },
+  { sys: 'COMMS', type: 'warn', msg: 'MINOR DOPPLER SHIFT DETECTED' },
+  { sys: 'SYS_CHECK', type: 'ok', msg: 'ALL SUBSYSTEMS GREEN' },
+  { sys: 'DEPLOY', type: 'ok', msg: 'CI/CD PIPELINE ACTIVE' },
+  { sys: 'MONITOR', type: 'ok', msg: 'UPTIME 99.99% MAINTAINED' },
+  { sys: 'PAYLOAD', type: 'data', msg: 'DOCKER CONTAINERS HEALTHY' },
+  { sys: 'THERMAL', type: 'ok', msg: 'RADIATOR PANELS DEPLOYED' },
+  { sys: 'POWER', type: 'ok', msg: 'BATTERY 94% CHARGE' },
+  { sys: 'COMMS', type: 'warn', msg: 'S-BAND SIGNAL FLUCTUATION' },
+  { sys: 'SYS_CHECK', type: 'ok', msg: 'MEMORY ALLOCATION OPTIMAL' },
+  { sys: 'GROUND', type: 'ok', msg: 'MISSION ELAPSED TIME NOMINAL' },
+];
+
+let telemetryIdx = 0;
+let telemetrySeconds = 0;
+
+function formatMET(seconds) {
+  const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+  const s = String(seconds % 60).padStart(2, '0');
+  return `T+${h}:${m}:${s}`;
+}
+
+function addTelemetry(sys, type, msg) {
+  const feed = document.getElementById('telemetryFeed');
+  const line = document.createElement('div');
+  line.className = 'telemetry-line';
+  const ts = formatMET(telemetrySeconds);
+  line.innerHTML = `<span class="timestamp">[${ts}]</span> <span class="${type}">${sys}:</span> <span class="data">${msg}</span>`;
+  feed.appendChild(line);
+  feed.scrollTop = feed.scrollHeight;
+
+  // Keep max 100 lines
+  while (feed.children.length > 100) {
+    feed.removeChild(feed.firstChild);
+  }
+}
+
+function generateTelemetry() {
+  telemetrySeconds++;
+  const tmpl = telemetryMessages[telemetryIdx % telemetryMessages.length];
+  telemetryIdx++;
+
+  let msg = tmpl.msg
+    .replace('{alt}', currentMission.altitude)
+    .replace('{vel}', currentMission.velocity);
+
+  addTelemetry(tmpl.sys, tmpl.type, msg);
+}
+
+// Start telemetry
+setInterval(generateTelemetry, 1800);
+
+// Initial telemetry burst
+setTimeout(() => {
+  addTelemetry('SYS', 'ok', 'MISSION CONTROL ONLINE');
+  setTimeout(() => addTelemetry('BOOT', 'ok', 'ALL SUBSYSTEMS INITIALIZED'), 300);
+  setTimeout(() => addTelemetry('COMMS', 'ok', 'COMMUNICATION CHANNELS OPEN'), 600);
+  setTimeout(() => addTelemetry('TRACK', 'ok', 'SATELLITE TRACKING ACTIVE'), 900);
+  setTimeout(() => addTelemetry('FLIGHT', 'ok', `MONITORING ${currentMission.name}`), 1200);
+}, 500);
+
+// ============================================
+// VITALS UPDATE
+// ============================================
+function updateVitals() {
+  const cpu = 15 + Math.random() * 25;
+  const mem = 40 + Math.random() * 20;
+  const net = 92 + Math.random() * 8;
+
+  document.getElementById('vitalCpu').textContent = Math.round(cpu) + '%';
+  document.getElementById('vitalCpuBar').style.width = cpu + '%';
+  document.getElementById('vitalMem').textContent = Math.round(mem) + '%';
+  document.getElementById('vitalMemBar').style.width = mem + '%';
+  document.getElementById('vitalNet').textContent = Math.round(net) + '%';
+  document.getElementById('vitalNetBar').style.width = net + '%';
+
+  // Color coding
+  document.getElementById('vitalCpuBar').style.background = cpu > 70 ? 'var(--amber)' : 'var(--status-green)';
+  document.getElementById('vitalMemBar').style.background = mem > 80 ? 'var(--amber)' : 'var(--status-green)';
+}
+
+setInterval(updateVitals, 3000);
+
+// ============================================
+// CLOCK
+// ============================================
+function updateClock() {
+  const now = new Date();
+  const timeStr = now.toTimeString().split(' ')[0];
+  document.getElementById('missionClock').textContent = timeStr;
+
+  missionElapsedTime++;
+  const days = String(Math.floor(missionElapsedTime / 86400)).padStart(3, '0');
+  const hrs = String(Math.floor((missionElapsedTime % 86400) / 3600)).padStart(2, '0');
+  const mins = String(Math.floor((missionElapsedTime % 3600) / 60)).padStart(2, '0');
+  const secs = String(missionElapsedTime % 60).padStart(2, '0');
+  document.getElementById('metClock').textContent = `T+${days}:${hrs}:${mins}:${secs}`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// ============================================
+// DOUBLE-CLICK MISSION FOR DETAIL VIEW
+// ============================================
+document.getElementById('missionList').addEventListener('dblclick', (e) => {
+  const item = e.target.closest('.mission-item');
+  if (item) {
+    const mission = missions.find(m => m.id === item.dataset.mission);
+    if (mission) showMissionDetail(mission);
+  }
+});
+
+// ============================================
+// COMMS FORM
+// ============================================
+document.querySelector('.comms-send-btn')?.addEventListener('click', () => {
+  const btn = document.querySelector('.comms-send-btn');
+  btn.textContent = 'TRANSMISSION SENT';
+  btn.style.borderColor = 'var(--status-green)';
+  btn.style.color = 'var(--status-green)';
+  addTelemetry('COMMS', 'ok', 'OUTBOUND TRANSMISSION DISPATCHED');
+  setTimeout(() => {
+    btn.textContent = 'TRANSMIT';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 3000);
+});
+
+// ============================================
+// KEYBOARD SHORTCUTS
+// ============================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === '1') selectMission('alpha');
+  if (e.key === '2') selectMission('beta');
+  if (e.key === '3') selectMission('gamma');
+  if (e.key === 'c') showView('crewView');
+  if (e.key === 'e') showView('equipmentView');
+  if (e.key === 'o') showView('orbitView');
+});
+</script>
+</body>
+</html>

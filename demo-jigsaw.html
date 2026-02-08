@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - The Jigsaw Puzzle Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. Piece together my story.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --table: #2A1F14;
+  --table-light: #3D2E1E;
+  --table-dark: #1E1610;
+  --blue: #4A90D9;
+  --blue-dark: #2C5F9E;
+  --blue-glow: rgba(74, 144, 217, 0.3);
+  --green: #4CAF50;
+  --green-dark: #2E7D32;
+  --green-glow: rgba(76, 175, 80, 0.3);
+  --orange: #FF9800;
+  --orange-dark: #E65100;
+  --orange-glow: rgba(255, 152, 0, 0.3);
+  --purple: #9C27B0;
+  --purple-dark: #6A1B9A;
+  --purple-glow: rgba(156, 39, 176, 0.3);
+  --gold: #FFD700;
+  --gold-dark: #C7A600;
+  --gold-glow: rgba(255, 215, 0, 0.3);
+  --text: #F5F0E8;
+  --text-dim: #A89B8C;
+  --text-dark: #2A1F14;
+  --panel: rgba(30, 22, 16, 0.9);
+  --panel-border: rgba(255, 215, 0, 0.15);
+  --success: #4CAF50;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--table);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* ===== WOOD TABLE BACKGROUND ===== */
+.wood-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(
+      87deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255,255,255,0.01) 3px,
+      rgba(255,255,255,0.01) 4px
+    ),
+    repeating-linear-gradient(
+      89deg,
+      transparent 0px,
+      transparent 8px,
+      rgba(0,0,0,0.04) 8px,
+      rgba(0,0,0,0.04) 9px
+    ),
+    repeating-linear-gradient(
+      85deg,
+      transparent 0px,
+      transparent 20px,
+      rgba(255,200,100,0.02) 20px,
+      rgba(255,200,100,0.02) 22px
+    ),
+    linear-gradient(180deg, #3D2E1E 0%, #2A1F14 30%, #231A10 70%, #1E1610 100%);
+}
+
+.wood-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 800px 600px at 50% 40%, rgba(255,200,100,0.06), transparent),
+    radial-gradient(ellipse 400px 300px at 30% 60%, rgba(0,0,0,0.15), transparent),
+    radial-gradient(ellipse 400px 300px at 70% 30%, rgba(0,0,0,0.1), transparent);
+}
+
+/* ===== APP CONTAINER ===== */
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HUD / HEADER ===== */
+.hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, rgba(30,22,16,0.95) 0%, rgba(30,22,16,0.8) 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hud-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: -0.5px;
+}
+
+.hud-title span {
+  color: var(--text-dim);
+  font-weight: 400;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.hud-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.hud-stat-value {
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.hud-stat-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hud-btn:hover {
+  background: rgba(255,215,0,0.1);
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.hud-btn.hint-btn:hover {
+  background: rgba(74,144,217,0.15);
+  color: var(--blue);
+  border-color: var(--blue);
+}
+
+.hud-btn.solve-btn:hover {
+  background: rgba(76,175,80,0.15);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.hud-timer {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar-container {
+  position: fixed;
+  top: 53px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.05);
+  z-index: 100;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--green), var(--orange), var(--purple), var(--gold));
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 10px rgba(255,215,0,0.3);
+}
+
+/* ===== SECTION INDICATORS ===== */
+.section-indicators {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-ind {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  transition: all 0.3s;
+  cursor: default;
+}
+
+.section-ind-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.section-ind-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  transition: color 0.3s;
+}
+
+.section-ind-check {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.section-ind.completed .section-ind-check {
+  opacity: 1;
+}
+
+.section-ind.completed .section-ind-label {
+  color: var(--text);
+}
+
+.section-ind[data-section="about"] .section-ind-dot { background: var(--blue); }
+.section-ind[data-section="skills"] .section-ind-dot { background: var(--green); }
+.section-ind[data-section="projects"] .section-ind-dot { background: var(--orange); }
+.section-ind[data-section="experience"] .section-ind-dot { background: var(--purple); }
+.section-ind[data-section="contact"] .section-ind-dot { background: var(--gold); }
+
+.section-ind.completed[data-section="about"] { border-color: var(--blue); box-shadow: 0 0 10px var(--blue-glow); }
+.section-ind.completed[data-section="skills"] { border-color: var(--green); box-shadow: 0 0 10px var(--green-glow); }
+.section-ind.completed[data-section="projects"] { border-color: var(--orange); box-shadow: 0 0 10px var(--orange-glow); }
+.section-ind.completed[data-section="experience"] { border-color: var(--purple); box-shadow: 0 0 10px var(--purple-glow); }
+.section-ind.completed[data-section="contact"] { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+
+/* ===== MAIN AREA ===== */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
+  padding-bottom: 220px;
+  min-height: 100vh;
+}
+
+/* ===== INTRO OVERLAY ===== */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 14, 8, 0.97);
+  backdrop-filter: blur(20px);
+  transition: opacity 0.8s, visibility 0.8s;
+}
+
+.intro-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-puzzle-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 30px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+.intro-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 10px;
+  text-align: center;
+  letter-spacing: -1px;
+}
+
+.intro-subtitle {
+  font-size: 18px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.intro-desc {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 40px;
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.6;
+  opacity: 0.7;
+}
+
+.intro-start-btn {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--text-dark);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.intro-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3);
+}
+
+/* ===== PUZZLE BOARD ===== */
+.puzzle-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  width: min(800px, calc(100vw - 220px));
+  aspect-ratio: 4 / 3;
+  margin: 20px auto;
+  position: relative;
+  padding: 20px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 16px;
+  border: 2px solid rgba(255,255,255,0.05);
+}
+
+.puzzle-board::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  border: 1px dashed rgba(255,215,0,0.15);
+  pointer-events: none;
+}
+
+/* ===== DROP ZONE / SLOT ===== */
+.puzzle-slot {
+  position: relative;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 2px dashed rgba(255,255,255,0.08);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.puzzle-slot .slot-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.12);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+}
+
+.puzzle-slot.drag-over {
+  border-color: var(--gold);
+  background: rgba(255,215,0,0.08);
+  box-shadow: inset 0 0 20px rgba(255,215,0,0.1);
+}
+
+.puzzle-slot.drag-over-wrong {
+  border-color: #CC2936;
+  background: rgba(204, 41, 54, 0.08);
+}
+
+.puzzle-slot.filled {
+  border-color: transparent;
+  background: transparent;
+}
+
+.puzzle-slot.hint-active {
+  animation: hintPulse 1.5s ease-in-out 3;
+}
+
+@keyframes hintPulse {
+  0%, 100% { box-shadow: inset 0 0 0 rgba(255,215,0,0); border-color: rgba(255,255,255,0.08); }
+  50% { box-shadow: inset 0 0 25px rgba(255,215,0,0.2); border-color: var(--gold); }
+}
+
+/* ===== PUZZLE PIECE ===== */
+.puzzle-piece {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.puzzle-piece::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.puzzle-piece .piece-icon {
+  font-size: 28px;
+  opacity: 0.9;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+
+.puzzle-piece .piece-label {
+  position: absolute;
+  bottom: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.puzzle-piece .piece-number {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 2;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Piece colors */
+.puzzle-piece[data-section="about"] {
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  box-shadow: 0 4px 15px var(--blue-glow);
+}
+.puzzle-piece[data-section="skills"] {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  box-shadow: 0 4px 15px var(--green-glow);
+}
+.puzzle-piece[data-section="projects"] {
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+  box-shadow: 0 4px 15px var(--orange-glow);
+}
+.puzzle-piece[data-section="experience"] {
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  box-shadow: 0 4px 15px var(--purple-glow);
+}
+.puzzle-piece[data-section="contact"] {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  box-shadow: 0 4px 15px var(--gold-glow);
+  color: var(--text-dark);
+}
+
+/* Jigsaw edge shapes via clip-path */
+.puzzle-piece[data-shape="0"] {
+  clip-path: polygon(
+    0% 0%, 35% 0%, 40% -8%, 50% -12%, 60% -8%, 65% 0%, 100% 0%,
+    100% 35%, 108% 40%, 112% 50%, 108% 60%, 100% 65%, 100% 100%,
+    65% 100%, 60% 108%, 50% 112%, 40% 108%, 35% 100%, 0% 100%,
+    0% 65%, -8% 60%, -12% 50%, -8% 40%, 0% 35%
+  );
+}
+.puzzle-piece[data-shape="1"] {
+  clip-path: polygon(
+    0% 0%, 35% 0%, 40% 8%, 50% 12%, 60% 8%, 65% 0%, 100% 0%,
+    100% 35%, 108% 40%, 112% 50%, 108% 60%, 100% 65%, 100% 100%,
+    65% 100%, 60% 92%, 50% 88%, 40% 92%, 35% 100%, 0% 100%,
+    0% 65%, 8% 60%, 12% 50%, 8% 40%, 0% 35%
+  );
+}
+.puzzle-piece[data-shape="2"] {
+  clip-path: polygon(
+    0% 0%, 35% 0%, 40% -8%, 50% -12%, 60% -8%, 65% 0%, 100% 0%,
+    100% 35%, 92% 40%, 88% 50%, 92% 60%, 100% 65%, 100% 100%,
+    65% 100%, 60% 108%, 50% 112%, 40% 108%, 35% 100%, 0% 100%,
+    0% 65%, 8% 60%, 12% 50%, 8% 40%, 0% 35%
+  );
+}
+.puzzle-piece[data-shape="3"] {
+  clip-path: polygon(
+    0% 0%, 35% 0%, 40% 8%, 50% 12%, 60% 8%, 65% 0%, 100% 0%,
+    100% 35%, 92% 40%, 88% 50%, 92% 60%, 100% 65%, 100% 100%,
+    65% 100%, 60% 92%, 50% 88%, 40% 92%, 35% 100%, 0% 100%,
+    0% 65%, -8% 60%, -12% 50%, -8% 40%, 0% 35%
+  );
+}
+
+/* Piece in tray */
+.tray-piece-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.puzzle-piece.in-tray {
+  width: 100px;
+  height: 80px;
+  animation: wobble 3s ease-in-out infinite;
+  animation-delay: var(--wobble-delay, 0s);
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(var(--rot, 0deg)); }
+  25% { transform: rotate(calc(var(--rot, 0deg) + 2deg)); }
+  75% { transform: rotate(calc(var(--rot, 0deg) - 2deg)); }
+}
+
+.puzzle-piece.in-tray:hover {
+  transform: scale(1.1) rotate(0deg) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  z-index: 10;
+}
+
+.puzzle-piece.dragging {
+  opacity: 0.85;
+  cursor: grabbing;
+  transform: scale(1.08);
+  filter: drop-shadow(0 12px 20px rgba(0,0,0,0.5));
+  z-index: 1000;
+  position: fixed;
+  pointer-events: none;
+}
+
+/* Placed piece */
+.puzzle-piece.placed {
+  cursor: default;
+  animation: snapIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  clip-path: none !important;
+  border-radius: 6px;
+}
+
+@keyframes snapIn {
+  0% { transform: scale(1.15); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Wrong placement shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px) rotate(-2deg); }
+  40% { transform: translateX(10px) rotate(2deg); }
+  60% { transform: translateX(-6px) rotate(-1deg); }
+  80% { transform: translateX(6px) rotate(1deg); }
+}
+
+.puzzle-piece.wrong {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ===== COMPLETED SECTION CARD ===== */
+.section-complete-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: rgba(20, 14, 8, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 16px;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-complete-card.visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.section-complete-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.section-complete-card .card-header .checkmark {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.section-complete-card .card-header h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.section-complete-card .card-content {
+  flex: 1;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* Section-specific card styles */
+.section-complete-card[data-section="about"] { border: 1px solid rgba(74,144,217,0.3); }
+.section-complete-card[data-section="about"] .checkmark { background: var(--blue); }
+.section-complete-card[data-section="about"] h3 { color: var(--blue); }
+
+.section-complete-card[data-section="skills"] { border: 1px solid rgba(76,175,80,0.3); }
+.section-complete-card[data-section="skills"] .checkmark { background: var(--green); }
+.section-complete-card[data-section="skills"] h3 { color: var(--green); }
+
+.section-complete-card[data-section="projects"] { border: 1px solid rgba(255,152,0,0.3); }
+.section-complete-card[data-section="projects"] .checkmark { background: var(--orange); }
+.section-complete-card[data-section="projects"] h3 { color: var(--orange); }
+
+.section-complete-card[data-section="experience"] { border: 1px solid rgba(156,39,176,0.3); }
+.section-complete-card[data-section="experience"] .checkmark { background: var(--purple); }
+.section-complete-card[data-section="experience"] h3 { color: var(--purple); }
+
+.section-complete-card[data-section="contact"] { border: 1px solid rgba(255,215,0,0.3); }
+.section-complete-card[data-section="contact"] .checkmark { background: var(--gold); color: var(--text-dark); }
+.section-complete-card[data-section="contact"] h3 { color: var(--gold); }
+
+/* ===== SECTION CARD CONTENT DETAILS ===== */
+.about-content .about-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.about-content .about-role {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.about-content .about-bio {
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.skill-tag {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 600;
+  background: rgba(76,175,80,0.15);
+  color: var(--green);
+  border: 1px solid rgba(76,175,80,0.2);
+}
+
+.project-mini {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.project-mini:last-child { border-bottom: none; }
+
+.project-mini-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.project-mini-desc {
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+.project-mini-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.project-mini-tags span {
+  font-size: 8.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255,152,0,0.12);
+  color: var(--orange);
+}
+
+.timeline-entry {
+  padding: 4px 0 4px 12px;
+  border-left: 2px solid rgba(156,39,176,0.3);
+  margin-bottom: 6px;
+}
+
+.timeline-entry:last-child { margin-bottom: 0; }
+
+.timeline-role {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.timeline-company {
+  font-size: 9.5px;
+  color: var(--purple);
+  font-weight: 600;
+}
+
+.timeline-period {
+  font-size: 9px;
+  opacity: 0.5;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.15);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 10.5px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.contact-link:hover {
+  background: rgba(255,215,0,0.15);
+  border-color: var(--gold);
+}
+
+.contact-link .link-icon {
+  font-size: 14px;
+}
+
+/* ===== PIECE TRAY ===== */
+.piece-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: linear-gradient(0deg, rgba(20,14,8,0.98) 0%, rgba(20,14,8,0.95) 80%, rgba(20,14,8,0) 100%);
+  padding: 30px 24px 20px;
+  min-height: 180px;
+}
+
+.tray-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  opacity: 0.6;
+}
+
+.tray-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* ===== COMPLETE OVERLAY ===== */
+.complete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 14, 8, 0);
+  backdrop-filter: blur(0px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.8s;
+}
+
+.complete-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  background: rgba(20, 14, 8, 0.85);
+  backdrop-filter: blur(12px);
+}
+
+.complete-banner {
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+}
+
+.complete-overlay.visible .complete-banner {
+  transform: scale(1);
+}
+
+.complete-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.complete-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--gold), var(--orange), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.complete-subtitle {
+  font-size: 18px;
+  color: var(--text-dim);
+  margin-bottom: 30px;
+  max-width: 450px;
+  line-height: 1.6;
+}
+
+.complete-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--text-dark);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.complete-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255,215,0,0.3);
+}
+
+/* ===== CONFETTI ===== */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 250;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===== SECTION GROUP OUTLINES ===== */
+.section-group-overlay {
+  position: absolute;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.section-group-overlay.active {
+  opacity: 1;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .section-indicators { display: none; }
+  .puzzle-board { width: calc(100vw - 40px); }
+}
+
+@media (max-width: 640px) {
+  .hud { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+  .hud-title span { display: none; }
+  .hud-stats { gap: 12px; }
+  .hud-stat { font-size: 11px; }
+  .hud-stat-value { font-size: 13px; }
+  .puzzle-board { width: calc(100vw - 20px); margin-top: 10px; }
+  .puzzle-piece.in-tray { width: 70px; height: 56px; }
+  .puzzle-piece .piece-icon { font-size: 20px; }
+  .puzzle-piece .piece-label { font-size: 7px; bottom: 4px; }
+  .piece-tray { min-height: 140px; padding: 20px 12px 14px; }
+  .tray-pieces { gap: 8px; }
+  .intro-title { font-size: 32px; }
+  .complete-title { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wood-bg"></div>
+
+<!-- INTRO OVERLAY -->
+<div class="intro-overlay" id="introOverlay">
+  <svg class="intro-puzzle-icon" viewBox="0 0 80 80" fill="none">
+    <rect x="5" y="5" width="30" height="30" rx="4" fill="#4A90D9" opacity="0.9"/>
+    <rect x="45" y="5" width="30" height="30" rx="4" fill="#4CAF50" opacity="0.9"/>
+    <rect x="5" y="45" width="30" height="30" rx="4" fill="#FF9800" opacity="0.9"/>
+    <rect x="45" y="45" width="30" height="30" rx="4" fill="#9C27B0" opacity="0.9"/>
+    <circle cx="40" cy="40" r="8" fill="#FFD700"/>
+  </svg>
+  <h1 class="intro-title">The Jigsaw Puzzle</h1>
+  <p class="intro-subtitle">Anshull Garg -- Software Developer</p>
+  <p class="intro-desc">Drag puzzle pieces to their correct positions on the board. Complete each section to reveal my portfolio. Can you put it all together?</p>
+  <button class="intro-start-btn" id="startBtn">Start Puzzling</button>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- HUD -->
+  <header class="hud" role="banner">
+    <div class="hud-left">
+      <div class="hud-title">JIGSAW <span>Portfolio</span></div>
+      <div class="hud-stats">
+        <div class="hud-stat">
+          <span class="hud-stat-icon">&#9641;</span>
+          <span>Pieces:</span>
+          <span class="hud-stat-value" id="piecesPlaced">0/12</span>
+        </div>
+        <div class="hud-stat">
+          <span class="hud-stat-icon">&#9635;</span>
+          <span>Sections:</span>
+          <span class="hud-stat-value" id="sectionsComplete">0/5</span>
+        </div>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-timer" id="timer">0:00</div>
+      <button class="hud-btn hint-btn" id="hintBtn" title="Highlight a correct position">Hint</button>
+      <button class="hud-btn" id="shuffleBtn" title="Re-scatter unplaced pieces">Shuffle</button>
+      <button class="hud-btn solve-btn" id="solveBtn" title="Auto-complete the puzzle">Solve</button>
+    </div>
+  </header>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- SECTION INDICATORS -->
+  <div class="section-indicators" aria-label="Section completion status">
+    <div class="section-ind" data-section="about">
+      <div class="section-ind-dot"></div>
+      <span class="section-ind-label">About</span>
+      <span class="section-ind-check">&#10003;</span>
+    </div>
+    <div class="section-ind" data-section="skills">
+      <div class="section-ind-dot"></div>
+      <span class="section-ind-label">Skills</span>
+      <span class="section-ind-check">&#10003;</span>
+    </div>
+    <div class="section-ind" data-section="projects">
+      <div class="section-ind-dot"></div>
+      <span class="section-ind-label">Projects</span>
+      <span class="section-ind-check">&#10003;</span>
+    </div>
+    <div class="section-ind" data-section="experience">
+      <div class="section-ind-dot"></div>
+      <span class="section-ind-label">Experience</span>
+      <span class="section-ind-check">&#10003;</span>
+    </div>
+    <div class="section-ind" data-section="contact">
+      <div class="section-ind-dot"></div>
+      <span class="section-ind-label">Contact</span>
+      <span class="section-ind-check">&#10003;</span>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <main class="main-area">
+    <div class="puzzle-board" id="puzzleBoard"></div>
+  </main>
+
+  <!-- PIECE TRAY -->
+  <div class="piece-tray">
+    <div class="tray-label">Puzzle Pieces -- Drag to Board</div>
+    <div class="tray-pieces" id="trayPieces"></div>
+  </div>
+
+</div>
+
+<!-- COMPLETE OVERLAY -->
+<div class="complete-overlay" id="completeOverlay">
+  <div class="confetti-container" id="confettiContainer"></div>
+  <div class="complete-banner">
+    <div class="complete-icon">&#127881;</div>
+    <h2 class="complete-title">Puzzle Complete!</h2>
+    <p class="complete-subtitle">You put it all together. Now let's build something together.</p>
+    <a class="complete-cta" href="mailto:anshull.garg@gmail.com">
+      Let's Connect &#8594;
+    </a>
+  </div>
+</div>
+
+<script>
+// ===== PUZZLE DATA =====
+const SECTIONS = {
+  about: { color: '#4A90D9', label: 'About', icon: '&#128100;', pieces: 2 },
+  skills: { color: '#4CAF50', label: 'Skills', icon: '&#9881;', pieces: 3 },
+  projects: { color: '#FF9800', label: 'Projects', icon: '&#128187;', pieces: 3 },
+  experience: { color: '#9C27B0', label: 'Experience', icon: '&#128188;', pieces: 2 },
+  contact: { color: '#FFD700', label: 'Contact', icon: '&#9993;', pieces: 2 }
+};
+
+// 4x3 grid: assign each cell to a section
+// Layout:
+// Row 0: about, about, skills, skills
+// Row 1: experience, projects, projects, skills
+// Row 2: experience, projects, contact, contact
+const GRID_MAP = [
+  ['about',      'about',    'skills',   'skills'],
+  ['experience', 'projects', 'projects', 'skills'],
+  ['experience', 'projects', 'contact',  'contact']
+];
+
+const PIECE_ICONS = {
+  about: ['&#128100;', '&#127758;'],
+  skills: ['&#9881;', '&#128295;', '&#128161;'],
+  projects: ['&#128187;', '&#128640;', '&#127919;'],
+  experience: ['&#128188;', '&#127942;'],
+  contact: ['&#9993;', '&#128241;']
+};
+
+const PIECE_LABELS = {
+  about: ['Profile', 'Story'],
+  skills: ['Frontend', 'Backend', 'Tools'],
+  projects: ['Checkout', 'Library', 'More'],
+  experience: ['Walmart', 'Growth'],
+  contact: ['Email', 'Social']
+};
+
+// Section content HTML
+const SECTION_CONTENT = {
+  about: `
+    <div class="about-content">
+      <div class="about-name">Anshull Garg</div>
+      <div class="about-role">Software Developer @ Walmart</div>
+      <div class="about-bio">Building scalable, performant software that serves millions. Passionate about clean architecture, developer experience, and turning complex problems into elegant solutions.</div>
+    </div>
+  `,
+  skills: `
+    <div class="skills-grid">
+      <span class="skill-tag">React</span>
+      <span class="skill-tag">TypeScript</span>
+      <span class="skill-tag">Node.js</span>
+      <span class="skill-tag">JavaScript</span>
+      <span class="skill-tag">Python</span>
+      <span class="skill-tag">GraphQL</span>
+      <span class="skill-tag">Next.js</span>
+      <span class="skill-tag">AWS</span>
+      <span class="skill-tag">Docker</span>
+      <span class="skill-tag">Redis</span>
+      <span class="skill-tag">PostgreSQL</span>
+      <span class="skill-tag">CI/CD</span>
+      <span class="skill-tag">System Design</span>
+      <span class="skill-tag">REST APIs</span>
+    </div>
+  `,
+  projects: `
+    <div class="project-mini">
+      <div class="project-mini-title">Checkout Optimization Engine</div>
+      <div class="project-mini-desc">High-throughput checkout pipeline at Walmart scale. 40% faster page loads.</div>
+      <div class="project-mini-tags"><span>React</span><span>Node.js</span><span>TypeScript</span></div>
+    </div>
+    <div class="project-mini">
+      <div class="project-mini-title">Internal Component Library</div>
+      <div class="project-mini-desc">Reusable design system used across 50+ micro-frontends.</div>
+      <div class="project-mini-tags"><span>React</span><span>Storybook</span></div>
+    </div>
+    <div class="project-mini">
+      <div class="project-mini-title">Real-time Analytics Dashboard</div>
+      <div class="project-mini-desc">Live metrics visualization processing millions of events.</div>
+      <div class="project-mini-tags"><span>D3.js</span><span>WebSocket</span></div>
+    </div>
+  `,
+  experience: `
+    <div class="timeline-entry">
+      <div class="timeline-role">Software Developer</div>
+      <div class="timeline-company">Walmart Global Tech</div>
+      <div class="timeline-period">2022 - Present</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-role">Software Engineer Intern</div>
+      <div class="timeline-company">Walmart Global Tech</div>
+      <div class="timeline-period">2021 - 2022</div>
+    </div>
+  `,
+  contact: `
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:anshull.garg@gmail.com">
+        <span class="link-icon">&#9993;</span> anshull.garg@gmail.com
+      </a>
+      <a class="contact-link" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+        <span class="link-icon">&#128736;</span> github.com/anshullgarg
+      </a>
+      <a class="contact-link" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+        <span class="link-icon">&#128101;</span> linkedin.com/in/anshullgarg
+      </a>
+    </div>
+  `
+};
+
+// ===== STATE =====
+let pieces = [];           // { id, section, gridRow, gridCol, placed, shapeIndex }
+let placedCount = 0;
+let completedSections = new Set();
+let timerInterval = null;
+let seconds = 0;
+let gameStarted = false;
+let draggedPiece = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+// ===== INITIALIZE =====
+function init() {
+  buildPieces();
+  renderBoard();
+  renderTray();
+  updateHUD();
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('hintBtn').addEventListener('click', giveHint);
+  document.getElementById('shuffleBtn').addEventListener('click', shuffleTray);
+  document.getElementById('solveBtn').addEventListener('click', solveAll);
+}
+
+function buildPieces() {
+  pieces = [];
+  let sectionCounters = {};
+  let id = 0;
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 4; c++) {
+      const section = GRID_MAP[r][c];
+      if (!sectionCounters[section]) sectionCounters[section] = 0;
+      const idx = sectionCounters[section];
+      pieces.push({
+        id: id++,
+        section,
+        gridRow: r,
+        gridCol: c,
+        placed: false,
+        sectionIndex: idx,
+        shapeIndex: id % 4
+      });
+      sectionCounters[section]++;
+    }
+  }
+}
+
+function renderBoard() {
+  const board = document.getElementById('puzzleBoard');
+  board.innerHTML = '';
+
+  // Create slots
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 4; c++) {
+      const section = GRID_MAP[r][c];
+      const slot = document.createElement('div');
+      slot.className = 'puzzle-slot';
+      slot.dataset.row = r;
+      slot.dataset.col = c;
+      slot.dataset.section = section;
+      slot.innerHTML = `<span class="slot-label">${SECTIONS[section].label}</span>`;
+      slot.style.gridRow = r + 1;
+      slot.style.gridColumn = c + 1;
+
+      // Drop events
+      slot.addEventListener('dragover', onDragOver);
+      slot.addEventListener('dragleave', onDragLeave);
+      slot.addEventListener('drop', onDrop);
+
+      board.appendChild(slot);
+    }
+  }
+
+  // Create section complete cards (spanning multiple cells)
+  createSectionCards(board);
+}
+
+function createSectionCards(board) {
+  // For each section, we need an overlay card that spans its grid area
+  const sectionBounds = {};
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 4; c++) {
+      const s = GRID_MAP[r][c];
+      if (!sectionBounds[s]) {
+        sectionBounds[s] = { minR: r, maxR: r, minC: c, maxC: c };
+      } else {
+        sectionBounds[s].minR = Math.min(sectionBounds[s].minR, r);
+        sectionBounds[s].maxR = Math.max(sectionBounds[s].maxR, r);
+        sectionBounds[s].minC = Math.min(sectionBounds[s].minC, c);
+        sectionBounds[s].maxC = Math.max(sectionBounds[s].maxC, c);
+      }
+    }
+  }
+
+  for (const [section, bounds] of Object.entries(sectionBounds)) {
+    const card = document.createElement('div');
+    card.className = 'section-complete-card';
+    card.id = `card-${section}`;
+    card.dataset.section = section;
+    card.style.gridRow = `${bounds.minR + 1} / ${bounds.maxR + 2}`;
+    card.style.gridColumn = `${bounds.minC + 1} / ${bounds.maxC + 2}`;
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="checkmark">&#10003;</div>
+        <h3>${SECTIONS[section].label}</h3>
+      </div>
+      <div class="card-content">${SECTION_CONTENT[section]}</div>
+    `;
+    board.appendChild(card);
+  }
+}
+
+function renderTray() {
+  const tray = document.getElementById('trayPieces');
+  tray.innerHTML = '';
+
+  const unplaced = pieces.filter(p => !p.placed);
+  // Shuffle for display
+  const shuffled = [...unplaced].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach(piece => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'tray-piece-wrapper';
+
+    const el = document.createElement('div');
+    el.className = 'puzzle-piece in-tray';
+    el.dataset.id = piece.id;
+    el.dataset.section = piece.section;
+    el.dataset.shape = piece.shapeIndex;
+    el.draggable = true;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', `${SECTIONS[piece.section].label} puzzle piece ${piece.sectionIndex + 1}`);
+    el.style.setProperty('--rot', `${(Math.random() - 0.5) * 8}deg`);
+    el.style.setProperty('--wobble-delay', `${Math.random() * 3}s`);
+
+    el.innerHTML = `
+      <span class="piece-icon">${PIECE_ICONS[piece.section][piece.sectionIndex]}</span>
+      <span class="piece-label">${PIECE_LABELS[piece.section][piece.sectionIndex]}</span>
+      <span class="piece-number">#${piece.id + 1}</span>
+    `;
+
+    // Drag events (HTML5)
+    el.addEventListener('dragstart', onDragStart);
+    el.addEventListener('dragend', onDragEnd);
+
+    // Touch events
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+
+    wrapper.appendChild(el);
+    tray.appendChild(wrapper);
+  });
+}
+
+// ===== DRAG AND DROP (HTML5) =====
+function onDragStart(e) {
+  const pieceId = parseInt(e.target.dataset.id);
+  draggedPiece = pieces.find(p => p.id === pieceId);
+  e.dataTransfer.setData('text/plain', pieceId);
+  e.dataTransfer.effectAllowed = 'move';
+
+  // Visual feedback
+  requestAnimationFrame(() => {
+    e.target.style.opacity = '0.4';
+  });
+}
+
+function onDragEnd(e) {
+  e.target.style.opacity = '1';
+  draggedPiece = null;
+
+  // Clean up all drag-over states
+  document.querySelectorAll('.puzzle-slot').forEach(slot => {
+    slot.classList.remove('drag-over', 'drag-over-wrong');
+  });
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const slot = e.currentTarget;
+
+  if (slot.classList.contains('filled')) return;
+
+  if (draggedPiece) {
+    const isCorrect = parseInt(slot.dataset.row) === draggedPiece.gridRow &&
+                      parseInt(slot.dataset.col) === draggedPiece.gridCol;
+    slot.classList.toggle('drag-over', isCorrect);
+    slot.classList.toggle('drag-over-wrong', !isCorrect);
+  } else {
+    slot.classList.add('drag-over');
+  }
+}
+
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over', 'drag-over-wrong');
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  const slot = e.currentTarget;
+  slot.classList.remove('drag-over', 'drag-over-wrong');
+
+  const pieceId = parseInt(e.dataTransfer.getData('text/plain'));
+  const piece = pieces.find(p => p.id === pieceId);
+  if (!piece) return;
+
+  attemptPlace(piece, slot);
+}
+
+// ===== TOUCH DRAG =====
+function onTouchStart(e) {
+  e.preventDefault();
+  const el = e.currentTarget;
+  const pieceId = parseInt(el.dataset.id);
+  const piece = pieces.find(p => p.id === pieceId);
+  if (!piece || piece.placed) return;
+
+  const touch = e.touches[0];
+  const rect = el.getBoundingClientRect();
+  dragOffsetX = touch.clientX - rect.left;
+  dragOffsetY = touch.clientY - rect.top;
+  draggedPiece = piece;
+
+  // Create floating clone
+  const clone = el.cloneNode(true);
+  clone.className = 'puzzle-piece dragging';
+  clone.dataset.id = pieceId;
+  clone.dataset.section = piece.section;
+  clone.dataset.shape = piece.shapeIndex;
+  clone.style.width = rect.width + 'px';
+  clone.style.height = rect.height + 'px';
+  clone.style.left = (touch.clientX - dragOffsetX) + 'px';
+  clone.style.top = (touch.clientY - dragOffsetY) + 'px';
+  clone.id = 'touch-drag-clone';
+  document.body.appendChild(clone);
+
+  el.style.opacity = '0.3';
+
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('touchend', onTouchEnd);
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const clone = document.getElementById('touch-drag-clone');
+  if (clone) {
+    clone.style.left = (touch.clientX - dragOffsetX) + 'px';
+    clone.style.top = (touch.clientY - dragOffsetY) + 'px';
+  }
+
+  // Highlight slot under finger
+  document.querySelectorAll('.puzzle-slot').forEach(s => s.classList.remove('drag-over', 'drag-over-wrong'));
+  const slotUnder = getSlotAt(touch.clientX, touch.clientY);
+  if (slotUnder && !slotUnder.classList.contains('filled') && draggedPiece) {
+    const isCorrect = parseInt(slotUnder.dataset.row) === draggedPiece.gridRow &&
+                      parseInt(slotUnder.dataset.col) === draggedPiece.gridCol;
+    slotUnder.classList.toggle('drag-over', isCorrect);
+    slotUnder.classList.toggle('drag-over-wrong', !isCorrect);
+  }
+}
+
+function onTouchEnd(e) {
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend', onTouchEnd);
+
+  const clone = document.getElementById('touch-drag-clone');
+  if (clone) clone.remove();
+
+  document.querySelectorAll('.puzzle-slot').forEach(s => s.classList.remove('drag-over', 'drag-over-wrong'));
+
+  if (!draggedPiece) return;
+
+  // Find which slot the piece was dropped on
+  const touch = e.changedTouches[0];
+  const slotUnder = getSlotAt(touch.clientX, touch.clientY);
+
+  // Restore original piece opacity
+  const origEl = document.querySelector(`.puzzle-piece.in-tray[data-id="${draggedPiece.id}"]`);
+  if (origEl) origEl.style.opacity = '1';
+
+  if (slotUnder && !slotUnder.classList.contains('filled')) {
+    attemptPlace(draggedPiece, slotUnder);
+  } else {
+    // Wrong drop - shake
+    if (origEl) {
+      origEl.classList.add('wrong');
+      setTimeout(() => origEl.classList.remove('wrong'), 500);
+    }
+  }
+
+  draggedPiece = null;
+}
+
+function getSlotAt(x, y) {
+  const slots = document.querySelectorAll('.puzzle-slot');
+  for (const slot of slots) {
+    const rect = slot.getBoundingClientRect();
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      return slot;
+    }
+  }
+  return null;
+}
+
+// ===== PLACE PIECE =====
+function attemptPlace(piece, slot) {
+  const row = parseInt(slot.dataset.row);
+  const col = parseInt(slot.dataset.col);
+
+  if (slot.classList.contains('filled')) return;
+
+  if (piece.gridRow === row && piece.gridCol === col) {
+    // Correct placement
+    placePiece(piece, slot);
+  } else {
+    // Wrong placement
+    wrongPlacement(piece);
+  }
+}
+
+function placePiece(piece, slot) {
+  piece.placed = true;
+  placedCount++;
+  slot.classList.add('filled');
+
+  // Create placed piece in the slot
+  const el = document.createElement('div');
+  el.className = 'puzzle-piece placed';
+  el.dataset.section = piece.section;
+  el.dataset.id = piece.id;
+  el.innerHTML = `
+    <span class="piece-icon">${PIECE_ICONS[piece.section][piece.sectionIndex]}</span>
+    <span class="piece-label">${PIECE_LABELS[piece.section][piece.sectionIndex]}</span>
+  `;
+  slot.innerHTML = '';
+  slot.appendChild(el);
+
+  // Remove from tray
+  const trayEl = document.querySelector(`.tray-piece-wrapper .puzzle-piece[data-id="${piece.id}"]`);
+  if (trayEl && trayEl.parentElement) {
+    trayEl.parentElement.style.transition = 'all 0.3s';
+    trayEl.parentElement.style.transform = 'scale(0)';
+    trayEl.parentElement.style.opacity = '0';
+    setTimeout(() => trayEl.parentElement.remove(), 300);
+  }
+
+  // Check section completion
+  checkSectionComplete(piece.section);
+  updateHUD();
+
+  // Check total completion
+  if (placedCount === 12) {
+    setTimeout(onPuzzleComplete, 800);
+  }
+}
+
+function wrongPlacement(piece) {
+  const trayEl = document.querySelector(`.tray-piece-wrapper .puzzle-piece[data-id="${piece.id}"]`);
+  if (trayEl) {
+    trayEl.style.opacity = '1';
+    trayEl.classList.add('wrong');
+    setTimeout(() => trayEl.classList.remove('wrong'), 500);
+  }
+}
+
+function checkSectionComplete(section) {
+  const sectionPieces = pieces.filter(p => p.section === section);
+  const allPlaced = sectionPieces.every(p => p.placed);
+
+  if (allPlaced && !completedSections.has(section)) {
+    completedSections.add(section);
+
+    // Animate: hide placed pieces, show content card
+    const card = document.getElementById(`card-${section}`);
+    if (card) {
+      // Small delay for dramatic effect
+      setTimeout(() => {
+        // Fade out individual pieces in that section
+        sectionPieces.forEach(p => {
+          const slot = document.querySelector(`.puzzle-slot[data-row="${p.gridRow}"][data-col="${p.gridCol}"] .puzzle-piece`);
+          if (slot) {
+            slot.style.transition = 'opacity 0.3s';
+            slot.style.opacity = '0';
+          }
+        });
+
+        setTimeout(() => {
+          card.classList.add('visible');
+        }, 300);
+      }, 200);
+    }
+
+    // Update section indicator
+    const ind = document.querySelector(`.section-ind[data-section="${section}"]`);
+    if (ind) ind.classList.add('completed');
+
+    updateHUD();
+  }
+}
+
+// ===== HUD =====
+function updateHUD() {
+  document.getElementById('piecesPlaced').textContent = `${placedCount}/12`;
+  document.getElementById('sectionsComplete').textContent = `${completedSections.size}/5`;
+  document.getElementById('progressBar').style.width = `${(placedCount / 12) * 100}%`;
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    seconds++;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ===== GAME START =====
+function startGame() {
+  document.getElementById('introOverlay').classList.add('hidden');
+  gameStarted = true;
+  startTimer();
+}
+
+// ===== HINT =====
+function giveHint() {
+  const unplaced = pieces.filter(p => !p.placed);
+  if (unplaced.length === 0) return;
+
+  const randomPiece = unplaced[Math.floor(Math.random() * unplaced.length)];
+  const slot = document.querySelector(`.puzzle-slot[data-row="${randomPiece.gridRow}"][data-col="${randomPiece.gridCol}"]`);
+  if (slot) {
+    slot.classList.add('hint-active');
+    setTimeout(() => slot.classList.remove('hint-active'), 4500);
+  }
+
+  // Also highlight the piece in the tray
+  const trayEl = document.querySelector(`.puzzle-piece[data-id="${randomPiece.id}"]`);
+  if (trayEl) {
+    trayEl.style.transform = 'scale(1.15)';
+    trayEl.style.boxShadow = '0 0 20px rgba(255,215,0,0.5)';
+    setTimeout(() => {
+      trayEl.style.transform = '';
+      trayEl.style.boxShadow = '';
+    }, 3000);
+  }
+}
+
+// ===== SHUFFLE =====
+function shuffleTray() {
+  const tray = document.getElementById('trayPieces');
+  const wrappers = [...tray.children];
+
+  // Animate out
+  wrappers.forEach((w, i) => {
+    w.style.transition = 'transform 0.3s, opacity 0.3s';
+    w.style.transform = 'scale(0.5) rotate(20deg)';
+    w.style.opacity = '0';
+  });
+
+  setTimeout(() => {
+    // Shuffle DOM order
+    for (let i = wrappers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      tray.appendChild(wrappers[j]);
+    }
+
+    // Animate in
+    [...tray.children].forEach((w, i) => {
+      w.style.transition = 'none';
+      w.style.transform = 'scale(0.5) rotate(-20deg)';
+      w.style.opacity = '0';
+      requestAnimationFrame(() => {
+        w.style.transition = `transform 0.4s ${i * 0.05}s, opacity 0.4s ${i * 0.05}s`;
+        w.style.transform = 'scale(1) rotate(0deg)';
+        w.style.opacity = '1';
+      });
+    });
+  }, 350);
+}
+
+// ===== SOLVE =====
+function solveAll() {
+  const unplaced = pieces.filter(p => !p.placed);
+  if (unplaced.length === 0) return;
+
+  let delay = 0;
+  unplaced.forEach((piece, i) => {
+    setTimeout(() => {
+      const slot = document.querySelector(`.puzzle-slot[data-row="${piece.gridRow}"][data-col="${piece.gridCol}"]`);
+      if (slot && !slot.classList.contains('filled')) {
+        placePiece(piece, slot);
+      }
+    }, delay);
+    delay += 200;
+  });
+}
+
+// ===== PUZZLE COMPLETE =====
+function onPuzzleComplete() {
+  stopTimer();
+  launchConfetti();
+  document.getElementById('completeOverlay').classList.add('visible');
+}
+
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#FFD700', '#4A90D9', '#4CAF50', '#FF9800', '#9C27B0', '#FF6B6B', '#FFFFFF'];
+  const shapes = ['square', 'circle'];
+
+  for (let i = 0; i < 120; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size = 6 + Math.random() * 10;
+    const isCircle = Math.random() > 0.5;
+    confetti.style.cssText = `
+      left: ${Math.random() * 100}%;
+      width: ${size}px;
+      height: ${isCircle ? size : size * 0.6}px;
+      background: ${color};
+      border-radius: ${isCircle ? '50%' : '2px'};
+      animation-duration: ${2 + Math.random() * 3}s;
+      animation-delay: ${Math.random() * 1.5}s;
+    `;
+    container.appendChild(confetti);
+  }
+
+  // Clean up after animation
+  setTimeout(() => {
+    container.innerHTML = '';
+  }, 6000);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

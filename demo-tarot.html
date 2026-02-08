@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE READING | Anshull Garg - Software Developer Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A mystical tarot card portfolio experience.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   CUSTOM PROPERTIES
+   ================================================================ */
+:root {
+  --bg-deep: #0A0A1F;
+  --bg-surface: #111133;
+  --bg-card: #1A1A2E;
+  --bg-card-back: #2D1B69;
+  --gold: #D4A853;
+  --gold-light: #F0D68A;
+  --gold-dark: #A07830;
+  --purple-light: #7B5EA7;
+  --purple-deep: #1E0F3E;
+  --text-main: #C8C0D8;
+  --text-heading: #EDE8F5;
+  --text-muted: #7A7494;
+  --accent-blue: #4A7BD4;
+  --accent-green: #4AD490;
+  --accent-red: #D44A6A;
+  --accent-cyan: #4AD4C8;
+  --accent-orange: #D4944A;
+  --accent-pink: #D44AB8;
+  --accent-teal: #3AA89E;
+
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Inter', sans-serif;
+
+  --card-w: 210px;
+  --card-h: 330px;
+
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-main);
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+::selection {
+  background: rgba(212, 168, 83, 0.3);
+  color: var(--text-heading);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================================
+   STARFIELD BACKGROUND
+   ================================================================ */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.star--twinkle {
+  animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: var(--min-o, 0.2); }
+  50% { opacity: var(--max-o, 1); }
+}
+
+/* ================================================================
+   GOLDEN DUST PARTICLES
+   ================================================================ */
+#dust-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatDust var(--dur, 8s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes floatDust {
+  0% { transform: translate(0, 0) scale(0); opacity: 0; }
+  20% { opacity: 0.6; transform: scale(1); }
+  80% { opacity: 0.3; }
+  100% { transform: translate(var(--dx, 50px), var(--dy, -200px)) scale(0); opacity: 0; }
+}
+
+/* ================================================================
+   MYSTIC FOG EDGES
+   ================================================================ */
+.fog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 0% 50%, rgba(10, 10, 31, 0.95) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 50%, rgba(10, 10, 31, 0.95) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(10, 10, 31, 0.7) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(10, 10, 31, 0.9) 0%, transparent 40%);
+}
+
+/* ================================================================
+   MOON PHASE
+   ================================================================ */
+.moon-phase {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.moon-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ================================================================
+   LAYOUT
+   ================================================================ */
+.app {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ================================================================
+   WELCOME SCENE
+   ================================================================ */
+#welcome {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+#welcome.hidden {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+  position: absolute;
+}
+
+.mandala-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 40px;
+  animation: mandalaFloat 6s ease-in-out infinite;
+}
+
+@keyframes mandalaFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+.mandala-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px rgba(212, 168, 83, 0.3));
+}
+
+.welcome-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(212, 168, 83, 0.3);
+}
+
+.welcome-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(12px, 2vw, 16px);
+  color: var(--text-muted);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+.welcome-text {
+  font-size: 16px;
+  color: var(--text-main);
+  max-width: 540px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.welcome-instruction {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--gold-dark);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 48px;
+}
+
+/* Card position labels */
+.card-positions-preview {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.position-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.position-preview .slot {
+  width: 120px;
+  height: 190px;
+  border: 2px dashed rgba(212, 168, 83, 0.25);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.position-preview .slot::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed rgba(212, 168, 83, 0.1);
+  border-radius: 8px;
+}
+
+.position-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* Begin Button */
+.btn-begin {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: transparent;
+  border: 2px solid var(--gold);
+  padding: 18px 48px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.5s var(--ease-smooth);
+}
+
+.btn-begin::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.15), rgba(212, 168, 83, 0.05));
+  transform: translateX(-100%);
+  transition: transform 0.5s var(--ease-smooth);
+}
+
+.btn-begin:hover::before {
+  transform: translateX(0);
+}
+
+.btn-begin:hover {
+  box-shadow: 0 0 40px rgba(212, 168, 83, 0.3), inset 0 0 40px rgba(212, 168, 83, 0.1);
+  text-shadow: 0 0 10px rgba(212, 168, 83, 0.5);
+}
+
+.btn-begin .glow-ring {
+  position: absolute;
+  inset: -4px;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+/* ================================================================
+   READING SCENE
+   ================================================================ */
+#reading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 100px;
+  min-height: 100vh;
+  width: 100%;
+}
+
+#reading.active {
+  display: flex;
+}
+
+.reading-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.reading-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3.5vw, 32px);
+  color: var(--gold);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.reading-header p {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.round-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--gold-dark);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+/* ================================================================
+   CARD TABLE
+   ================================================================ */
+.card-table {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+  perspective: 1200px;
+}
+
+.card-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.card-slot .slot-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ================================================================
+   THE CARD
+   ================================================================ */
+.tarot-card {
+  width: var(--card-w);
+  height: var(--card-h);
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.8s var(--ease-smooth);
+  animation: cardFloat 4s ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+}
+
+.tarot-card.dealing {
+  animation: dealIn 0.7s var(--ease-bounce) forwards;
+  opacity: 0;
+  animation-delay: var(--deal-delay, 0s);
+}
+
+@keyframes dealIn {
+  0% { transform: translateY(-200px) rotateZ(15deg) scale(0.5); opacity: 0; }
+  100% { transform: translateY(0) rotateZ(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.tarot-card.flipped {
+  transform: rotateY(180deg);
+  animation: none;
+}
+
+.tarot-card.flipped .card-back { pointer-events: none; }
+
+.tarot-card:hover:not(.flipped) {
+  filter: brightness(1.1);
+  box-shadow: 0 0 30px rgba(212, 168, 83, 0.4);
+}
+
+.card-face, .card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ================================================================
+   CARD BACK DESIGN
+   ================================================================ */
+.card-back {
+  background: var(--bg-card-back);
+  border: 2px solid var(--gold-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.card-back-inner {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(212, 168, 83, 0.4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-back-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(212, 168, 83, 0.3) 14px, rgba(212, 168, 83, 0.3) 15px),
+    repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(212, 168, 83, 0.3) 14px, rgba(212, 168, 83, 0.3) 15px);
+}
+
+.card-back-pattern::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(212, 168, 83, 0.15) 20px, rgba(212, 168, 83, 0.15) 21px),
+    repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(212, 168, 83, 0.15) 20px, rgba(212, 168, 83, 0.15) 21px);
+}
+
+.card-back-center {
+  position: relative;
+  z-index: 2;
+  width: 80px;
+  height: 80px;
+}
+
+.card-back-corners {
+  position: absolute;
+  inset: 16px;
+}
+
+.card-back-corners::before,
+.card-back-corners::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+
+.card-back-corners::before {
+  top: 0; left: 0;
+  border-width: 1px 0 0 1px;
+}
+
+.card-back-corners::after {
+  bottom: 0; right: 0;
+  border-width: 0 1px 1px 0;
+}
+
+/* ================================================================
+   CARD FACE DESIGN
+   ================================================================ */
+.card-face {
+  background: var(--bg-card);
+  border: 2px solid var(--card-accent, var(--gold-dark));
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+}
+
+.card-face-inner {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.card-numeral {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.card-art {
+  width: 120px;
+  height: 120px;
+  margin: 8px 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-art svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px var(--card-glow, rgba(212, 168, 83, 0.3)));
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 8px 0 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.card-meaning {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.card-divider {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 8px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.card-keyword {
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--card-accent, var(--gold));
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+/* Card accent glow background */
+.card-face::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 40%;
+  background: radial-gradient(ellipse, var(--card-glow, rgba(212, 168, 83, 0.08)), transparent 70%);
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+
+/* ================================================================
+   SPARKLE PARTICLES ON FLIP
+   ================================================================ */
+.sparkle-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--gold-light);
+  border-radius: 50%;
+  animation: sparkleOut 0.8s ease-out forwards;
+}
+
+@keyframes sparkleOut {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--sx, 30px), var(--sy, -30px)) scale(0); opacity: 0; }
+}
+
+/* ================================================================
+   READING PANEL (below cards)
+   ================================================================ */
+.reading-panel {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s var(--ease-smooth);
+}
+
+.reading-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reading-content {
+  background: rgba(26, 26, 46, 0.6);
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: 16px;
+  padding: 32px;
+  backdrop-filter: blur(10px);
+}
+
+.reading-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.reading-card-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.reading-card-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--gold);
+  letter-spacing: 3px;
+}
+
+.reading-card-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.reading-typewriter {
+  font-style: italic;
+  color: var(--gold-dark);
+  font-size: 15px;
+  margin-bottom: 20px;
+  min-height: 24px;
+  border-right: 2px solid var(--gold);
+  display: inline-block;
+  animation: blink-caret 0.8s step-end infinite;
+}
+
+@keyframes blink-caret {
+  0%, 100% { border-color: var(--gold); }
+  50% { border-color: transparent; }
+}
+
+.reading-typewriter.done {
+  border-color: transparent;
+  animation: none;
+}
+
+.reading-body h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 20px 0 10px;
+}
+
+.reading-body p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.reading-body ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reading-body li {
+  padding: 6px 0 6px 20px;
+  position: relative;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.reading-body li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.skill-tag {
+  font-size: 12px;
+  padding: 4px 14px;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  border-radius: 20px;
+  color: var(--gold);
+  background: rgba(212, 168, 83, 0.05);
+  font-family: var(--font-body);
+  letter-spacing: 1px;
+}
+
+.timeline-item {
+  padding: 16px 0 16px 24px;
+  border-left: 2px solid rgba(212, 168, 83, 0.2);
+  position: relative;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 22px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.timeline-item .tl-date {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.timeline-item .tl-role {
+  font-size: 15px;
+  color: var(--text-heading);
+  font-weight: 500;
+  margin: 2px 0;
+}
+
+.timeline-item .tl-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 10px 16px;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+  background: rgba(212, 168, 83, 0.08);
+  border-color: rgba(212, 168, 83, 0.4);
+}
+
+.contact-link svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   ACTION BUTTONS
+   ================================================================ */
+.actions {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  border: 1.5px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  background: rgba(212, 168, 83, 0.1);
+  box-shadow: 0 0 30px rgba(212, 168, 83, 0.2);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.2), rgba(212, 168, 83, 0.05));
+}
+
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ================================================================
+   FULL READING MODE
+   ================================================================ */
+#fullReading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 24px 100px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#fullReading.active {
+  display: flex;
+}
+
+.full-reading-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.full-reading-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 40px);
+  color: var(--gold);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.full-reading-header p {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.full-card-section {
+  width: 100%;
+  margin-bottom: 60px;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s var(--ease-smooth);
+}
+
+.full-card-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.full-card-section:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.full-card-mini {
+  flex-shrink: 0;
+  width: 160px;
+  height: 252px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--gold-dark);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+}
+
+.full-card-mini .card-art {
+  width: 80px;
+  height: 80px;
+  margin: 4px 0;
+}
+
+.full-card-mini .card-name {
+  font-size: 11px;
+  margin: 4px 0 2px;
+}
+
+.full-card-mini .card-meaning {
+  font-size: 8px;
+}
+
+.full-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.full-content h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+
+.full-content .position-tag {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--gold-dark);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.full-content .divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  margin-bottom: 16px;
+}
+
+.full-content p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+/* ================================================================
+   BACK TO TOP
+   ================================================================ */
+.back-to-top {
+  margin-top: 40px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--gold-dark);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.back-to-top:hover { color: var(--gold); }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  :root {
+    --card-w: 160px;
+    --card-h: 252px;
+  }
+
+  .card-table { gap: 20px; }
+
+  .card-positions-preview { gap: 16px; }
+  .position-preview .slot { width: 80px; height: 126px; }
+
+  .full-card-section,
+  .full-card-section:nth-child(even) {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .reading-content { padding: 20px; }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --card-w: 130px;
+    --card-h: 205px;
+  }
+
+  .card-table { gap: 12px; }
+  .card-art { width: 70px; height: 70px; }
+  .card-name { font-size: 11px; letter-spacing: 2px; }
+  .card-meaning { font-size: 9px; }
+  .card-numeral { font-size: 8px; }
+  .actions { flex-direction: column; align-items: center; }
+}
+
+/* ================================================================
+   ENTRANCE ANIMATION
+   ================================================================ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s var(--ease-smooth) forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================================================
+   CANDLELIGHT FLICKER ON ELEMENTS
+   ================================================================ */
+.candle-flicker {
+  animation: candleFlicker 3s ease-in-out infinite;
+}
+
+@keyframes candleFlicker {
+  0%, 100% { opacity: 1; }
+  25% { opacity: 0.92; }
+  50% { opacity: 0.97; }
+  75% { opacity: 0.88; }
+}
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<div id="starfield"></div>
+
+<!-- GOLDEN DUST -->
+<div id="dust-layer"></div>
+
+<!-- MYSTIC FOG -->
+<div class="fog-overlay"></div>
+
+<!-- MOON PHASE -->
+<div class="moon-phase candle-flicker" id="moonPhase">
+  <svg class="moon-icon" viewBox="0 0 24 24" id="moonIcon"></svg>
+  <span id="moonLabel"></span>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- ============================================================
+       WELCOME SCENE
+       ============================================================ -->
+  <section id="welcome">
+    <div class="mandala-container fade-in" style="--delay: 0.2s">
+      <svg class="mandala-svg" viewBox="0 0 200 200">
+        <!-- Outer ring -->
+        <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(212,168,83,0.3)" stroke-width="0.5"/>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(212,168,83,0.15)" stroke-width="0.5"/>
+        <!-- Petal pattern -->
+        <g opacity="0.4">
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(30 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(60 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(90 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(120 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(150 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(180 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(210 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(240 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(270 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(300 100 100)"/>
+          <path d="M100 20 Q120 60 100 100 Q80 60 100 20Z" fill="none" stroke="#D4A853" stroke-width="0.7" transform="rotate(330 100 100)"/>
+        </g>
+        <!-- Inner circles -->
+        <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(212,168,83,0.25)" stroke-width="0.5" stroke-dasharray="4 4"/>
+        <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(212,168,83,0.2)" stroke-width="0.5"/>
+        <circle cx="100" cy="100" r="20" fill="none" stroke="rgba(212,168,83,0.15)" stroke-width="0.5"/>
+        <!-- Center eye -->
+        <ellipse cx="100" cy="100" rx="15" ry="8" fill="none" stroke="#D4A853" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="100" cy="100" r="4" fill="#D4A853" opacity="0.5"/>
+        <!-- Star points on outer ring -->
+        <g opacity="0.5" fill="#D4A853">
+          <circle cx="100" cy="5" r="2"/>
+          <circle cx="100" cy="195" r="2"/>
+          <circle cx="5" cy="100" r="2"/>
+          <circle cx="195" cy="100" r="2"/>
+          <circle cx="33" cy="33" r="1.5"/>
+          <circle cx="167" cy="33" r="1.5"/>
+          <circle cx="33" cy="167" r="1.5"/>
+          <circle cx="167" cy="167" r="1.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <h1 class="welcome-title fade-in" style="--delay: 0.4s">The Reading</h1>
+    <p class="welcome-subtitle fade-in" style="--delay: 0.5s">A Portfolio Divination</p>
+
+    <p class="welcome-text fade-in" style="--delay: 0.7s">
+      Welcome, Seeker. The cards hold the story of a software developer who builds at Fortune 1 scale.
+    </p>
+    <p class="welcome-instruction fade-in" style="--delay: 0.9s">
+      Draw three cards to reveal: Past, Present, and Future
+    </p>
+
+    <div class="card-positions-preview fade-in" style="--delay: 1.1s">
+      <div class="position-preview">
+        <div class="slot">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(212,168,83,0.3)" stroke-width="1">
+            <circle cx="12" cy="12" r="8"/>
+            <path d="M12 4v16M4 12h16"/>
+          </svg>
+        </div>
+        <span class="position-label">Past</span>
+      </div>
+      <div class="position-preview">
+        <div class="slot">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(212,168,83,0.3)" stroke-width="1">
+            <circle cx="12" cy="12" r="8"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <span class="position-label">Present</span>
+      </div>
+      <div class="position-preview">
+        <div class="slot">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(212,168,83,0.3)" stroke-width="1">
+            <polygon points="12,4 20,20 4,20"/>
+          </svg>
+        </div>
+        <span class="position-label">Future</span>
+      </div>
+    </div>
+
+    <button class="btn-begin fade-in" style="--delay: 1.3s" onclick="beginReading()">
+      <span class="glow-ring"></span>
+      Begin Reading
+    </button>
+  </section>
+
+  <!-- ============================================================
+       READING SCENE
+       ============================================================ -->
+  <section id="reading">
+    <div class="reading-header">
+      <h2>Your Reading</h2>
+      <p id="readingSubtitle">Click each card to reveal its meaning</p>
+    </div>
+
+    <p class="round-label" id="roundLabel">Round I</p>
+
+    <div class="card-table" id="cardTable">
+      <!-- Cards inserted by JS -->
+    </div>
+
+    <div class="reading-panel" id="readingPanel">
+      <div class="reading-content" id="readingContent">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+
+    <div class="actions" id="actionButtons" style="display:none">
+      <button class="btn btn--primary" id="btnDrawMore" onclick="drawMoreCards()">Draw More Cards</button>
+      <button class="btn" id="btnFullReading" onclick="showFullReading()">View Full Reading</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FULL READING MODE
+       ============================================================ -->
+  <section id="fullReading">
+    <div class="full-reading-header">
+      <h2>The Complete Reading</h2>
+      <p>All cards have been drawn for Anshull Garg</p>
+    </div>
+    <div id="fullReadingCards"></div>
+    <button class="btn" onclick="resetReading()" style="margin-top: 32px">Begin a New Reading</button>
+    <button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Return to the Stars</button>
+  </section>
+
+</div>
+
+<script>
+/* ================================================================
+   CARD DATA - THE SEVEN ARCANA
+   ================================================================ */
+const CARDS = [
+  {
+    id: 'architect',
+    numeral: 'I',
+    name: 'The Architect',
+    meaning: 'The foundation of who you are',
+    keyword: 'Origin',
+    accent: '#4A7BD4',
+    glow: 'rgba(74,123,212,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Tower of code -->
+      <rect x="40" y="20" width="40" height="80" stroke="#4A7BD4" stroke-width="1.5" rx="2" opacity="0.8"/>
+      <rect x="35" y="95" width="50" height="8" stroke="#4A7BD4" stroke-width="1" rx="1" opacity="0.5"/>
+      <!-- Windows/code lines -->
+      <line x1="48" y1="32" x2="72" y2="32" stroke="#4A7BD4" stroke-width="1" opacity="0.6"/>
+      <line x1="48" y1="38" x2="65" y2="38" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+      <line x1="48" y1="44" x2="70" y2="44" stroke="#4A7BD4" stroke-width="1" opacity="0.6"/>
+      <line x1="48" y1="50" x2="60" y2="50" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+      <line x1="48" y1="56" x2="68" y2="56" stroke="#4A7BD4" stroke-width="1" opacity="0.6"/>
+      <line x1="48" y1="62" x2="72" y2="62" stroke="#4A7BD4" stroke-width="1" opacity="0.4"/>
+      <line x1="48" y1="68" x2="63" y2="68" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+      <line x1="48" y1="74" x2="70" y2="74" stroke="#4A7BD4" stroke-width="1" opacity="0.6"/>
+      <line x1="48" y1="80" x2="66" y2="80" stroke="#4A7BD4" stroke-width="1" opacity="0.4"/>
+      <line x1="48" y1="86" x2="58" y2="86" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+      <!-- Roof/pinnacle -->
+      <polygon points="60,8 42,20 78,20" stroke="#D4A853" stroke-width="1" fill="rgba(212,168,83,0.1)"/>
+      <circle cx="60" cy="8" r="3" fill="#D4A853" opacity="0.6"/>
+      <!-- Geometric support lines -->
+      <line x1="30" y1="103" x2="40" y2="95" stroke="#4A7BD4" stroke-width="0.5" opacity="0.3"/>
+      <line x1="90" y1="103" x2="80" y2="95" stroke="#4A7BD4" stroke-width="0.5" opacity="0.3"/>
+      <!-- Floating brackets -->
+      <text x="22" y="60" font-family="monospace" font-size="18" fill="#4A7BD4" opacity="0.3">{</text>
+      <text x="90" y="60" font-family="monospace" font-size="18" fill="#4A7BD4" opacity="0.3">}</text>
+    </svg>`,
+    readingText: 'The Architect reveals a builder of systems, one who sees structure where others see chaos.',
+    content: `
+      <h3>About</h3>
+      <p>Anshull Garg is a Software Developer at Walmart Global Tech, where he architects scalable, high-performance applications powering enterprise e-commerce at Fortune 1 scale.</p>
+      <p>He builds systems that serve millions -- designing clean architectures, optimizing frontend performance, and collaborating across teams to ship features that matter. His approach blends deep technical expertise with a focus on user-centric design and maintainable code.</p>
+      <h3>Philosophy</h3>
+      <ul>
+        <li>Readability is not optional -- code is read 10x more than written</li>
+        <li>Every PR should leave the codebase better than found</li>
+        <li>Ship, measure, iterate -- perfection is the enemy of progress</li>
+      </ul>
+    `
+  },
+  {
+    id: 'forge',
+    numeral: 'II',
+    name: 'The Forge',
+    meaning: 'The tools you have mastered',
+    keyword: 'Mastery',
+    accent: '#D4944A',
+    glow: 'rgba(212,148,74,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Anvil body -->
+      <path d="M30 70 L40 55 L80 55 L90 70 L95 75 L25 75 Z" stroke="#D4944A" stroke-width="1.5" fill="rgba(212,148,74,0.08)"/>
+      <rect x="45" y="75" width="30" height="15" stroke="#D4944A" stroke-width="1" rx="2" fill="rgba(212,148,74,0.05)"/>
+      <rect x="35" y="90" width="50" height="6" stroke="#D4944A" stroke-width="1" rx="1" fill="rgba(212,148,74,0.05)"/>
+      <!-- Hammer -->
+      <line x1="60" y1="20" x2="60" y2="50" stroke="#D4A853" stroke-width="1.5"/>
+      <rect x="48" y="12" width="24" height="12" rx="2" stroke="#D4A853" stroke-width="1.5" fill="rgba(212,168,83,0.15)"/>
+      <!-- Sparks -->
+      <circle cx="45" cy="45" r="2" fill="#D4A853" opacity="0.8"/>
+      <circle cx="38" cy="38" r="1.5" fill="#D4944A" opacity="0.6"/>
+      <circle cx="75" cy="42" r="2" fill="#D4A853" opacity="0.7"/>
+      <circle cx="82" cy="35" r="1.5" fill="#D4944A" opacity="0.5"/>
+      <circle cx="50" cy="35" r="1" fill="#F0D68A" opacity="0.9"/>
+      <circle cx="70" cy="33" r="1" fill="#F0D68A" opacity="0.8"/>
+      <!-- Spark lines -->
+      <line x1="42" y1="48" x2="32" y2="38" stroke="#D4A853" stroke-width="0.5" opacity="0.5"/>
+      <line x1="78" y1="45" x2="88" y2="32" stroke="#D4A853" stroke-width="0.5" opacity="0.5"/>
+      <line x1="48" y1="40" x2="35" y2="28" stroke="#D4944A" stroke-width="0.5" opacity="0.4"/>
+      <line x1="72" y1="38" x2="85" y2="25" stroke="#D4944A" stroke-width="0.5" opacity="0.4"/>
+      <!-- Heat glow -->
+      <ellipse cx="60" cy="55" rx="20" ry="5" fill="rgba(212,148,74,0.1)"/>
+    </svg>`,
+    readingText: 'The Forge speaks of tools tempered through fire -- each technology a blade sharpened with purpose.',
+    content: `
+      <h3>Tech Stack</h3>
+      <div class="skill-tags">
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Next.js</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">GraphQL</span>
+        <span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">MongoDB</span>
+        <span class="skill-tag">Redis</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">CI/CD</span>
+        <span class="skill-tag">Git</span>
+        <span class="skill-tag">Tailwind CSS</span>
+      </div>
+      <h3>Disciplines</h3>
+      <ul>
+        <li>Full-stack application architecture at enterprise scale</li>
+        <li>Performance optimization -- Core Web Vitals, code splitting, lazy loading</li>
+        <li>System design for high-traffic distributed systems</li>
+        <li>Test-driven development with Jest, Cypress, Playwright</li>
+        <li>Agile methodologies, code review culture, and cross-team collaboration</li>
+      </ul>
+    `
+  },
+  {
+    id: 'navigator',
+    numeral: 'III',
+    name: 'The Navigator',
+    meaning: 'The journey you have walked',
+    keyword: 'Journey',
+    accent: '#4AD4C8',
+    glow: 'rgba(74,212,200,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Compass circle -->
+      <circle cx="60" cy="60" r="45" stroke="#4AD4C8" stroke-width="1" opacity="0.5"/>
+      <circle cx="60" cy="60" r="40" stroke="#4AD4C8" stroke-width="0.5" opacity="0.3"/>
+      <circle cx="60" cy="60" r="50" stroke="#4AD4C8" stroke-width="0.5" opacity="0.2" stroke-dasharray="3 3"/>
+      <!-- Compass rose -->
+      <polygon points="60,15 65,55 60,58 55,55" fill="rgba(212,168,83,0.4)" stroke="#D4A853" stroke-width="0.8"/>
+      <polygon points="60,105 55,65 60,62 65,65" fill="rgba(74,212,200,0.2)" stroke="#4AD4C8" stroke-width="0.8"/>
+      <polygon points="15,60 55,55 58,60 55,65" fill="rgba(74,212,200,0.15)" stroke="#4AD4C8" stroke-width="0.8"/>
+      <polygon points="105,60 65,55 62,60 65,65" fill="rgba(74,212,200,0.15)" stroke="#4AD4C8" stroke-width="0.8"/>
+      <!-- Center circle -->
+      <circle cx="60" cy="60" r="5" fill="rgba(212,168,83,0.3)" stroke="#D4A853" stroke-width="1"/>
+      <circle cx="60" cy="60" r="2" fill="#D4A853" opacity="0.6"/>
+      <!-- Cardinal markers -->
+      <text x="57" y="12" font-family="serif" font-size="8" fill="#D4A853" opacity="0.7">N</text>
+      <text x="57" y="114" font-family="serif" font-size="8" fill="#4AD4C8" opacity="0.5">S</text>
+      <text x="5" y="63" font-family="serif" font-size="8" fill="#4AD4C8" opacity="0.5">W</text>
+      <text x="108" y="63" font-family="serif" font-size="8" fill="#4AD4C8" opacity="0.5">E</text>
+      <!-- Tick marks -->
+      <line x1="60" y1="16" x2="60" y2="22" stroke="#D4A853" stroke-width="0.5" opacity="0.4"/>
+      <line x1="60" y1="98" x2="60" y2="104" stroke="#4AD4C8" stroke-width="0.5" opacity="0.3"/>
+      <line x1="16" y1="60" x2="22" y2="60" stroke="#4AD4C8" stroke-width="0.5" opacity="0.3"/>
+      <line x1="98" y1="60" x2="104" y2="60" stroke="#4AD4C8" stroke-width="0.5" opacity="0.3"/>
+    </svg>`,
+    readingText: 'The Navigator charts a course through complexity -- every waypoint a lesson learned at scale.',
+    content: `
+      <h3>Career Path</h3>
+      <div class="timeline-item">
+        <span class="tl-date">2023 - Present</span>
+        <div class="tl-role">Software Developer, Walmart Global Tech</div>
+        <div class="tl-desc">Architecting scalable full-stack applications powering digital commerce for one of the world's largest retail platforms. Building systems that handle millions of users, optimizing performance, and driving cross-functional initiatives.</div>
+      </div>
+      <div class="timeline-item">
+        <span class="tl-date">2021 - 2023</span>
+        <div class="tl-role">Software Engineering Foundations</div>
+        <div class="tl-desc">Deep-dived into full-stack development, system design, and modern web technologies. Built multiple production-grade applications and contributed to open-source projects, honing a craft focused on clean architecture and performance.</div>
+      </div>
+      <div class="timeline-item">
+        <span class="tl-date">Education</span>
+        <div class="tl-role">Computer Science</div>
+        <div class="tl-desc">Formal education in algorithms, data structures, and software engineering principles. Developed a strong foundation in computational thinking and problem decomposition.</div>
+      </div>
+    `
+  },
+  {
+    id: 'creator',
+    numeral: 'IV',
+    name: 'The Creator',
+    meaning: 'What you have brought into the world',
+    keyword: 'Creation',
+    accent: '#4AD490',
+    glow: 'rgba(74,212,144,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Hands (geometric) -->
+      <path d="M25 85 Q25 65 40 60 L50 58" stroke="#4AD490" stroke-width="1.2" fill="none" opacity="0.6"/>
+      <path d="M95 85 Q95 65 80 60 L70 58" stroke="#4AD490" stroke-width="1.2" fill="none" opacity="0.6"/>
+      <!-- Fingers suggestion -->
+      <path d="M40 60 Q45 55 50 56" stroke="#4AD490" stroke-width="0.8" opacity="0.5"/>
+      <path d="M80 60 Q75 55 70 56" stroke="#4AD490" stroke-width="0.8" opacity="0.5"/>
+      <!-- Glowing orb -->
+      <circle cx="60" cy="50" r="22" stroke="#4AD490" stroke-width="1" opacity="0.4"/>
+      <circle cx="60" cy="50" r="16" stroke="#D4A853" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="60" cy="50" r="10" fill="rgba(74,212,144,0.1)" stroke="#4AD490" stroke-width="0.8" opacity="0.6"/>
+      <circle cx="60" cy="50" r="4" fill="rgba(212,168,83,0.4)"/>
+      <!-- Energy lines from orb -->
+      <line x1="60" y1="28" x2="60" y2="18" stroke="#4AD490" stroke-width="0.5" opacity="0.4"/>
+      <line x1="42" y1="35" x2="35" y2="28" stroke="#4AD490" stroke-width="0.5" opacity="0.3"/>
+      <line x1="78" y1="35" x2="85" y2="28" stroke="#4AD490" stroke-width="0.5" opacity="0.3"/>
+      <line x1="38" y1="50" x2="28" y2="50" stroke="#4AD490" stroke-width="0.5" opacity="0.3"/>
+      <line x1="82" y1="50" x2="92" y2="50" stroke="#4AD490" stroke-width="0.5" opacity="0.3"/>
+      <!-- Glow effect -->
+      <circle cx="60" cy="50" r="30" fill="rgba(74,212,144,0.05)"/>
+    </svg>`,
+    readingText: 'The Creator shapes raw energy into form -- every project a world brought into being.',
+    content: `
+      <h3>Featured Project: Enterprise Commerce Platform</h3>
+      <p>Architected and built a high-performance frontend application serving millions of daily active users on Walmart's digital commerce platform.</p>
+      <h3>Key Contributions</h3>
+      <ul>
+        <li>Engineered React-based component architecture with optimized rendering pipelines</li>
+        <li>Implemented code splitting and lazy loading strategies reducing bundle size significantly</li>
+        <li>Designed scalable state management patterns for complex e-commerce workflows</li>
+        <li>Built responsive, accessible UI components meeting WCAG 2.1 AA standards</li>
+      </ul>
+      <h3>Technologies</h3>
+      <div class="skill-tags">
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">Next.js</span>
+        <span class="skill-tag">GraphQL</span>
+        <span class="skill-tag">Node.js</span>
+      </div>
+    `
+  },
+  {
+    id: 'guardian',
+    numeral: 'V',
+    name: 'The Guardian',
+    meaning: 'What you protect and maintain',
+    keyword: 'Resilience',
+    accent: '#D44A6A',
+    glow: 'rgba(212,74,106,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shield shape -->
+      <path d="M60 15 L90 30 L90 65 Q90 90 60 105 Q30 90 30 65 L30 30 Z" stroke="#D44A6A" stroke-width="1.5" fill="rgba(212,74,106,0.05)"/>
+      <path d="M60 22 L84 34 L84 63 Q84 85 60 98 Q36 85 36 63 L36 34 Z" stroke="#D44A6A" stroke-width="0.5" fill="none" opacity="0.4"/>
+      <!-- Code symbols on shield -->
+      <text x="46" y="52" font-family="monospace" font-size="10" fill="#D44A6A" opacity="0.6">&lt;/&gt;</text>
+      <text x="50" y="66" font-family="monospace" font-size="8" fill="#D4A853" opacity="0.5">{...}</text>
+      <!-- Shield cross -->
+      <line x1="60" y1="30" x2="60" y2="95" stroke="#D44A6A" stroke-width="0.5" opacity="0.2"/>
+      <line x1="35" y1="55" x2="85" y2="55" stroke="#D44A6A" stroke-width="0.5" opacity="0.2"/>
+      <!-- Glow at top -->
+      <circle cx="60" cy="15" r="4" fill="rgba(212,168,83,0.3)"/>
+      <circle cx="60" cy="15" r="2" fill="#D4A853" opacity="0.5"/>
+    </svg>`,
+    readingText: 'The Guardian stands watch over critical systems -- vigilant, resilient, unwavering.',
+    content: `
+      <h3>Featured Project: System Reliability & Performance</h3>
+      <p>Led initiatives to improve system reliability and performance across critical production services, ensuring seamless experiences for millions of users during peak traffic events.</p>
+      <h3>Impact</h3>
+      <ul>
+        <li>Optimized API response times and frontend performance metrics across key user journeys</li>
+        <li>Implemented comprehensive monitoring, alerting, and observability pipelines</li>
+        <li>Built automated testing frameworks increasing deployment confidence</li>
+        <li>Reduced incident resolution time through improved debugging tooling and runbooks</li>
+      </ul>
+      <h3>Technologies</h3>
+      <div class="skill-tags">
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">CI/CD</span>
+        <span class="skill-tag">Jest</span>
+        <span class="skill-tag">Cypress</span>
+      </div>
+    `
+  },
+  {
+    id: 'star',
+    numeral: 'VI',
+    name: 'The Star',
+    meaning: 'Your moment of greatest impact',
+    keyword: 'Impact',
+    accent: '#F0D68A',
+    glow: 'rgba(240,214,138,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Central star -->
+      <polygon points="60,10 68,42 100,42 74,62 82,94 60,76 38,94 46,62 20,42 52,42"
+               stroke="#D4A853" stroke-width="1.2" fill="rgba(212,168,83,0.1)"/>
+      <!-- Inner star -->
+      <polygon points="60,25 65,45 85,45 70,58 75,78 60,67 45,78 50,58 35,45 55,45"
+               stroke="#F0D68A" stroke-width="0.8" fill="rgba(240,214,138,0.05)" opacity="0.7"/>
+      <!-- Radiating lines -->
+      <line x1="60" y1="2" x2="60" y2="8" stroke="#F0D68A" stroke-width="0.8" opacity="0.5"/>
+      <line x1="60" y1="112" x2="60" y2="118" stroke="#F0D68A" stroke-width="0.5" opacity="0.3"/>
+      <line x1="2" y1="60" x2="8" y2="60" stroke="#F0D68A" stroke-width="0.5" opacity="0.3"/>
+      <line x1="112" y1="60" x2="118" y2="60" stroke="#F0D68A" stroke-width="0.5" opacity="0.3"/>
+      <line x1="15" y1="15" x2="20" y2="20" stroke="#F0D68A" stroke-width="0.5" opacity="0.2"/>
+      <line x1="100" y1="15" x2="105" y2="20" stroke="#F0D68A" stroke-width="0.5" opacity="0.2"/>
+      <line x1="15" y1="105" x2="20" y2="100" stroke="#F0D68A" stroke-width="0.5" opacity="0.2"/>
+      <line x1="105" y1="105" x2="100" y2="100" stroke="#F0D68A" stroke-width="0.5" opacity="0.2"/>
+      <!-- Center glow -->
+      <circle cx="60" cy="52" r="8" fill="rgba(240,214,138,0.15)"/>
+      <circle cx="60" cy="52" r="3" fill="#F0D68A" opacity="0.5"/>
+    </svg>`,
+    readingText: 'The Star illuminates the darkness -- a beacon of achievement that cannot be hidden.',
+    content: `
+      <h3>Key Achievement</h3>
+      <p>Engineering software at Fortune 1 scale -- building systems that power digital commerce for one of the world's largest retail platforms, serving millions of customers daily.</p>
+      <h3>Impact Highlights</h3>
+      <ul>
+        <li>Built and shipped production features used by millions of users on Walmart's platform</li>
+        <li>Drove measurable performance improvements across critical user-facing applications</li>
+        <li>Contributed to systems handling massive traffic spikes during peak retail events</li>
+        <li>Championed code quality practices adopted across engineering teams</li>
+      </ul>
+      <h3>Recognition</h3>
+      <p>Operating at the intersection of scale, performance, and user experience at the world's largest company by revenue -- where every line of code impacts real people in real time.</p>
+    `
+  },
+  {
+    id: 'portal',
+    numeral: 'VII',
+    name: 'The Portal',
+    meaning: 'The path forward',
+    keyword: 'Connection',
+    accent: '#D44AB8',
+    glow: 'rgba(212,74,184,0.3)',
+    artSVG: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Doorway frame -->
+      <path d="M35 100 L35 30 Q35 15 60 15 Q85 15 85 30 L85 100" stroke="#D44AB8" stroke-width="1.5" fill="none"/>
+      <path d="M40 100 L40 33 Q40 20 60 20 Q80 20 80 33 L80 100" stroke="#D44AB8" stroke-width="0.5" fill="none" opacity="0.4"/>
+      <!-- Light streaming through -->
+      <path d="M45 100 L55 45 L60 30 L65 45 L75 100" fill="rgba(212,74,184,0.06)" stroke="none"/>
+      <line x1="60" y1="25" x2="60" y2="100" stroke="#D4A853" stroke-width="0.5" opacity="0.3"/>
+      <line x1="60" y1="30" x2="45" y2="100" stroke="#D4A853" stroke-width="0.3" opacity="0.2"/>
+      <line x1="60" y1="30" x2="75" y2="100" stroke="#D4A853" stroke-width="0.3" opacity="0.2"/>
+      <line x1="60" y1="30" x2="40" y2="80" stroke="rgba(212,168,83,0.15)" stroke-width="0.3"/>
+      <line x1="60" y1="30" x2="80" y2="80" stroke="rgba(212,168,83,0.15)" stroke-width="0.3"/>
+      <!-- Glow at center -->
+      <circle cx="60" cy="55" r="12" fill="rgba(212,74,184,0.08)"/>
+      <circle cx="60" cy="55" r="5" fill="rgba(212,168,83,0.15)"/>
+      <circle cx="60" cy="55" r="2" fill="#D4A853" opacity="0.5"/>
+      <!-- Stars beyond the portal -->
+      <circle cx="55" cy="40" r="1" fill="#D4A853" opacity="0.5"/>
+      <circle cx="65" cy="45" r="0.8" fill="#D44AB8" opacity="0.4"/>
+      <circle cx="58" cy="50" r="0.6" fill="#D4A853" opacity="0.4"/>
+      <circle cx="63" cy="35" r="0.8" fill="#D4A853" opacity="0.3"/>
+      <!-- Threshold -->
+      <line x1="32" y1="100" x2="88" y2="100" stroke="#D44AB8" stroke-width="1" opacity="0.5"/>
+    </svg>`,
+    readingText: 'The Portal opens to those who seek -- step through and a new connection awaits.',
+    content: `
+      <h3>Let Us Connect</h3>
+      <p>The reading is complete, but the story continues. Whether you have an opportunity, a project idea, or simply want to talk about building great software -- the door is open.</p>
+      <div class="contact-links">
+        <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 4l10 8 10-8"/></svg>
+          anshullgarg@gmail.com
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><path d="M8 11v5M8 8v.01M12 16v-5c0-1 1-2 2-2s2 1 2 2v5"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.66-.22.66-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0112 6.8c.85 0 1.7.11 2.5.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.7-4.57 4.95.36.31.68.92.68 1.85v2.75c0 .27.16.58.67.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <p style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">Currently open to interesting conversations and new opportunities. I typically respond within 24 hours.</p>
+    `
+  }
+];
+
+/* ================================================================
+   STATE
+   ================================================================ */
+let deck = [];
+let drawnCards = []; // all cards drawn so far
+let currentRound = [];
+let roundNumber = 0;
+let flippedInRound = 0;
+const POSITIONS = ['Past', 'Present', 'Future'];
+
+/* ================================================================
+   STARFIELD
+   ================================================================ */
+function createStarfield() {
+  const container = document.getElementById('starfield');
+  const count = 150;
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
+    const size = Math.random() * 2.5 + 0.5;
+    const isTwinkle = Math.random() > 0.6;
+    const dur = (Math.random() * 4 + 2).toFixed(1);
+    const minO = (Math.random() * 0.2 + 0.1).toFixed(2);
+    const maxO = (Math.random() * 0.5 + 0.5).toFixed(2);
+    const baseO = (Math.random() * 0.5 + 0.3).toFixed(2);
+    html += `<div class="star${isTwinkle ? ' star--twinkle' : ''}" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;opacity:${baseO};--dur:${dur}s;--min-o:${minO};--max-o:${maxO}"></div>`;
+  }
+  container.innerHTML = html;
+}
+
+/* ================================================================
+   GOLDEN DUST
+   ================================================================ */
+function createDust() {
+  const container = document.getElementById('dust-layer');
+  const count = 30;
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
+    const dur = (Math.random() * 8 + 6).toFixed(1);
+    const delay = (Math.random() * 10).toFixed(1);
+    const dx = (Math.random() * 100 - 50).toFixed(0);
+    const dy = (Math.random() * -250 - 50).toFixed(0);
+    html += `<div class="dust" style="left:${x}%;top:${y}%;--dur:${dur}s;--delay:${delay}s;--dx:${dx}px;--dy:${dy}px"></div>`;
+  }
+  container.innerHTML = html;
+}
+
+/* ================================================================
+   MOON PHASE CALCULATOR
+   ================================================================ */
+function getMoonPhase() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+
+  // Conway's moon phase algorithm
+  let r = year % 100;
+  r %= 19;
+  if (r > 9) r -= 19;
+  r = ((r * 11) % 30) + month + day;
+  if (month < 3) r += 2;
+  r -= ((year < 2000) ? 4 : 8.3);
+  r = Math.floor(r + 0.5) % 30;
+  if (r < 0) r += 30;
+
+  const phases = [
+    { name: 'New Moon', icon: 'M12 2a10 10 0 100 20 10 10 0 000-20z', fill: '#333' },
+    { name: 'Waxing Crescent', icon: 'crescentR', fill: '' },
+    { name: 'First Quarter', icon: 'halfR', fill: '' },
+    { name: 'Waxing Gibbous', icon: 'gibbousR', fill: '' },
+    { name: 'Full Moon', icon: 'M12 2a10 10 0 100 20 10 10 0 000-20z', fill: '#D4A853' },
+    { name: 'Waning Gibbous', icon: 'gibbousL', fill: '' },
+    { name: 'Last Quarter', icon: 'halfL', fill: '' },
+    { name: 'Waning Crescent', icon: 'crescentL', fill: '' }
+  ];
+
+  const index = Math.floor(r / 3.75) % 8;
+  return { phase: phases[index], age: r };
+}
+
+function renderMoon() {
+  const { phase } = getMoonPhase();
+  const moonIcon = document.getElementById('moonIcon');
+  const moonLabel = document.getElementById('moonLabel');
+
+  moonLabel.textContent = phase.name;
+
+  // Simple moon rendering
+  let svg = '';
+  const cx = 12, cy = 12, r = 9;
+
+  svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(212,168,83,0.1)" stroke="rgba(212,168,83,0.4)" stroke-width="0.5"/>`;
+
+  if (phase.name === 'Full Moon') {
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(212,168,83,0.6)"/>`;
+  } else if (phase.name === 'New Moon') {
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(30,15,62,0.8)" stroke="rgba(212,168,83,0.3)" stroke-width="0.5"/>`;
+  } else if (phase.name === 'First Quarter') {
+    svg += `<clipPath id="mc"><rect x="12" y="2" width="10" height="20"/></clipPath>`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(212,168,83,0.5)" clip-path="url(#mc)"/>`;
+  } else if (phase.name === 'Last Quarter') {
+    svg += `<clipPath id="mc"><rect x="2" y="2" width="10" height="20"/></clipPath>`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(212,168,83,0.5)" clip-path="url(#mc)"/>`;
+  } else if (phase.name === 'Waxing Crescent') {
+    svg += `<path d="M12 3 A9 9 0 0 1 12 21 A5 9 0 0 0 12 3" fill="rgba(212,168,83,0.5)"/>`;
+  } else if (phase.name === 'Waning Crescent') {
+    svg += `<path d="M12 3 A9 9 0 0 0 12 21 A5 9 0 0 1 12 3" fill="rgba(212,168,83,0.5)"/>`;
+  } else if (phase.name === 'Waxing Gibbous') {
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(212,168,83,0.5)"/>`;
+    svg += `<path d="M12 3 A9 9 0 0 0 12 21 A3 9 0 0 1 12 3" fill="rgba(30,15,62,0.7)"/>`;
+  } else if (phase.name === 'Waning Gibbous') {
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(212,168,83,0.5)"/>`;
+    svg += `<path d="M12 3 A9 9 0 0 1 12 21 A3 9 0 0 0 12 3" fill="rgba(30,15,62,0.7)"/>`;
+  }
+
+  moonIcon.innerHTML = svg;
+}
+
+/* ================================================================
+   CARD RENDERING
+   ================================================================ */
+function createCardBackSVG() {
+  return `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Central eye/diamond -->
+    <rect x="25" y="25" width="30" height="30" rx="2" transform="rotate(45 40 40)" stroke="#D4A853" stroke-width="1" fill="rgba(212,168,83,0.08)"/>
+    <circle cx="40" cy="40" r="10" stroke="#D4A853" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <circle cx="40" cy="40" r="4" fill="rgba(212,168,83,0.3)"/>
+    <circle cx="40" cy="40" r="1.5" fill="#D4A853" opacity="0.6"/>
+    <!-- Ornamental lines -->
+    <line x1="40" y1="5" x2="40" y2="20" stroke="#D4A853" stroke-width="0.5" opacity="0.3"/>
+    <line x1="40" y1="60" x2="40" y2="75" stroke="#D4A853" stroke-width="0.5" opacity="0.3"/>
+    <line x1="5" y1="40" x2="20" y2="40" stroke="#D4A853" stroke-width="0.5" opacity="0.3"/>
+    <line x1="60" y1="40" x2="75" y2="40" stroke="#D4A853" stroke-width="0.5" opacity="0.3"/>
+    <!-- Corner diamonds -->
+    <rect x="8" y="8" width="6" height="6" rx="1" transform="rotate(45 11 11)" stroke="#D4A853" stroke-width="0.5" opacity="0.3" fill="none"/>
+    <rect x="66" y="8" width="6" height="6" rx="1" transform="rotate(45 69 11)" stroke="#D4A853" stroke-width="0.5" opacity="0.3" fill="none"/>
+    <rect x="8" y="66" width="6" height="6" rx="1" transform="rotate(45 11 69)" stroke="#D4A853" stroke-width="0.5" opacity="0.3" fill="none"/>
+    <rect x="66" y="66" width="6" height="6" rx="1" transform="rotate(45 69 69)" stroke="#D4A853" stroke-width="0.5" opacity="0.3" fill="none"/>
+  </svg>`;
+}
+
+function renderCardHTML(card, positionIndex, dealDelay) {
+  const position = POSITIONS[positionIndex];
+  const floatDelay = (positionIndex * 0.8).toFixed(1);
+
+  return `
+    <div class="card-slot">
+      <span class="slot-label">${position}</span>
+      <div class="tarot-card dealing"
+           data-card-id="${card.id}"
+           style="--float-delay:${floatDelay}s; --deal-delay:${dealDelay}s; --card-accent:${card.accent}; --card-glow:${card.glow}"
+           onclick="flipCard(this, '${card.id}')">
+        <!-- BACK -->
+        <div class="card-back">
+          <div class="card-back-inner">
+            <div class="card-back-pattern"></div>
+            <div class="card-back-center">${createCardBackSVG()}</div>
+            <div class="card-back-corners"></div>
+          </div>
+        </div>
+        <!-- FACE -->
+        <div class="card-face" style="--card-accent:${card.accent}; --card-glow:${card.glow}; border-color: ${card.accent}30;">
+          <div class="card-face-inner"></div>
+          <span class="card-numeral">${card.numeral}</span>
+          <div class="card-art">${card.artSVG}</div>
+          <div class="card-divider"></div>
+          <span class="card-name">${card.name}</span>
+          <span class="card-meaning">${card.meaning}</span>
+          <div class="card-divider"></div>
+          <span class="card-keyword">${card.keyword}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ================================================================
+   SPARKLE EFFECT
+   ================================================================ */
+function createSparkles(cardEl) {
+  const rect = cardEl.getBoundingClientRect();
+  const container = document.createElement('div');
+  container.className = 'sparkle-container';
+  container.style.position = 'fixed';
+  container.style.left = rect.left + 'px';
+  container.style.top = rect.top + 'px';
+  container.style.width = rect.width + 'px';
+  container.style.height = rect.height + 'px';
+  container.style.zIndex = '9999';
+  container.style.pointerEvents = 'none';
+
+  for (let i = 0; i < 20; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = Math.random() * 80 + 40;
+    const sx = Math.cos(angle) * dist;
+    const sy = Math.sin(angle) * dist;
+    sparkle.style.left = (rect.width / 2) + 'px';
+    sparkle.style.top = (rect.height / 2) + 'px';
+    sparkle.style.setProperty('--sx', sx + 'px');
+    sparkle.style.setProperty('--sy', sy + 'px');
+    sparkle.style.animationDelay = (Math.random() * 0.2) + 's';
+    sparkle.style.width = (Math.random() * 4 + 2) + 'px';
+    sparkle.style.height = sparkle.style.width;
+    container.appendChild(sparkle);
+  }
+
+  document.body.appendChild(container);
+  setTimeout(() => container.remove(), 1000);
+}
+
+/* ================================================================
+   TYPEWRITER EFFECT
+   ================================================================ */
+function typewriter(element, text, speed = 30) {
+  return new Promise(resolve => {
+    let i = 0;
+    element.textContent = '';
+    element.classList.remove('done');
+    const interval = setInterval(() => {
+      element.textContent += text[i];
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
+        element.classList.add('done');
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+/* ================================================================
+   GAME LOGIC
+   ================================================================ */
+function shuffleDeck() {
+  deck = [...CARDS].filter(c => !drawnCards.find(d => d.id === c.id));
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+function beginReading() {
+  const welcome = document.getElementById('welcome');
+  welcome.classList.add('hidden');
+
+  setTimeout(() => {
+    welcome.style.display = 'none';
+    const reading = document.getElementById('reading');
+    reading.classList.add('active');
+    drawRound();
+  }, 800);
+}
+
+function drawRound() {
+  shuffleDeck();
+  roundNumber++;
+  flippedInRound = 0;
+
+  const cardsNeeded = Math.min(3, deck.length);
+  if (cardsNeeded === 0) {
+    showFullReading();
+    return;
+  }
+
+  currentRound = deck.splice(0, cardsNeeded);
+
+  const table = document.getElementById('cardTable');
+  const roundLabels = ['I', 'II', 'III', 'IV', 'V'];
+  document.getElementById('roundLabel').textContent = `Round ${roundLabels[roundNumber - 1] || roundNumber}`;
+
+  let html = '';
+  currentRound.forEach((card, i) => {
+    html += renderCardHTML(card, i, (i * 0.25).toFixed(2));
+  });
+  table.innerHTML = html;
+
+  // Hide panels
+  document.getElementById('readingPanel').classList.remove('visible');
+  document.getElementById('actionButtons').style.display = 'none';
+  document.getElementById('readingSubtitle').textContent = 'Click each card to reveal its meaning';
+}
+
+function flipCard(cardEl, cardId) {
+  if (cardEl.classList.contains('flipped')) return;
+
+  cardEl.classList.add('flipped');
+  createSparkles(cardEl);
+
+  const card = CARDS.find(c => c.id === cardId);
+  drawnCards.push(card);
+  flippedInRound++;
+
+  // Show reading panel
+  setTimeout(() => {
+    showReadingPanel(card);
+  }, 600);
+
+  // Check if round complete
+  if (flippedInRound >= currentRound.length) {
+    setTimeout(() => {
+      const remaining = CARDS.filter(c => !drawnCards.find(d => d.id === c.id));
+      const actions = document.getElementById('actionButtons');
+      actions.style.display = 'flex';
+
+      const btnDraw = document.getElementById('btnDrawMore');
+      if (remaining.length === 0) {
+        btnDraw.disabled = true;
+        btnDraw.textContent = 'All Cards Revealed';
+      } else {
+        btnDraw.disabled = false;
+        btnDraw.textContent = `Draw More Cards (${remaining.length} remaining)`;
+      }
+    }, 1500);
+  }
+}
+
+function showReadingPanel(card) {
+  const panel = document.getElementById('readingPanel');
+  const content = document.getElementById('readingContent');
+
+  content.innerHTML = `
+    <div class="reading-card-header">
+      <div class="reading-card-icon" style="color: ${card.accent}">
+        ${card.artSVG.replace(/width="[^"]*"/, 'width="48"').replace(/height="[^"]*"/, 'height="48"')}
+      </div>
+      <div>
+        <div class="reading-card-title">${card.name}</div>
+        <div class="reading-card-subtitle">${card.numeral} - ${card.meaning}</div>
+      </div>
+    </div>
+    <div class="reading-typewriter" id="typewriterText"></div>
+    <div class="reading-body" id="readingBody" style="opacity:0; transition: opacity 0.5s ease;">
+      ${card.content}
+    </div>
+  `;
+
+  panel.classList.add('visible');
+
+  // Scroll to panel
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+
+  // Typewriter then show content
+  const tw = document.getElementById('typewriterText');
+  typewriter(tw, card.readingText, 25).then(() => {
+    setTimeout(() => {
+      document.getElementById('readingBody').style.opacity = '1';
+    }, 300);
+  });
+}
+
+function drawMoreCards() {
+  drawRound();
+  document.getElementById('cardTable').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ================================================================
+   FULL READING MODE
+   ================================================================ */
+function showFullReading() {
+  document.getElementById('reading').classList.remove('active');
+  document.getElementById('reading').style.display = 'none';
+
+  const fullReading = document.getElementById('fullReading');
+  fullReading.classList.add('active');
+
+  const container = document.getElementById('fullReadingCards');
+  let html = '';
+
+  drawnCards.forEach((card, i) => {
+    const posLabel = POSITIONS[i % 3] || ['Foundation', 'Heart', 'Crown', 'Shadow'][i % 4];
+    html += `
+      <div class="full-card-section" data-index="${i}">
+        <div class="full-card-mini" style="--card-accent:${card.accent}; border-color: ${card.accent}40;">
+          <span class="card-numeral">${card.numeral}</span>
+          <div class="card-art">${card.artSVG}</div>
+          <div class="card-divider"></div>
+          <span class="card-name">${card.name}</span>
+          <span class="card-meaning">${card.meaning}</span>
+        </div>
+        <div class="full-content">
+          <h3 style="color: ${card.accent}">${card.name}</h3>
+          <span class="position-tag">Position: ${posLabel}</span>
+          <div class="divider" style="background: linear-gradient(90deg, ${card.accent}, transparent)"></div>
+          <p style="font-style:italic; color: var(--gold-dark); margin-bottom:16px;">${card.readingText}</p>
+          ${card.content}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  // Staggered reveal
+  const sections = container.querySelectorAll('.full-card-section');
+  sections.forEach((section, i) => {
+    setTimeout(() => {
+      section.classList.add('visible');
+    }, 200 + i * 200);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetReading() {
+  drawnCards = [];
+  currentRound = [];
+  roundNumber = 0;
+  flippedInRound = 0;
+  deck = [];
+
+  document.getElementById('fullReading').classList.remove('active');
+  document.getElementById('fullReading').style.display = '';
+
+  document.getElementById('reading').style.display = '';
+  document.getElementById('reading').classList.remove('active');
+
+  const welcome = document.getElementById('welcome');
+  welcome.style.display = '';
+  welcome.classList.remove('hidden');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+function init() {
+  createStarfield();
+  createDust();
+  renderMoon();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG | The Movie Credits Portfolio</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. A cinematic portfolio experience presented as movie credits.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   CUSTOM PROPERTIES
+   ======================================================================== */
+:root {
+  --black: #000000;
+  --white: #FFFFFF;
+  --gold: #D4A853;
+  --gold-dim: #9A7A3A;
+  --red: #8B0000;
+  --red-bright: #C41E3A;
+  --grey: #888888;
+  --grey-dark: #333333;
+  --grey-mid: #555555;
+
+  --font-title: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --bar-height: 44px;
+  --ease-cine: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-dramatic: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* ========================================================================
+   RESET & BASE
+   ======================================================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--white);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  user-select: none;
+}
+
+/* ========================================================================
+   LETTERBOX BARS
+   ======================================================================== */
+.letterbox-top,
+.letterbox-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: var(--bar-height);
+  background: var(--black);
+  z-index: 1000;
+  pointer-events: none;
+}
+.letterbox-top { top: 0; }
+.letterbox-bottom { bottom: 0; }
+
+/* ========================================================================
+   MAIN STAGE - The viewport between letterbox bars
+   ======================================================================== */
+#stage {
+  position: fixed;
+  top: var(--bar-height);
+  left: 0;
+  right: 0;
+  bottom: var(--bar-height);
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* ========================================================================
+   SCENES - Each scene is fullscreen within the stage
+   ======================================================================== */
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s var(--ease-cine);
+  overflow: hidden;
+}
+
+.scene.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scene.exiting {
+  opacity: 0;
+}
+
+/* ========================================================================
+   PARTICLE CANVAS
+   ======================================================================== */
+#particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ========================================================================
+   SCENE 0: STUDIO LOGO
+   ======================================================================== */
+#scene-studio {
+  z-index: 10;
+}
+
+.studio-text {
+  font-family: var(--font-title);
+  font-size: clamp(1.4rem, 3.5vw, 3rem);
+  letter-spacing: 0.8em;
+  color: var(--gold);
+  opacity: 0;
+  text-align: center;
+  text-indent: 0.8em;
+}
+
+.studio-line {
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  margin: 20px auto;
+  transition: width 2s var(--ease-cine);
+}
+
+.studio-line.expand {
+  width: min(400px, 60vw);
+}
+
+/* ========================================================================
+   SCENE 1: MOVIE POSTER
+   ======================================================================== */
+#scene-poster {
+  z-index: 9;
+  text-align: center;
+  padding: 40px 20px;
+  background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 70%);
+}
+
+.poster-tagline-top {
+  font-family: var(--font-body);
+  font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+  letter-spacing: 0.5em;
+  color: var(--grey);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 0;
+  text-indent: 0.5em;
+}
+
+.poster-title {
+  font-family: var(--font-title);
+  font-size: clamp(4rem, 14vw, 12rem);
+  line-height: 0.9;
+  color: var(--white);
+  opacity: 0;
+  text-shadow: 0 0 80px rgba(212, 168, 83, 0.15);
+  margin-bottom: 4px;
+}
+
+.poster-subtitle {
+  font-family: var(--font-title);
+  font-size: clamp(1.2rem, 3vw, 2.4rem);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  opacity: 0;
+  margin-bottom: 30px;
+  text-indent: 0.4em;
+}
+
+.poster-tagline {
+  font-family: var(--font-body);
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--grey);
+  opacity: 0;
+  margin-bottom: 20px;
+}
+
+.poster-cta {
+  font-family: var(--font-title);
+  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  letter-spacing: 0.3em;
+  color: var(--red-bright);
+  opacity: 0;
+  margin-bottom: 20px;
+  text-indent: 0.3em;
+}
+
+.poster-stars {
+  font-size: clamp(1rem, 2vw, 1.6rem);
+  color: var(--gold);
+  opacity: 0;
+  letter-spacing: 0.3em;
+}
+
+.poster-divider {
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  margin: 16px auto;
+  transition: width 2.5s var(--ease-cine);
+}
+
+.poster-divider.expand {
+  width: min(600px, 80vw);
+}
+
+/* ========================================================================
+   SCENE 2: ACT I - THE ORIGIN
+   ======================================================================== */
+#scene-origin {
+  z-index: 8;
+}
+
+.act-card {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.act-number {
+  font-family: var(--font-title);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  opacity: 0;
+  text-indent: 0.3em;
+}
+
+.act-title {
+  font-family: var(--font-body);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  letter-spacing: 0.6em;
+  color: var(--grey);
+  text-transform: uppercase;
+  margin-top: 8px;
+  opacity: 0;
+  text-indent: 0.6em;
+}
+
+.origin-crawl-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(700px, 85vw);
+  height: 100%;
+  overflow: hidden;
+  perspective: 400px;
+  opacity: 0;
+}
+
+.origin-crawl {
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform-origin: center bottom;
+  transform: rotateX(18deg);
+  padding: 40px 20px;
+}
+
+.origin-crawl p {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.6vw, 1.15rem);
+  font-weight: 300;
+  line-height: 2;
+  color: var(--gold);
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+/* ========================================================================
+   SCENE 3: ACT II - THE CRAFT (Skills)
+   ======================================================================== */
+#scene-craft {
+  z-index: 7;
+  padding: 40px 20px;
+}
+
+.craft-header {
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-align: center;
+  margin-bottom: 50px;
+  opacity: 0;
+  text-indent: 0.3em;
+}
+
+.cast-list {
+  width: min(650px, 90vw);
+  margin: 0 auto;
+}
+
+.cast-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.cast-name {
+  font-family: var(--font-title);
+  font-size: clamp(1.1rem, 2.2vw, 1.7rem);
+  color: var(--white);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cast-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--grey-dark);
+  margin: 0 12px;
+  min-width: 30px;
+  position: relative;
+  top: -4px;
+}
+
+.cast-role {
+  font-family: var(--font-body);
+  font-size: clamp(0.7rem, 1.2vw, 0.88rem);
+  font-weight: 300;
+  color: var(--grey);
+  font-style: italic;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ========================================================================
+   SCENE 4: ACT III - THE MISSIONS (Projects)
+   ======================================================================== */
+#scene-missions {
+  z-index: 6;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.mission-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, 88vw);
+  opacity: 0;
+  text-align: center;
+}
+
+.mission-scene-num {
+  font-family: var(--font-title);
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+  letter-spacing: 0.6em;
+  color: var(--grey-mid);
+  margin-bottom: 16px;
+  text-indent: 0.6em;
+}
+
+.mission-title {
+  font-family: var(--font-title);
+  font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+  color: var(--white);
+  margin-bottom: 24px;
+  line-height: 1.1;
+}
+
+.mission-title::before,
+.mission-title::after {
+  content: '"';
+  color: var(--gold);
+}
+
+.mission-desc {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--grey);
+  margin-bottom: 36px;
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mission-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.mission-meta-row {
+  font-family: var(--font-body);
+  font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+  color: var(--grey-mid);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.mission-meta-row span {
+  color: var(--gold);
+}
+
+/* ========================================================================
+   SCENE 5: ACT IV - THE JOURNEY (Experience)
+   ======================================================================== */
+#scene-journey {
+  z-index: 5;
+  padding: 40px 20px;
+}
+
+.journey-header {
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-align: center;
+  margin-bottom: 50px;
+  opacity: 0;
+  text-indent: 0.3em;
+}
+
+.timeline {
+  width: min(700px, 90vw);
+  margin: 0 auto;
+}
+
+.timeline-entry {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 44px;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.timeline-year {
+  font-family: var(--font-title);
+  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+  color: var(--gold-dim);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 120px;
+  text-align: right;
+  padding-top: 2px;
+}
+
+.timeline-divider {
+  width: 1px;
+  background: var(--grey-dark);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.timeline-divider::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.timeline-content {
+  flex: 1;
+  padding-top: 0;
+}
+
+.timeline-company {
+  font-family: var(--font-title);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  color: var(--white);
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+
+.timeline-role {
+  font-family: var(--font-body);
+  font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+  font-weight: 400;
+  color: var(--gold-dim);
+  margin-bottom: 8px;
+}
+
+.timeline-quote {
+  font-family: var(--font-body);
+  font-size: clamp(0.7rem, 1.1vw, 0.82rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--grey);
+  line-height: 1.7;
+}
+
+/* ========================================================================
+   SCENE 6: END CREDITS (Scrolling)
+   ======================================================================== */
+#scene-credits {
+  z-index: 4;
+}
+
+.credits-scroll-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, 85vw);
+  height: 100%;
+  overflow: hidden;
+}
+
+.credits-scroll {
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 60px 20px 200px;
+}
+
+.credits-section-title {
+  font-family: var(--font-title);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  margin-bottom: 40px;
+  margin-top: 60px;
+  text-indent: 0.3em;
+}
+
+.credits-section-title:first-child {
+  margin-top: 0;
+}
+
+.credit-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.credit-role {
+  font-family: var(--font-body);
+  font-size: clamp(0.65rem, 1.1vw, 0.82rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.credit-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--grey-dark);
+  margin: 0 10px;
+  min-width: 20px;
+  position: relative;
+  top: -4px;
+}
+
+.credit-name {
+  font-family: var(--font-body);
+  font-size: clamp(0.7rem, 1.2vw, 0.88rem);
+  font-weight: 400;
+  color: var(--white);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.credits-thank-you {
+  font-family: var(--font-body);
+  font-size: clamp(0.65rem, 1vw, 0.78rem);
+  font-weight: 300;
+  color: var(--grey-mid);
+  line-height: 2;
+  margin-top: 50px;
+  text-align: center;
+}
+
+/* ========================================================================
+   SCENE 7: POST-CREDITS
+   ======================================================================== */
+#scene-postcredits {
+  z-index: 3;
+  text-align: center;
+}
+
+.postcredits-return {
+  font-family: var(--font-title);
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  color: var(--white);
+  letter-spacing: 0.2em;
+  opacity: 0;
+  text-indent: 0.2em;
+}
+
+.postcredits-but {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--grey);
+  margin-top: 16px;
+  opacity: 0;
+}
+
+.postcredits-contact {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  opacity: 0;
+}
+
+.contact-link {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+  font-weight: 400;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  position: relative;
+  padding: 6px 0;
+  transition: color 0.3s ease;
+}
+
+.contact-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.4s var(--ease-cine);
+}
+
+.contact-link:hover {
+  color: var(--white);
+}
+
+.contact-link:hover::after {
+  width: 100%;
+}
+
+.postcredits-end {
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 5vw, 4rem);
+  color: var(--gold);
+  letter-spacing: 0.4em;
+  margin-top: 64px;
+  opacity: 0;
+  text-indent: 0.4em;
+}
+
+/* ========================================================================
+   CONTROLS
+   ======================================================================== */
+.controls {
+  position: fixed;
+  bottom: var(--bar-height);
+  left: 0;
+  right: 0;
+  z-index: 900;
+  pointer-events: none;
+}
+
+/* Timeline scrubber */
+.scrubber {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--grey-dark);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: height 0.2s ease;
+}
+
+.scrubber:hover {
+  height: 6px;
+}
+
+.scrubber-fill {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.3s linear;
+  position: relative;
+}
+
+.scrubber-fill::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.scrubber:hover .scrubber-fill::after {
+  opacity: 1;
+}
+
+/* Chapter markers */
+.chapter-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 10px;
+  background: var(--grey-mid);
+  pointer-events: none;
+  border-radius: 1px;
+}
+
+/* Control buttons */
+.control-buttons {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.ctrl-btn {
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid var(--grey-dark);
+  color: var(--grey);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ctrl-btn:hover {
+  color: var(--white);
+  border-color: var(--grey-mid);
+}
+
+.ctrl-btn.active {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+.speed-btn {
+  min-width: 36px;
+  text-align: center;
+}
+
+/* Runtime display */
+.runtime-display {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  pointer-events: none;
+}
+
+.runtime-text {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--grey-mid);
+  text-transform: uppercase;
+}
+
+/* Scene label */
+.scene-label {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.scene-label-text {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--grey-dark);
+  text-transform: uppercase;
+  text-indent: 0.3em;
+  transition: color 0.5s ease;
+}
+
+/* ========================================================================
+   FADE OVERLAY (for transitions)
+   ======================================================================== */
+.fade-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--black);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.fade-overlay.visible {
+  opacity: 1;
+}
+
+/* ========================================================================
+   VIGNETTE
+   ======================================================================== */
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ========================================================================
+   FILM GRAIN
+   ======================================================================== */
+.film-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  animation: grain 0.5s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0); }
+  70% { transform: translate(0, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* ========================================================================
+   PULSE GLOW EFFECT (ambient behind text)
+   ======================================================================== */
+.ambient-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,83,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  animation: ambientPulse 6s ease-in-out infinite;
+}
+
+@keyframes ambientPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.5); opacity: 1; }
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 600px) {
+  :root {
+    --bar-height: 28px;
+  }
+
+  .timeline-entry {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .timeline-year {
+    text-align: left;
+    min-width: auto;
+  }
+
+  .timeline-divider {
+    display: none;
+  }
+
+  .control-buttons {
+    gap: 6px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .ctrl-btn {
+    font-size: 0.6rem;
+    padding: 4px 8px;
+  }
+
+  .runtime-display {
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .scene-label {
+    display: none;
+  }
+
+  .credit-line {
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .credit-dots {
+    display: none;
+  }
+}
+
+/* ========================================================================
+   INTRO OVERLAY (covers everything until user clicks play)
+   ======================================================================== */
+#intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--black);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 1s ease;
+}
+
+#intro-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-label {
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  letter-spacing: 0.5em;
+  color: var(--gold-dim);
+  margin-bottom: 30px;
+  text-indent: 0.5em;
+}
+
+.play-circle {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.play-circle:hover {
+  border-color: var(--gold);
+  transform: scale(1.1);
+}
+
+.play-circle::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 18px solid var(--gold);
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  margin-left: 5px;
+}
+
+.intro-hint {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--grey-dark);
+  margin-top: 24px;
+  text-transform: uppercase;
+  text-indent: 0.3em;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div class="intro-label">A PORTFOLIO EXPERIENCE</div>
+  <div class="play-circle"></div>
+  <div class="intro-hint">Click to begin</div>
+</div>
+
+<!-- LETTERBOX BARS -->
+<div class="letterbox-top"></div>
+<div class="letterbox-bottom"></div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particles"></canvas>
+
+<!-- VIGNETTE & GRAIN -->
+<div class="vignette"></div>
+<div class="film-grain"></div>
+
+<!-- FADE OVERLAY -->
+<div class="fade-overlay" id="fade-overlay"></div>
+
+<!-- MAIN STAGE -->
+<div id="stage">
+
+  <!-- SCENE 0: STUDIO LOGO -->
+  <div class="scene" id="scene-studio" data-scene="0" data-label="Studio Logo">
+    <div class="ambient-glow" style="top:30%;left:40%;"></div>
+    <div class="studio-text" id="studio-text">GARG STUDIOS PRESENTS</div>
+    <div class="studio-line" id="studio-line"></div>
+  </div>
+
+  <!-- SCENE 1: MOVIE POSTER -->
+  <div class="scene" id="scene-poster" data-scene="1" data-label="Movie Poster">
+    <div class="ambient-glow" style="top:20%;left:50%;transform:translateX(-50%);"></div>
+    <div class="poster-tagline-top" id="poster-studio">FROM THE MIND BEHIND ENTERPRISE-SCALE SOFTWARE</div>
+    <div class="poster-title" id="poster-title">ANSHULL GARG</div>
+    <div class="poster-divider" id="poster-divider"></div>
+    <div class="poster-subtitle" id="poster-subtitle">A SOFTWARE DEVELOPER</div>
+    <div class="poster-tagline" id="poster-tagline">Building at scale. Shipping with care.</div>
+    <div class="poster-cta" id="poster-cta">COMING SOON TO A TEAM NEAR YOU</div>
+    <div class="poster-stars" id="poster-stars"></div>
+  </div>
+
+  <!-- SCENE 2: ACT I - THE ORIGIN -->
+  <div class="scene" id="scene-origin" data-scene="2" data-label="Act I: The Origin">
+    <div class="act-card" id="origin-card">
+      <div class="act-number" id="origin-act">ACT I</div>
+      <div class="act-title" id="origin-title">THE ORIGIN</div>
+    </div>
+    <div class="origin-crawl-container" id="origin-crawl-container">
+      <div class="origin-crawl" id="origin-crawl">
+        <p>In a world of ever-evolving technology, one developer set out to build things that matter.</p>
+        <p>Armed with an unyielding curiosity and a relentless drive to ship quality software, he carved his path through the vast landscape of modern engineering.</p>
+        <p>From crafting pixel-perfect interfaces to architecting resilient backend systems, every line of code was written with purpose, every deployment a step toward something greater.</p>
+        <p>Today, at Walmart Global Tech, he builds software at a scale that touches millions of lives daily. Not for the glory, but for the craft.</p>
+        <p>This is his story.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3: ACT II - THE CRAFT -->
+  <div class="scene" id="scene-craft" data-scene="3" data-label="Act II: The Craft">
+    <div class="craft-header" id="craft-header">STARRING</div>
+    <div class="cast-list" id="cast-list">
+      <div class="cast-row" data-delay="0">
+        <span class="cast-name">REACT</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Frontend Lead</span>
+      </div>
+      <div class="cast-row" data-delay="1">
+        <span class="cast-name">NODE.JS</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Backend Architect</span>
+      </div>
+      <div class="cast-row" data-delay="2">
+        <span class="cast-name">TYPESCRIPT</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Type Guardian</span>
+      </div>
+      <div class="cast-row" data-delay="3">
+        <span class="cast-name">AWS</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Cloud Commander</span>
+      </div>
+      <div class="cast-row" data-delay="4">
+        <span class="cast-name">PYTHON</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Data Whisperer</span>
+      </div>
+      <div class="cast-row" data-delay="5">
+        <span class="cast-name">DOCKER</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Container Maestro</span>
+      </div>
+      <div class="cast-row" data-delay="6">
+        <span class="cast-name">JAVA</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Enterprise Veteran</span>
+      </div>
+      <div class="cast-row" data-delay="7">
+        <span class="cast-name">GRAPHQL</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Query Conductor</span>
+      </div>
+      <div class="cast-row" data-delay="8">
+        <span class="cast-name">REDIS</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Speed Demon</span>
+      </div>
+      <div class="cast-row" data-delay="9">
+        <span class="cast-name">KUBERNETES</span>
+        <span class="cast-dots"></span>
+        <span class="cast-role">The Orchestrator</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 4: ACT III - THE MISSIONS -->
+  <div class="scene" id="scene-missions" data-scene="4" data-label="Act III: The Missions">
+
+    <div class="mission-card" id="mission-0">
+      <div class="mission-scene-num">SCENE I</div>
+      <div class="mission-title">The Checkout Optimization</div>
+      <div class="mission-desc">Led the re-architecture of the checkout pipeline, reducing page load times by 40% and increasing conversion rates. A high-stakes mission where every millisecond counted.</div>
+      <div class="mission-meta">
+        <div class="mission-meta-row">Produced with: <span>React, Node.js, Redis</span></div>
+        <div class="mission-meta-row">Runtime: <span>6 months</span></div>
+        <div class="mission-meta-row">Rating: <span>40% faster page loads</span></div>
+      </div>
+    </div>
+
+    <div class="mission-card" id="mission-1">
+      <div class="mission-scene-num">SCENE II</div>
+      <div class="mission-title">The Inventory Intelligence</div>
+      <div class="mission-desc">Built a real-time inventory tracking system handling millions of SKUs across thousands of stores. A sprawling epic of data pipelines and distributed systems.</div>
+      <div class="mission-meta">
+        <div class="mission-meta-row">Produced with: <span>Java, Kafka, AWS</span></div>
+        <div class="mission-meta-row">Runtime: <span>8 months</span></div>
+        <div class="mission-meta-row">Rating: <span>99.9% uptime</span></div>
+      </div>
+    </div>
+
+    <div class="mission-card" id="mission-2">
+      <div class="mission-scene-num">SCENE III</div>
+      <div class="mission-title">The Developer Portal</div>
+      <div class="mission-desc">Designed and shipped an internal developer portal that unified tooling, documentation, and deployment workflows. A quiet revolution in developer experience.</div>
+      <div class="mission-meta">
+        <div class="mission-meta-row">Produced with: <span>TypeScript, React, GraphQL</span></div>
+        <div class="mission-meta-row">Runtime: <span>4 months</span></div>
+        <div class="mission-meta-row">Rating: <span>500+ daily active engineers</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 5: ACT IV - THE JOURNEY -->
+  <div class="scene" id="scene-journey" data-scene="5" data-label="Act IV: The Journey">
+    <div class="journey-header" id="journey-header">PRODUCTION HISTORY</div>
+    <div class="timeline" id="timeline">
+      <div class="timeline-entry" data-delay="0">
+        <div class="timeline-year">2023 - PRESENT</div>
+        <div class="timeline-divider"></div>
+        <div class="timeline-content">
+          <div class="timeline-company">WALMART GLOBAL TECH</div>
+          <div class="timeline-role">Software Developer</div>
+          <div class="timeline-quote">"The most ambitious chapter yet. Building at a scale that touches millions, shipping features that define the future of retail technology."</div>
+        </div>
+      </div>
+      <div class="timeline-entry" data-delay="1">
+        <div class="timeline-year">2021 - 2023</div>
+        <div class="timeline-divider"></div>
+        <div class="timeline-content">
+          <div class="timeline-company">PREVIOUS STUDIO</div>
+          <div class="timeline-role">Full Stack Engineer</div>
+          <div class="timeline-quote">"Where the foundations were laid. Learned the art of balancing speed with quality, and the power of well-crafted APIs."</div>
+        </div>
+      </div>
+      <div class="timeline-entry" data-delay="2">
+        <div class="timeline-year">2019 - 2021</div>
+        <div class="timeline-divider"></div>
+        <div class="timeline-content">
+          <div class="timeline-company">THE FIRST ACT</div>
+          <div class="timeline-role">Software Engineer Intern</div>
+          <div class="timeline-quote">"Every great director starts somewhere. This is where passion met code for the very first time."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6: END CREDITS -->
+  <div class="scene" id="scene-credits" data-scene="6" data-label="End Credits">
+    <div class="credits-scroll-container">
+      <div class="credits-scroll" id="credits-scroll">
+        <div class="credits-section-title">PRODUCTION CREDITS</div>
+
+        <div class="credit-line">
+          <span class="credit-role">Directed By</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Anshull Garg</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Produced By</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Caffeine & Determination</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Screenplay By</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Stack Overflow & Documentation</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Original Score By</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Lofi Hip Hop Radio</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Cinematography By</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">VS Code & Dark Theme</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Edited With</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Git Rebase & Force Push</span>
+        </div>
+
+        <div class="credits-section-title">TECHNICAL CREW</div>
+
+        <div class="credit-line">
+          <span class="credit-role">Lead Engineer</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Anshull Garg</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Backend Systems</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Node.js & Java</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Frontend Magic</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">React & TypeScript</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Infrastructure</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">AWS & Kubernetes</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">Data Layer</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">Redis & PostgreSQL</span>
+        </div>
+        <div class="credit-line">
+          <span class="credit-role">CI/CD Pipeline</span>
+          <span class="credit-dots"></span>
+          <span class="credit-name">GitHub Actions</span>
+        </div>
+
+        <div class="credits-section-title">SPECIAL THANKS</div>
+
+        <div class="credits-thank-you">
+          The Open Source Community<br>
+          Every Developer Who Documented Their Code<br>
+          Late Night Debugging Sessions<br>
+          The Rubber Duck on My Desk<br>
+          Coffee (Obviously)<br>
+          <br>
+          And to everyone who has ever<br>
+          believed in building things that matter.
+        </div>
+
+        <div class="credits-section-title" style="margin-top:80px;font-size:clamp(0.7rem,1.2vw,0.9rem);color:var(--grey-mid);">
+          NO BUGS WERE HARMED IN THE MAKING OF THIS PORTFOLIO
+        </div>
+        <div class="credits-section-title" style="margin-top:20px;font-size:clamp(0.6rem,1vw,0.75rem);color:var(--grey-dark);">
+          (Well, maybe a few. But they were fixed.)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 7: POST-CREDITS -->
+  <div class="scene" id="scene-postcredits" data-scene="7" data-label="Post-Credits">
+    <div class="postcredits-return" id="pc-return">ANSHULL GARG WILL RETURN</div>
+    <div class="postcredits-but" id="pc-but">But why wait?</div>
+    <div class="postcredits-contact" id="pc-contact">
+      <a href="mailto:anshullgarg@gmail.com" class="contact-link">anshullgarg@gmail.com</a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="contact-link">LinkedIn</a>
+      <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="contact-link">GitHub</a>
+    </div>
+    <div class="postcredits-end" id="pc-end">THE END</div>
+  </div>
+
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="runtime-display">
+    <span class="runtime-text" id="runtime-text">00:00 / 00:00</span>
+  </div>
+  <div class="scene-label">
+    <span class="scene-label-text" id="scene-label-text">GARG STUDIOS</span>
+  </div>
+  <div class="control-buttons">
+    <button class="ctrl-btn speed-btn" id="speed-btn" title="Playback speed">1x</button>
+    <button class="ctrl-btn" id="play-btn" title="Play / Pause">PAUSE</button>
+    <button class="ctrl-btn" id="skip-btn" title="Skip to end">SKIP</button>
+  </div>
+  <div class="scrubber" id="scrubber">
+    <div class="scrubber-fill" id="scrubber-fill"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   THE MOVIE CREDITS - CINEMATIC PORTFOLIO ENGINE
+   ========================================================================= */
+(function() {
+  'use strict';
+
+  /* ------------------------------------------------------------------
+     CONFIGURATION
+     ------------------------------------------------------------------ */
+  const TOTAL_DURATION = 210; // seconds at 1x (3.5 minutes)
+  const SPEEDS = [0.5, 1, 2];
+  let speedIndex = 1;
+  let speed = 1;
+  let playing = false;
+  let elapsed = 0;
+  let lastTick = null;
+
+  /* Scene timeline (start times in seconds at 1x) */
+  const SCENES = [
+    { id: 'scene-studio',       start: 0,   end: 12,  label: 'Studio Logo' },
+    { id: 'scene-poster',       start: 12,  end: 30,  label: 'Movie Poster' },
+    { id: 'scene-origin',       start: 30,  end: 58,  label: 'Act I: The Origin' },
+    { id: 'scene-craft',        start: 58,  end: 88,  label: 'Act II: The Craft' },
+    { id: 'scene-missions',     start: 88,  end: 128, label: 'Act III: The Missions' },
+    { id: 'scene-journey',      start: 128, end: 158, label: 'Act IV: The Journey' },
+    { id: 'scene-credits',      start: 158, end: 196, label: 'End Credits' },
+    { id: 'scene-postcredits',  start: 196, end: 210, label: 'Post-Credits' },
+  ];
+
+  /* ------------------------------------------------------------------
+     DOM REFERENCES
+     ------------------------------------------------------------------ */
+  const $ = id => document.getElementById(id);
+  const introOverlay = $('intro-overlay');
+  const fadeOverlay = $('fade-overlay');
+  const playBtn = $('play-btn');
+  const speedBtn = $('speed-btn');
+  const skipBtn = $('skip-btn');
+  const scrubber = $('scrubber');
+  const scrubberFill = $('scrubber-fill');
+  const runtimeText = $('runtime-text');
+  const sceneLabelText = $('scene-label-text');
+  const particleCanvas = $('particles');
+  const ctx = particleCanvas.getContext('2d');
+
+  /* ------------------------------------------------------------------
+     PARTICLES
+     ------------------------------------------------------------------ */
+  let particles = [];
+  const PARTICLE_COUNT = 60;
+
+  function resizeCanvas() {
+    particleCanvas.width = window.innerWidth;
+    particleCanvas.height = window.innerHeight;
+  }
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * particleCanvas.width,
+        y: Math.random() * particleCanvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -Math.random() * 0.4 - 0.1,
+        size: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.5 + 0.1,
+        pulse: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.pulse += 0.02;
+      const a = p.alpha * (0.5 + 0.5 * Math.sin(p.pulse));
+
+      if (p.y < -10) { p.y = particleCanvas.height + 10; p.x = Math.random() * particleCanvas.width; }
+      if (p.x < -10) p.x = particleCanvas.width + 10;
+      if (p.x > particleCanvas.width + 10) p.x = -10;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212, 168, 83, ${a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+  }
+
+  resizeCanvas();
+  initParticles();
+  drawParticles();
+  window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+
+  /* ------------------------------------------------------------------
+     CHAPTER MARKERS ON SCRUBBER
+     ------------------------------------------------------------------ */
+  function createChapterMarkers() {
+    SCENES.forEach(sc => {
+      if (sc.start === 0) return;
+      const marker = document.createElement('div');
+      marker.className = 'chapter-marker';
+      marker.style.left = ((sc.start / TOTAL_DURATION) * 100) + '%';
+      scrubber.appendChild(marker);
+    });
+  }
+  createChapterMarkers();
+
+  /* ------------------------------------------------------------------
+     FORMAT TIME
+     ------------------------------------------------------------------ */
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
+  /* ------------------------------------------------------------------
+     SCENE MANAGEMENT
+     ------------------------------------------------------------------ */
+  let currentSceneIndex = -1;
+
+  function getSceneForTime(t) {
+    for (let i = SCENES.length - 1; i >= 0; i--) {
+      if (t >= SCENES[i].start) return i;
+    }
+    return 0;
+  }
+
+  function activateScene(index) {
+    if (index === currentSceneIndex) return;
+
+    document.querySelectorAll('.scene').forEach(s => {
+      s.classList.remove('active');
+      s.classList.remove('exiting');
+    });
+
+    const scene = $(SCENES[index].id);
+    scene.classList.add('active');
+    currentSceneIndex = index;
+    sceneLabelText.textContent = SCENES[index].label.toUpperCase();
+
+    // Reset scene-specific animations
+    resetSceneAnimations(index);
+  }
+
+  /* ------------------------------------------------------------------
+     SCENE-SPECIFIC ANIMATION CONTROLLERS
+     ------------------------------------------------------------------ */
+  let activeAnimations = [];
+
+  function clearAnimations() {
+    activeAnimations.forEach(id => clearTimeout(id));
+    activeAnimations = [];
+  }
+
+  function scheduleTimeout(fn, delay) {
+    const id = setTimeout(fn, delay / speed);
+    activeAnimations.push(id);
+    return id;
+  }
+
+  function resetSceneAnimations(index) {
+    clearAnimations();
+
+    switch(index) {
+      case 0: animateStudio(); break;
+      case 1: animatePoster(); break;
+      case 2: animateOrigin(); break;
+      case 3: animateCraft(); break;
+      case 4: animateMissions(); break;
+      case 5: animateJourney(); break;
+      case 6: animateCredits(); break;
+      case 7: animatePostCredits(); break;
+    }
+  }
+
+  /* SCENE 0: STUDIO LOGO */
+  function animateStudio() {
+    const text = $('studio-text');
+    const line = $('studio-line');
+    text.style.opacity = '0';
+    text.style.transition = 'opacity 2s ease';
+    line.classList.remove('expand');
+
+    scheduleTimeout(() => {
+      text.style.opacity = '1';
+      line.classList.add('expand');
+    }, 800);
+
+    scheduleTimeout(() => {
+      text.style.opacity = '0';
+    }, 8000);
+  }
+
+  /* SCENE 1: MOVIE POSTER */
+  function animatePoster() {
+    const els = [
+      { el: $('poster-studio'), delay: 300 },
+      { el: $('poster-title'), delay: 800 },
+      { el: $('poster-divider'), delay: 1300, expand: true },
+      { el: $('poster-subtitle'), delay: 1800 },
+      { el: $('poster-tagline'), delay: 2500 },
+      { el: $('poster-cta'), delay: 3200 },
+      { el: $('poster-stars'), delay: 3800 },
+    ];
+
+    els.forEach(({ el, delay, expand }) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(10px)';
+      el.style.transition = 'opacity 1.2s ease, transform 1.2s ease';
+      if (expand) el.classList.remove('expand');
+
+      scheduleTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        if (expand) el.classList.add('expand');
+      }, delay);
+    });
+
+    // Animate stars
+    const starsEl = $('poster-stars');
+    starsEl.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+      scheduleTimeout(() => {
+        starsEl.innerHTML += '\u2605 ';
+      }, 3800 + i * 200);
+    }
+  }
+
+  /* SCENE 2: ACT I - THE ORIGIN */
+  function animateOrigin() {
+    const card = $('origin-card');
+    const actNum = $('origin-act');
+    const actTitle = $('origin-title');
+    const crawlContainer = $('origin-crawl-container');
+    const crawl = $('origin-crawl');
+
+    // Reset
+    card.style.opacity = '1';
+    actNum.style.opacity = '0';
+    actNum.style.transition = 'opacity 1.5s ease';
+    actTitle.style.opacity = '0';
+    actTitle.style.transition = 'opacity 1.5s ease';
+    crawlContainer.style.opacity = '0';
+    crawl.style.bottom = '-100%';
+    crawl.style.transition = 'none';
+
+    // Show act card
+    scheduleTimeout(() => {
+      actNum.style.opacity = '1';
+    }, 400);
+
+    scheduleTimeout(() => {
+      actTitle.style.opacity = '1';
+    }, 1200);
+
+    // Fade out act card, show crawl
+    scheduleTimeout(() => {
+      card.style.transition = 'opacity 1s ease';
+      card.style.opacity = '0';
+    }, 4000);
+
+    scheduleTimeout(() => {
+      crawlContainer.style.transition = 'opacity 1.5s ease';
+      crawlContainer.style.opacity = '1';
+
+      const duration = 22 / speed;
+      crawl.style.transition = `bottom ${duration}s linear`;
+      crawl.style.bottom = '120%';
+    }, 5500);
+  }
+
+  /* SCENE 3: ACT II - THE CRAFT */
+  function animateCraft() {
+    const header = $('craft-header');
+    header.style.opacity = '0';
+    header.style.transition = 'opacity 1s ease';
+
+    scheduleTimeout(() => { header.style.opacity = '1'; }, 500);
+
+    const rows = document.querySelectorAll('#cast-list .cast-row');
+    rows.forEach(row => {
+      row.style.opacity = '0';
+      row.style.transform = 'translateY(15px)';
+      row.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    });
+
+    rows.forEach((row, i) => {
+      scheduleTimeout(() => {
+        row.style.opacity = '1';
+        row.style.transform = 'translateY(0)';
+      }, 1500 + i * 350);
+    });
+  }
+
+  /* SCENE 4: ACT III - THE MISSIONS */
+  let currentMission = 0;
+
+  function animateMissions() {
+    const missions = [0, 1, 2];
+    currentMission = 0;
+
+    missions.forEach(i => {
+      const card = $('mission-' + i);
+      card.style.opacity = '0';
+      card.style.transform = 'translate(-50%, -50%) scale(0.97)';
+      card.style.transition = 'opacity 1.2s ease, transform 1.2s ease';
+    });
+
+    function showMission(i) {
+      if (i > 0) {
+        const prev = $('mission-' + (i - 1));
+        prev.style.opacity = '0';
+        prev.style.transform = 'translate(-50%, -50%) scale(0.97)';
+      }
+
+      scheduleTimeout(() => {
+        const card = $('mission-' + i);
+        card.style.opacity = '1';
+        card.style.transform = 'translate(-50%, -50%) scale(1)';
+        currentMission = i;
+      }, i === 0 ? 600 : 1200);
+    }
+
+    showMission(0);
+    scheduleTimeout(() => showMission(1), 12000);
+    scheduleTimeout(() => showMission(2), 24000);
+  }
+
+  /* SCENE 5: ACT IV - THE JOURNEY */
+  function animateJourney() {
+    const header = $('journey-header');
+    header.style.opacity = '0';
+    header.style.transition = 'opacity 1s ease';
+
+    scheduleTimeout(() => { header.style.opacity = '1'; }, 400);
+
+    const entries = document.querySelectorAll('#timeline .timeline-entry');
+    entries.forEach(entry => {
+      entry.style.opacity = '0';
+      entry.style.transform = 'translateY(20px)';
+      entry.style.transition = 'opacity 1s ease, transform 1s ease';
+    });
+
+    entries.forEach((entry, i) => {
+      scheduleTimeout(() => {
+        entry.style.opacity = '1';
+        entry.style.transform = 'translateY(0)';
+      }, 2000 + i * 2500);
+    });
+  }
+
+  /* SCENE 6: END CREDITS */
+  function animateCredits() {
+    const scroll = $('credits-scroll');
+    scroll.style.transition = 'none';
+    scroll.style.bottom = '-100%';
+
+    scheduleTimeout(() => {
+      const duration = 35 / speed;
+      scroll.style.transition = `bottom ${duration}s linear`;
+      scroll.style.bottom = '120%';
+    }, 800);
+  }
+
+  /* SCENE 7: POST-CREDITS */
+  function animatePostCredits() {
+    const ret = $('pc-return');
+    const but = $('pc-but');
+    const contact = $('pc-contact');
+    const end = $('pc-end');
+
+    ret.style.opacity = '0';
+    ret.style.transition = 'opacity 1.5s ease';
+    but.style.opacity = '0';
+    but.style.transition = 'opacity 1.2s ease';
+    contact.style.opacity = '0';
+    contact.style.transition = 'opacity 1.2s ease';
+    end.style.opacity = '0';
+    end.style.transition = 'opacity 2s ease';
+
+    scheduleTimeout(() => { ret.style.opacity = '1'; }, 2000);
+    scheduleTimeout(() => { but.style.opacity = '1'; }, 5000);
+    scheduleTimeout(() => { contact.style.opacity = '1'; }, 7000);
+    scheduleTimeout(() => { end.style.opacity = '1'; }, 10000);
+  }
+
+  /* ------------------------------------------------------------------
+     MAIN TICK LOOP
+     ------------------------------------------------------------------ */
+  function tick(timestamp) {
+    if (!playing) {
+      lastTick = null;
+      requestAnimationFrame(tick);
+      return;
+    }
+
+    if (lastTick === null) lastTick = timestamp;
+    const delta = (timestamp - lastTick) / 1000;
+    lastTick = timestamp;
+
+    elapsed += delta * speed;
+
+    if (elapsed >= TOTAL_DURATION) {
+      elapsed = TOTAL_DURATION;
+      playing = false;
+      playBtn.textContent = 'REPLAY';
+    }
+
+    // Update scrubber
+    const progress = (elapsed / TOTAL_DURATION) * 100;
+    scrubberFill.style.width = progress + '%';
+
+    // Update runtime
+    runtimeText.textContent = fmt(elapsed) + ' / ' + fmt(TOTAL_DURATION);
+
+    // Determine current scene
+    const sceneIdx = getSceneForTime(elapsed);
+    activateScene(sceneIdx);
+
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+
+  /* ------------------------------------------------------------------
+     CONTROLS
+     ------------------------------------------------------------------ */
+
+  // INTRO OVERLAY - Start
+  introOverlay.addEventListener('click', () => {
+    introOverlay.classList.add('hidden');
+    setTimeout(() => {
+      introOverlay.style.display = 'none';
+      playing = true;
+      lastTick = null;
+    }, 1000);
+  });
+
+  // PLAY / PAUSE
+  playBtn.addEventListener('click', () => {
+    if (elapsed >= TOTAL_DURATION) {
+      // Replay
+      elapsed = 0;
+      currentSceneIndex = -1;
+      playing = true;
+      lastTick = null;
+      playBtn.textContent = 'PAUSE';
+      return;
+    }
+
+    playing = !playing;
+    if (playing) lastTick = null;
+    playBtn.textContent = playing ? 'PAUSE' : 'PLAY';
+  });
+
+  // SPEED
+  speedBtn.addEventListener('click', () => {
+    speedIndex = (speedIndex + 1) % SPEEDS.length;
+    speed = SPEEDS[speedIndex];
+    speedBtn.textContent = speed + 'x';
+    speedBtn.classList.toggle('active', speed !== 1);
+  });
+
+  // SKIP
+  skipBtn.addEventListener('click', () => {
+    elapsed = SCENES[SCENES.length - 1].start;
+    currentSceneIndex = -1;
+    if (!playing) {
+      playing = true;
+      lastTick = null;
+      playBtn.textContent = 'PAUSE';
+    }
+  });
+
+  // SCRUBBER CLICK
+  scrubber.addEventListener('click', (e) => {
+    const rect = scrubber.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    elapsed = pct * TOTAL_DURATION;
+    currentSceneIndex = -1;
+
+    if (!playing) {
+      playing = true;
+      lastTick = null;
+      playBtn.textContent = 'PAUSE';
+    }
+  });
+
+  // KEYBOARD SHORTCUTS
+  document.addEventListener('keydown', (e) => {
+    if (introOverlay.style.display !== 'none') {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        introOverlay.click();
+        e.preventDefault();
+      }
+      return;
+    }
+
+    switch(e.code) {
+      case 'Space':
+        e.preventDefault();
+        playBtn.click();
+        break;
+      case 'ArrowRight':
+        elapsed = Math.min(elapsed + 10, TOTAL_DURATION);
+        currentSceneIndex = -1;
+        break;
+      case 'ArrowLeft':
+        elapsed = Math.max(elapsed - 10, 0);
+        currentSceneIndex = -1;
+        break;
+      case 'KeyS':
+        speedBtn.click();
+        break;
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
