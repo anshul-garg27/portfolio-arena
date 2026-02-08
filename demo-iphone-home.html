@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Anshull Garg - iPhone Portfolio</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg1:#1C0B2E;--bg2:#0A1628;
+--glass:rgba(255,255,255,0.12);--glass2:rgba(255,255,255,0.06);
+--text:#fff;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.5);
+--font:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Segoe UI",sans-serif;
+--radius:13px;--icon-size:60px;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:#000;color:var(--text);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none}
+
+/* iPhone Frame */
+.iphone-frame{
+  position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;
+  margin:0 auto;overflow:hidden;
+  background:linear-gradient(165deg,var(--bg1) 0%,#12082B 30%,var(--bg2) 70%,#0D1B2A 100%);
+}
+@media(min-width:500px){
+  body{display:flex;align-items:center;justify-content:center;background:#111}
+  .iphone-frame{border-radius:48px;border:3px solid #333;height:min(932px,95vh)}
+}
+
+/* Wallpaper orbs */
+.wallpaper-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;pointer-events:none;z-index:0}
+.orb1{width:300px;height:300px;background:#7B2FBE;top:-50px;left:-80px}
+.orb2{width:250px;height:250px;background:#1E5FAD;bottom:100px;right:-60px}
+.orb3{width:200px;height:200px;background:#D946EF;bottom:-40px;left:40px;opacity:.2}
+
+/* Status Bar */
+.status-bar{
+  position:relative;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 28px 0;height:54px;font-size:14px;font-weight:600;
+}
+.status-time{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.status-right{display:flex;align-items:center;gap:6px;font-size:13px}
+.status-right svg{width:18px;height:18px;fill:var(--text)}
+.battery-wrap{display:flex;align-items:center;gap:3px;font-size:13px;font-weight:600}
+.battery-icon{width:25px;height:12px;border:1.5px solid rgba(255,255,255,.5);border-radius:3px;position:relative;padding:1.5px}
+.battery-icon::after{content:'';position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:2px;height:5px;background:rgba(255,255,255,.5);border-radius:0 1px 1px 0}
+.battery-fill{width:80%;height:100%;background:#34C759;border-radius:1.5px}
+
+/* Dynamic Island */
+.dynamic-island{
+  width:126px;height:36px;background:#000;border-radius:20px;
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:200;
+}
+
+/* Scrollable Content Area */
+.home-content{
+  position:relative;z-index:10;height:calc(100% - 54px - 90px - 34px);
+  overflow-y:auto;overflow-x:hidden;padding:8px 20px 20px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.home-content::-webkit-scrollbar{display:none}
+
+/* Notification Center */
+.notif-center{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:300;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  transform:translateY(-100%);transition:transform .4s cubic-bezier(.32,.72,0,1);
+  padding:70px 20px 40px;overflow-y:auto;
+}
+.notif-center.open{transform:translateY(0)}
+.notif-center h3{font-size:32px;font-weight:700;margin-bottom:4px}
+.notif-date{font-size:15px;color:var(--text2);margin-bottom:20px}
+.notif-card{
+  background:rgba(255,255,255,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:16px;padding:14px 16px;margin-bottom:10px;
+}
+.notif-card .notif-app{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.notif-card .notif-app .notif-dot{width:6px;height:6px;border-radius:50%}
+.notif-card .notif-title{font-size:15px;font-weight:600;margin-bottom:2px}
+.notif-card .notif-body{font-size:13px;color:var(--text2);line-height:1.4}
+.notif-close-hint{text-align:center;color:var(--text3);font-size:13px;margin-top:20px}
+
+/* Pull indicator */
+.pull-indicator{
+  position:absolute;top:58px;left:50%;transform:translateX(-50%);z-index:150;
+  width:36px;height:5px;border-radius:3px;background:rgba(255,255,255,.25);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.pull-indicator.visible{opacity:1}
+
+/* Widgets */
+.widget{
+  background:rgba(255,255,255,.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:14px 16px;
+  position:relative;overflow:hidden;
+}
+.widget::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 50%);pointer-events:none;border-radius:20px}
+
+.widget-row{display:flex;gap:12px;margin-bottom:12px}
+.widget-large{flex:1}
+.widget-small{width:calc(50% - 6px)}
+.widget-row-small{display:flex;gap:12px;margin-bottom:16px}
+.widget-row-small .widget{flex:1}
+
+/* About Widget */
+.about-widget{display:flex;flex-direction:column;gap:10px}
+.about-top{display:flex;align-items:center;gap:12px}
+.about-avatar{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,#7B2FBE,#3B82F6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;flex-shrink:0;
+}
+.about-info .about-name{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.about-info .about-role{font-size:12px;color:var(--text2);margin-top:1px}
+.about-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  background:rgba(52,199,89,.2);color:#34C759;align-self:flex-start;
+}
+.about-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#34C759;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.about-desc{font-size:12px;color:var(--text2);line-height:1.5}
+
+/* GitHub Widget */
+.gh-widget .gh-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.gh-stats{display:flex;gap:16px}
+.gh-stat .gh-num{font-size:22px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#58A6FF,#3FB950);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gh-stat .gh-lbl{font-size:10px;color:var(--text3);margin-top:1px}
+.gh-graph{display:flex;gap:2px;align-items:flex-end;margin-top:10px;height:30px}
+.gh-bar{flex:1;background:rgba(63,185,80,.6);border-radius:2px;min-width:4px}
+
+/* Clock Widget */
+.clock-widget{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80px}
+.clock-widget .clock-city{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.clock-widget .clock-time{font-size:30px;font-weight:200;letter-spacing:2px;margin:4px 0}
+.clock-widget .clock-label{font-size:10px;color:var(--text3)}
+
+/* Weather Widget */
+.weather-widget{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80px}
+.weather-widget .weather-loc{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.weather-widget .weather-temp{font-size:34px;font-weight:200;margin:2px 0}
+.weather-widget .weather-desc{font-size:11px;color:var(--text2)}
+.weather-icon{font-size:22px;margin-bottom:2px}
+
+/* App Grid */
+.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 0;justify-items:center;margin-bottom:16px;padding:0 4px}
+.app-icon-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.app-icon-wrap:active .app-icon{transform:scale(.9)}
+.app-icon{
+  width:var(--icon-size);height:var(--icon-size);border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;transition:transform .15s ease;position:relative;
+  box-shadow:0 4px 12px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.15);
+}
+.app-icon svg{width:32px;height:32px;fill:#fff}
+.app-label{font-size:11px;color:var(--text);text-align:center;font-weight:400;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Icon colors */
+.icon-blue{background:linear-gradient(135deg,#007AFF,#5856D6)}
+.icon-green{background:linear-gradient(135deg,#34C759,#30D158)}
+.icon-orange{background:linear-gradient(135deg,#FF9500,#FF6B00)}
+.icon-red{background:linear-gradient(135deg,#FF3B30,#FF2D55)}
+.icon-dark{background:linear-gradient(135deg,#1C1C1E,#2C2C2E);border:1px solid rgba(255,255,255,.1)}
+.icon-linkedin{background:linear-gradient(135deg,#0A66C2,#004182)}
+.icon-mail{background:linear-gradient(135deg,#007AFF,#34AADC)}
+.icon-gray{background:linear-gradient(135deg,#8E8E93,#636366)}
+.icon-rainbow{background:linear-gradient(135deg,#FF3B30,#FF9500,#FFCC00,#34C759,#007AFF,#5856D6)}
+.icon-terminal{background:#000;border:1px solid rgba(255,255,255,.15)}
+.icon-yellow{background:linear-gradient(135deg,#FFD60A,#FFCC00)}
+.icon-safari{background:linear-gradient(135deg,#007AFF,#34AADC)}
+
+/* Page dots */
+.page-dots{display:flex;justify-content:center;gap:6px;margin:8px 0 12px}
+.page-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3)}
+.page-dot.active{background:#fff}
+
+/* Dock */
+.dock{
+  position:absolute;bottom:34px;left:12px;right:12px;z-index:50;
+  background:rgba(255,255,255,.12);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,.1);border-radius:28px;
+  display:flex;justify-content:space-around;align-items:center;
+  padding:12px 16px;
+}
+.dock .app-icon{width:52px;height:52px;border-radius:12px;font-size:24px}
+.dock .app-icon svg{width:26px;height:26px}
+.dock .app-label{display:none}
+
+/* Home Indicator */
+.home-indicator{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:60;
+  width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);
+}
+
+/* Wobble animation */
+@keyframes wobble{
+  0%{transform:rotate(0deg)}25%{transform:rotate(1.5deg)}50%{transform:rotate(0deg)}75%{transform:rotate(-1.5deg)}100%{transform:rotate(0deg)}
+}
+.wobble-mode .app-icon-wrap .app-icon{animation:wobble .25s infinite ease-in-out}
+.wobble-mode .app-icon-wrap:nth-child(2n) .app-icon{animation-delay:.05s}
+.wobble-mode .app-icon-wrap:nth-child(3n) .app-icon{animation-delay:.1s}
+
+/* App Modal (opens from icon) */
+.app-modal-overlay{
+  position:absolute;inset:0;z-index:400;pointer-events:none;opacity:0;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:opacity .35s ease;
+}
+.app-modal-overlay.open{opacity:1;pointer-events:auto}
+.app-modal{
+  position:absolute;z-index:401;
+  border-radius:40px;background:rgba(28,11,46,.97);
+  backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+  border:1px solid rgba(255,255,255,.1);overflow:hidden;
+  transition:all .45s cubic-bezier(.32,.72,0,1);
+  display:flex;flex-direction:column;
+}
+.app-modal.closed{
+  width:60px;height:60px;border-radius:13px;opacity:0;transform:scale(.5);
+}
+.app-modal.open{
+  top:10px;left:10px;right:10px;bottom:10px;border-radius:40px;opacity:1;transform:scale(1);
+}
+.app-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px 12px;flex-shrink:0;
+}
+.app-modal-title{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.app-modal-close{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:none;color:#fff;
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.app-modal-close:hover{background:rgba(255,255,255,.2)}
+.app-modal-body{
+  flex:1;overflow-y:auto;padding:0 24px 30px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.app-modal-body::-webkit-scrollbar{display:none}
+
+/* App Content Styles */
+.app-section-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 12px}
+.app-section-title:first-child{margin-top:8px}
+
+/* Projects App */
+.project-card{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:16px;margin-bottom:12px;
+}
+.project-card h4{font-size:16px;font-weight:700;margin-bottom:4px}
+.project-card .project-tech{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.project-card .project-tech span{font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.08);color:var(--text2)}
+.project-card p{font-size:13px;color:var(--text2);line-height:1.5}
+.project-card .project-links{display:flex;gap:10px;margin-top:10px}
+.project-card .project-links a{font-size:12px;color:#007AFF;text-decoration:none;font-weight:600}
+
+/* Skills App */
+.skill-category{margin-bottom:16px}
+.skill-category h4{font-size:14px;font-weight:700;margin-bottom:8px}
+.skill-pills{display:flex;flex-wrap:wrap;gap:6px}
+.skill-pill{
+  padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.06);
+  transition:all .2s;
+}
+.skill-pill:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.15)}
+.skill-pill.highlight{background:rgba(0,122,255,.2);border-color:rgba(0,122,255,.3);color:#5AC8FA}
+
+/* Experience App */
+.exp-item{
+  position:relative;padding-left:20px;margin-bottom:20px;
+  border-left:2px solid rgba(255,255,255,.1);
+}
+.exp-item::before{
+  content:'';position:absolute;left:-5px;top:4px;
+  width:8px;height:8px;border-radius:50%;background:#007AFF;
+}
+.exp-item h4{font-size:15px;font-weight:700}
+.exp-item .exp-company{font-size:13px;color:#007AFF;font-weight:600}
+.exp-item .exp-date{font-size:11px;color:var(--text3);margin:2px 0 6px}
+.exp-item p{font-size:13px;color:var(--text2);line-height:1.5}
+.exp-item ul{margin-top:6px;padding-left:16px}
+.exp-item li{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* Resume App */
+.resume-section{margin-bottom:20px}
+.resume-section h4{font-size:14px;font-weight:700;margin-bottom:8px;color:#FF9500}
+.resume-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.resume-row .resume-left{font-size:13px;font-weight:600}
+.resume-row .resume-right{font-size:11px;color:var(--text3);text-align:right}
+.resume-detail{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.resume-download{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 24px;
+  border-radius:12px;background:linear-gradient(135deg,#FF3B30,#FF2D55);
+  color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;
+  margin-top:8px;transition:transform .2s;
+}
+.resume-download:active{transform:scale(.95)}
+
+/* Settings App */
+.settings-group{margin-bottom:16px}
+.settings-group-title{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding:0 4px}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.06);padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;
+}
+.settings-row:first-of-type{border-radius:12px 12px 0 0}
+.settings-row:last-of-type{border-radius:0 0 12px 12px;border-bottom:none}
+.settings-row:only-of-type{border-radius:12px}
+.settings-row .settings-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:12px}
+.settings-row-left{display:flex;align-items:center}
+.toggle{
+  width:44px;height:26px;border-radius:13px;background:rgba(255,255,255,.15);
+  position:relative;cursor:pointer;transition:background .3s;
+}
+.toggle.active{background:#34C759}
+.toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:22px;height:22px;border-radius:50%;background:#fff;
+  transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.toggle.active::after{transform:translateX(18px)}
+
+/* Terminal App */
+.terminal-screen{
+  background:#000;border-radius:12px;padding:16px;font-family:'SF Mono',Monaco,'Fira Code',monospace;
+  font-size:12px;min-height:200px;line-height:1.7;
+}
+.terminal-screen .t-green{color:#34C759}
+.terminal-screen .t-blue{color:#5AC8FA}
+.terminal-screen .t-gray{color:#8E8E93}
+.terminal-screen .t-yellow{color:#FFD60A}
+.terminal-screen .t-red{color:#FF453A}
+.terminal-input{
+  display:flex;align-items:center;gap:6px;margin-top:8px;
+}
+.terminal-input span{color:#34C759;font-family:inherit;font-size:12px}
+.terminal-input input{
+  flex:1;background:none;border:none;outline:none;color:#fff;
+  font-family:inherit;font-size:12px;caret-color:#34C759;
+}
+
+/* Notes App */
+.note-item{
+  background:rgba(255,204,0,.06);border-left:3px solid #FFD60A;
+  border-radius:0 12px 12px 0;padding:14px 16px;margin-bottom:12px;
+}
+.note-item h4{font-size:14px;font-weight:700;margin-bottom:4px;color:#FFD60A}
+.note-item p{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* Photos App */
+.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.photo-thumb{
+  aspect-ratio:1;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--text3);text-align:center;padding:4px;
+}
+
+/* Safari App */
+.safari-bar{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.08);border-radius:10px;padding:8px 14px;margin-bottom:16px;
+}
+.safari-bar input{flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:var(--font)}
+.link-card{
+  display:block;text-decoration:none;color:var(--text);
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:14px 16px;margin-bottom:10px;transition:background .2s;
+}
+.link-card:hover{background:rgba(255,255,255,.1)}
+.link-card h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.link-card p{font-size:12px;color:var(--text2)}
+
+/* Contact App */
+.contact-field{margin-bottom:14px}
+.contact-field label{display:block;font-size:12px;color:var(--text3);margin-bottom:4px;font-weight:600}
+.contact-field input,.contact-field textarea{
+  width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;font-family:var(--font);
+  outline:none;resize:none;transition:border-color .2s;
+}
+.contact-field input:focus,.contact-field textarea:focus{border-color:rgba(0,122,255,.5)}
+.contact-send{
+  width:100%;padding:14px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#007AFF,#5856D6);
+  color:#fff;font-size:16px;font-weight:600;cursor:pointer;
+  transition:transform .15s;font-family:var(--font);
+}
+.contact-send:active{transform:scale(.97)}
+
+/* LinkedIn / GitHub link pages */
+.profile-header{text-align:center;padding:20px 0}
+.profile-avatar{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;
+}
+.profile-header h4{font-size:20px;font-weight:700}
+.profile-header p{font-size:13px;color:var(--text2);margin-top:4px}
+.profile-link-btn{
+  display:block;width:100%;padding:14px;border-radius:12px;border:none;
+  font-size:15px;font-weight:600;cursor:pointer;text-align:center;
+  margin-top:12px;transition:transform .15s;font-family:var(--font);text-decoration:none;
+}
+.profile-link-btn:active{transform:scale(.97)}
+.stat-row{display:flex;justify-content:center;gap:24px;margin:16px 0}
+.stat-item{text-align:center}
+.stat-item .stat-num{font-size:22px;font-weight:800}
+.stat-item .stat-lbl{font-size:11px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<div class="iphone-frame" id="iphoneFrame">
+  <!-- Wallpaper orbs -->
+  <div class="wallpaper-orb orb1"></div>
+  <div class="wallpaper-orb orb2"></div>
+  <div class="wallpaper-orb orb3"></div>
+
+  <!-- Dynamic Island -->
+  <div class="dynamic-island"></div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time" id="statusTime">9:41</span>
+    <div class="status-right">
+      <svg viewBox="0 0 20 20"><path d="M2 14h2v4H2zm4-3h2v7H6zm4-4h2v11h-2zm4-3h2v14h-2z" opacity=".9"/></svg>
+      <svg viewBox="0 0 20 20"><path d="M10 3.5c-3.59 0-6.5 2.91-6.5 6.5h2a4.5 4.5 0 019 0h2c0-3.59-2.91-6.5-6.5-6.5zm0 3c-1.93 0-3.5 1.57-3.5 3.5h2c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5h2c0-1.93-1.57-3.5-3.5-3.5zm0 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+      <div class="battery-wrap">
+        <div class="battery-icon"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pull indicator -->
+  <div class="pull-indicator" id="pullIndicator"></div>
+
+  <!-- Notification Center -->
+  <div class="notif-center" id="notifCenter">
+    <h3 id="notifTitle">Good Morning</h3>
+    <div class="notif-date" id="notifDate">Saturday, February 8</div>
+    <div class="notif-card">
+      <div class="notif-app"><span class="notif-dot" style="background:#007AFF"></span>LinkedIn</div>
+      <div class="notif-title">New connection request</div>
+      <div class="notif-body">A recruiter from Google wants to connect with you.</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-app"><span class="notif-dot" style="background:#34C759"></span>GitHub</div>
+      <div class="notif-title">PR merged successfully</div>
+      <div class="notif-body">Your pull request "feat: optimize checkout flow" was merged into main.</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-app"><span class="notif-dot" style="background:#FF9500"></span>Walmart Tech</div>
+      <div class="notif-title">Sprint review today</div>
+      <div class="notif-body">Demo at 2:00 PM -- showcasing the new performance improvements.</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-app"><span class="notif-dot" style="background:#FF3B30"></span>System</div>
+      <div class="notif-title">Portfolio visitors +240%</div>
+      <div class="notif-body">Your portfolio had 1,247 unique visitors this week. Trending up.</div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-app"><span class="notif-dot" style="background:#5856D6"></span>Mail</div>
+      <div class="notif-title">Interview invitation</div>
+      <div class="notif-body">Congrats! We'd love to schedule a technical interview for the Senior SWE role.</div>
+    </div>
+    <div class="notif-close-hint">Swipe up or tap to close</div>
+  </div>
+
+  <!-- Scrollable Home Content -->
+  <div class="home-content" id="homeContent">
+
+    <!-- Large Widget: About -->
+    <div class="widget-row">
+      <div class="widget widget-large about-widget">
+        <div class="about-top">
+          <div class="about-avatar">AG</div>
+          <div class="about-info">
+            <div class="about-name">Anshull Garg</div>
+            <div class="about-role">Software Developer at Walmart</div>
+          </div>
+        </div>
+        <div class="about-badge">Available for opportunities</div>
+        <div class="about-desc">Building scalable, high-performance applications at Fortune #1. Full-stack engineer focused on clean architecture and exceptional UX.</div>
+      </div>
+    </div>
+
+    <!-- Medium Widget: GitHub Stats -->
+    <div class="widget-row">
+      <div class="widget widget-large gh-widget">
+        <div class="gh-label">GitHub Activity</div>
+        <div class="gh-stats">
+          <div class="gh-stat"><div class="gh-num">500+</div><div class="gh-lbl">Contributions</div></div>
+          <div class="gh-stat"><div class="gh-num">30+</div><div class="gh-lbl">Repositories</div></div>
+          <div class="gh-stat"><div class="gh-num">45</div><div class="gh-lbl">Day Streak</div></div>
+        </div>
+        <div class="gh-graph" id="ghGraph"></div>
+      </div>
+    </div>
+
+    <!-- Small Widgets Row -->
+    <div class="widget-row-small">
+      <div class="widget clock-widget">
+        <div class="clock-city">Bentonville</div>
+        <div class="clock-time" id="clockTime">9:41</div>
+        <div class="clock-label">CST</div>
+      </div>
+      <div class="widget weather-widget">
+        <div class="weather-loc">Bentonville</div>
+        <div class="weather-icon">&#9728;&#65039;</div>
+        <div class="weather-temp">42&#176;</div>
+        <div class="weather-desc">Partly Cloudy</div>
+      </div>
+    </div>
+
+    <!-- App Grid Page 1 -->
+    <div class="app-grid" id="appGrid">
+      <div class="app-icon-wrap" data-app="projects" onclick="openApp('projects',this)">
+        <div class="app-icon icon-blue"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg></div>
+        <span class="app-label">Projects</span>
+      </div>
+      <div class="app-icon-wrap" data-app="skills" onclick="openApp('skills',this)">
+        <div class="app-icon icon-green"><svg viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6z" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M9 15l3-6 3 6" fill="none" stroke="#fff" stroke-width="1.5"/></svg></div>
+        <span class="app-label">Skills</span>
+      </div>
+      <div class="app-icon-wrap" data-app="experience" onclick="openApp('experience',this)">
+        <div class="app-icon icon-orange"><svg viewBox="0 0 24 24"><path d="M20 6h-4V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2H4a2 2 0 00-2 2v11a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></svg></div>
+        <span class="app-label">Experience</span>
+      </div>
+      <div class="app-icon-wrap" data-app="resume" onclick="openApp('resume',this)">
+        <div class="app-icon icon-red"><svg viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 13h8v1H8v-1zm0 3h8v1H8v-1zm0-6h3v1H8v-1z"/></svg></div>
+        <span class="app-label">Resume</span>
+      </div>
+      <div class="app-icon-wrap" data-app="github" onclick="openApp('github',this)">
+        <div class="app-icon icon-dark"><svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg></div>
+        <span class="app-label">GitHub</span>
+      </div>
+      <div class="app-icon-wrap" data-app="linkedin" onclick="openApp('linkedin',this)">
+        <div class="app-icon icon-linkedin"><svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14zM8.5 18V10H6v8h2.5zM7.25 8.75a1.38 1.38 0 100-2.75 1.38 1.38 0 000 2.75zM18 18v-4.5c0-2.34-1.35-3.5-3.15-3.5A2.72 2.72 0 0012.5 11.5V10H10v8h2.5v-4.05c0-1.1.5-1.95 1.6-1.95.95 0 1.4.7 1.4 1.95V18H18z"/></svg></div>
+        <span class="app-label">LinkedIn</span>
+      </div>
+      <div class="app-icon-wrap" data-app="mail" onclick="openApp('mail',this)">
+        <div class="app-icon icon-mail"><svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v.01L12 12l8-5.99V6H4zm0 2.41V18h16V8.41l-8 5.99-8-5.99z"/></svg></div>
+        <span class="app-label">Mail</span>
+      </div>
+      <div class="app-icon-wrap" data-app="settings" onclick="openApp('settings',this)">
+        <div class="app-icon icon-gray"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1012 8.5a3.5 3.5 0 000 7zm7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-.97l2.11-1.65a.5.5 0 00.12-.64l-2-3.46a.5.5 0 00-.61-.22l-2.49 1a7.04 7.04 0 00-1.67-.97l-.38-2.65A.49.49 0 0014 3h-4a.49.49 0 00-.49.42l-.38 2.65c-.61.25-1.17.58-1.67.97l-2.49-1a.5.5 0 00-.61.22l-2 3.46a.49.49 0 00.12.64l2.11 1.65c-.04.32-.07.65-.07.97s.03.66.07.97l-2.11 1.65a.5.5 0 00-.12.64l2 3.46a.5.5 0 00.61.22l2.49-1c.5.39 1.06.72 1.67.97l.38 2.65c.05.24.26.42.49.42h4c.24 0 .44-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.67-.97l2.49 1a.5.5 0 00.61-.22l2-3.46a.49.49 0 00-.12-.64l-2.11-1.65z"/></svg></div>
+        <span class="app-label">Settings</span>
+      </div>
+      <div class="app-icon-wrap" data-app="photos" onclick="openApp('photos',this)">
+        <div class="app-icon icon-rainbow"><svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2zM8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-5z" fill="#fff"/></svg></div>
+        <span class="app-label">Photos</span>
+      </div>
+      <div class="app-icon-wrap" data-app="terminal" onclick="openApp('terminal',this)">
+        <div class="app-icon icon-terminal"><svg viewBox="0 0 24 24"><path d="M7 10l5 3-5 3V10z" fill="#34C759"/><path d="M13 17h5v1h-5z" fill="#34C759"/></svg></div>
+        <span class="app-label">Terminal</span>
+      </div>
+      <div class="app-icon-wrap" data-app="notes" onclick="openApp('notes',this)">
+        <div class="app-icon icon-yellow"><svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zm2 4v1h10V7H7zm0 3v1h10v-1H7zm0 3v1h7v-1H7z" fill="#000" opacity=".7"/></svg></div>
+        <span class="app-label">Notes</span>
+      </div>
+      <div class="app-icon-wrap" data-app="safari" onclick="openApp('safari',this)">
+        <div class="app-icon icon-safari"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36z" fill="#fff" opacity=".8"/></svg></div>
+        <span class="app-label">Safari</span>
+      </div>
+    </div>
+
+    <!-- Page Dots -->
+    <div class="page-dots">
+      <div class="page-dot active"></div>
+      <div class="page-dot"></div>
+    </div>
+
+  </div>
+
+  <!-- Dock -->
+  <div class="dock">
+    <div class="app-icon-wrap" onclick="openApp('about-dock',this)">
+      <div class="app-icon icon-blue" style="background:linear-gradient(135deg,#7B2FBE,#3B82F6)"><svg viewBox="0 0 24 24"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/></svg></div>
+    </div>
+    <div class="app-icon-wrap" onclick="openApp('projects',this)">
+      <div class="app-icon icon-blue"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg></div>
+    </div>
+    <div class="app-icon-wrap" onclick="openApp('skills',this)">
+      <div class="app-icon icon-green"><svg viewBox="0 0 24 24"><path d="M9 15l3-6 3 6" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 2L1 21h22L12 2z" fill="none" stroke="#fff" stroke-width="1.5"/></svg></div>
+    </div>
+    <div class="app-icon-wrap" onclick="openApp('mail',this)">
+      <div class="app-icon icon-mail"><svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v.01L12 12l8-5.99V6H4zm0 2.41V18h16V8.41l-8 5.99-8-5.99z"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Home Indicator -->
+  <div class="home-indicator"></div>
+
+  <!-- App Modal Overlay -->
+  <div class="app-modal-overlay" id="appOverlay" onclick="closeApp()"></div>
+
+  <!-- App Modal -->
+  <div class="app-modal closed" id="appModal">
+    <div class="app-modal-header">
+      <div class="app-modal-title" id="appModalTitle">App</div>
+      <button class="app-modal-close" onclick="closeApp()" aria-label="Close app">&#10005;</button>
+    </div>
+    <div class="app-modal-body" id="appModalBody"></div>
+  </div>
+</div>
+
+<script>
+// ---- Live clock ----
+function updateClocks(){
+  const now=new Date();
+  const h=now.getHours(),m=now.getMinutes();
+  const fmt=(h%12||12)+':'+(m<10?'0':'')+m;
+  const ampm=h>=12?'PM':'AM';
+  document.getElementById('statusTime').textContent=fmt;
+  document.getElementById('clockTime').textContent=fmt;
+  // Notification greeting
+  const greet=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  document.getElementById('notifTitle').textContent=greet;
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('notifDate').textContent=days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate();
+}
+updateClocks();
+setInterval(updateClocks,10000);
+
+// ---- GitHub graph bars ----
+(function(){
+  const g=document.getElementById('ghGraph');
+  for(let i=0;i<28;i++){
+    const bar=document.createElement('div');
+    bar.className='gh-bar';
+    const h=Math.random()*24+6;
+    bar.style.height=h+'px';
+    bar.style.opacity=(.3+Math.random()*.7).toFixed(2);
+    g.appendChild(bar);
+  }
+})();
+
+// ---- Notification Center (pull down) ----
+let notifOpen=false;
+const notifEl=document.getElementById('notifCenter');
+const pullInd=document.getElementById('pullIndicator');
+const homeContent=document.getElementById('homeContent');
+let touchStartY=0,pulling=false;
+
+homeContent.addEventListener('touchstart',function(e){
+  if(homeContent.scrollTop<=0){touchStartY=e.touches[0].clientY;pulling=true}
+},{passive:true});
+homeContent.addEventListener('touchmove',function(e){
+  if(!pulling)return;
+  const dy=e.touches[0].clientY-touchStartY;
+  if(dy>10)pullInd.classList.add('visible');
+  if(dy>80&&!notifOpen)toggleNotif(true);
+},{passive:true});
+homeContent.addEventListener('touchend',function(){pulling=false;pullInd.classList.remove('visible')});
+
+// Mouse pull-down for desktop
+homeContent.addEventListener('mousedown',function(e){
+  if(homeContent.scrollTop<=0){touchStartY=e.clientY;pulling=true}
+});
+homeContent.addEventListener('mousemove',function(e){
+  if(!pulling)return;
+  const dy=e.clientY-touchStartY;
+  if(dy>10)pullInd.classList.add('visible');
+  if(dy>60&&!notifOpen)toggleNotif(true);
+});
+homeContent.addEventListener('mouseup',function(){pulling=false;pullInd.classList.remove('visible')});
+
+function toggleNotif(open){
+  notifOpen=open;
+  if(open)notifEl.classList.add('open');
+  else notifEl.classList.remove('open');
+}
+notifEl.addEventListener('click',function(e){
+  if(e.target===notifEl||e.target.classList.contains('notif-close-hint'))toggleNotif(false);
+});
+// Swipe up to close notif
+let notifTouchY=0;
+notifEl.addEventListener('touchstart',function(e){notifTouchY=e.touches[0].clientY},{passive:true});
+notifEl.addEventListener('touchend',function(e){
+  const dy=e.changedTouches[0].clientY-notifTouchY;
+  if(dy<-50)toggleNotif(false);
+},{passive:true});
+
+// ---- Wobble mode (long press) ----
+let wobbleTimer=null;
+const appGrid=document.getElementById('appGrid');
+appGrid.addEventListener('pointerdown',function(){
+  wobbleTimer=setTimeout(()=>{appGrid.classList.toggle('wobble-mode')},600);
+});
+appGrid.addEventListener('pointerup',function(){clearTimeout(wobbleTimer)});
+appGrid.addEventListener('pointerleave',function(){clearTimeout(wobbleTimer)});
+
+// ---- App content definitions ----
+const appContent={
+  'about-dock':function(){return `
+    <div class="profile-header">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#7B2FBE,#3B82F6)">AG</div>
+      <h4>Anshull Garg</h4>
+      <p>Software Developer at Walmart Global Tech</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item"><div class="stat-num">3+</div><div class="stat-lbl">Years Exp</div></div>
+      <div class="stat-item"><div class="stat-num">500+</div><div class="stat-lbl">Contributions</div></div>
+      <div class="stat-item"><div class="stat-num">30+</div><div class="stat-lbl">Projects</div></div>
+    </div>
+    <div class="app-section-title">About</div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px">
+      Software Engineer at Walmart Global Tech, building systems that serve millions of customers. I architect scalable, high-performance applications that power enterprise e-commerce at Fortune #1 scale. I specialize in full-stack development with React, Node.js, and cloud infrastructure.
+    </p>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px">
+      I care about clean architecture, deep user empathy, and writing code that is as maintainable as it is functional. I believe great software is built at the intersection of technical excellence and thoughtful design.
+    </p>
+    <div class="app-section-title">What Drives Me</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.8">
+      <div style="margin-bottom:6px">&#8226; Writing code that is readable, testable, and built to last</div>
+      <div style="margin-bottom:6px">&#8226; Understanding the "why" before jumping to the "how"</div>
+      <div style="margin-bottom:6px">&#8226; Continuous learning and pushing technical boundaries</div>
+      <div>&#8226; Building products that genuinely help people</div>
+    </div>
+  `},
+  'projects':function(){return `
+    <div class="app-section-title">Featured Projects</div>
+    <div class="project-card">
+      <h4>Enterprise E-Commerce Platform</h4>
+      <p>High-performance storefront serving millions of daily users with sub-second load times and real-time inventory updates.</p>
+      <div class="project-tech"><span>React</span><span>Node.js</span><span>GraphQL</span><span>Redis</span><span>Kubernetes</span></div>
+      <div class="project-links"><a href="#">Live Demo</a><a href="#">Source Code</a></div>
+    </div>
+    <div class="project-card">
+      <h4>Real-Time Analytics Dashboard</h4>
+      <p>Interactive dashboard processing 10K+ events/second with live visualizations, anomaly detection, and custom alerting.</p>
+      <div class="project-tech"><span>TypeScript</span><span>D3.js</span><span>WebSocket</span><span>PostgreSQL</span></div>
+      <div class="project-links"><a href="#">Live Demo</a><a href="#">Source Code</a></div>
+    </div>
+    <div class="project-card">
+      <h4>Developer Productivity CLI</h4>
+      <p>Command-line toolkit automating repetitive dev tasks -- PR creation, code scaffolding, and deployment pipelines. Used by 200+ engineers.</p>
+      <div class="project-tech"><span>Go</span><span>Python</span><span>Docker</span><span>GitHub Actions</span></div>
+      <div class="project-links"><a href="#">Source Code</a></div>
+    </div>
+    <div class="project-card">
+      <h4>AI-Powered Code Review Bot</h4>
+      <p>Automated code review assistant using LLMs to detect anti-patterns, suggest improvements, and enforce style guidelines.</p>
+      <div class="project-tech"><span>Python</span><span>OpenAI API</span><span>FastAPI</span><span>GitHub API</span></div>
+      <div class="project-links"><a href="#">Live Demo</a><a href="#">Source Code</a></div>
+    </div>
+    <div class="project-card">
+      <h4>Collaborative Whiteboard</h4>
+      <p>Real-time collaborative drawing tool with conflict-free replicated data types (CRDTs) for seamless multi-user editing.</p>
+      <div class="project-tech"><span>React</span><span>Canvas API</span><span>WebRTC</span><span>Yjs</span></div>
+      <div class="project-links"><a href="#">Live Demo</a><a href="#">Source Code</a></div>
+    </div>
+  `},
+  'skills':function(){return `
+    <div class="skill-category">
+      <h4>Frontend Engineering</h4>
+      <div class="skill-pills">
+        <span class="skill-pill highlight">React</span><span class="skill-pill highlight">Next.js</span>
+        <span class="skill-pill highlight">TypeScript</span><span class="skill-pill">Tailwind CSS</span>
+        <span class="skill-pill">Framer Motion</span><span class="skill-pill">Redux</span>
+        <span class="skill-pill">Vue.js</span><span class="skill-pill">Webpack</span>
+        <span class="skill-pill">HTML5 / CSS3</span><span class="skill-pill">WCAG / A11y</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h4>Backend &amp; APIs</h4>
+      <div class="skill-pills">
+        <span class="skill-pill highlight">Node.js</span><span class="skill-pill highlight">Express</span>
+        <span class="skill-pill highlight">GraphQL</span><span class="skill-pill">Python</span>
+        <span class="skill-pill">FastAPI</span><span class="skill-pill">Java</span>
+        <span class="skill-pill">REST API Design</span><span class="skill-pill">gRPC</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h4>Databases &amp; Storage</h4>
+      <div class="skill-pills">
+        <span class="skill-pill">PostgreSQL</span><span class="skill-pill">MongoDB</span>
+        <span class="skill-pill">Redis</span><span class="skill-pill">Elasticsearch</span>
+        <span class="skill-pill">DynamoDB</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h4>DevOps &amp; Cloud</h4>
+      <div class="skill-pills">
+        <span class="skill-pill">Docker</span><span class="skill-pill">Kubernetes</span>
+        <span class="skill-pill">AWS</span><span class="skill-pill">GCP</span>
+        <span class="skill-pill">CI/CD</span><span class="skill-pill">GitHub Actions</span>
+        <span class="skill-pill">Jenkins</span><span class="skill-pill">Terraform</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h4>Tools &amp; Practices</h4>
+      <div class="skill-pills">
+        <span class="skill-pill">Git</span><span class="skill-pill">Agile / Scrum</span>
+        <span class="skill-pill">TDD</span><span class="skill-pill">System Design</span>
+        <span class="skill-pill">Code Review</span><span class="skill-pill">Figma</span>
+      </div>
+    </div>
+  `},
+  'experience':function(){return `
+    <div class="app-section-title">Career Timeline</div>
+    <div class="exp-item">
+      <h4>Software Engineer</h4>
+      <div class="exp-company">Walmart Global Tech</div>
+      <div class="exp-date">2022 - Present | Bentonville, AR</div>
+      <p>Building production systems at Fortune #1 scale.</p>
+      <ul>
+        <li>Architected and shipped features serving millions of daily active users across Walmart's digital commerce platform</li>
+        <li>Reduced page load times by 40% through code splitting, lazy loading, and aggressive caching strategies</li>
+        <li>Led migration of legacy monolith to microservices architecture, improving deployment frequency by 3x</li>
+        <li>Built internal tooling used by 500+ engineers to streamline development workflows</li>
+        <li>Mentored junior developers and led code reviews across cross-functional teams</li>
+      </ul>
+    </div>
+    <div class="exp-item">
+      <h4>Software Engineering Intern</h4>
+      <div class="exp-company">Walmart Global Tech</div>
+      <div class="exp-date">Summer 2021</div>
+      <p>Full-stack development on customer-facing features.</p>
+      <ul>
+        <li>Developed a real-time inventory tracking dashboard used across multiple distribution centers</li>
+        <li>Implemented automated testing pipeline that caught 30% more bugs before production</li>
+        <li>Collaborated with senior engineers on performance optimization initiatives</li>
+      </ul>
+    </div>
+    <div class="exp-item">
+      <h4>Freelance Developer</h4>
+      <div class="exp-company">Self-Employed</div>
+      <div class="exp-date">2020 - 2022</div>
+      <ul>
+        <li>Built and deployed web applications for 10+ clients across various industries</li>
+        <li>Designed responsive, accessible interfaces with React and modern CSS</li>
+        <li>Managed full project lifecycle from requirements to deployment</li>
+      </ul>
+    </div>
+  `},
+  'resume':function(){return `
+    <div class="resume-section">
+      <h4>Education</h4>
+      <div class="resume-row"><span class="resume-left">Bachelor of Science, Computer Science</span><span class="resume-right">2018 - 2022</span></div>
+      <div class="resume-detail">Relevant coursework: Data Structures, Algorithms, Distributed Systems, Software Engineering, Database Design, Computer Networks</div>
+    </div>
+    <div class="resume-section">
+      <h4>Certifications</h4>
+      <div class="resume-row"><span class="resume-left">AWS Certified Solutions Architect</span></div>
+      <div class="resume-detail">Amazon Web Services cloud architecture design and deployment</div>
+      <div class="resume-row"><span class="resume-left">Meta Front-End Developer Certificate</span></div>
+      <div class="resume-detail">Advanced React patterns, testing, and performance optimization</div>
+    </div>
+    <div class="resume-section">
+      <h4>Highlights</h4>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8">
+        <div>&#8226; 3+ years of professional software engineering experience</div>
+        <div>&#8226; Production systems serving millions of users daily</div>
+        <div>&#8226; Full-stack expertise: React, Node.js, Python, Go</div>
+        <div>&#8226; Cloud infrastructure: AWS, GCP, Kubernetes</div>
+        <div>&#8226; Strong communicator and cross-functional collaborator</div>
+      </div>
+    </div>
+    <button class="resume-download" onclick="alert('Resume download would trigger here')">
+      <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>
+      Download Resume (PDF)
+    </button>
+  `},
+  'github':function(){return `
+    <div class="profile-header">
+      <div class="profile-avatar" style="background:#1C1C1E;border:2px solid rgba(255,255,255,.1)">
+        <svg width="40" height="40" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      </div>
+      <h4>@anshullgarg</h4>
+      <p>Building things that matter</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item"><div class="stat-num" style="color:#58A6FF">30+</div><div class="stat-lbl">Repos</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:#3FB950">500+</div><div class="stat-lbl">Contributions</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:#F78166">15+</div><div class="stat-lbl">Stars</div></div>
+    </div>
+    <div class="app-section-title">Pinned Repositories</div>
+    <div class="project-card">
+      <h4>portfolio-v3</h4>
+      <p>Personal portfolio site with multiple creative themes. React + Vite.</p>
+      <div class="project-tech"><span>TypeScript</span><span>React</span><span>Vite</span></div>
+    </div>
+    <div class="project-card">
+      <h4>scalable-api-starter</h4>
+      <p>Production-ready Node.js API boilerplate with auth, rate limiting, and monitoring.</p>
+      <div class="project-tech"><span>Node.js</span><span>Express</span><span>Docker</span></div>
+    </div>
+    <div class="project-card">
+      <h4>realtime-collab</h4>
+      <p>Real-time collaboration engine with CRDT-based conflict resolution.</p>
+      <div class="project-tech"><span>Go</span><span>WebSocket</span><span>Redis</span></div>
+    </div>
+    <a class="profile-link-btn" style="background:#333;color:#fff" href="https://github.com" target="_blank">View Full GitHub Profile</a>
+  `},
+  'linkedin':function(){return `
+    <div class="profile-header">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#0A66C2,#004182)">AG</div>
+      <h4>Anshull Garg</h4>
+      <p>Software Developer at Walmart Global Tech</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item"><div class="stat-num" style="color:#5AC8FA">500+</div><div class="stat-lbl">Connections</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:#5AC8FA">50+</div><div class="stat-lbl">Endorsements</div></div>
+    </div>
+    <div class="app-section-title">Recent Activity</div>
+    <div class="notif-card" style="background:rgba(10,102,194,.1);border:1px solid rgba(10,102,194,.15)">
+      <div class="notif-title">Shared a post about microservices</div>
+      <div class="notif-body">"Migrating a monolith at scale taught me more about software engineering than any textbook..."</div>
+    </div>
+    <div class="notif-card" style="background:rgba(10,102,194,.1);border:1px solid rgba(10,102,194,.15)">
+      <div class="notif-title">Published an article</div>
+      <div class="notif-body">"5 Patterns I Use Daily for Building Resilient APIs"</div>
+    </div>
+    <a class="profile-link-btn" style="background:#0A66C2;color:#fff" href="https://linkedin.com" target="_blank">Connect on LinkedIn</a>
+  `},
+  'mail':function(){return `
+    <div class="app-section-title">Get In Touch</div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px">
+      I'm always open to discussing new opportunities, interesting projects, or just connecting over tech. Drop me a message below.
+    </p>
+    <div class="contact-field"><label>Name</label><input type="text" placeholder="Your name"></div>
+    <div class="contact-field"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+    <div class="contact-field"><label>Subject</label><input type="text" placeholder="What's this about?"></div>
+    <div class="contact-field"><label>Message</label><textarea rows="5" placeholder="Tell me more..."></textarea></div>
+    <button class="contact-send" onclick="this.textContent='Message Sent!';this.style.background='#34C759'">Send Message</button>
+    <div class="app-section-title" style="margin-top:24px">Or Reach Me At</div>
+    <div style="font-size:14px;color:var(--text2);line-height:2">
+      <div>Email: anshull.garg@gmail.com</div>
+      <div>LinkedIn: /in/anshullgarg</div>
+      <div>GitHub: @anshullgarg</div>
+      <div>Location: Bentonville, AR</div>
+    </div>
+  `},
+  'settings':function(){return `
+    <div class="settings-group">
+      <div class="settings-group-title">Appearance</div>
+      <div class="settings-row" onclick="toggleSettingToggle(this)">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#5856D6">&#127912;</div>Dark Mode</div>
+        <div class="toggle active"></div>
+      </div>
+      <div class="settings-row" onclick="toggleSettingToggle(this)">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#FF9500">&#9728;&#65039;</div>Reduce Motion</div>
+        <div class="toggle"></div>
+      </div>
+      <div class="settings-row" onclick="toggleSettingToggle(this)">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#34C759">&#128200;</div>Show GitHub Stats</div>
+        <div class="toggle active"></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">About This Portfolio</div>
+      <div class="settings-row">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#007AFF">&#9432;</div>Version</div>
+        <span style="color:var(--text3);font-size:13px">3.0.0 (iPhone Edition)</span>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#8E8E93">&#128187;</div>Built With</div>
+        <span style="color:var(--text3);font-size:13px">HTML, CSS, JS</span>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#FF3B30">&#10084;&#65039;</div>Made By</div>
+        <span style="color:var(--text3);font-size:13px">Anshull Garg</span>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">Quick Links</div>
+      <div class="settings-row" style="cursor:pointer" onclick="closeApp();setTimeout(()=>openApp('mail'),300)">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#34AADC">&#9993;</div>Contact Me</div>
+        <span style="color:var(--text3)">&#8250;</span>
+      </div>
+      <div class="settings-row" style="cursor:pointer" onclick="closeApp();setTimeout(()=>openApp('resume'),300)">
+        <div class="settings-row-left"><div class="settings-icon" style="background:#FF2D55">&#128196;</div>View Resume</div>
+        <span style="color:var(--text3)">&#8250;</span>
+      </div>
+    </div>
+  `},
+  'photos':function(){
+    const colors=['#FF3B30','#FF9500','#FFCC00','#34C759','#007AFF','#5856D6','#AF52DE','#FF2D55','#34AADC','#8E8E93','#FF6B00','#30D158'];
+    const labels=['E-Commerce UI','Dashboard','CLI Tool','Mobile App','API Docs','Code Review','Analytics','Landing Page','Widget Lib','Design System','Monitoring','Auth Flow'];
+    let html='<div class="app-section-title">Project Screenshots</div><div class="photos-grid">';
+    for(let i=0;i<12;i++){
+      html+=`<div class="photo-thumb" style="background:${colors[i]}20;border:1px solid ${colors[i]}30"><span style="color:${colors[i]}">${labels[i]}</span></div>`;
+    }
+    return html+'</div><p style="text-align:center;color:var(--text3);font-size:12px;margin-top:16px">12 project screenshots</p>';
+  },
+  'terminal':function(){return `
+    <div class="terminal-screen" id="terminalScreen">
+      <div><span class="t-green">anshull@portfolio</span>:<span class="t-blue">~</span>$ whoami</div>
+      <div>Anshull Garg - Software Developer @ Walmart</div>
+      <div>&nbsp;</div>
+      <div><span class="t-green">anshull@portfolio</span>:<span class="t-blue">~</span>$ cat skills.txt</div>
+      <div><span class="t-yellow">Languages:</span> JavaScript, TypeScript, Python, Go, Java</div>
+      <div><span class="t-yellow">Frontend:</span> React, Next.js, Vue.js, Tailwind CSS</div>
+      <div><span class="t-yellow">Backend:</span> Node.js, Express, FastAPI, GraphQL</div>
+      <div><span class="t-yellow">Cloud:</span> AWS, GCP, Docker, Kubernetes</div>
+      <div>&nbsp;</div>
+      <div><span class="t-green">anshull@portfolio</span>:<span class="t-blue">~</span>$ uptime</div>
+      <div>3+ years of professional engineering experience</div>
+      <div>&nbsp;</div>
+      <div><span class="t-green">anshull@portfolio</span>:<span class="t-blue">~</span>$ fortune</div>
+      <div><span class="t-gray">"Any sufficiently advanced technology is indistinguishable from magic." - Arthur C. Clarke</span></div>
+      <div>&nbsp;</div>
+      <div class="terminal-input">
+        <span>anshull@portfolio:~$</span>
+        <input type="text" id="termInput" placeholder="type a command..." onkeydown="handleTerminal(event)" autofocus>
+      </div>
+    </div>
+  `},
+  'notes':function(){return `
+    <div class="app-section-title">Thoughts &amp; Philosophy</div>
+    <div class="note-item">
+      <h4>On Clean Code</h4>
+      <p>Code is read far more often than it is written. Every function should tell a story. Every module should have a single, clear purpose. The best code is the code you don't have to explain.</p>
+    </div>
+    <div class="note-item">
+      <h4>On Scale</h4>
+      <p>Working at Walmart taught me that scale changes everything. The patterns that work for 100 users break at 1 million. Engineering for scale means engineering for failure -- because at scale, everything that can fail, will.</p>
+    </div>
+    <div class="note-item">
+      <h4>On Learning</h4>
+      <p>The best developers I know are perpetual beginners. They approach every new codebase with curiosity, not assumptions. They ask "why" more than "how." Stay hungry, stay humble.</p>
+    </div>
+    <div class="note-item">
+      <h4>On Craft</h4>
+      <p>Software engineering is a craft. Like woodworking or architecture, the difference between good and great is in the details -- the error handling nobody sees, the accessibility nobody tests, the performance nobody measures until it matters.</p>
+    </div>
+    <div class="note-item">
+      <h4>On Collaboration</h4>
+      <p>The myth of the 10x engineer is that they code 10x more. The truth is they make the whole team 10x better. Great engineers elevate everyone around them through mentorship, clear communication, and thoughtful code review.</p>
+    </div>
+  `},
+  'safari':function(){return `
+    <div class="safari-bar">
+      <svg width="16" height="16" fill="var(--text3)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1a2 2 0 002 2v1.93zm6.9-2.54A1.99 1.99 0 0016 16h-1v-3a1 1 0 00-1-1H8v-2h2a1 1 0 001-1V7h2a2 2 0 002-2v-.41A7.998 7.998 0 0120 12c0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      <input type="text" value="anshullgarg.dev" readonly>
+    </div>
+    <div class="app-section-title">Links &amp; Resources</div>
+    <a class="link-card" href="https://github.com" target="_blank">
+      <h4>GitHub Profile</h4>
+      <p>Open source projects, contributions, and code</p>
+    </a>
+    <a class="link-card" href="https://linkedin.com" target="_blank">
+      <h4>LinkedIn</h4>
+      <p>Professional network and career updates</p>
+    </a>
+    <a class="link-card" href="#" onclick="event.preventDefault()">
+      <h4>Tech Blog</h4>
+      <p>Writings on software engineering, architecture, and developer experience</p>
+    </a>
+    <a class="link-card" href="#" onclick="event.preventDefault()">
+      <h4>Stack Overflow</h4>
+      <p>Community contributions and technical Q&amp;A</p>
+    </a>
+    <a class="link-card" href="#" onclick="event.preventDefault()">
+      <h4>Dev.to</h4>
+      <p>Articles and tutorials on modern web development</p>
+    </a>
+    <div class="app-section-title">Reading List</div>
+    <a class="link-card" href="#" onclick="event.preventDefault()">
+      <h4>Designing Data-Intensive Applications</h4>
+      <p>Martin Kleppmann -- The bible of distributed systems</p>
+    </a>
+    <a class="link-card" href="#" onclick="event.preventDefault()">
+      <h4>Clean Architecture</h4>
+      <p>Robert C. Martin -- Principles of software structure and design</p>
+    </a>
+  `}
+};
+
+// App title map
+const appTitles={
+  'about-dock':'About Me','projects':'Projects','skills':'Skills','experience':'Experience',
+  'resume':'Resume','github':'GitHub','linkedin':'LinkedIn','mail':'Contact',
+  'settings':'Settings','photos':'Photos','terminal':'Terminal','notes':'Notes','safari':'Safari'
+};
+
+// ---- Open / Close App Modal ----
+const overlay=document.getElementById('appOverlay');
+const modal=document.getElementById('appModal');
+const modalTitle=document.getElementById('appModalTitle');
+const modalBody=document.getElementById('appModalBody');
+let currentApp=null;
+
+function openApp(appId, el){
+  if(currentApp)return;
+  currentApp=appId;
+
+  // Set content
+  modalTitle.textContent=appTitles[appId]||appId;
+  const contentFn=appContent[appId];
+  modalBody.innerHTML=contentFn?contentFn():'<p style="color:var(--text3);padding:40px 0;text-align:center">Coming soon</p>';
+
+  // Animate from icon position
+  if(el){
+    const icon=el.querySelector('.app-icon')||el;
+    const rect=icon.getBoundingClientRect();
+    const frame=document.getElementById('iphoneFrame').getBoundingClientRect();
+    modal.style.top=(rect.top-frame.top)+'px';
+    modal.style.left=(rect.left-frame.left)+'px';
+    modal.style.width=rect.width+'px';
+    modal.style.height=rect.height+'px';
+    modal.style.borderRadius='13px';
+  }
+
+  modal.classList.remove('closed');
+  overlay.classList.add('open');
+
+  // Expand to full
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      modal.classList.add('open');
+      modal.style.top='';modal.style.left='';modal.style.width='';modal.style.height='';modal.style.borderRadius='';
+    });
+  });
+
+  // Focus terminal input
+  if(appId==='terminal'){
+    setTimeout(()=>{const inp=document.getElementById('termInput');if(inp)inp.focus()},500);
+  }
+}
+
+function closeApp(){
+  if(!currentApp)return;
+  modal.classList.remove('open');
+  modal.classList.add('closed');
+  overlay.classList.remove('open');
+  setTimeout(()=>{modalBody.innerHTML='';currentApp=null},400);
+}
+
+// Settings toggle helper
+function toggleSettingToggle(row){
+  const t=row.querySelector('.toggle');
+  if(t)t.classList.toggle('active');
+}
+
+// Terminal commands
+function handleTerminal(e){
+  if(e.key!=='Enter')return;
+  const input=e.target;
+  const cmd=input.value.trim().toLowerCase();
+  input.value='';
+  const screen=document.getElementById('terminalScreen');
+  const inputDiv=screen.querySelector('.terminal-input');
+
+  function addLine(text,cls){
+    const d=document.createElement('div');
+    if(cls)d.className=cls;
+    d.innerHTML=text;
+    screen.insertBefore(d,inputDiv);
+  }
+
+  addLine(`<span class="t-green">anshull@portfolio</span>:<span class="t-blue">~</span>$ ${cmd}`);
+
+  const commands={
+    'help':'Available commands: help, whoami, skills, projects, contact, clear, date, echo, ls, pwd, fortune',
+    'whoami':'Anshull Garg - Software Developer at Walmart Global Tech',
+    'skills':'<span class="t-yellow">React, TypeScript, Node.js, Python, Go, AWS, Docker, Kubernetes, GraphQL, PostgreSQL</span>',
+    'projects':'1. Enterprise E-Commerce Platform\n2. Real-Time Analytics Dashboard\n3. Developer Productivity CLI\n4. AI Code Review Bot\n5. Collaborative Whiteboard',
+    'contact':'<span class="t-blue">Email:</span> anshull.garg@gmail.com\n<span class="t-blue">GitHub:</span> @anshullgarg\n<span class="t-blue">LinkedIn:</span> /in/anshullgarg',
+    'date':new Date().toString(),
+    'pwd':'/home/anshull/portfolio',
+    'ls':'<span class="t-blue">projects/</span>  <span class="t-blue">skills/</span>  <span class="t-blue">experience/</span>  resume.pdf  README.md',
+    'fortune':'"First, solve the problem. Then, write the code." - John Johnson',
+  };
+
+  if(cmd==='clear'){
+    const lines=screen.querySelectorAll('div:not(.terminal-input)');
+    lines.forEach(l=>l.remove());
+    return;
+  }
+  if(cmd.startsWith('echo ')){addLine(cmd.slice(5));return}
+  const resp=commands[cmd];
+  if(resp){
+    resp.split('\n').forEach(l=>addLine(l));
+  } else if(cmd){
+    addLine(`<span class="t-red">command not found: ${cmd}</span>. Type <span class="t-green">help</span> for available commands.`);
+  }
+  addLine('&nbsp;');
+  screen.scrollTop=screen.scrollHeight;
+}
+
+// Swipe down on modal to close
+let modalTouchStart=0;
+modal.addEventListener('touchstart',function(e){modalTouchStart=e.touches[0].clientY},{passive:true});
+modal.addEventListener('touchend',function(e){
+  const dy=e.changedTouches[0].clientY-modalTouchStart;
+  if(dy>100)closeApp();
+},{passive:true});
+
+// Keyboard shortcut: Escape to close
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if(currentApp)closeApp();
+    else if(notifOpen)toggleNotif(false);
+  }
+});
+</script>
+</body>
+</html>
