@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Vintage Typewriter Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   RESET & BASE
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --desk:#1A1208;
+  --desk-light:#2A200F;
+  --paper:#FFF8E7;
+  --paper-dark:#F5EDDA;
+  --ink:#1A1A1A;
+  --red:#B22222;
+  --red-glow:#D44444;
+  --key-bg:#2C2C2C;
+  --key-face:#3A3A3A;
+  --key-text:#D4C9A8;
+  --metal:#5A5A5A;
+  --metal-light:#888;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Special Elite',monospace;
+  background:var(--desk);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* =========================================================
+   DESK SURFACE
+   ========================================================= */
+.desk{
+  width:100%;min-height:100vh;
+  background:
+    radial-gradient(ellipse at 50% 20%,#2E2010 0%,var(--desk) 70%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,transparent 120px,
+      rgba(0,0,0,.08) 120px,rgba(0,0,0,.08) 121px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,transparent 60px,
+      rgba(0,0,0,.05) 60px,rgba(0,0,0,.05) 61px
+    );
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 10px 60px;
+}
+
+/* =========================================================
+   TYPEWRITER MACHINE (CSS ILLUSTRATION)
+   ========================================================= */
+.typewriter-machine{
+  position:relative;
+  width:min(720px,95vw);
+  margin-bottom:0;
+  user-select:none;
+  flex-shrink:0;
+}
+
+/* -- Body / Frame -- */
+.tw-body{
+  position:relative;
+  width:100%;height:180px;
+  background:linear-gradient(180deg,#2C2824 0%,#1E1B17 100%);
+  border-radius:20px 20px 8px 8px;
+  box-shadow:
+    0 8px 30px rgba(0,0,0,.6),
+    inset 0 2px 0 rgba(255,255,255,.06),
+    inset 0 -4px 10px rgba(0,0,0,.4);
+  z-index:2;
+}
+
+/* Decorative brand plate */
+.tw-body::before{
+  content:'ROYAL PORTFOLIO';
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  font-family:'Special Elite',monospace;
+  font-size:11px;letter-spacing:6px;
+  color:#8B7D5E;
+  text-shadow:0 1px 0 rgba(0,0,0,.8);
+  background:linear-gradient(180deg,#3A342A,#2A2520);
+  padding:4px 24px;border-radius:3px;
+  border:1px solid #4A4030;
+}
+
+/* -- Paper Guide / Platen -- */
+.tw-platen{
+  position:absolute;
+  top:-30px;left:50%;transform:translateX(-50%);
+  width:88%;height:50px;
+  background:linear-gradient(180deg,#1A1A1A,#0E0E0E);
+  border-radius:25px 25px 0 0;
+  box-shadow:0 -4px 12px rgba(0,0,0,.5);
+  z-index:1;
+  overflow:hidden;
+}
+/* Roller texture */
+.tw-platen::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,transparent 2px,
+    rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px
+  );
+  border-radius:inherit;
+}
+
+/* -- Paper emerging from platen -- */
+.tw-paper-preview{
+  position:absolute;
+  top:-80px;left:50%;transform:translateX(-50%);
+  width:78%;height:70px;
+  background:var(--paper);
+  border-radius:2px 2px 0 0;
+  box-shadow:0 -2px 8px rgba(0,0,0,.3);
+  z-index:0;
+  overflow:hidden;
+  padding:8px 20px;
+  font-size:10px;line-height:1.6;
+  color:var(--ink);opacity:.7;
+}
+.tw-paper-preview::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:30px;
+  background:linear-gradient(transparent,rgba(30,27,23,.95));
+}
+
+/* -- Carriage -- */
+.tw-carriage{
+  position:absolute;
+  top:38px;left:50%;
+  transform:translateX(-50%);
+  width:92%;height:16px;
+  background:linear-gradient(180deg,var(--metal),#444);
+  border-radius:3px;
+  box-shadow:0 2px 6px rgba(0,0,0,.5);
+  z-index:3;
+  transition:transform .05s ease;
+}
+.tw-carriage.return{
+  animation:carriageReturn .4s ease-in-out;
+}
+@keyframes carriageReturn{
+  0%{transform:translateX(-50%) translateX(0)}
+  50%{transform:translateX(-50%) translateX(40px)}
+  100%{transform:translateX(-50%) translateX(0)}
+}
+
+/* Carriage indicator / print head */
+.tw-carriage::after{
+  content:'';position:absolute;
+  top:-4px;left:var(--head-pos,50%);
+  width:3px;height:24px;
+  background:var(--red);
+  border-radius:1px;
+  box-shadow:0 0 6px rgba(178,34,34,.5);
+  transition:left .03s linear;
+}
+
+/* -- Ding indicator -- */
+.tw-ding{
+  position:absolute;top:8px;right:30px;
+  width:12px;height:12px;
+  background:var(--metal);
+  border-radius:50%;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.2);
+  z-index:4;
+  transition:background .1s,box-shadow .1s;
+}
+.tw-ding.flash{
+  background:#FFD700;
+  box-shadow:0 0 12px #FFD700,0 0 24px rgba(255,215,0,.4);
+}
+
+/* =========================================================
+   KEYBOARD
+   ========================================================= */
+.tw-keyboard{
+  position:relative;
+  width:100%;
+  padding:50px 20px 20px;
+  display:flex;flex-direction:column;
+  align-items:center;gap:6px;
+  z-index:3;
+}
+.kb-row{
+  display:flex;gap:5px;
+  justify-content:center;
+}
+.kb-key{
+  width:38px;height:38px;
+  background:radial-gradient(circle at 50% 35%,#4A4A4A,var(--key-bg));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Special Elite',monospace;
+  font-size:12px;color:var(--key-text);
+  box-shadow:
+    0 3px 0 #1A1A1A,
+    0 4px 6px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.1);
+  transition:transform .06s ease,box-shadow .06s ease;
+  cursor:default;
+  position:relative;
+}
+.kb-key.pressed{
+  transform:translateY(3px);
+  box-shadow:
+    0 0 0 #1A1A1A,
+    0 1px 3px rgba(0,0,0,.3),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+.kb-key.space{width:200px;border-radius:19px}
+.kb-key.shift{width:56px;border-radius:19px;font-size:9px}
+.kb-key.enter{width:56px;border-radius:19px;font-size:9px}
+
+/* =========================================================
+   PAPER CONTENT AREA
+   ========================================================= */
+.paper-container{
+  position:relative;
+  width:min(680px,92vw);
+  margin-top:-10px;
+  z-index:5;
+}
+
+.paper{
+  position:relative;
+  background:var(--paper);
+  min-height:600px;
+  padding:60px 70px 80px 90px;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,.4),
+    inset 0 0 80px rgba(0,0,0,.03);
+  border-radius:2px;
+  /* Paper texture overlay */
+  background-image:
+    radial-gradient(ellipse at 80% 20%,rgba(200,180,140,.12),transparent 60%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,transparent 27px,
+      rgba(120,140,180,.08) 27px,rgba(120,140,180,.08) 28px
+    );
+  background-color:var(--paper);
+}
+
+/* Margin line */
+.paper::before{
+  content:'';position:absolute;
+  top:0;bottom:0;left:72px;
+  width:2px;
+  background:rgba(200,60,60,.15);
+}
+
+/* Paper curl - left */
+.paper::after{
+  content:'';position:absolute;
+  bottom:0;left:0;width:30px;height:30px;
+  background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.04) 50%);
+  border-radius:0 0 0 2px;
+}
+
+/* Paper curl - right */
+.paper-curl{
+  position:absolute;bottom:0;right:0;
+  width:40px;height:40px;
+  background:linear-gradient(-135deg,var(--desk) 48%,var(--paper-dark) 50%,var(--paper) 52%);
+  box-shadow:-2px -2px 4px rgba(0,0,0,.08);
+}
+
+/* Hole punches */
+.paper-holes{
+  position:absolute;top:0;bottom:0;left:24px;
+  display:flex;flex-direction:column;
+  justify-content:flex-start;
+  gap:0;padding-top:80px;
+}
+.paper-hole{
+  width:14px;height:14px;
+  border-radius:50%;
+  background:var(--desk);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+  margin-bottom:260px;
+}
+
+/* =========================================================
+   TYPED CONTENT STYLING
+   ========================================================= */
+#typed-output{
+  font-family:'Special Elite',monospace;
+  font-size:15px;
+  line-height:28px;
+  color:var(--ink);
+  white-space:pre-wrap;
+  word-break:break-word;
+  min-height:200px;
+}
+
+/* Individual character spans */
+.char{
+  display:inline;
+  opacity:0;
+  animation:stampIn .05s ease forwards;
+}
+@keyframes stampIn{
+  0%{opacity:0;transform:scale(1.3)}
+  60%{opacity:1;transform:scale(.98)}
+  100%{opacity:var(--char-opacity,0.88);transform:scale(1)}
+}
+
+/* Smudged character */
+.char.smudge{
+  filter:blur(0.4px);
+  opacity:var(--char-opacity,.75) !important;
+}
+
+/* Red header text */
+.char.red{
+  color:var(--red);
+  text-shadow:0 0 0.5px rgba(178,34,34,.3);
+}
+
+/* Cursor */
+#cursor{
+  display:inline-block;
+  width:2px;height:18px;
+  background:var(--ink);
+  vertical-align:text-bottom;
+  animation:blink .6s step-end infinite;
+  margin-left:1px;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+.controls{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,rgba(26,18,8,.0),rgba(26,18,8,.97) 20%,#0E0A04);
+  padding:20px 20px 24px;
+  display:flex;flex-wrap:wrap;
+  align-items:center;justify-content:center;
+  gap:14px;
+  z-index:100;
+  border-top:1px solid rgba(90,70,40,.3);
+}
+.ctrl-group{
+  display:flex;align-items:center;gap:8px;
+}
+.ctrl-label{
+  font-family:'Special Elite',monospace;
+  font-size:12px;color:#8B7D5E;
+  letter-spacing:1px;text-transform:uppercase;
+}
+.ctrl-btn{
+  font-family:'Special Elite',monospace;
+  font-size:12px;
+  padding:6px 14px;
+  background:linear-gradient(180deg,#3A342A,#2A2520);
+  color:var(--key-text);
+  border:1px solid #4A4030;
+  border-radius:4px;
+  cursor:pointer;
+  transition:all .15s;
+  letter-spacing:1px;
+}
+.ctrl-btn:hover{
+  background:linear-gradient(180deg,#4A4438,#3A3530);
+  border-color:#5A5040;
+}
+.ctrl-btn.active{
+  background:linear-gradient(180deg,#5A3020,#3A2018);
+  border-color:var(--red);
+  color:#E8C8B0;
+  box-shadow:0 0 8px rgba(178,34,34,.3);
+}
+.ctrl-select{
+  font-family:'Special Elite',monospace;
+  font-size:12px;
+  padding:6px 10px;
+  background:#2A2520;
+  color:var(--key-text);
+  border:1px solid #4A4030;
+  border-radius:4px;
+  cursor:pointer;
+  outline:none;
+}
+.ctrl-select:focus{border-color:var(--red)}
+
+/* Progress */
+.progress-bar{
+  position:fixed;top:0;left:0;right:0;height:3px;
+  background:rgba(0,0,0,.3);z-index:101;
+}
+.progress-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--red),var(--red-glow));
+  transition:width .3s ease;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media(max-width:600px){
+  .paper{padding:40px 30px 60px 50px}
+  .paper::before{left:38px}
+  .paper-holes{left:10px;padding-top:60px}
+  .paper-hole{margin-bottom:200px}
+  #typed-output{font-size:13px;line-height:24px}
+  .kb-key{width:28px;height:28px;font-size:9px}
+  .kb-key.space{width:120px}
+  .kb-key.shift,.kb-key.enter{width:40px;font-size:8px}
+  .tw-body{height:140px}
+  .tw-body::before{font-size:8px;letter-spacing:4px}
+  .controls{gap:8px;padding:14px 10px 18px}
+  .ctrl-btn{padding:5px 10px;font-size:11px}
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .6s ease forwards}
+
+/* Ding flash on the paper */
+.ding-flash{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(255,215,0,.02);
+  pointer-events:none;
+  animation:dingGlow .3s ease;
+}
+@keyframes dingGlow{
+  0%{opacity:1}100%{opacity:0}
+}
+
+/* Ink ribbon indicator */
+.ribbon-indicator{
+  position:absolute;top:60px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;z-index:4;
+}
+.ribbon-spool{
+  width:20px;height:20px;
+  border-radius:50%;
+  border:3px solid var(--metal);
+  background:#111;
+  box-shadow:inset 0 0 4px rgba(0,0,0,.8);
+}
+.ribbon-spool.spinning{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* =========================================================
+   SECTION NAV DOTS
+   ========================================================= */
+.section-dots{
+  position:fixed;right:16px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:12px;z-index:101;
+}
+.section-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(139,125,94,.3);
+  border:1px solid rgba(139,125,94,.4);
+  cursor:pointer;transition:all .2s;
+  position:relative;
+}
+.section-dot:hover,.section-dot.active{
+  background:var(--red);
+  border-color:var(--red);
+  box-shadow:0 0 6px rgba(178,34,34,.5);
+}
+.section-dot::after{
+  content:attr(data-label);
+  position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  font-family:'Special Elite',monospace;
+  font-size:10px;color:#8B7D5E;
+  white-space:nowrap;
+  opacity:0;transition:opacity .2s;
+  pointer-events:none;
+}
+.section-dot:hover::after{opacity:1}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="section-dots" id="sectionDots"></div>
+
+<div class="desk">
+
+  <!-- ===== TYPEWRITER MACHINE ===== -->
+  <div class="typewriter-machine fade-in">
+    <!-- Paper emerging from top -->
+    <div class="tw-paper-preview" id="paperPreview"></div>
+
+    <!-- Platen roller -->
+    <div class="tw-platen"></div>
+
+    <!-- Machine body -->
+    <div class="tw-body">
+      <!-- Ding bell -->
+      <div class="tw-ding" id="dingBell"></div>
+
+      <!-- Carriage rail -->
+      <div class="tw-carriage" id="carriage"></div>
+
+      <!-- Ribbon spools -->
+      <div class="ribbon-indicator">
+        <div class="ribbon-spool" id="spoolLeft"></div>
+        <div class="ribbon-spool" id="spoolRight"></div>
+      </div>
+
+      <!-- Keyboard -->
+      <div class="tw-keyboard" id="keyboard"></div>
+    </div>
+  </div>
+
+  <!-- ===== PAPER ===== -->
+  <div class="paper-container fade-in" style="animation-delay:.3s">
+    <div class="paper" id="paper">
+      <div class="paper-holes">
+        <div class="paper-hole"></div>
+        <div class="paper-hole"></div>
+        <div class="paper-hole"></div>
+      </div>
+      <div id="typed-output"></div>
+      <span id="cursor"></span>
+      <div class="paper-curl"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== CONTROLS ===== -->
+<div class="controls">
+  <div class="ctrl-group">
+    <span class="ctrl-label">Speed:</span>
+    <button class="ctrl-btn" data-speed="80" onclick="setSpeed(80,this)">Slow</button>
+    <button class="ctrl-btn active" data-speed="35" onclick="setSpeed(35,this)">Medium</button>
+    <button class="ctrl-btn" data-speed="12" onclick="setSpeed(12,this)">Fast</button>
+    <button class="ctrl-btn" data-speed="0" onclick="setSpeed(0,this)">Instant</button>
+  </div>
+  <div class="ctrl-group">
+    <button class="ctrl-btn" id="pauseBtn" onclick="togglePause()">Pause</button>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Jump to:</span>
+    <select class="ctrl-select" id="sectionSelect" onchange="jumpToSection(this.value)">
+      <option value="">-- Section --</option>
+    </select>
+  </div>
+</div>
+
+<script>
+// =========================================================
+// PORTFOLIO CONTENT
+// =========================================================
+const sections = [
+  {
+    id:'header', label:'Header', red:true, text:
+`ANSHULL GARG
+Software Developer`
+  },
+  {
+    id:'divider1', label:null, red:false, text:
+`
+======================================`
+  },
+  {
+    id:'about', label:'About', red:true, text:
+`
+
+ABOUT ME
+--------
+I am a software developer at Walmart Global
+Tech, where I build systems that serve millions
+of customers every single day. I thrive at the
+intersection of clean architecture, beautiful
+interfaces, and products that genuinely make
+people's lives easier.
+
+I believe great software is invisible -- it just
+works. And I obsess over making that happen.`
+  },
+  {
+    id:'experience', label:'Experience', red:true, text:
+`
+
+
+EXPERIENCE
+----------
+WALMART GLOBAL TECH
+Software Developer | 2023 - Present
+
+  * Built checkout optimization system that
+    reduced page latency by 40%, improving
+    conversion rates across all storefronts
+
+  * Led development of an internal component
+    library now adopted by 12+ engineering
+    teams across the organization
+
+  * Architected real-time inventory sync
+    service handling 2M+ events per hour
+    with 99.97% uptime
+
+  * Mentored 4 junior developers through
+    code reviews and pair programming
+    sessions every week`
+  },
+  {
+    id:'projects', label:'Projects', red:true, text:
+`
+
+
+PROJECTS
+--------
+STORMWATCH
+  Real-time severe weather tracking dashboard
+  built with React, D3.js, and WebSocket feeds.
+  Displays radar overlays, alerts, and forecast
+  models for emergency preparedness teams.
+
+CODEFORGE CLI
+  A developer productivity toolkit written in
+  Node.js that scaffolds projects, manages git
+  workflows, and automates repetitive tasks.
+  Used by 300+ developers internally.
+
+PIXEL ARCHIVE
+  Full-stack photography portfolio platform
+  with lazy-loaded galleries, EXIF parsing,
+  and AI-powered image tagging. Built with
+  Next.js, Prisma, and Cloudinary.`
+  },
+  {
+    id:'skills', label:'Skills', red:true, text:
+`
+
+
+SKILLS
+------
+Languages .... JavaScript, TypeScript,
+               Python, Java, Go
+
+Frontend ..... React, Next.js, Vue,
+               Tailwind CSS, Framer Motion
+
+Backend ...... Node.js, Express, FastAPI,
+               Spring Boot, GraphQL
+
+Databases .... PostgreSQL, MongoDB, Redis,
+               DynamoDB
+
+Cloud ........ AWS, GCP, Docker, Kubernetes,
+               Terraform, CI/CD
+
+Tools ........ Git, Figma, Storybook,
+               Jest, Playwright`
+  },
+  {
+    id:'education', label:'Education', red:true, text:
+`
+
+
+EDUCATION
+---------
+Bachelor of Technology
+Computer Science & Engineering
+Graduated with Distinction`
+  },
+  {
+    id:'contact', label:'Contact', red:true, text:
+`
+
+
+CONTACT
+-------
+Email ........ anshullgarg@gmail.com
+GitHub ....... github.com/anshullgarg
+Location ..... Bentonville, AR
+
+
+              ~~~~~~~~~~~~~~~~~~~~~~~~
+                 Thank you for reading.
+                 Let's build something
+                    extraordinary.
+              ~~~~~~~~~~~~~~~~~~~~~~~~`
+  }
+];
+
+// =========================================================
+// KEYBOARD LAYOUT
+// =========================================================
+const kbRows = [
+  ['1','2','3','4','5','6','7','8','9','0','-','='],
+  ['Q','W','E','R','T','Y','U','I','O','P','[',']'],
+  ['A','S','D','F','G','H','J','K','L',';',"'",'ENTER'],
+  ['SHIFT','Z','X','C','V','B','N','M',',','.','/','SHIFT'],
+  ['SPACE']
+];
+
+// =========================================================
+// BUILD KEYBOARD
+// =========================================================
+const keyboardEl = document.getElementById('keyboard');
+const keyElements = {};
+
+kbRows.forEach(row => {
+  const rowEl = document.createElement('div');
+  rowEl.className = 'kb-row';
+  row.forEach(key => {
+    const k = document.createElement('div');
+    k.className = 'kb-key';
+    if(key === 'SPACE') k.classList.add('space');
+    else if(key === 'SHIFT') k.classList.add('shift');
+    else if(key === 'ENTER') k.classList.add('enter');
+    k.textContent = key === 'SPACE' ? '' : key;
+    rowEl.appendChild(k);
+    const keyId = key.toUpperCase();
+    if(!keyElements[keyId]) keyElements[keyId] = [];
+    keyElements[keyId].push(k);
+  });
+  keyboardEl.appendChild(rowEl);
+});
+
+// =========================================================
+// STATE
+// =========================================================
+let typingSpeed = 35;
+let isPaused = false;
+let currentSectionIndex = 0;
+let currentCharIndex = 0;
+let fullText = '';
+let typedSoFar = 0;
+let sectionOffsets = [];
+let isTyping = false;
+let typingTimeout = null;
+
+// Build full text & track section offsets
+let offset = 0;
+sections.forEach((s, i) => {
+  sectionOffsets.push({ start: offset, end: offset + s.text.length, id: s.id, label: s.label, red: s.red });
+  fullText += s.text;
+  offset += s.text.length;
+});
+
+// =========================================================
+// SECTION NAVIGATION
+// =========================================================
+const sectionSelect = document.getElementById('sectionSelect');
+const sectionDotsEl = document.getElementById('sectionDots');
+
+sections.forEach((s, i) => {
+  if(!s.label) return;
+  // Dropdown
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = s.label;
+  sectionSelect.appendChild(opt);
+  // Dots
+  const dot = document.createElement('div');
+  dot.className = 'section-dot';
+  dot.dataset.label = s.label;
+  dot.dataset.index = i;
+  dot.onclick = () => jumpToSection(i);
+  sectionDotsEl.appendChild(dot);
+});
+
+// =========================================================
+// TYPING ENGINE
+// =========================================================
+const outputEl = document.getElementById('typed-output');
+const cursorEl = document.getElementById('cursor');
+const paperPreview = document.getElementById('paperPreview');
+const carriageEl = document.getElementById('carriage');
+const dingBell = document.getElementById('dingBell');
+const spoolLeft = document.getElementById('spoolLeft');
+const spoolRight = document.getElementById('spoolRight');
+const progressFill = document.getElementById('progressFill');
+const paperEl = document.getElementById('paper');
+
+// Determine if a character index falls within a red section header
+function isRedChar(globalIndex) {
+  for(const sec of sectionOffsets) {
+    if(globalIndex >= sec.start && globalIndex < sec.end && sec.red) {
+      // Only the header lines (first 1-2 lines of a red section)
+      const localIndex = globalIndex - sec.start;
+      const textBefore = sec.id === 'header'
+        ? fullText.substring(sec.start, globalIndex)
+        : fullText.substring(sec.start, globalIndex);
+      // Red: the section title line(s) before the dashes or second newline
+      const sectionText = fullText.substring(sec.start, sec.end);
+      // Find the title: skip leading newlines, take until '---' or double newline
+      const stripped = sectionText.replace(/^\n+/, '');
+      const titleEnd = stripped.indexOf('\n---') !== -1
+        ? stripped.indexOf('\n---') + 4
+        : stripped.indexOf('\n\n') !== -1
+          ? stripped.indexOf('\n\n')
+          : stripped.length;
+      const leadingNewlines = sectionText.length - sectionText.replace(/^\n+/, '').length;
+      if(localIndex >= leadingNewlines && localIndex < leadingNewlines + titleEnd) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function getCharKey(ch) {
+  const upper = ch.toUpperCase();
+  if(ch === ' ') return 'SPACE';
+  if(ch === '\n') return 'ENTER';
+  if(upper in keyElements && keyElements[upper]) return upper;
+  // Check symbols
+  if(ch in keyElements) return ch;
+  // Map common chars
+  const map = {
+    '-':'-','=':'=','[':'[',']':']',';':';',"'":"'",',':',','.':'.','/':'/',
+    '~':'`','!':'1','@':'2','#':'3','$':'4','%':'5','^':'6','&':'7','*':'8',
+    '(':'9',')':'0','_':'-','+':'=','{':'[','}':']',':':';','"':"'",
+    '<':',','>':'.',
+  };
+  if(map[ch]) return map[ch].toUpperCase();
+  return upper;
+}
+
+function pressKey(ch) {
+  const keyId = getCharKey(ch);
+  const elems = keyElements[keyId];
+  if(elems) {
+    elems.forEach(el => {
+      el.classList.add('pressed');
+      setTimeout(() => el.classList.remove('pressed'), 100);
+    });
+  }
+  // Shift for uppercase or symbols
+  const needsShift = (ch >= 'A' && ch <= 'Z') || '~!@#$%^&*()_+{}|:"<>?'.includes(ch);
+  if(needsShift && keyElements['SHIFT']) {
+    keyElements['SHIFT'].forEach(el => {
+      el.classList.add('pressed');
+      setTimeout(() => el.classList.remove('pressed'), 100);
+    });
+  }
+  // Spin spools
+  spoolLeft.classList.add('spinning');
+  spoolRight.classList.add('spinning');
+  clearTimeout(pressKey._spoolTimer);
+  pressKey._spoolTimer = setTimeout(() => {
+    spoolLeft.classList.remove('spinning');
+    spoolRight.classList.remove('spinning');
+  }, 200);
+}
+
+let lineCharCount = 0;
+const maxLineChars = 42;
+
+function typeNextChar() {
+  if(isPaused) { isTyping = false; return; }
+  if(typedSoFar >= fullText.length) {
+    isTyping = false;
+    cursorEl.style.display = 'none';
+    return;
+  }
+
+  isTyping = true;
+  const ch = fullText[typedSoFar];
+
+  // Press the key
+  pressKey(ch);
+
+  // Create character span
+  if(ch === '\n') {
+    outputEl.appendChild(document.createTextNode('\n'));
+    // Carriage return animation
+    carriageEl.classList.remove('return');
+    void carriageEl.offsetWidth;
+    carriageEl.classList.add('return');
+    lineCharCount = 0;
+
+    // Ding at line end occasionally
+    if(Math.random() < 0.3) {
+      dingBell.classList.add('flash');
+      setTimeout(() => dingBell.classList.remove('flash'), 300);
+    }
+  } else {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch;
+
+    // Varying opacity for ink authenticity
+    const baseOpacity = 0.82 + Math.random() * 0.18;
+    span.style.setProperty('--char-opacity', baseOpacity.toFixed(2));
+
+    // Occasional ink smudge
+    if(Math.random() < 0.02 && ch !== ' ') {
+      span.classList.add('smudge');
+    }
+
+    // Red for headers
+    if(isRedChar(typedSoFar)) {
+      span.classList.add('red');
+    }
+
+    outputEl.appendChild(span);
+    lineCharCount++;
+
+    // Update carriage head position
+    const headPct = Math.min(95, 5 + (lineCharCount / maxLineChars) * 90);
+    carriageEl.style.setProperty('--head-pos', headPct + '%');
+  }
+
+  typedSoFar++;
+
+  // Update progress
+  const pct = (typedSoFar / fullText.length) * 100;
+  progressFill.style.width = pct + '%';
+
+  // Update paper preview with last few typed lines
+  updatePaperPreview();
+
+  // Update active section dot
+  updateActiveDot();
+
+  // Auto-scroll paper into view
+  autoScroll();
+
+  // Schedule next character
+  if(typingSpeed === 0) {
+    // Instant mode: type in chunks
+    let chunk = 40;
+    while(chunk-- > 0 && typedSoFar < fullText.length) {
+      typeNextCharInstant();
+    }
+    typingTimeout = requestAnimationFrame(typeNextChar);
+  } else {
+    const variation = typingSpeed * (0.5 + Math.random());
+    // Longer pause after period, comma, newline
+    const pauseMultiplier = '.!?'.includes(ch) ? 4 : ',;:'.includes(ch) ? 2 : ch === '\n' ? 3 : 1;
+    typingTimeout = setTimeout(typeNextChar, variation * pauseMultiplier);
+  }
+}
+
+function typeNextCharInstant() {
+  const ch = fullText[typedSoFar];
+  if(ch === '\n') {
+    outputEl.appendChild(document.createTextNode('\n'));
+    lineCharCount = 0;
+  } else {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch;
+    const baseOpacity = 0.82 + Math.random() * 0.18;
+    span.style.setProperty('--char-opacity', baseOpacity.toFixed(2));
+    if(Math.random() < 0.02 && ch !== ' ') span.classList.add('smudge');
+    if(isRedChar(typedSoFar)) span.classList.add('red');
+    outputEl.appendChild(span);
+    lineCharCount++;
+  }
+  typedSoFar++;
+  const pct = (typedSoFar / fullText.length) * 100;
+  progressFill.style.width = pct + '%';
+}
+
+function updatePaperPreview() {
+  // Show last ~100 chars in the preview paper
+  const text = fullText.substring(Math.max(0, typedSoFar - 120), typedSoFar);
+  paperPreview.textContent = text;
+}
+
+function updateActiveDot() {
+  const dots = sectionDotsEl.querySelectorAll('.section-dot');
+  let activeIdx = 0;
+  for(let i = sectionOffsets.length - 1; i >= 0; i--) {
+    if(typedSoFar >= sectionOffsets[i].start && sectionOffsets[i].label) {
+      // Find which dot index this corresponds to
+      let dotIdx = 0;
+      for(let j = 0; j <= i; j++) {
+        if(sectionOffsets[j].label) dotIdx++;
+      }
+      activeIdx = dotIdx - 1;
+      break;
+    }
+  }
+  dots.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+}
+
+function autoScroll() {
+  // Scroll so the cursor stays in view
+  const cursorRect = cursorEl.getBoundingClientRect();
+  const viewportH = window.innerHeight;
+  if(cursorRect.bottom > viewportH - 100) {
+    window.scrollBy({ top: cursorRect.bottom - viewportH + 150, behavior: 'smooth' });
+  }
+}
+
+// =========================================================
+// CONTROLS
+// =========================================================
+function setSpeed(speed, btn) {
+  typingSpeed = speed;
+  document.querySelectorAll('.ctrl-btn[data-speed]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // If we were paused, resume
+  if(isPaused) {
+    isPaused = false;
+    document.getElementById('pauseBtn').textContent = 'Pause';
+  }
+  if(!isTyping && typedSoFar < fullText.length) {
+    typeNextChar();
+  }
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  const btn = document.getElementById('pauseBtn');
+  btn.textContent = isPaused ? 'Resume' : 'Pause';
+  btn.classList.toggle('active', isPaused);
+  if(!isPaused && !isTyping && typedSoFar < fullText.length) {
+    typeNextChar();
+  }
+}
+
+function jumpToSection(index) {
+  index = parseInt(index);
+  if(isNaN(index) || index < 0 || index >= sections.length) return;
+
+  const targetOffset = sectionOffsets[index].start;
+
+  // If we haven't typed up to this section yet, type everything up to it instantly
+  if(typedSoFar < targetOffset) {
+    // Clear timeout
+    clearTimeout(typingTimeout);
+    cancelAnimationFrame(typingTimeout);
+
+    // Type everything up to the section start instantly
+    while(typedSoFar < targetOffset) {
+      typeNextCharInstant();
+    }
+    updatePaperPreview();
+    updateActiveDot();
+
+    // Resume normal typing from here
+    if(!isPaused) {
+      isTyping = false;
+      typeNextChar();
+    }
+  }
+
+  // Scroll to that section's position in the paper
+  // Find the approximate vertical position
+  setTimeout(() => {
+    const chars = outputEl.querySelectorAll('.char, br');
+    // Rough estimate: scroll to fraction of paper
+    const fraction = targetOffset / fullText.length;
+    const paperRect = paperEl.getBoundingClientRect();
+    const scrollTarget = window.scrollY + paperRect.top + (paperRect.height * fraction) - 100;
+    window.scrollTo({ top: Math.max(0, scrollTarget), behavior: 'smooth' });
+  }, 50);
+
+  sectionSelect.value = '';
+}
+
+// =========================================================
+// PHYSICAL KEYBOARD INTERACTION
+// =========================================================
+document.addEventListener('keydown', (e) => {
+  // Let users type on their actual keyboard to control
+  if(e.key === ' ') {
+    e.preventDefault();
+    togglePause();
+  }
+  if(e.key === 'ArrowUp') {
+    e.preventDefault();
+    const speeds = [80, 35, 12, 0];
+    const currentIdx = speeds.indexOf(typingSpeed);
+    if(currentIdx > 0) {
+      const newSpeed = speeds[currentIdx - 1];
+      document.querySelector(`.ctrl-btn[data-speed="${newSpeed}"]`).click();
+    }
+  }
+  if(e.key === 'ArrowDown') {
+    e.preventDefault();
+    const speeds = [80, 35, 12, 0];
+    const currentIdx = speeds.indexOf(typingSpeed);
+    if(currentIdx < speeds.length - 1) {
+      const newSpeed = speeds[currentIdx + 1];
+      document.querySelector(`.ctrl-btn[data-speed="${newSpeed}"]`).click();
+    }
+  }
+});
+
+// =========================================================
+// START
+// =========================================================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    typeNextChar();
+  }, 800);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Vinyl Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --wood: #1A1208;
+    --wood-light: #2D1F10;
+    --metal-dark: #2A2A2A;
+    --metal-light: #3A3A3A;
+    --metal-highlight: #4A4A4A;
+    --vinyl: #111111;
+    --vinyl-groove: #1a1a1a;
+    --label-cream: #FFF8E7;
+    --label-copper: #C87941;
+    --label-gold: #D4A04A;
+    --amber: #FFB000;
+    --amber-dim: #996A00;
+    --red-led: #FF3333;
+    --green-led: #33FF66;
+    --text-light: #E8DCC8;
+    --text-muted: #8B7D6B;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--wood);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Wood grain background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        87deg,
+        transparent,
+        transparent 3px,
+        rgba(255,200,100,0.015) 3px,
+        rgba(255,200,100,0.015) 4px
+      ),
+      repeating-linear-gradient(
+        91deg,
+        transparent,
+        transparent 7px,
+        rgba(0,0,0,0.08) 7px,
+        rgba(0,0,0,0.08) 8px
+      ),
+      radial-gradient(ellipse at 30% 50%, rgba(60,40,15,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse at 70% 30%, rgba(80,50,20,0.2) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Dust / film grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 1.5rem 0 1rem;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Main layout */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    align-items: start;
+    margin-top: 1rem;
+  }
+
+  /* ===================== TURNTABLE ===================== */
+  .turntable-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .turntable-body {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 1.15 / 1;
+    background: linear-gradient(145deg, var(--metal-dark) 0%, #333 50%, var(--metal-dark) 100%);
+    border-radius: 16px;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.6),
+      0 2px 4px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      inset 0 -1px 0 rgba(0,0,0,0.3);
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  /* Brushed metal texture */
+  .turntable-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 1px,
+        rgba(255,255,255,0.008) 1px,
+        rgba(255,255,255,0.008) 2px
+      );
+    pointer-events: none;
+    border-radius: 16px;
+  }
+
+  /* Dust cover reflection */
+  .turntable-body::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 10%;
+    right: 10%;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+    border-radius: 16px 16px 50% 50%;
+    pointer-events: none;
+  }
+
+  /* Platter area */
+  .platter-area {
+    position: relative;
+    width: 85%;
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+
+  /* Platter base / mat */
+  .platter-base {
+    position: absolute;
+    inset: -4%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1f1f1f 0%, #181818 60%, #222 100%);
+    box-shadow:
+      0 0 0 3px #1a1a1a,
+      0 0 0 6px #252525,
+      inset 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  /* Platter mat texture (rubber) */
+  .platter-base::after {
+    content: '';
+    position: absolute;
+    inset: 3%;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(
+        circle at center,
+        transparent 0px,
+        transparent 4px,
+        rgba(255,255,255,0.01) 4px,
+        rgba(255,255,255,0.01) 5px
+      );
+  }
+
+  /* Vinyl record */
+  .vinyl {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--vinyl);
+    box-shadow:
+      0 0 0 2px #0a0a0a,
+      0 4px 20px rgba(0,0,0,0.5),
+      inset 0 0 60px rgba(0,0,0,0.8);
+    animation: spin 1.8s linear infinite;
+    animation-play-state: paused;
+    cursor: pointer;
+    transition: filter 0.3s;
+  }
+
+  .vinyl.playing {
+    animation-play-state: running;
+  }
+
+  .vinyl.rpm33 {
+    animation-duration: 1.8s;
+  }
+
+  .vinyl.rpm45 {
+    animation-duration: 1.333s;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Grooves */
+  .vinyl::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(
+        circle at center,
+        transparent 0px,
+        transparent 2px,
+        rgba(255,255,255,0.03) 2.5px,
+        transparent 3px
+      );
+    mask-image: radial-gradient(
+      circle at center,
+      transparent 18%,
+      black 19%,
+      black 48%,
+      transparent 49%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at center,
+      transparent 18%,
+      black 19%,
+      black 48%,
+      transparent 49%
+    );
+  }
+
+  /* Light reflection on vinyl */
+  .vinyl::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      conic-gradient(
+        from 30deg,
+        transparent 0deg,
+        rgba(255,255,255,0.06) 15deg,
+        transparent 30deg,
+        transparent 180deg,
+        rgba(255,255,255,0.04) 195deg,
+        transparent 210deg
+      );
+  }
+
+  /* Outer rim / edge of vinyl */
+  .vinyl-edge {
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    border: 2px solid #1a1a1a;
+    box-shadow: inset 0 0 3px rgba(255,255,255,0.05);
+    pointer-events: none;
+  }
+
+  /* Record label */
+  .label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 40% 35%, #FFF8E7 0%, #F0E4C8 40%, #E8D4A8 70%, #D4B87A 100%);
+    box-shadow:
+      0 0 0 4px var(--label-copper),
+      0 0 0 6px rgba(200,121,65,0.3),
+      inset 0 2px 6px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10%;
+    z-index: 2;
+  }
+
+  /* Label ring decoration */
+  .label::before {
+    content: '';
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    border: 1px solid rgba(200,121,65,0.3);
+  }
+
+  .label::after {
+    content: '';
+    position: absolute;
+    inset: 15%;
+    border-radius: 50%;
+    border: 0.5px dashed rgba(200,121,65,0.2);
+  }
+
+  /* Spindle hole */
+  .spindle-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #222;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+    z-index: 5;
+  }
+
+  .label-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(0.4rem, 1.2vw, 0.65rem);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--label-copper);
+    margin-bottom: 2px;
+    font-weight: 700;
+  }
+
+  .label-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(0.7rem, 2vw, 1.1rem);
+    font-weight: 900;
+    color: #2A1A08;
+    line-height: 1.1;
+    margin-bottom: 2px;
+  }
+
+  .label-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.3rem, 0.8vw, 0.5rem);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #6B5030;
+    font-weight: 500;
+  }
+
+  .label-catalog {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.25rem, 0.6vw, 0.38rem);
+    color: #9B8060;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* ===================== TONEARM ===================== */
+  .tonearm-container {
+    position: absolute;
+    top: -5%;
+    right: 2%;
+    width: 45%;
+    height: 110%;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .tonearm {
+    position: absolute;
+    top: 12%;
+    right: 10%;
+    width: 100%;
+    height: 100%;
+    transform-origin: 85% 8%;
+    transform: rotate(-32deg);
+    transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .tonearm.track-1 { transform: rotate(-20deg); }
+  .tonearm.track-2 { transform: rotate(-16deg); }
+  .tonearm.track-3 { transform: rotate(-11deg); }
+  .tonearm.track-4 { transform: rotate(-6deg); }
+  .tonearm.track-5 { transform: rotate(-1deg); }
+
+  .tonearm svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Tonearm pivot / rest */
+  .tonearm-pivot {
+    position: absolute;
+    top: 6%;
+    right: 5%;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #555, #333);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    z-index: 11;
+  }
+  .tonearm-pivot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #222;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  /* ===================== CONTROLS ===================== */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  /* Power button */
+  .power-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .power-btn:hover { color: var(--text-light); }
+
+  .power-led {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+    transition: all 0.3s;
+  }
+  .power-led.on {
+    background: var(--green-led);
+    box-shadow: 0 0 8px rgba(51,255,102,0.6), 0 0 2px rgba(51,255,102,0.8);
+  }
+
+  /* Speed selector */
+  .speed-selector {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(0,0,0,0.3);
+    border-radius: 20px;
+    padding: 2px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .speed-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    padding: 6px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+  .speed-btn.active {
+    background: rgba(255,176,0,0.15);
+    color: var(--amber);
+    box-shadow: 0 0 10px rgba(255,176,0,0.1);
+  }
+  .speed-btn:hover:not(.active) {
+    color: var(--text-light);
+  }
+
+  /* Volume knob */
+  .volume-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .volume-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .volume-knob {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #555, #2a2a2a);
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    position: relative;
+    cursor: pointer;
+  }
+  .volume-knob::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 2px;
+    height: 8px;
+    background: var(--amber);
+    border-radius: 1px;
+  }
+
+  /* ===================== TRACK LIST (SLEEVE) ===================== */
+  .sleeve {
+    background: linear-gradient(135deg, #1E1810 0%, #171009 100%);
+    border: 1px solid rgba(200,160,100,0.08);
+    border-radius: 8px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sleeve::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,240,200,0.008) 2px,
+        rgba(255,240,200,0.008) 3px
+      );
+    pointer-events: none;
+  }
+
+  .sleeve-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--label-cream);
+    margin-bottom: 0.25rem;
+  }
+
+  .sleeve-artist {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(200,160,100,0.1);
+  }
+
+  .side-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--label-copper);
+    margin: 1.2rem 0 0.6rem;
+  }
+  .side-label:first-of-type {
+    margin-top: 0;
+  }
+
+  .track-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    margin: 2px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .track-item:hover {
+    background: rgba(255,176,0,0.06);
+  }
+  .track-item.active {
+    background: rgba(255,176,0,0.1);
+  }
+
+  .track-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .track-item.active .track-num {
+    color: var(--amber);
+  }
+
+  .track-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .track-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    transition: color 0.3s;
+  }
+  .track-item.active .track-title {
+    color: var(--amber);
+  }
+
+  .track-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .track-duration {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .track-playing-icon {
+    width: 16px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .track-item.active .track-playing-icon {
+    opacity: 1;
+    animation: musicSpin 1s linear infinite;
+  }
+  @keyframes musicSpin {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+  }
+
+  /* Now Playing bar */
+  .now-playing-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(200,160,100,0.1);
+  }
+
+  .eq-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 16px;
+  }
+  .eq-bar {
+    width: 3px;
+    background: var(--amber);
+    border-radius: 1px;
+    animation: eqBounce 0.8s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+  .eq-bars.active .eq-bar {
+    animation-play-state: running;
+  }
+  .eq-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .eq-bar:nth-child(2) { height: 80%; animation-delay: 0.15s; }
+  .eq-bar:nth-child(3) { height: 55%; animation-delay: 0.3s; }
+  .eq-bar:nth-child(4) { height: 90%; animation-delay: 0.1s; }
+  .eq-bar:nth-child(5) { height: 35%; animation-delay: 0.25s; }
+
+  @keyframes eqBounce {
+    0% { transform: scaleY(0.3); }
+    100% { transform: scaleY(1); }
+  }
+
+  .now-playing-text {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .now-playing-track {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--amber);
+  }
+
+  /* ===================== CONTENT AREA ===================== */
+  .content-area {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+    position: relative;
+  }
+
+  .content-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .content-divider {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(200,121,65,0.3), transparent);
+  }
+
+  .content-now-label {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--label-copper);
+    white-space: nowrap;
+  }
+
+  .content-panel {
+    background: linear-gradient(135deg, rgba(30,24,16,0.8), rgba(20,16,10,0.8));
+    border: 1px solid rgba(200,160,100,0.06);
+    border-radius: 12px;
+    padding: 2.5rem;
+    min-height: 260px;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Crackle / noise transition overlay */
+  .crackle-overlay {
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 5;
+    mix-blend-mode: overlay;
+  }
+  .crackle-overlay.active {
+    opacity: 1;
+  }
+
+  .content-section {
+    display: none;
+    animation: fadeContent 0.6s ease forwards;
+  }
+  .content-section.active {
+    display: block;
+  }
+  @keyframes fadeContent {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .content-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--label-cream);
+    margin-bottom: 0.5rem;
+  }
+
+  .content-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--label-copper);
+    margin-bottom: 1.5rem;
+  }
+
+  .content-section p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    max-width: 700px;
+    margin-bottom: 1rem;
+  }
+
+  .content-section .highlight {
+    color: var(--amber);
+    font-weight: 500;
+  }
+
+  /* Experience items */
+  .exp-item {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(200,160,100,0.06);
+  }
+  .exp-item:last-child { border-bottom: none; }
+  .exp-role {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--label-cream);
+    margin-bottom: 2px;
+  }
+  .exp-company {
+    font-size: 0.85rem;
+    color: var(--amber);
+    margin-bottom: 2px;
+  }
+  .exp-period {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .exp-desc {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    opacity: 0.85;
+  }
+
+  /* Projects grid */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+  }
+  .project-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(200,160,100,0.06);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+  }
+  .project-card:hover {
+    border-color: rgba(255,176,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .project-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--label-cream);
+    margin-bottom: 0.5rem;
+  }
+  .project-desc {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-light);
+    opacity: 0.8;
+    margin-bottom: 0.75rem;
+  }
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .project-tech span {
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(200,121,65,0.1);
+    color: var(--label-copper);
+    border: 1px solid rgba(200,121,65,0.15);
+    letter-spacing: 0.5px;
+  }
+
+  /* Skills */
+  .skills-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .skill-group h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,176,0,0.15);
+  }
+  .skill-list {
+    list-style: none;
+  }
+  .skill-list li {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    padding: 0.35rem 0;
+    padding-left: 1rem;
+    position: relative;
+    opacity: 0.85;
+  }
+  .skill-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--label-copper);
+  }
+
+  /* Contact */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(200,160,100,0.06);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-light);
+    transition: all 0.3s;
+  }
+  .contact-item:hover {
+    border-color: rgba(255,176,0,0.2);
+    background: rgba(255,176,0,0.05);
+  }
+  .contact-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(200,121,65,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: var(--amber);
+  }
+  .contact-detail {
+    min-width: 0;
+  }
+  .contact-detail .contact-type {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .contact-detail .contact-value {
+    font-size: 0.85rem;
+    color: var(--text-light);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 900px) {
+    .main-layout {
+      grid-template-columns: 1fr;
+    }
+    .turntable-body {
+      max-width: 500px;
+    }
+    .sleeve {
+      order: -1;
+    }
+    .content-panel {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    .turntable-body { padding: 1rem; }
+    .controls-row { flex-wrap: wrap; gap: 1rem; justify-content: center; }
+    .content-section h2 { font-size: 1.4rem; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .skills-layout { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Vinyl scratch / pop animation on click */
+  @keyframes vinylPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.01); }
+    100% { transform: scale(1); }
+  }
+  .vinyl.pop {
+    animation: spin 1.8s linear infinite, vinylPop 0.2s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="header">
+    <h1>A Vinyl Portfolio Experience</h1>
+  </header>
+
+  <div class="main-layout">
+    <!-- TURNTABLE -->
+    <div class="turntable-wrapper">
+      <div class="turntable-body">
+        <div class="platter-area">
+          <div class="platter-base"></div>
+          <div class="vinyl rpm33" id="vinyl">
+            <div class="vinyl-edge"></div>
+            <div class="label">
+              <div class="label-brand">Walmart Records</div>
+              <div class="label-name">Anshull<br>Garg</div>
+              <div class="label-subtitle">Software Developer</div>
+              <div class="label-catalog">CAT. AG-2025-01</div>
+            </div>
+            <div class="spindle-hole"></div>
+          </div>
+
+          <!-- Tonearm -->
+          <div class="tonearm-container">
+            <div class="tonearm-pivot"></div>
+            <div class="tonearm" id="tonearm">
+              <svg viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Arm base / counterweight -->
+                <ellipse cx="255" cy="32" rx="18" ry="14" fill="#444" stroke="#555" stroke-width="1"/>
+                <!-- Main arm -->
+                <line x1="252" y1="34" x2="60" y2="310" stroke="#4a4a4a" stroke-width="6" stroke-linecap="round"/>
+                <line x1="252" y1="34" x2="60" y2="310" stroke="url(#armGrad)" stroke-width="4" stroke-linecap="round"/>
+                <!-- Headshell -->
+                <rect x="42" y="298" width="30" height="16" rx="2" fill="#444" transform="rotate(-25 57 306)"/>
+                <!-- Cartridge -->
+                <rect x="36" y="318" width="12" height="8" rx="1" fill="#333" transform="rotate(-25 42 322)"/>
+                <!-- Stylus -->
+                <line x1="38" y1="328" x2="34" y2="340" stroke="#aaa" stroke-width="1.5" transform="rotate(-25 36 334)"/>
+                <!-- Gradient definition -->
+                <defs>
+                  <linearGradient id="armGrad" x1="252" y1="34" x2="60" y2="310">
+                    <stop offset="0%" stop-color="#555"/>
+                    <stop offset="50%" stop-color="#4a4a4a"/>
+                    <stop offset="100%" stop-color="#3a3a3a"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-row">
+          <button class="power-btn" id="powerBtn">
+            <div class="power-led" id="powerLed"></div>
+            Power
+          </button>
+
+          <div class="speed-selector">
+            <button class="speed-btn active" data-speed="33" id="speed33">33&#8531;</button>
+            <button class="speed-btn" data-speed="45" id="speed45">45</button>
+          </div>
+
+          <div class="volume-area">
+            <span class="volume-label">Vol</span>
+            <div class="volume-knob" id="volKnob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACK LIST / SLEEVE -->
+    <aside class="sleeve">
+      <div class="sleeve-title">Greatest Hits</div>
+      <div class="sleeve-artist">Anshull Garg</div>
+
+      <div class="side-label">Side A</div>
+
+      <div class="track-item active" data-track="1" onclick="selectTrack(1)">
+        <span class="track-playing-icon">&#9835;</span>
+        <span class="track-num">1</span>
+        <div class="track-info">
+          <div class="track-title">Introduction</div>
+          <div class="track-label">About</div>
+        </div>
+        <span class="track-duration">3:24</span>
+      </div>
+
+      <div class="track-item" data-track="2" onclick="selectTrack(2)">
+        <span class="track-playing-icon">&#9835;</span>
+        <span class="track-num">2</span>
+        <div class="track-info">
+          <div class="track-title">The Journey</div>
+          <div class="track-label">Experience</div>
+        </div>
+        <span class="track-duration">4:15</span>
+      </div>
+
+      <div class="track-item" data-track="3" onclick="selectTrack(3)">
+        <span class="track-playing-icon">&#9835;</span>
+        <span class="track-num">3</span>
+        <div class="track-info">
+          <div class="track-title">The Works</div>
+          <div class="track-label">Projects</div>
+        </div>
+        <span class="track-duration">5:02</span>
+      </div>
+
+      <div class="side-label">Side B</div>
+
+      <div class="track-item" data-track="4" onclick="selectTrack(4)">
+        <span class="track-playing-icon">&#9835;</span>
+        <span class="track-num">4</span>
+        <div class="track-info">
+          <div class="track-title">The Toolkit</div>
+          <div class="track-label">Skills</div>
+        </div>
+        <span class="track-duration">2:48</span>
+      </div>
+
+      <div class="track-item" data-track="5" onclick="selectTrack(5)">
+        <span class="track-playing-icon">&#9835;</span>
+        <span class="track-num">5</span>
+        <div class="track-info">
+          <div class="track-title">The Closer</div>
+          <div class="track-label">Contact</div>
+        </div>
+        <span class="track-duration">1:30</span>
+      </div>
+
+      <!-- Now Playing bar -->
+      <div class="now-playing-bar">
+        <div class="eq-bars" id="eqBars">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <div>
+          <div class="now-playing-text">Now Playing</div>
+          <div class="now-playing-track" id="nowPlayingTrack">Introduction</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+      <div class="content-header">
+        <span class="content-now-label">Now Playing</span>
+        <div class="content-divider"></div>
+      </div>
+
+      <div class="content-panel" id="contentPanel">
+        <div class="crackle-overlay" id="crackleOverlay"></div>
+
+        <!-- Track 1: About -->
+        <div class="content-section active" data-content="1">
+          <h2>Introduction</h2>
+          <h3>The opening track</h3>
+          <p>
+            Hello -- I am <span class="highlight">Anshull Garg</span>, a Software Developer at
+            <span class="highlight">Walmart</span>. I build scalable, high-impact applications
+            that serve millions of users daily. My work sits at the intersection of engineering
+            excellence and thoughtful user experience.
+          </p>
+          <p>
+            With a passion for clean architecture, performance optimization, and collaborative
+            development, I approach every project as an opportunity to craft something meaningful.
+            Much like pressing a perfect vinyl record, I believe great software requires patience,
+            precision, and an ear for detail.
+          </p>
+          <p>
+            When I am not writing code, you will find me exploring new technologies, contributing
+            to open-source projects, or searching for rare records at local shops.
+          </p>
+        </div>
+
+        <!-- Track 2: Experience -->
+        <div class="content-section" data-content="2">
+          <h2>The Journey</h2>
+          <h3>Career experience, track by track</h3>
+
+          <div class="exp-item">
+            <div class="exp-role">Software Developer</div>
+            <div class="exp-company">Walmart</div>
+            <div class="exp-period">Present</div>
+            <div class="exp-desc">
+              Building and maintaining large-scale distributed systems that power one of the
+              world's largest retail platforms. Focused on performance, reliability, and delivering
+              seamless experiences to millions of customers worldwide.
+            </div>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-role">Software Engineer</div>
+            <div class="exp-company">Previous Experience</div>
+            <div class="exp-period">Prior</div>
+            <div class="exp-desc">
+              Developed full-stack web applications, APIs, and microservices. Collaborated with
+              cross-functional teams to ship features on tight timelines while maintaining high
+              code quality and test coverage.
+            </div>
+          </div>
+        </div>
+
+        <!-- Track 3: Projects -->
+        <div class="content-section" data-content="3">
+          <h2>The Works</h2>
+          <h3>Selected recordings from the studio</h3>
+
+          <div class="projects-grid">
+            <div class="project-card">
+              <div class="project-name">E-Commerce Platform</div>
+              <div class="project-desc">
+                High-traffic retail platform handling millions of daily transactions with
+                sub-second response times. Optimized checkout flow, reducing cart abandonment.
+              </div>
+              <div class="project-tech">
+                <span>React</span><span>Node.js</span><span>Microservices</span><span>Redis</span>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-name">Real-Time Inventory System</div>
+              <div class="project-desc">
+                Distributed inventory management system providing real-time stock visibility
+                across thousands of stores and fulfillment centers.
+              </div>
+              <div class="project-tech">
+                <span>Java</span><span>Kafka</span><span>Cassandra</span><span>K8s</span>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-name">Developer Tooling</div>
+              <div class="project-desc">
+                Internal CLI tools and CI/CD pipeline improvements that reduced build times
+                by 40% and improved developer productivity across multiple teams.
+              </div>
+              <div class="project-tech">
+                <span>TypeScript</span><span>Go</span><span>Docker</span><span>GitHub Actions</span>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-name">Analytics Dashboard</div>
+              <div class="project-desc">
+                Data visualization platform for business intelligence, processing terabytes
+                of data to surface actionable insights through interactive charts.
+              </div>
+              <div class="project-tech">
+                <span>React</span><span>D3.js</span><span>Python</span><span>SQL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Track 4: Skills -->
+        <div class="content-section" data-content="4">
+          <h2>The Toolkit</h2>
+          <h3>Instruments in the collection</h3>
+
+          <div class="skills-layout">
+            <div class="skill-group">
+              <h4>Languages</h4>
+              <ul class="skill-list">
+                <li>JavaScript / TypeScript</li>
+                <li>Java</li>
+                <li>Python</li>
+                <li>Go</li>
+                <li>SQL</li>
+              </ul>
+            </div>
+
+            <div class="skill-group">
+              <h4>Frontend</h4>
+              <ul class="skill-list">
+                <li>React / Next.js</li>
+                <li>HTML5 / CSS3</li>
+                <li>Tailwind CSS</li>
+                <li>Redux / Zustand</li>
+                <li>Webpack / Vite</li>
+              </ul>
+            </div>
+
+            <div class="skill-group">
+              <h4>Backend</h4>
+              <ul class="skill-list">
+                <li>Node.js / Express</li>
+                <li>Spring Boot</li>
+                <li>REST / GraphQL</li>
+                <li>Kafka / RabbitMQ</li>
+                <li>gRPC</li>
+              </ul>
+            </div>
+
+            <div class="skill-group">
+              <h4>Infrastructure</h4>
+              <ul class="skill-list">
+                <li>AWS / GCP / Azure</li>
+                <li>Docker / Kubernetes</li>
+                <li>CI/CD Pipelines</li>
+                <li>Terraform</li>
+                <li>Monitoring / Observability</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Track 5: Contact -->
+        <div class="content-section" data-content="5">
+          <h2>The Closer</h2>
+          <h3>Let us make music together</h3>
+
+          <p>
+            Every great record starts with a conversation. Whether you have a project in mind,
+            want to collaborate, or just want to talk tech -- I would love to hear from you.
+          </p>
+
+          <div class="contact-grid">
+            <a class="contact-item" href="mailto:anshull.garg@email.com">
+              <div class="contact-icon">@</div>
+              <div class="contact-detail">
+                <div class="contact-type">Email</div>
+                <div class="contact-value">anshull.garg@email.com</div>
+              </div>
+            </a>
+
+            <a class="contact-item" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+              <div class="contact-icon">in</div>
+              <div class="contact-detail">
+                <div class="contact-type">LinkedIn</div>
+                <div class="contact-value">linkedin.com/in/anshullgarg</div>
+              </div>
+            </a>
+
+            <a class="contact-item" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+              <div class="contact-icon">&lt;/&gt;</div>
+              <div class="contact-detail">
+                <div class="contact-type">GitHub</div>
+                <div class="contact-value">github.com/anshullgarg</div>
+              </div>
+            </a>
+
+            <a class="contact-item" href="#">
+              <div class="contact-icon">&#9742;</div>
+              <div class="contact-detail">
+                <div class="contact-type">Location</div>
+                <div class="contact-value">Based in the USA</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Pressed with care &mdash; Anshull Garg &mdash; 2025
+  </footer>
+</div>
+
+<script>
+  // State
+  let isPlaying = false;
+  let currentTrack = 1;
+  let currentSpeed = 33;
+
+  // Elements
+  const vinyl = document.getElementById('vinyl');
+  const tonearm = document.getElementById('tonearm');
+  const powerLed = document.getElementById('powerLed');
+  const eqBars = document.getElementById('eqBars');
+  const nowPlayingTrack = document.getElementById('nowPlayingTrack');
+  const crackleOverlay = document.getElementById('crackleOverlay');
+  const contentPanel = document.getElementById('contentPanel');
+
+  const trackNames = {
+    1: 'Introduction',
+    2: 'The Journey',
+    3: 'The Works',
+    4: 'The Toolkit',
+    5: 'The Closer'
+  };
+
+  // Power toggle
+  document.getElementById('powerBtn').addEventListener('click', function() {
+    isPlaying = !isPlaying;
+    updatePlayState();
+  });
+
+  // Vinyl click to toggle play
+  vinyl.addEventListener('click', function() {
+    isPlaying = !isPlaying;
+    updatePlayState();
+  });
+
+  // Speed selector
+  document.getElementById('speed33').addEventListener('click', function() {
+    currentSpeed = 33;
+    updateSpeed();
+  });
+  document.getElementById('speed45').addEventListener('click', function() {
+    currentSpeed = 45;
+    updateSpeed();
+  });
+
+  // Volume knob rotation on drag (decorative)
+  let knobAngle = 45;
+  const volKnob = document.getElementById('volKnob');
+  let isDragging = false;
+  let startY = 0;
+
+  volKnob.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    startY = e.clientY;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    const delta = startY - e.clientY;
+    knobAngle = Math.max(-30, Math.min(270, knobAngle + delta * 0.5));
+    volKnob.style.transform = 'rotate(' + knobAngle + 'deg)';
+    startY = e.clientY;
+  });
+  window.addEventListener('mouseup', function() {
+    isDragging = false;
+  });
+
+  function selectTrack(num) {
+    if (num === currentTrack && isPlaying) return;
+    currentTrack = num;
+
+    // Trigger crackle effect
+    crackleOverlay.classList.add('active');
+    setTimeout(function() {
+      crackleOverlay.classList.remove('active');
+    }, 300);
+
+    // Auto-start playing
+    if (!isPlaying) {
+      isPlaying = true;
+    }
+
+    updatePlayState();
+    updateTrackList();
+    updateContent();
+    updateTonearm();
+    updateNowPlaying();
+  }
+
+  function updatePlayState() {
+    if (isPlaying) {
+      vinyl.classList.add('playing');
+      powerLed.classList.add('on');
+      eqBars.classList.add('active');
+    } else {
+      vinyl.classList.remove('playing');
+      powerLed.classList.remove('on');
+      eqBars.classList.remove('active');
+    }
+    updateTonearm();
+  }
+
+  function updateSpeed() {
+    document.getElementById('speed33').classList.toggle('active', currentSpeed === 33);
+    document.getElementById('speed45').classList.toggle('active', currentSpeed === 45);
+
+    vinyl.classList.remove('rpm33', 'rpm45');
+    if (currentSpeed === 33) {
+      vinyl.classList.add('rpm33');
+    } else {
+      vinyl.classList.add('rpm45');
+    }
+  }
+
+  function updateTrackList() {
+    document.querySelectorAll('.track-item').forEach(function(item) {
+      const t = parseInt(item.getAttribute('data-track'));
+      item.classList.toggle('active', t === currentTrack);
+    });
+  }
+
+  function updateContent() {
+    document.querySelectorAll('.content-section').forEach(function(section) {
+      const c = parseInt(section.getAttribute('data-content'));
+      section.classList.remove('active');
+      if (c === currentTrack) {
+        // Small delay for transition
+        setTimeout(function() {
+          section.classList.add('active');
+        }, 150);
+      }
+    });
+  }
+
+  function updateTonearm() {
+    tonearm.className = 'tonearm';
+    if (isPlaying) {
+      tonearm.classList.add('track-' + currentTrack);
+    }
+  }
+
+  function updateNowPlaying() {
+    nowPlayingTrack.textContent = trackNames[currentTrack] || '';
+  }
+
+  // Initialize
+  updatePlayState();
+  updateTrackList();
+  updateTonearm();
+  updateNowPlaying();
+
+  // Auto-play on load with small delay
+  setTimeout(function() {
+    isPlaying = true;
+    updatePlayState();
+  }, 800);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Zen Garden Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sand: #E8DCC8;
+  --sand-dark: #D4C5A9;
+  --sand-darker: #BFB08E;
+  --stone-dark: #4A4A4A;
+  --stone-warm: #6B5B4E;
+  --stone-light: #8A7B6E;
+  --moss: #5A7A52;
+  --moss-light: #7A9A72;
+  --blossom: #FFB7C5;
+  --blossom-light: #FFD4DE;
+  --water: #7BA7BC;
+  --water-light: #9BC7DC;
+  --water-dark: #5B8A9F;
+  --bamboo: #8B9A46;
+  --bamboo-dark: #6B7A36;
+  --paper: #F5F0E8;
+  --ink: #2A2A2A;
+  --ink-light: #5A5A5A;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: var(--sand);
+  color: var(--ink);
+  cursor: none;
+}
+
+/* Custom cursor - zen rake */
+#cursor-rake {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+}
+
+/* Main garden container */
+#garden {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sand canvas overlay */
+#sand-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+/* Background decorative layer */
+#bg-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+
+/* Stone markers (clickable areas beneath sand) */
+.stone {
+  position: absolute;
+  z-index: 3;
+  cursor: none;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.stone-body {
+  position: relative;
+  border-radius: 50% 45% 55% 48% / 48% 52% 45% 55%;
+  background: linear-gradient(145deg, var(--stone-light), var(--stone-dark));
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    inset 0 -4px 12px rgba(0,0,0,0.2),
+    inset 0 4px 8px rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.stone-body.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.stone-body .stone-label {
+  font-family: 'Noto Serif JP', serif;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 8px;
+  user-select: none;
+}
+
+/* Center stone - largest */
+#stone-center .stone-body {
+  width: 180px;
+  height: 140px;
+  background: linear-gradient(145deg, #5A5A5A, #3A3A3A);
+}
+
+#stone-center .stone-label {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Moss patches */
+.moss-patch {
+  position: absolute;
+  z-index: 2;
+  border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+  background: radial-gradient(ellipse, var(--moss), var(--moss-light), transparent);
+  opacity: 0;
+  transition: opacity 2s ease;
+  pointer-events: none;
+}
+
+.moss-patch.visible {
+  opacity: 0.6;
+}
+
+/* Water stream */
+#water-stream {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+#water-stream.visible {
+  opacity: 1;
+}
+
+/* Cherry blossom petals */
+.petal {
+  position: fixed;
+  z-index: 8;
+  pointer-events: none;
+  width: 10px;
+  height: 10px;
+  opacity: 0;
+}
+
+.petal-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 0 50% 50%;
+  background: var(--blossom);
+  box-shadow: 0 0 4px rgba(255,183,197,0.3);
+}
+
+@keyframes petalFall {
+  0% {
+    transform: translate(0, -20px) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translate(var(--drift), calc(100vh + 20px)) rotate(720deg) scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* Floating scroll panel */
+#scroll-panel {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#scroll-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.scroll-inner {
+  background: var(--paper);
+  border: 1px solid rgba(139, 119, 90, 0.3);
+  border-radius: 4px;
+  padding: 32px;
+  max-width: 420px;
+  min-width: 300px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.15),
+    0 4px 16px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-inner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 28px,
+      rgba(139, 119, 90, 0.05) 28px,
+      rgba(139, 119, 90, 0.05) 29px
+    );
+  pointer-events: none;
+}
+
+.scroll-inner::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.scroll-title {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(139, 119, 90, 0.2);
+  letter-spacing: 1px;
+}
+
+.scroll-content {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--ink-light);
+  font-weight: 300;
+}
+
+.scroll-content strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.scroll-content a {
+  color: var(--water-dark);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(91, 138, 159, 0.3);
+  transition: border-color 0.3s;
+}
+
+.scroll-content a:hover {
+  border-color: var(--water-dark);
+}
+
+.skill-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 3px;
+  font-size: 0.75rem;
+  background: rgba(90, 122, 82, 0.1);
+  color: var(--moss);
+  border: 1px solid rgba(90, 122, 82, 0.2);
+  border-radius: 2px;
+  font-weight: 400;
+}
+
+.timeline-entry {
+  padding-left: 16px;
+  border-left: 2px solid rgba(74, 74, 74, 0.2);
+  margin-bottom: 16px;
+}
+
+.timeline-entry:last-child { margin-bottom: 0; }
+
+.timeline-date {
+  font-size: 0.7rem;
+  color: var(--moss);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.timeline-role {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+.timeline-desc {
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* Bamboo fence (decorative borders) */
+.bamboo-fence {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bamboo-fence-top {
+  top: 0; left: 0; right: 0;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bamboo-dark) 0px,
+    var(--bamboo-dark) 3px,
+    var(--bamboo) 3px,
+    var(--bamboo) 6px,
+    transparent 6px,
+    transparent 40px
+  );
+  opacity: 0.4;
+}
+
+.bamboo-fence-bottom {
+  bottom: 0; left: 0; right: 0;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bamboo-dark) 0px,
+    var(--bamboo-dark) 3px,
+    var(--bamboo) 3px,
+    var(--bamboo) 6px,
+    transparent 6px,
+    transparent 40px
+  );
+  opacity: 0.4;
+}
+
+/* Bonsai tree */
+#bonsai {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+#bonsai.visible { opacity: 1; }
+
+/* Stone lantern */
+#lantern {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+#lantern.visible { opacity: 1; }
+
+@keyframes lanternGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Instruction overlay */
+#instructions {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232, 220, 200, 0.95);
+  transition: opacity 1.5s ease;
+  cursor: none;
+}
+
+#instructions.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.instructions-inner {
+  text-align: center;
+  max-width: 500px;
+  padding: 40px;
+}
+
+.instructions-inner h1 {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 300;
+  font-size: 2rem;
+  letter-spacing: 6px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.instructions-inner .subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 40px;
+}
+
+.instructions-inner .prompt {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 300;
+  font-size: 0.9rem;
+  color: var(--stone-warm);
+  line-height: 2;
+}
+
+.instructions-inner .start-hint {
+  margin-top: 32px;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sand-darker);
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Sound toggle */
+#sound-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 150;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(74, 74, 74, 0.2);
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  font-size: 14px;
+  color: var(--ink-light);
+  transition: all 0.3s;
+  opacity: 0.6;
+}
+
+#sound-toggle:hover { opacity: 1; }
+
+/* Rake progress indicator */
+#rake-progress {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 150;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sand-darker);
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+/* Bridge SVG */
+#bridge {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+#bridge.visible { opacity: 1; }
+
+/* Reset button */
+#reset-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 150;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  background: none;
+  border: 1px solid rgba(74, 74, 74, 0.15);
+  border-radius: 2px;
+  padding: 8px 16px;
+  cursor: none;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+#reset-btn.visible {
+  opacity: 0.5;
+}
+
+#reset-btn:hover {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .scroll-inner {
+    max-width: 90vw;
+    min-width: unset;
+    padding: 24px;
+  }
+  #stone-center .stone-body {
+    width: 120px;
+    height: 100px;
+  }
+  #stone-center .stone-label {
+    font-size: 0.8rem;
+  }
+  .instructions-inner h1 {
+    font-size: 1.5rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<svg id="cursor-rake" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line x1="20" y1="8" x2="20" y2="34" stroke="#6B5B4E" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="8" x2="12" y2="16" stroke="#6B5B4E" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="16" y1="8" x2="16" y2="16" stroke="#6B5B4E" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="20" y1="8" x2="20" y2="16" stroke="#6B5B4E" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="24" y1="8" x2="24" y2="16" stroke="#6B5B4E" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="28" y1="8" x2="28" y2="16" stroke="#6B5B4E" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="10" y1="8" x2="30" y2="8" stroke="#6B5B4E" stroke-width="2" stroke-linecap="round"/>
+</svg>
+
+<!-- Instructions Overlay -->
+<div id="instructions">
+  <div class="instructions-inner">
+    <h1>Zen Garden</h1>
+    <div class="subtitle">Portfolio of Anshull Garg</div>
+    <div class="prompt">
+      Rake the sand to reveal the stones beneath.<br>
+      Each stone holds a piece of the story.<br>
+      Move slowly. Breathe.
+    </div>
+    <div class="start-hint">Move cursor to begin</div>
+  </div>
+</div>
+
+<!-- Main Garden -->
+<div id="garden">
+  <!-- Sand raking canvas -->
+  <canvas id="sand-canvas"></canvas>
+
+  <!-- Background layer for decorative elements -->
+  <canvas id="bg-layer"></canvas>
+
+  <!-- Bamboo fences -->
+  <div class="bamboo-fence bamboo-fence-top"></div>
+  <div class="bamboo-fence bamboo-fence-bottom"></div>
+
+  <!-- Moss patches -->
+  <div class="moss-patch" style="width:120px;height:80px;top:15%;left:8%;"></div>
+  <div class="moss-patch" style="width:90px;height:60px;top:70%;left:75%;"></div>
+  <div class="moss-patch" style="width:70px;height:50px;top:45%;left:85%;"></div>
+  <div class="moss-patch" style="width:100px;height:70px;top:80%;left:20%;"></div>
+  <div class="moss-patch" style="width:60px;height:40px;top:25%;left:60%;"></div>
+
+  <!-- Stones -->
+  <div class="stone" id="stone-center" style="top:50%;left:50%;transform:translate(-50%,-50%);">
+    <div class="stone-body"><span class="stone-label">Anshull<br>Garg</span></div>
+  </div>
+
+  <div class="stone" id="stone-about" style="top:25%;left:25%;" data-panel="about">
+    <div class="stone-body" style="width:100px;height:80px;border-radius:45% 55% 50% 50%/50% 45% 55% 50%;">
+      <span class="stone-label">About</span>
+    </div>
+  </div>
+
+  <div class="stone" id="stone-skills" style="top:20%;left:68%;" data-panel="skills">
+    <div class="stone-body" style="width:90px;height:75px;border-radius:55% 45% 48% 52%/48% 55% 45% 52%;">
+      <span class="stone-label">Skills</span>
+    </div>
+  </div>
+
+  <div class="stone" id="stone-project1" style="top:55%;left:18%;" data-panel="project1">
+    <div class="stone-body" style="width:95px;height:78px;border-radius:48% 52% 55% 45%/52% 48% 45% 55%;">
+      <span class="stone-label">Project</span>
+    </div>
+  </div>
+
+  <div class="stone" id="stone-project2" style="top:68%;left:55%;" data-panel="project2">
+    <div class="stone-body" style="width:88px;height:72px;border-radius:52% 48% 45% 55%/55% 45% 52% 48%;">
+      <span class="stone-label">Project</span>
+    </div>
+  </div>
+
+  <div class="stone" id="stone-experience" style="top:40%;left:78%;" data-panel="experience">
+    <div class="stone-body" style="width:110px;height:85px;border-radius:50% 50% 48% 52%/48% 52% 50% 50%;">
+      <span class="stone-label">Experience</span>
+    </div>
+  </div>
+
+  <div class="stone" id="stone-contact" style="top:78%;left:38%;" data-panel="contact">
+    <div class="stone-body" style="width:85px;height:70px;border-radius:46% 54% 52% 48%/54% 46% 48% 52%;">
+      <span class="stone-label">Contact</span>
+    </div>
+  </div>
+</div>
+
+<!-- Scroll Panel (content popup) -->
+<div id="scroll-panel">
+  <div class="scroll-inner">
+    <div class="scroll-title" id="panel-title"></div>
+    <div class="scroll-content" id="panel-content"></div>
+  </div>
+</div>
+
+<!-- Controls -->
+<button id="reset-btn" onclick="resetGarden()">Smooth Sand</button>
+<div id="rake-progress">Stones found: <span id="stone-count">0</span> / 7</div>
+<button id="sound-toggle" onclick="toggleSound()" title="Toggle ambient sound">&#9835;</button>
+
+<script>
+// ============================================================
+// ZEN GARDEN - Anshull Garg Portfolio
+// ============================================================
+
+const canvas = document.getElementById('sand-canvas');
+const ctx = canvas.getContext('2d');
+const bgCanvas = document.getElementById('bg-layer');
+const bgCtx = bgCanvas.getContext('2d');
+
+let W, H;
+let mouseX = -100, mouseY = -100;
+let prevMouseX = -100, prevMouseY = -100;
+let isRaking = false;
+let hasStarted = false;
+let rakePoints = [];
+let revealedStones = new Set();
+let activePanel = null;
+let audioCtx = null;
+let isAudioPlaying = false;
+let animFrameId;
+
+// Sand coverage grid - tracks where sand has been raked
+const GRID_SIZE = 4;
+let sandGrid = [];
+let gridCols, gridRows;
+
+// Stone positions (will be set after resize)
+const stoneData = {
+  'stone-center': { rx: 0.50, ry: 0.50 },
+  'stone-about': { rx: 0.25, ry: 0.25 },
+  'stone-skills': { rx: 0.68, ry: 0.20 },
+  'stone-project1': { rx: 0.18, ry: 0.55 },
+  'stone-project2': { rx: 0.55, ry: 0.68 },
+  'stone-experience': { rx: 0.78, ry: 0.40 },
+  'stone-contact': { rx: 0.38, ry: 0.78 },
+};
+
+// Panel content
+const panelData = {
+  about: {
+    title: 'About',
+    content: `
+      <p><strong>Anshull Garg</strong> is a Software Developer at <strong>Walmart Global Tech</strong>, building scalable systems that serve millions of customers.</p>
+      <br>
+      <p>With a passion for clean architecture, performance optimization, and thoughtful user experiences, Anshull brings a meticulous engineering mindset to every project.</p>
+      <br>
+      <p>When not coding, you might find him exploring new technologies, contributing to open source, or contemplating the art of simplicity -- much like tending a zen garden.</p>
+    `
+  },
+  skills: {
+    title: 'Skills',
+    content: `
+      <p style="margin-bottom: 12px; font-size: 0.75rem; color: var(--ink-light);">Core competencies, cultivated with care.</p>
+      <div>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">Go</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">GraphQL</span>
+        <span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">Microservices</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">GCP</span>
+        <span class="skill-tag">CI/CD</span>
+        <span class="skill-tag">System Design</span>
+        <span class="skill-tag">Performance</span>
+        <span class="skill-tag">Agile</span>
+      </div>
+    `
+  },
+  project1: {
+    title: 'Inventory Intelligence Platform',
+    content: `
+      <p><strong>Real-time inventory management</strong> system handling millions of SKUs across thousands of Walmart stores.</p>
+      <br>
+      <p>Built a reactive data pipeline that processes inventory events in real-time, enabling accurate stock visibility and reducing out-of-stock incidents by 30%.</p>
+      <br>
+      <p style="font-size:0.75rem;color:var(--moss);">React &middot; Node.js &middot; Kafka &middot; Redis &middot; Kubernetes</p>
+    `
+  },
+  project2: {
+    title: 'Checkout Optimization Engine',
+    content: `
+      <p><strong>Performance-critical checkout flow</strong> serving millions of daily transactions on walmart.com.</p>
+      <br>
+      <p>Led frontend optimization efforts that reduced checkout page load times by 40% and improved conversion rates. Implemented code splitting, lazy hydration, and edge caching strategies.</p>
+      <br>
+      <p style="font-size:0.75rem;color:var(--moss);">React &middot; Next.js &middot; GraphQL &middot; Edge Computing &middot; A/B Testing</p>
+    `
+  },
+  experience: {
+    title: 'Experience',
+    content: `
+      <div class="timeline-entry">
+        <div class="timeline-date">2022 -- Present</div>
+        <div class="timeline-role">Software Developer, Walmart Global Tech</div>
+        <div class="timeline-desc">Building scalable e-commerce systems serving millions of customers. Focus on performance, reliability, and developer experience.</div>
+      </div>
+      <div class="timeline-entry">
+        <div class="timeline-date">Education</div>
+        <div class="timeline-role">Computer Science</div>
+        <div class="timeline-desc">Strong foundation in algorithms, distributed systems, and software engineering principles.</div>
+      </div>
+    `
+  },
+  contact: {
+    title: 'Contact',
+    content: `
+      <p style="margin-bottom:16px;">Like a stone in the garden, the best connections are the ones that endure.</p>
+      <p><strong>Email</strong><br><a href="mailto:anshull.garg@outlook.com">anshull.garg@outlook.com</a></p>
+      <br>
+      <p><strong>LinkedIn</strong><br><a href="https://linkedin.com/in/anshullgarg" target="_blank">linkedin.com/in/anshullgarg</a></p>
+      <br>
+      <p><strong>GitHub</strong><br><a href="https://github.com/anshullgarg" target="_blank">github.com/anshullgarg</a></p>
+    `
+  }
+};
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+
+function init() {
+  resize();
+  initSandGrid();
+  drawBgElements();
+  spawnPetals();
+  requestAnimationFrame(loop);
+
+  // Event listeners
+  window.addEventListener('resize', () => {
+    resize();
+    initSandGrid();
+    drawBgElements();
+    drawSand();
+  });
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('mouseup', onMouseUp);
+
+  // Touch support
+  document.addEventListener('touchstart', onTouchStart, { passive: false });
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('touchend', onTouchEnd);
+}
+
+function resize() {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W;
+  canvas.height = H;
+  bgCanvas.width = W;
+  bgCanvas.height = H;
+}
+
+function initSandGrid() {
+  gridCols = Math.ceil(W / GRID_SIZE);
+  gridRows = Math.ceil(H / GRID_SIZE);
+  sandGrid = new Float32Array(gridCols * gridRows);
+  // 1.0 = full sand coverage, 0.0 = fully raked
+  sandGrid.fill(1.0);
+}
+
+// ============================================================
+// SAND RENDERING
+// ============================================================
+
+function drawSand() {
+  // Create sand texture using imageData for performance
+  const imageData = ctx.createImageData(W, H);
+  const data = imageData.data;
+
+  // Base sand color
+  const sandR = 232, sandG = 220, sandB = 200;
+  // Raked groove color (darker)
+  const grooveR = 195, grooveG = 180, grooveB = 155;
+  // Deep rake color
+  const deepR = 175, deepG = 160, deepB = 135;
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const gi = Math.floor(y / GRID_SIZE) * gridCols + Math.floor(x / GRID_SIZE);
+      const coverage = sandGrid[gi] || 0;
+      const pixelIdx = (y * W + x) * 4;
+
+      // Noise for texture
+      const noise = (Math.random() - 0.5) * 8;
+
+      if (coverage > 0.5) {
+        // Sand covered area
+        const t = (coverage - 0.5) * 2; // 0-1
+        data[pixelIdx] = sandR + noise * t;
+        data[pixelIdx + 1] = sandG + noise * t;
+        data[pixelIdx + 2] = sandB + noise * t;
+        data[pixelIdx + 3] = Math.floor(coverage * 255);
+      } else {
+        // Raked area - show groove lines
+        const t = coverage * 2; // 0-1
+        const r = deepR + (grooveR - deepR) * t;
+        const g = deepG + (grooveG - deepG) * t;
+        const b = deepB + (grooveB - deepB) * t;
+        data[pixelIdx] = r + noise * 0.5;
+        data[pixelIdx + 1] = g + noise * 0.5;
+        data[pixelIdx + 2] = b + noise * 0.5;
+        data[pixelIdx + 3] = Math.floor(coverage * 180 + 40);
+      }
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+}
+
+// Optimized: only redraw the area around the rake
+function rakeAt(x, y, prevX, prevY) {
+  const rakeWidth = 28;
+  const dx = x - prevX;
+  const dy = y - prevY;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < 1) return;
+
+  const steps = Math.ceil(dist / 2);
+  const perpX = -dy / dist;
+  const perpY = dx / dist;
+
+  for (let s = 0; s <= steps; s++) {
+    const t = s / steps;
+    const cx = prevX + dx * t;
+    const cy = prevY + dy * t;
+
+    // Create rake tines
+    for (let tine = -3; tine <= 3; tine++) {
+      const tineX = cx + perpX * tine * (rakeWidth / 6);
+      const tineY = cy + perpY * tine * (rakeWidth / 6);
+
+      // Create groove around tine
+      for (let r = -2; r <= 2; r++) {
+        for (let c = -2; c <= 2; c++) {
+          const gx = Math.floor((tineX + c) / GRID_SIZE);
+          const gy = Math.floor((tineY + r) / GRID_SIZE);
+          if (gx >= 0 && gx < gridCols && gy >= 0 && gy < gridRows) {
+            const gi = gy * gridCols + gx;
+            const distFromCenter = Math.sqrt(r * r + c * c) / 2;
+            const rakeAmount = Math.max(0, 1 - distFromCenter) * 0.15;
+            sandGrid[gi] = Math.max(0, sandGrid[gi] - rakeAmount);
+          }
+        }
+      }
+    }
+
+    // Also create a wider, softer push of sand at the edges
+    for (let offset = -rakeWidth; offset <= rakeWidth; offset++) {
+      const px = cx + perpX * offset;
+      const py = cy + perpY * offset;
+      const gx = Math.floor(px / GRID_SIZE);
+      const gy = Math.floor(py / GRID_SIZE);
+      if (gx >= 0 && gx < gridCols && gy >= 0 && gy < gridRows) {
+        const gi = gy * gridCols + gx;
+        const edgeDist = Math.abs(offset) / rakeWidth;
+        const amount = (1 - edgeDist) * 0.05;
+        sandGrid[gi] = Math.max(0, sandGrid[gi] - amount);
+      }
+    }
+  }
+
+  // Check stone reveals
+  checkStoneReveals();
+
+  // Dirty flag for redraw
+  needsRedraw = true;
+}
+
+let needsRedraw = true;
+
+// ============================================================
+// STONE REVEAL CHECK
+// ============================================================
+
+function checkStoneReveals() {
+  for (const [id, pos] of Object.entries(stoneData)) {
+    if (revealedStones.has(id)) continue;
+
+    const cx = pos.rx * W;
+    const cy = pos.ry * H;
+    const checkRadius = 60;
+
+    // Sample grid around stone center
+    let totalCoverage = 0;
+    let samples = 0;
+
+    for (let dy = -checkRadius; dy <= checkRadius; dy += GRID_SIZE * 2) {
+      for (let dx = -checkRadius; dx <= checkRadius; dx += GRID_SIZE * 2) {
+        if (dx * dx + dy * dy > checkRadius * checkRadius) continue;
+        const gx = Math.floor((cx + dx) / GRID_SIZE);
+        const gy = Math.floor((cy + dy) / GRID_SIZE);
+        if (gx >= 0 && gx < gridCols && gy >= 0 && gy < gridRows) {
+          totalCoverage += sandGrid[gy * gridCols + gx];
+          samples++;
+        }
+      }
+    }
+
+    const avgCoverage = samples > 0 ? totalCoverage / samples : 1;
+
+    if (avgCoverage < 0.65) {
+      revealStone(id);
+    }
+  }
+}
+
+function revealStone(id) {
+  revealedStones.add(id);
+  const el = document.getElementById(id);
+  if (el) {
+    const body = el.querySelector('.stone-body');
+    if (body) body.classList.add('revealed');
+  }
+
+  // Update count
+  document.getElementById('stone-count').textContent = revealedStones.size;
+
+  // Show reset button after first reveal
+  if (revealedStones.size >= 1) {
+    document.getElementById('reset-btn').classList.add('visible');
+  }
+
+  // Show decorative elements
+  if (revealedStones.size >= 2) {
+    document.querySelectorAll('.moss-patch').forEach(m => m.classList.add('visible'));
+  }
+}
+
+// ============================================================
+// BACKGROUND ELEMENTS (drawn on bg canvas)
+// ============================================================
+
+function drawBgElements() {
+  bgCtx.clearRect(0, 0, W, H);
+
+  // Water stream - curved path
+  drawWaterStream();
+
+  // Bonsai tree
+  drawBonsai();
+
+  // Stone lantern
+  drawLantern();
+
+  // Bridge
+  drawBridge();
+
+  // Circular rake pattern guides (very faint)
+  drawZenCircles();
+}
+
+function drawWaterStream() {
+  bgCtx.save();
+  bgCtx.beginPath();
+
+  const startX = W * 0.05;
+  const startY = H * 0.35;
+  const endX = W * 0.35;
+  const endY = H * 0.95;
+
+  bgCtx.moveTo(startX, startY);
+  bgCtx.bezierCurveTo(
+    W * 0.15, H * 0.45,
+    W * 0.10, H * 0.65,
+    W * 0.20, H * 0.75
+  );
+  bgCtx.bezierCurveTo(
+    W * 0.28, H * 0.82,
+    W * 0.30, H * 0.88,
+    endX, endY
+  );
+
+  // Stream width
+  bgCtx.lineWidth = 30;
+  bgCtx.strokeStyle = 'rgba(123, 167, 188, 0.25)';
+  bgCtx.lineCap = 'round';
+  bgCtx.stroke();
+
+  // Inner lighter line
+  bgCtx.lineWidth = 16;
+  bgCtx.strokeStyle = 'rgba(155, 199, 220, 0.2)';
+  bgCtx.stroke();
+
+  // Highlight
+  bgCtx.lineWidth = 4;
+  bgCtx.strokeStyle = 'rgba(200, 225, 240, 0.15)';
+  bgCtx.stroke();
+
+  bgCtx.restore();
+}
+
+function drawBonsai() {
+  const bx = W * 0.88;
+  const by = H * 0.12;
+
+  bgCtx.save();
+  bgCtx.translate(bx, by);
+
+  // Pot
+  bgCtx.fillStyle = 'rgba(107, 91, 78, 0.5)';
+  bgCtx.beginPath();
+  bgCtx.ellipse(0, 35, 20, 8, 0, 0, Math.PI * 2);
+  bgCtx.fill();
+  bgCtx.fillRect(-16, 20, 32, 16);
+
+  // Trunk
+  bgCtx.strokeStyle = 'rgba(90, 70, 55, 0.5)';
+  bgCtx.lineWidth = 4;
+  bgCtx.beginPath();
+  bgCtx.moveTo(0, 20);
+  bgCtx.bezierCurveTo(-3, 5, 5, -10, -5, -20);
+  bgCtx.stroke();
+
+  // Branch
+  bgCtx.lineWidth = 2;
+  bgCtx.beginPath();
+  bgCtx.moveTo(-2, -5);
+  bgCtx.bezierCurveTo(10, -10, 18, -8, 22, -12);
+  bgCtx.stroke();
+
+  bgCtx.beginPath();
+  bgCtx.moveTo(-4, -15);
+  bgCtx.bezierCurveTo(-15, -20, -20, -18, -22, -22);
+  bgCtx.stroke();
+
+  // Foliage blobs
+  const drawFoliage = (fx, fy, r) => {
+    bgCtx.fillStyle = 'rgba(90, 122, 82, 0.35)';
+    bgCtx.beginPath();
+    bgCtx.arc(fx, fy, r, 0, Math.PI * 2);
+    bgCtx.fill();
+    bgCtx.fillStyle = 'rgba(70, 102, 62, 0.2)';
+    bgCtx.beginPath();
+    bgCtx.arc(fx - 2, fy - 2, r * 0.7, 0, Math.PI * 2);
+    bgCtx.fill();
+  };
+
+  drawFoliage(-5, -25, 12);
+  drawFoliage(-22, -24, 8);
+  drawFoliage(22, -15, 9);
+  drawFoliage(8, -20, 7);
+
+  bgCtx.restore();
+}
+
+function drawLantern() {
+  const lx = W * 0.42;
+  const ly = H * 0.88;
+
+  bgCtx.save();
+  bgCtx.translate(lx, ly);
+
+  // Base
+  bgCtx.fillStyle = 'rgba(74, 74, 74, 0.35)';
+  bgCtx.fillRect(-12, 10, 24, 6);
+
+  // Pillar
+  bgCtx.fillRect(-4, -15, 8, 25);
+
+  // Lantern body
+  bgCtx.fillStyle = 'rgba(74, 74, 74, 0.3)';
+  bgCtx.fillRect(-14, -30, 28, 16);
+
+  // Window cutouts (glow)
+  bgCtx.fillStyle = 'rgba(255, 220, 150, 0.3)';
+  bgCtx.fillRect(-10, -28, 8, 10);
+  bgCtx.fillRect(2, -28, 8, 10);
+
+  // Roof
+  bgCtx.fillStyle = 'rgba(74, 74, 74, 0.35)';
+  bgCtx.beginPath();
+  bgCtx.moveTo(-20, -30);
+  bgCtx.lineTo(0, -42);
+  bgCtx.lineTo(20, -30);
+  bgCtx.closePath();
+  bgCtx.fill();
+
+  // Top finial
+  bgCtx.fillRect(-2, -46, 4, 5);
+
+  bgCtx.restore();
+}
+
+function drawBridge() {
+  const bx = W * 0.15;
+  const by = H * 0.58;
+
+  bgCtx.save();
+  bgCtx.translate(bx, by);
+
+  // Bridge arc
+  bgCtx.strokeStyle = 'rgba(139, 119, 90, 0.35)';
+  bgCtx.lineWidth = 4;
+  bgCtx.beginPath();
+  bgCtx.arc(0, 10, 35, Math.PI, 0, false);
+  bgCtx.stroke();
+
+  // Planks
+  bgCtx.lineWidth = 2;
+  for (let i = -30; i <= 30; i += 8) {
+    const angle = Math.acos(i / 35);
+    const ty = 10 - Math.sin(angle) * 35;
+    bgCtx.beginPath();
+    bgCtx.moveTo(i, ty);
+    bgCtx.lineTo(i, ty + 3);
+    bgCtx.stroke();
+  }
+
+  // Rails
+  bgCtx.lineWidth = 1.5;
+  bgCtx.beginPath();
+  bgCtx.arc(0, 10, 38, Math.PI + 0.15, -0.15, false);
+  bgCtx.stroke();
+
+  bgCtx.restore();
+}
+
+function drawZenCircles() {
+  bgCtx.save();
+
+  // Faint concentric circles around center stone
+  const cx = W * 0.5;
+  const cy = H * 0.5;
+
+  bgCtx.strokeStyle = 'rgba(191, 176, 142, 0.15)';
+  bgCtx.lineWidth = 1;
+
+  for (let r = 110; r < 250; r += 18) {
+    bgCtx.beginPath();
+    bgCtx.arc(cx, cy, r, 0, Math.PI * 2);
+    bgCtx.stroke();
+  }
+
+  bgCtx.restore();
+}
+
+// ============================================================
+// CHERRY BLOSSOM PETALS
+// ============================================================
+
+function spawnPetals() {
+  setInterval(() => {
+    if (!hasStarted) return;
+    createPetal();
+  }, 3000);
+}
+
+function createPetal() {
+  const petal = document.createElement('div');
+  petal.className = 'petal';
+  const inner = document.createElement('div');
+  inner.className = 'petal-inner';
+
+  // Randomize color
+  const hue = 340 + Math.random() * 20;
+  const sat = 70 + Math.random() * 30;
+  const light = 80 + Math.random() * 15;
+  inner.style.background = `hsl(${hue}, ${sat}%, ${light}%)`;
+
+  // Size variation
+  const size = 6 + Math.random() * 8;
+  petal.style.width = size + 'px';
+  petal.style.height = size + 'px';
+
+  // Position
+  petal.style.left = (Math.random() * 100) + '%';
+  petal.style.top = '-20px';
+
+  // Drift
+  const drift = (Math.random() - 0.5) * 200;
+  petal.style.setProperty('--drift', drift + 'px');
+
+  // Duration
+  const duration = 8 + Math.random() * 12;
+  petal.style.animation = `petalFall ${duration}s ease-in forwards`;
+
+  petal.appendChild(inner);
+  document.body.appendChild(petal);
+
+  setTimeout(() => petal.remove(), duration * 1000 + 100);
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+
+function onMouseMove(e) {
+  prevMouseX = mouseX;
+  prevMouseY = mouseY;
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  // Move custom cursor
+  const cursor = document.getElementById('cursor-rake');
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+
+  // Dismiss instructions
+  if (!hasStarted) {
+    hasStarted = true;
+    document.getElementById('instructions').classList.add('hidden');
+    setTimeout(() => {
+      document.getElementById('instructions').style.display = 'none';
+    }, 1500);
+  }
+
+  // Always rake on movement (no click needed)
+  if (prevMouseX !== -100) {
+    rakeAt(mouseX, mouseY, prevMouseX, prevMouseY);
+  }
+}
+
+function onMouseDown(e) {
+  // Check if clicked on a revealed stone
+  const clickedStone = getClickedStone(e.clientX, e.clientY);
+  if (clickedStone && revealedStones.has(clickedStone)) {
+    const el = document.getElementById(clickedStone);
+    const panelKey = el.getAttribute('data-panel');
+    if (panelKey) {
+      openPanel(panelKey, e.clientX, e.clientY);
+      return;
+    }
+  }
+
+  // Close panel if open
+  if (activePanel) {
+    closePanel();
+  }
+}
+
+function onMouseUp(e) {}
+
+function onTouchStart(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  prevMouseX = t.clientX;
+  prevMouseY = t.clientY;
+  mouseX = t.clientX;
+  mouseY = t.clientY;
+
+  if (!hasStarted) {
+    hasStarted = true;
+    document.getElementById('instructions').classList.add('hidden');
+    setTimeout(() => {
+      document.getElementById('instructions').style.display = 'none';
+    }, 1500);
+  }
+
+  // Check stone click
+  const clickedStone = getClickedStone(mouseX, mouseY);
+  if (clickedStone && revealedStones.has(clickedStone)) {
+    const el = document.getElementById(clickedStone);
+    const panelKey = el.getAttribute('data-panel');
+    if (panelKey) {
+      openPanel(panelKey, mouseX, mouseY);
+      return;
+    }
+  }
+
+  if (activePanel) closePanel();
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  prevMouseX = mouseX;
+  prevMouseY = mouseY;
+  mouseX = t.clientX;
+  mouseY = t.clientY;
+
+  const cursor = document.getElementById('cursor-rake');
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+
+  rakeAt(mouseX, mouseY, prevMouseX, prevMouseY);
+}
+
+function onTouchEnd(e) {}
+
+function getClickedStone(x, y) {
+  for (const [id, pos] of Object.entries(stoneData)) {
+    const sx = pos.rx * W;
+    const sy = pos.ry * H;
+    const dist = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2);
+    if (dist < 60) return id;
+  }
+  return null;
+}
+
+// ============================================================
+// PANEL SYSTEM
+// ============================================================
+
+function openPanel(key, x, y) {
+  const data = panelData[key];
+  if (!data) return;
+
+  activePanel = key;
+  const panel = document.getElementById('scroll-panel');
+  const title = document.getElementById('panel-title');
+  const content = document.getElementById('panel-content');
+
+  title.textContent = data.title;
+  content.innerHTML = data.content;
+
+  // Position panel near click but within viewport
+  let px = x + 30;
+  let py = y - 30;
+
+  // Get panel size estimate
+  panel.classList.add('open');
+  const rect = panel.getBoundingClientRect();
+
+  if (px + 420 > W) px = x - 450;
+  if (px < 10) px = 10;
+  if (py + 300 > H) py = H - 320;
+  if (py < 10) py = 10;
+
+  panel.style.left = px + 'px';
+  panel.style.top = py + 'px';
+}
+
+function closePanel() {
+  activePanel = null;
+  document.getElementById('scroll-panel').classList.remove('open');
+}
+
+// ============================================================
+// RESET
+// ============================================================
+
+function resetGarden() {
+  sandGrid.fill(1.0);
+  revealedStones.clear();
+  document.querySelectorAll('.stone-body').forEach(s => s.classList.remove('revealed'));
+  document.querySelectorAll('.moss-patch').forEach(m => m.classList.remove('visible'));
+  document.getElementById('stone-count').textContent = '0';
+  document.getElementById('reset-btn').classList.remove('visible');
+  closePanel();
+  needsRedraw = true;
+}
+
+// ============================================================
+// AUDIO (simple ambient)
+// ============================================================
+
+function toggleSound() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (isAudioPlaying) {
+    if (audioCtx.state === 'running') {
+      audioCtx.suspend();
+    }
+    isAudioPlaying = false;
+    document.getElementById('sound-toggle').style.opacity = '0.3';
+    return;
+  }
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+    isAudioPlaying = true;
+    document.getElementById('sound-toggle').style.opacity = '0.8';
+    return;
+  }
+
+  // Create ambient drone
+  const createDrone = (freq, gain) => {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    filter.type = 'lowpass';
+    filter.frequency.value = 400;
+    g.gain.value = gain;
+    osc.connect(filter);
+    filter.connect(g);
+    g.connect(audioCtx.destination);
+    osc.start();
+
+    // Gentle LFO
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+    lfo.frequency.value = 0.1 + Math.random() * 0.2;
+    lfoGain.gain.value = freq * 0.01;
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+    lfo.start();
+
+    return { osc, g, lfo };
+  };
+
+  createDrone(110, 0.03);
+  createDrone(165, 0.015);
+  createDrone(220, 0.01);
+  createDrone(82.5, 0.02);
+
+  // Water sound (filtered noise)
+  const bufferSize = audioCtx.sampleRate * 2;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * 0.5;
+  }
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+  const noiseFilter = audioCtx.createBiquadFilter();
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.value = 800;
+  noiseFilter.Q.value = 0.5;
+  const noiseGain = audioCtx.createGain();
+  noiseGain.gain.value = 0.008;
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(audioCtx.destination);
+  noise.start();
+
+  isAudioPlaying = true;
+  document.getElementById('sound-toggle').style.opacity = '0.8';
+}
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+
+let lastDrawTime = 0;
+
+function loop(time) {
+  animFrameId = requestAnimationFrame(loop);
+
+  // Throttle sand redraws to ~30fps for performance
+  if (needsRedraw && time - lastDrawTime > 33) {
+    drawSand();
+    needsRedraw = false;
+    lastDrawTime = time;
+  }
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+
+window.addEventListener('DOMContentLoaded', () => {
+  init();
+  // Initial full sand draw
+  drawSand();
+});
+
+</script>
+</body>
+</html>
