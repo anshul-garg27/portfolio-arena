@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull's Code Kitchen | Order a Developer</title>
+<style>
+  /* ========================================
+     RESET & BASE
+     ======================================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange-primary: #fc8019;
+    --orange-dark: #e06c00;
+    --orange-light: #fff4e6;
+    --green-primary: #60b246;
+    --green-dark: #4a9e30;
+    --bg-white: #ffffff;
+    --bg-page: #f1f1f6;
+    --bg-card: #ffffff;
+    --text-primary: #282c3f;
+    --text-secondary: #686b78;
+    --text-light: #93959f;
+    --border-color: #e9e9eb;
+    --shadow-sm: 0 1px 4px rgba(40,44,63,0.08);
+    --shadow-md: 0 3px 12px rgba(40,44,63,0.12);
+    --shadow-lg: 0 8px 30px rgba(40,44,63,0.15);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --font-main: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    --header-height: 80px;
+    --cart-width: 380px;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; font-family: inherit; border: none; background: none; }
+  img { max-width: 100%; display: block; }
+
+  /* ========================================
+     HEADER / NAVBAR
+     ======================================== */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--header-height);
+    background: var(--bg-white);
+    box-shadow: var(--shadow-sm);
+    display: flex; align-items: center;
+    padding: 0 40px;
+    transition: box-shadow 0.3s;
+  }
+  .header.scrolled { box-shadow: var(--shadow-md); }
+
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 50px; height: 50px;
+    background: var(--orange-primary);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: white;
+  }
+  .logo-text { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--orange-primary); }
+
+  .header-nav {
+    display: flex; align-items: center; gap: 36px;
+    margin-left: auto;
+  }
+  .header-nav a {
+    font-size: 15px; font-weight: 600; color: var(--text-secondary);
+    position: relative; padding: 4px 0;
+    transition: color 0.2s;
+  }
+  .header-nav a:hover { color: var(--text-primary); }
+  .header-nav a::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px;
+    background: var(--orange-primary); transition: width 0.25s;
+  }
+  .header-nav a:hover::after { width: 100%; }
+  .header-nav .nav-icon { font-size: 18px; margin-right: 6px; vertical-align: middle; }
+
+  .cart-badge {
+    position: relative;
+    background: var(--green-primary); color: white;
+    padding: 8px 18px; border-radius: 30px;
+    font-size: 14px; font-weight: 700;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .cart-badge:hover { background: var(--green-dark); transform: scale(1.05); }
+  .cart-badge .badge-count {
+    position: absolute; top: -6px; right: -6px;
+    background: var(--orange-primary); color: white;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+    box-shadow: 0 2px 6px rgba(252,128,25,0.4);
+    transition: transform 0.3s;
+  }
+  .cart-badge .badge-count.bump { animation: cartBump 0.4s ease; }
+  @keyframes cartBump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  /* ========================================
+     HERO / RESTAURANT BANNER
+     ======================================== */
+  .hero {
+    margin-top: var(--header-height);
+    background: linear-gradient(135deg, #1b1e2b 0%, #282c3f 50%, #36394a 100%);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  .hero-content {
+    max-width: 900px; position: relative; z-index: 1;
+  }
+  .hero-restaurant-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+    padding: 6px 14px; border-radius: 30px;
+    font-size: 13px; color: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+  }
+  .hero-restaurant-badge .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green-primary);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+  }
+
+  .hero h1 {
+    font-size: 48px; font-weight: 900; color: white;
+    line-height: 1.15; margin-bottom: 8px;
+    letter-spacing: -1px;
+  }
+  .hero h1 .highlight { color: var(--orange-primary); }
+
+  .hero-subtitle {
+    font-size: 20px; color: rgba(255,255,255,0.6);
+    margin-bottom: 24px; font-weight: 400;
+  }
+
+  .hero-meta {
+    display: flex; align-items: center; gap: 28px;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 500;
+  }
+  .hero-meta-item .icon {
+    font-size: 20px;
+  }
+  .rating-stars {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--green-primary); color: white;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 14px; font-weight: 800;
+  }
+  .hero-tags {
+    display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .hero-tag {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+  }
+
+  /* ========================================
+     DELIVERY STRIP
+     ======================================== */
+  .delivery-strip {
+    background: var(--orange-light);
+    border-bottom: 1px solid #ffddb3;
+    padding: 14px 40px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 40px; flex-wrap: wrap;
+  }
+  .delivery-strip-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: var(--text-primary);
+  }
+  .delivery-strip-item .icon { font-size: 20px; }
+
+  /* ========================================
+     MAIN LAYOUT
+     ======================================== */
+  .main-layout {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    gap: 30px;
+    align-items: flex-start;
+  }
+
+  .menu-section { flex: 1; min-width: 0; }
+  .cart-section {
+    width: var(--cart-width); flex-shrink: 0;
+    position: sticky; top: calc(var(--header-height) + 20px);
+  }
+
+  /* ========================================
+     CATEGORY TABS (sticky)
+     ======================================== */
+  .category-tabs {
+    position: sticky; top: var(--header-height); z-index: 50;
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 0 0 0;
+    margin-bottom: 24px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    overflow-x: auto;
+    display: flex;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .category-tabs::-webkit-scrollbar { display: none; }
+
+  .category-tab {
+    flex-shrink: 0;
+    padding: 16px 24px;
+    font-size: 15px; font-weight: 700;
+    color: var(--text-secondary);
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .category-tab:hover { color: var(--text-primary); }
+  .category-tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
+  }
+  .category-tab .tab-count {
+    font-size: 12px; color: var(--text-light);
+    margin-left: 6px; font-weight: 500;
+  }
+
+  /* ========================================
+     MENU CATEGORY
+     ======================================== */
+  .menu-category {
+    margin-bottom: 36px;
+    scroll-margin-top: calc(var(--header-height) + 60px);
+  }
+  .menu-category-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 0; cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 4px;
+  }
+  .menu-category-title {
+    font-size: 20px; font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .menu-category-count {
+    font-size: 14px; color: var(--text-light); font-weight: 500;
+  }
+  .menu-category-toggle {
+    font-size: 20px; color: var(--text-secondary);
+    transition: transform 0.3s;
+  }
+  .menu-category.collapsed .menu-category-toggle { transform: rotate(180deg); }
+  .menu-category.collapsed .menu-items { display: none; }
+
+  /* ========================================
+     MENU ITEM CARD
+     ======================================== */
+  .menu-item {
+    display: flex; align-items: flex-start; gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+  }
+  .menu-item:last-child { border-bottom: none; }
+
+  .menu-item-info { flex: 1; min-width: 0; }
+
+  .menu-item-type {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-bottom: 6px;
+  }
+  .menu-item-type .veg-icon {
+    width: 18px; height: 18px;
+    border: 2px solid var(--green-primary);
+    border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .menu-item-type .veg-icon::after {
+    content: '';
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green-primary);
+  }
+  .menu-item-type.non-veg .veg-icon {
+    border-color: #e43b4f;
+  }
+  .menu-item-type.non-veg .veg-icon::after {
+    background: #e43b4f;
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    width: 8px; height: 7px;
+  }
+  .menu-item-type .bestseller {
+    background: #fff4e6; color: var(--orange-primary);
+    font-size: 11px; font-weight: 800;
+    padding: 2px 8px; border-radius: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  .menu-item-name {
+    font-size: 17px; font-weight: 700;
+    margin-bottom: 4px; line-height: 1.3;
+  }
+  .menu-item-price {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 8px; color: var(--text-primary);
+  }
+  .menu-item-desc {
+    font-size: 14px; color: var(--text-light);
+    line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  .menu-item-image-wrap {
+    position: relative; flex-shrink: 0;
+    width: 156px; height: 144px;
+  }
+  .menu-item-image {
+    width: 156px; height: 144px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #f0f0f5;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .menu-item-image .placeholder-icon {
+    font-size: 56px; opacity: 0.8;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+  .add-btn-wrap {
+    position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
+    z-index: 5;
+  }
+  .add-btn {
+    background: var(--bg-white);
+    color: var(--green-primary);
+    border: 2px solid var(--green-primary);
+    font-size: 14px; font-weight: 800;
+    padding: 8px 32px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .add-btn:hover {
+    background: var(--green-primary); color: white;
+    box-shadow: 0 4px 14px rgba(96,178,70,0.35);
+    transform: translateY(-1px);
+  }
+  .add-btn.added {
+    background: var(--green-primary); color: white;
+  }
+
+  .qty-controls {
+    display: flex; align-items: center; gap: 0;
+    background: var(--green-primary);
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 4px 14px rgba(96,178,70,0.35);
+  }
+  .qty-btn {
+    width: 34px; height: 36px;
+    color: white; font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .qty-btn:hover { background: rgba(255,255,255,0.15); }
+  .qty-count {
+    width: 30px; text-align: center;
+    font-size: 14px; font-weight: 800; color: white;
+  }
+
+  /* ========================================
+     CART PANEL
+     ======================================== */
+  .cart-panel {
+    background: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .cart-header {
+    background: var(--text-primary);
+    color: white;
+    padding: 20px 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cart-header-icon { font-size: 28px; }
+  .cart-header-text h3 { font-size: 17px; font-weight: 800; }
+  .cart-header-text p { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+
+  .cart-delivery-info {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 24px;
+    background: var(--orange-light);
+    border-bottom: 1px solid #ffddb3;
+    font-size: 13px; font-weight: 600;
+    color: var(--orange-dark);
+  }
+  .cart-delivery-info .icon { font-size: 20px; }
+
+  .cart-empty {
+    padding: 48px 24px;
+    text-align: center;
+  }
+  .cart-empty .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.4; }
+  .cart-empty p { color: var(--text-light); font-size: 15px; font-weight: 500; }
+  .cart-empty .empty-sub { font-size: 13px; margin-top: 6px; }
+
+  .cart-items {
+    padding: 16px 24px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .cart-items::-webkit-scrollbar { width: 4px; }
+  .cart-items::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+  .cart-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border-color);
+    animation: slideIn 0.3s ease;
+  }
+  .cart-item:last-child { border-bottom: none; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .cart-item-icon { font-size: 24px; flex-shrink: 0; }
+  .cart-item-details { flex: 1; min-width: 0; }
+  .cart-item-name {
+    font-size: 14px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cart-item-qty {
+    font-size: 12px; color: var(--text-light);
+  }
+  .cart-item-price {
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0; color: var(--text-primary);
+  }
+  .cart-item-remove {
+    font-size: 16px; color: var(--text-light);
+    padding: 4px; transition: color 0.2s;
+  }
+  .cart-item-remove:hover { color: #e43b4f; }
+
+  .cart-divider {
+    height: 1px; background: var(--border-color);
+    margin: 0 24px;
+  }
+
+  .cart-bill {
+    padding: 16px 24px;
+  }
+  .cart-bill h4 {
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-primary); margin-bottom: 12px;
+  }
+  .cart-bill-row {
+    display: flex; justify-content: space-between;
+    font-size: 14px; margin-bottom: 8px;
+    color: var(--text-secondary);
+  }
+  .cart-bill-row.total {
+    font-size: 16px; font-weight: 800;
+    color: var(--text-primary);
+    padding-top: 10px;
+    border-top: 2px solid var(--text-primary);
+    margin-top: 10px;
+  }
+  .cart-bill-row .label { font-weight: 500; }
+
+  .cart-savings {
+    background: #e8f5e1;
+    color: var(--green-dark);
+    padding: 10px 24px;
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .place-order-btn {
+    display: block; width: calc(100% - 48px);
+    margin: 0 24px 20px;
+    background: var(--green-primary);
+    color: white;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-size: 16px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(96,178,70,0.35);
+  }
+  .place-order-btn:hover {
+    background: var(--green-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(96,178,70,0.4);
+  }
+  .place-order-btn:disabled {
+    background: #ccc; box-shadow: none;
+    cursor: not-allowed; transform: none;
+  }
+  .place-order-btn .btn-total { font-size: 14px; opacity: 0.9; font-weight: 600; }
+
+  /* ========================================
+     REVIEWS SECTION
+     ======================================== */
+  .reviews-section {
+    max-width: 1400px; margin: 0 auto;
+    padding: 20px 40px 40px;
+  }
+  .reviews-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .reviews-header h2 {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+  }
+  .reviews-overall {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .reviews-score {
+    background: var(--green-primary); color: white;
+    padding: 8px 14px; border-radius: var(--radius-sm);
+    font-size: 20px; font-weight: 800;
+  }
+  .reviews-count { font-size: 14px; color: var(--text-secondary); }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .review-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .review-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  .review-top {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .review-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: white;
+  }
+  .review-author { font-size: 15px; font-weight: 700; }
+  .review-role { font-size: 12px; color: var(--text-light); }
+  .review-rating {
+    margin-left: auto;
+    background: var(--green-primary); color: white;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 13px; font-weight: 800;
+  }
+  .review-text {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.6;
+  }
+  .review-date {
+    font-size: 12px; color: var(--text-light); margin-top: 10px;
+  }
+  .review-ordered {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--text-light);
+    background: #f8f8f8; padding: 4px 10px; border-radius: 20px;
+    margin-top: 10px;
+  }
+
+  /* ========================================
+     ORDER / CONTACT MODAL
+     ======================================== */
+  .modal-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    z-index: 200;
+    justify-content: center; align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.3s;
+  }
+  .modal-overlay.active { display: flex; }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .modal {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    max-width: 520px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalSlide 0.4s ease;
+  }
+  @keyframes modalSlide {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .modal-header h2 {
+    font-size: 24px; font-weight: 800; margin-bottom: 4px;
+  }
+  .modal-header p { font-size: 14px; color: var(--text-light); }
+  .modal-close {
+    position: absolute; top: 20px; right: 24px;
+    font-size: 24px; color: var(--text-secondary);
+    padding: 4px; transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text-primary); }
+
+  .modal-body { padding: 24px 32px; position: relative; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label {
+    display: block; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-secondary); margin-bottom: 8px;
+  }
+  .form-input, .form-textarea {
+    width: 100%; padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 15px; font-family: var(--font-main);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--orange-primary);
+    box-shadow: 0 0 0 3px rgba(252,128,25,0.1);
+  }
+  .form-textarea { resize: vertical; min-height: 100px; }
+
+  .modal-order-summary {
+    background: #f8f8fa; border-radius: var(--radius-sm);
+    padding: 16px; margin-bottom: 20px;
+  }
+  .modal-order-summary h4 {
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+  .modal-order-item {
+    display: flex; justify-content: space-between;
+    font-size: 14px; margin-bottom: 6px;
+    color: var(--text-secondary);
+  }
+  .modal-order-total {
+    display: flex; justify-content: space-between;
+    font-size: 16px; font-weight: 800;
+    color: var(--text-primary);
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+    margin-top: 8px;
+  }
+
+  .submit-order-btn {
+    width: 100%;
+    background: var(--orange-primary); color: white;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-size: 16px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(252,128,25,0.35);
+  }
+  .submit-order-btn:hover {
+    background: var(--orange-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(252,128,25,0.4);
+  }
+
+  .modal-footer {
+    padding: 16px 32px 24px;
+    text-align: center;
+    font-size: 13px; color: var(--text-light);
+  }
+
+  /* ========================================
+     SUCCESS ANIMATION
+     ======================================== */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 32px;
+  }
+  .success-screen.active { display: block; }
+  .success-icon {
+    font-size: 80px; margin-bottom: 20px;
+    animation: successBounce 0.6s ease;
+  }
+  @keyframes successBounce {
+    0% { transform: scale(0); } 50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .success-screen h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .success-screen p { color: var(--text-secondary); font-size: 15px; line-height: 1.6; }
+  .success-order-id {
+    display: inline-block; margin-top: 16px;
+    background: var(--orange-light); color: var(--orange-dark);
+    padding: 8px 20px; border-radius: 30px;
+    font-size: 14px; font-weight: 700;
+  }
+
+  /* ========================================
+     FOOTER
+     ======================================== */
+  .footer {
+    background: var(--text-primary);
+    color: rgba(255,255,255,0.5);
+    padding: 40px;
+    text-align: center;
+  }
+  .footer-brand { font-size: 22px; font-weight: 800; color: white; margin-bottom: 8px; }
+  .footer-brand span { color: var(--orange-primary); }
+  .footer p { font-size: 14px; max-width: 500px; margin: 0 auto 20px; line-height: 1.6; }
+  .footer-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+  .footer-link {
+    color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--orange-primary); }
+
+  /* ========================================
+     OFFER BANNER
+     ======================================== */
+  .offer-banner {
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #1b1e2b 0%, #282c3f 100%);
+    border-radius: var(--radius-md);
+    padding: 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .offer-banner::after {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(252,128,25,0.1);
+    border-radius: 50%;
+  }
+  .offer-code {
+    display: inline-block;
+    background: var(--orange-primary); color: white;
+    font-size: 12px; font-weight: 800;
+    padding: 4px 12px; border-radius: 4px;
+    letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .offer-banner h3 { color: white; font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .offer-banner p { color: rgba(255,255,255,0.5); font-size: 13px; }
+
+  /* ========================================
+     RESPONSIVE
+     ======================================== */
+  @media (max-width: 1100px) {
+    .main-layout { flex-direction: column; }
+    .cart-section {
+      width: 100%; position: static;
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header { padding: 0 20px; }
+    .header-nav { gap: 20px; }
+    .header-nav .nav-label { display: none; }
+    .hero { padding: 40px 20px 36px; }
+    .hero h1 { font-size: 32px; }
+    .hero-subtitle { font-size: 16px; }
+    .delivery-strip { padding: 12px 20px; gap: 20px; }
+    .main-layout { padding: 20px; }
+    .reviews-section { padding: 20px; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .menu-item { flex-direction: column-reverse; }
+    .menu-item-image-wrap { width: 100%; height: 180px; }
+    .menu-item-image { width: 100%; height: 180px; }
+    .footer { padding: 30px 20px; }
+  }
+
+  @media (max-width: 480px) {
+    .header-nav a:not(.cart-badge) { display: none; }
+    .hero-meta { gap: 16px; }
+    .hero h1 { font-size: 26px; }
+    .category-tab { padding: 14px 16px; font-size: 13px; }
+  }
+
+  /* ========================================
+     ANIMATIONS
+     ======================================== */
+  .fade-up {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* Toast notification */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--text-primary); color: white;
+    padding: 14px 28px; border-radius: 12px;
+    font-size: 14px; font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    z-index: 300;
+    transition: transform 0.4s ease;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast .toast-icon { font-size: 20px; }
+</style>
+</head>
+<body>
+
+<!-- ========================================
+     HEADER
+     ======================================== -->
+<header class="header" id="header">
+  <div class="header-left">
+    <div class="logo-icon" aria-hidden="true">AG</div>
+    <div class="logo-text">code<span>kitchen</span></div>
+  </div>
+  <nav class="header-nav" aria-label="Main navigation">
+    <a href="#appetizers"><span class="nav-icon" aria-hidden="true">&#127869;</span><span class="nav-label">Menu</span></a>
+    <a href="#reviews-section"><span class="nav-icon" aria-hidden="true">&#11088;</span><span class="nav-label">Reviews</span></a>
+    <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer"><span class="nav-icon" aria-hidden="true">&#128187;</span><span class="nav-label">GitHub</span></a>
+    <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer"><span class="nav-icon" aria-hidden="true">&#128188;</span><span class="nav-label">LinkedIn</span></a>
+    <button class="cart-badge" onclick="scrollToCart()" aria-label="View cart">
+      &#128722; Cart
+      <span class="badge-count" id="cartBadge">0</span>
+    </button>
+  </nav>
+</header>
+
+<!-- ========================================
+     HERO BANNER
+     ======================================== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-restaurant-badge">
+      <span class="dot"></span>
+      Currently accepting orders
+    </div>
+    <h1>Anshull's Code Kitchen <span class="highlight">&#11088; 4.8</span></h1>
+    <p class="hero-subtitle">Order a Developer &mdash; Freshly compiled code, served hot.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="rating-stars">&#11088; 4.8</span>
+        <span>1.2K+ orders</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="icon" aria-hidden="true">&#9201;</span>
+        Ships features in 2 weeks
+      </div>
+      <div class="hero-meta-item">
+        <span class="icon" aria-hidden="true">&#128176;</span>
+        Competitive pricing
+      </div>
+    </div>
+    <div class="hero-tags">
+      <span class="hero-tag">Full Stack</span>
+      <span class="hero-tag">React / Next.js</span>
+      <span class="hero-tag">Node.js / AWS</span>
+      <span class="hero-tag">System Design</span>
+      <span class="hero-tag">Open to Opportunities</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     DELIVERY INFO STRIP
+     ======================================== -->
+<div class="delivery-strip">
+  <div class="delivery-strip-item">
+    <span class="icon" aria-hidden="true">&#128666;</span>
+    Delivery Time: Ships features in 2 weeks
+  </div>
+  <div class="delivery-strip-item">
+    <span class="icon" aria-hidden="true">&#127775;</span>
+    100% Clean Code Guaranteed
+  </div>
+  <div class="delivery-strip-item">
+    <span class="icon" aria-hidden="true">&#128274;</span>
+    Production-Grade Security
+  </div>
+</div>
+
+<!-- ========================================
+     MAIN LAYOUT: MENU + CART
+     ======================================== -->
+<div class="main-layout">
+  <!-- LEFT: MENU -->
+  <div class="menu-section">
+
+    <!-- Category Tabs -->
+    <div class="category-tabs" role="tablist" aria-label="Menu categories">
+      <button class="category-tab active" onclick="scrollToCategory('appetizers')" role="tab">&#127836; Appetizers<span class="tab-count">(4)</span></button>
+      <button class="category-tab" onclick="scrollToCategory('main-course')" role="tab">&#127858; Main Course<span class="tab-count">(3)</span></button>
+      <button class="category-tab" onclick="scrollToCategory('sides')" role="tab">&#127843; Sides<span class="tab-count">(8)</span></button>
+      <button class="category-tab" onclick="scrollToCategory('desserts')" role="tab">&#127848; Desserts<span class="tab-count">(4)</span></button>
+    </div>
+
+    <!-- Offer Banner -->
+    <div class="offer-banner">
+      <div class="offer-code">HIRE2024</div>
+      <h3>Get 100% dedication on your first project</h3>
+      <p>Hire a full-stack developer. No hidden charges. Free code reviews included.</p>
+    </div>
+
+    <!-- ===== APPETIZERS (About) ===== -->
+    <div class="menu-category" id="appetizers">
+      <div class="menu-category-header" onclick="toggleCategory(this)">
+        <div>
+          <div class="menu-category-title">Appetizers (About Me)</div>
+          <div class="menu-category-count">4 items</div>
+        </div>
+        <span class="menu-category-toggle" aria-hidden="true">&#9660;</span>
+      </div>
+      <div class="menu-items">
+
+        <div class="menu-item fade-up" data-id="a1" data-name="Developer Origin Story" data-price="0" data-icon="&#128214;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">MUST TRY</span>
+            </div>
+            <div class="menu-item-name">Developer Origin Story</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">Full-stack developer with a passion for building scalable web applications. Started coding at 16, never looked back. Currently crafting digital experiences that users love.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128214;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Developer Origin Story to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="a2" data-name="Education Sampler Platter" data-price="0" data-icon="&#127891;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Education Sampler Platter</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">B.Tech in Computer Science. Seasoned with countless online courses, certifications, and a never-ending appetite for learning new technologies.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#127891;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Education Sampler Platter to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="a3" data-name="Work Experience Bruschetta" data-price="0" data-icon="&#128188;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">POPULAR</span>
+            </div>
+            <div class="menu-item-name">Work Experience Bruschetta</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">5+ years of professional experience building production-grade applications. Served across startups and established companies. Pairs well with any team.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128188;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Work Experience Bruschetta to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="a4" data-name="Passion Project Soup" data-price="0" data-icon="&#128293;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Passion Project Soup</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">A warm blend of open-source contributions, hackathon wins, and side projects. Constantly cooking up new ideas in the lab. Comfort food for the soul.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128293;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Passion Project Soup to cart">ADD</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== MAIN COURSE (Projects) ===== -->
+    <div class="menu-category" id="main-course">
+      <div class="menu-category-header" onclick="toggleCategory(this)">
+        <div>
+          <div class="menu-category-title">Main Course (Projects)</div>
+          <div class="menu-category-count">3 items</div>
+        </div>
+        <span class="menu-category-toggle" aria-hidden="true">&#9660;</span>
+      </div>
+      <div class="menu-items">
+
+        <div class="menu-item fade-up" data-id="m1" data-name="Full Stack Thali" data-price="599" data-icon="&#127859;">
+          <div class="menu-item-info">
+            <div class="menu-item-type non-veg">
+              <div class="veg-icon"></div>
+              <span class="bestseller">BESTSELLER</span>
+            </div>
+            <div class="menu-item-name">Full Stack Thali &mdash; React + Node + AWS</div>
+            <div class="menu-item-price">&#8377;599</div>
+            <div class="menu-item-desc">A complete meal: React frontend, Node.js backend, PostgreSQL database, deployed on AWS with CI/CD pipeline. Served with authentication, real-time updates, and a side of Docker.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#127859;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Full Stack Thali to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="m2" data-name="React Biryani" data-price="449" data-icon="&#127858;">
+          <div class="menu-item-info">
+            <div class="menu-item-type non-veg">
+              <div class="veg-icon"></div>
+              <span class="bestseller">SPICY</span>
+            </div>
+            <div class="menu-item-name">React Biryani &mdash; Spicy Frontend Skills</div>
+            <div class="menu-item-price">&#8377;449</div>
+            <div class="menu-item-desc">Aromatic React components layered with Redux state management, custom hooks, lazy loading, and pixel-perfect responsive design. Garnished with Framer Motion animations. Extra spicy.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#127858;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add React Biryani to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="m3" data-name="Node.js Dosa" data-price="349" data-icon="&#129384;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">CHEF'S SPECIAL</span>
+            </div>
+            <div class="menu-item-name">Node.js Dosa &mdash; Crispy Backend</div>
+            <div class="menu-item-price">&#8377;349</div>
+            <div class="menu-item-desc">Crispy Express.js APIs wrapped around a filling of MongoDB and PostgreSQL. Served with JWT authentication chutney, rate-limiting sambar, and WebSocket coconut cream.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#129384;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Node.js Dosa to cart">ADD</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== SIDES (Skills) ===== -->
+    <div class="menu-category" id="sides">
+      <div class="menu-category-header" onclick="toggleCategory(this)">
+        <div>
+          <div class="menu-category-title">Sides (Skills)</div>
+          <div class="menu-category-count">8 items</div>
+        </div>
+        <span class="menu-category-toggle" aria-hidden="true">&#9660;</span>
+      </div>
+      <div class="menu-items">
+
+        <div class="menu-item fade-up" data-id="s1" data-name="React.js" data-price="4" data-icon="&#9883;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">EXPERT</span>
+            </div>
+            <div class="menu-item-name">React.js</div>
+            <div class="menu-item-price">&#8377;4 yrs experience</div>
+            <div class="menu-item-desc">Hooks, Context, Redux, Next.js, Server Components, Performance optimization. The secret sauce behind every great frontend.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#9883;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add React.js to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s2" data-name="Node.js" data-price="4" data-icon="&#128994;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">EXPERT</span>
+            </div>
+            <div class="menu-item-name">Node.js</div>
+            <div class="menu-item-price">&#8377;4 yrs experience</div>
+            <div class="menu-item-desc">Express, Fastify, REST APIs, GraphQL, Microservices, WebSockets. The backbone of every robust backend system.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128994;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Node.js to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s3" data-name="TypeScript" data-price="3" data-icon="&#128309;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">TypeScript</div>
+            <div class="menu-item-price">&#8377;3 yrs experience</div>
+            <div class="menu-item-desc">Type-safe code that catches bugs before they reach production. Generics, utility types, and strict mode always on.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128309;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add TypeScript to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s4" data-name="AWS Cloud" data-price="3" data-icon="&#9729;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">HOT</span>
+            </div>
+            <div class="menu-item-name">AWS Cloud</div>
+            <div class="menu-item-price">&#8377;3 yrs experience</div>
+            <div class="menu-item-desc">EC2, S3, Lambda, RDS, CloudFront, DynamoDB. Infrastructure as Code with Terraform. Scalable and cost-optimized.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#9729;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add AWS Cloud to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s5" data-name="Python" data-price="3" data-icon="&#128013;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Python</div>
+            <div class="menu-item-price">&#8377;3 yrs experience</div>
+            <div class="menu-item-desc">Django, Flask, data processing, scripting, automation. The Swiss army knife for any backend or data task.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128013;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Python to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s6" data-name="Docker & DevOps" data-price="2" data-icon="&#128230;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Docker & DevOps</div>
+            <div class="menu-item-price">&#8377;2 yrs experience</div>
+            <div class="menu-item-desc">Containerization, CI/CD pipelines, GitHub Actions, Kubernetes basics. Ship it fast, ship it safe.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128230;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Docker and DevOps to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s7" data-name="PostgreSQL & MongoDB" data-price="3" data-icon="&#128451;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">PostgreSQL & MongoDB</div>
+            <div class="menu-item-price">&#8377;3 yrs experience</div>
+            <div class="menu-item-desc">Relational and NoSQL databases. Query optimization, indexing, schema design, and data modeling expertise.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128451;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add PostgreSQL and MongoDB to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="s8" data-name="Git & Collaboration" data-price="5" data-icon="&#128101;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">ESSENTIAL</span>
+            </div>
+            <div class="menu-item-name">Git & Collaboration</div>
+            <div class="menu-item-price">&#8377;5 yrs experience</div>
+            <div class="menu-item-desc">Git workflows, code reviews, Agile/Scrum, Jira, pair programming. Plays well with others &mdash; and with version control.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#128101;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Git and Collaboration to cart">ADD</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== DESSERTS (Fun Facts) ===== -->
+    <div class="menu-category" id="desserts">
+      <div class="menu-category-header" onclick="toggleCategory(this)">
+        <div>
+          <div class="menu-category-title">Desserts (Fun Facts)</div>
+          <div class="menu-category-count">4 items</div>
+        </div>
+        <span class="menu-category-toggle" aria-hidden="true">&#9660;</span>
+      </div>
+      <div class="menu-items">
+
+        <div class="menu-item fade-up" data-id="d1" data-name="Coffee Addiction Tiramisu" data-price="0" data-icon="&#9749;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Coffee Addiction Tiramisu</div>
+            <div class="menu-item-price">FREE (runs on caffeine)</div>
+            <div class="menu-item-desc">Fueled by an average of 4 cups of coffee per day. Has strong opinions about pour-over vs. espresso. The coffee machine is the most important production server.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#9749;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Coffee Addiction Tiramisu to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="d2" data-name="Dark Mode Gulab Jamun" data-price="0" data-icon="&#127761;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Dark Mode Gulab Jamun</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">Will debate anyone that dark mode is objectively superior. Every IDE, every app, every website &mdash; if it has dark mode, it's already enabled. Light mode is for debugging only.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#127761;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Dark Mode Gulab Jamun to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="d3" data-name="Mechanical Keyboard Kulfi" data-price="0" data-icon="&#9000;">
+          <div class="menu-item-info">
+            <div class="menu-item-type"><div class="veg-icon"></div></div>
+            <div class="menu-item-name">Mechanical Keyboard Kulfi</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">Types at 120 WPM on a custom mechanical keyboard with Cherry MX Browns. The sound of keystrokes is basically a love language. Yes, the team can hear it on calls.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#9000;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Mechanical Keyboard Kulfi to cart">ADD</button></div>
+          </div>
+        </div>
+
+        <div class="menu-item fade-up" data-id="d4" data-name="Weekend Hackathon Rasmalai" data-price="0" data-icon="&#127942;">
+          <div class="menu-item-info">
+            <div class="menu-item-type">
+              <div class="veg-icon"></div>
+              <span class="bestseller">SWEET</span>
+            </div>
+            <div class="menu-item-name">Weekend Hackathon Rasmalai</div>
+            <div class="menu-item-price">FREE</div>
+            <div class="menu-item-desc">Weekends are for building random projects that may or may not see the light of day. Has a graveyard of unfinished side projects and zero regrets about it.</div>
+          </div>
+          <div class="menu-item-image-wrap">
+            <div class="menu-item-image"><span class="placeholder-icon">&#127942;</span></div>
+            <div class="add-btn-wrap"><button class="add-btn" onclick="addToCart(this)" aria-label="Add Weekend Hackathon Rasmalai to cart">ADD</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: CART -->
+  <aside class="cart-section" id="cartSection" aria-label="Your cart">
+    <div class="cart-panel">
+      <div class="cart-header">
+        <span class="cart-header-icon" aria-hidden="true">&#128722;</span>
+        <div class="cart-header-text">
+          <h3>Your Order</h3>
+          <p>Anshull's Code Kitchen</p>
+        </div>
+      </div>
+
+      <div class="cart-delivery-info">
+        <span class="icon" aria-hidden="true">&#128337;</span>
+        Estimated Delivery: 2 weeks from order confirmation
+      </div>
+
+      <div id="cartContent">
+        <!-- Dynamically populated -->
+        <div class="cart-empty" id="cartEmpty">
+          <div class="empty-icon" aria-hidden="true">&#128722;</div>
+          <p>Your cart is empty</p>
+          <p class="empty-sub">Browse the menu and add items you'd like to "order"</p>
+        </div>
+      </div>
+
+      <div id="cartBill" style="display:none;">
+        <div class="cart-divider"></div>
+        <div class="cart-bill">
+          <h4>Bill Details</h4>
+          <div class="cart-bill-row">
+            <span class="label">Item Total</span>
+            <span id="billSubtotal">&#8377;0</span>
+          </div>
+          <div class="cart-bill-row">
+            <span class="label">Platform Fee (just kidding)</span>
+            <span style="text-decoration: line-through; color: var(--text-light);">&#8377;99</span>
+          </div>
+          <div class="cart-bill-row">
+            <span class="label">Developer Enthusiasm</span>
+            <span style="color: var(--green-primary);">Unlimited</span>
+          </div>
+          <div class="cart-bill-row total">
+            <span>TO PAY</span>
+            <span id="billTotal">&#8377;0</span>
+          </div>
+        </div>
+        <div class="cart-savings" id="cartSavings" style="display:none;">
+          &#127881; You're saving &#8377;99 on this order! (Platform fee waived)
+        </div>
+      </div>
+
+      <div style="padding: 16px 24px 20px;" id="placeOrderWrap" style="display:none;">
+        <button class="place-order-btn" id="placeOrderBtn" onclick="openModal()" disabled>
+          PLACE ORDER &mdash; CONTACT ME
+          <div class="btn-total" id="btnTotal"></div>
+        </button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ========================================
+     REVIEWS
+     ======================================== -->
+<section class="reviews-section" id="reviews-section">
+  <div class="reviews-header">
+    <h2>Customer Reviews</h2>
+    <div class="reviews-overall">
+      <div class="reviews-score">4.8</div>
+      <div>
+        <div style="font-weight:700;">Excellent</div>
+        <div class="reviews-count">Based on 50+ collaborations</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reviews-grid">
+
+    <div class="review-card fade-up">
+      <div class="review-top">
+        <div class="review-avatar" style="background:#6c5ce7;">PM</div>
+        <div>
+          <div class="review-author">Priya M.</div>
+          <div class="review-role">Engineering Manager</div>
+        </div>
+        <div class="review-rating">&#11088; 5.0</div>
+      </div>
+      <div class="review-text">"Anshull delivered a full-stack application that exceeded expectations. The code quality was restaurant-grade &mdash; clean, well-documented, and thoroughly tested. Would absolutely order again!"</div>
+      <div class="review-ordered">&#127859; Ordered: Full Stack Thali</div>
+      <div class="review-date">2 weeks ago</div>
+    </div>
+
+    <div class="review-card fade-up">
+      <div class="review-top">
+        <div class="review-avatar" style="background:#00b894;">RK</div>
+        <div>
+          <div class="review-author">Rahul K.</div>
+          <div class="review-role">Startup Founder</div>
+        </div>
+        <div class="review-rating">&#11088; 4.8</div>
+      </div>
+      <div class="review-text">"The React Biryani was extra spicy! Beautiful UI with smooth animations. Anshull's attention to responsive design and performance optimization made our product shine."</div>
+      <div class="review-ordered">&#127858; Ordered: React Biryani</div>
+      <div class="review-date">1 month ago</div>
+    </div>
+
+    <div class="review-card fade-up">
+      <div class="review-top">
+        <div class="review-avatar" style="background:#fd79a8;">SK</div>
+        <div>
+          <div class="review-author">Sarah K.</div>
+          <div class="review-role">Product Designer</div>
+        </div>
+        <div class="review-rating">&#11088; 5.0</div>
+      </div>
+      <div class="review-text">"As a designer, I'm very picky about implementation. Anshull translated my Figma designs to pixel-perfect code. Fast delivery, great communication, and the Node.js Dosa was crispy perfection."</div>
+      <div class="review-ordered">&#129384; Ordered: Node.js Dosa</div>
+      <div class="review-date">1 month ago</div>
+    </div>
+
+    <div class="review-card fade-up">
+      <div class="review-top">
+        <div class="review-avatar" style="background:#e17055;">AJ</div>
+        <div>
+          <div class="review-author">Amit J.</div>
+          <div class="review-role">CTO, Series B Startup</div>
+        </div>
+        <div class="review-rating">&#11088; 4.7</div>
+      </div>
+      <div class="review-text">"Hired Anshull for a complex AWS migration. The infrastructure was set up flawlessly with proper CI/CD pipelines. He thinks about scalability from day one. Highly recommended combo meal."</div>
+      <div class="review-ordered">&#9729; Ordered: AWS Cloud + Docker Combo</div>
+      <div class="review-date">2 months ago</div>
+    </div>
+
+    <div class="review-card fade-up">
+      <div class="review-top">
+        <div class="review-avatar" style="background:#0984e3;">NR</div>
+        <div>
+          <div class="review-author">Neha R.</div>
+          <div class="review-role">Tech Lead</div>
+        </div>
+        <div class="review-rating">&#11088; 4.9</div>
+      </div>
+      <div class="review-text">"Anshull is that rare developer who writes code as good as his commit messages. Clean architecture, meaningful PR descriptions, and always on time. 10/10 would recommend this Code Kitchen."</div>
+      <div class="review-ordered">&#128101; Ordered: Full Stack Thali + Git Collab</div>
+      <div class="review-date">3 months ago</div>
+    </div>
+
+    <div class="review-card fade-up">
+      <div class="review-top">
+        <div class="review-avatar" style="background:#636e72;">VT</div>
+        <div>
+          <div class="review-author">Vikram T.</div>
+          <div class="review-role">Senior Developer</div>
+        </div>
+        <div class="review-rating">&#11088; 4.6</div>
+      </div>
+      <div class="review-text">"Great pairing partner. Anshull's TypeScript skills are top-notch &mdash; zero any types in the entire codebase. The Education Sampler Platter showed he's always learning and growing."</div>
+      <div class="review-ordered">&#128309; Ordered: TypeScript + React.js</div>
+      <div class="review-date">3 months ago</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================================
+     CONTACT / ORDER MODAL
+     ======================================== -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modalContent">
+
+    <!-- FORM VIEW -->
+    <div id="formView">
+      <div class="modal-header" style="position:relative;">
+        <h2 id="modalTitle">Place Your Order</h2>
+        <p>Fill in your details and Anshull will get back to you ASAP</p>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-order-summary" id="modalOrderSummary">
+          <!-- Dynamically populated -->
+        </div>
+
+        <form id="contactForm" onsubmit="submitOrder(event)">
+          <div class="form-group">
+            <label class="form-label" for="name">Your Name</label>
+            <input class="form-input" type="text" id="name" name="name" placeholder="What should we call you?" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="Where should we deliver?" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="company">Company / Project</label>
+            <input class="form-input" type="text" id="company" name="company" placeholder="Your restaurant... er, company name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Special Instructions</label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Tell me about the project, timeline, or anything else..."></textarea>
+          </div>
+          <button type="submit" class="submit-order-btn">
+            Confirm Order &amp; Send Message
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        By placing this order, you agree to receive one enthusiastic developer in your inbox.
+      </div>
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div class="success-screen" id="successView">
+      <div class="success-icon" aria-hidden="true">&#127881;</div>
+      <h2>Order Placed Successfully!</h2>
+      <p>Your order has been received at Anshull's Code Kitchen. Expect a response within 24 hours. Your developer is being prepared with extra care.</p>
+      <div class="success-order-id" id="orderId">Order #CK-2024-001</div>
+      <br><br>
+      <button class="submit-order-btn" onclick="closeModal()" style="max-width:300px; margin:0 auto;">
+        Back to Menu
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================
+     TOAST NOTIFICATION
+     ======================================== -->
+<div class="toast" id="toast" role="alert" aria-live="polite">
+  <span class="toast-icon" aria-hidden="true">&#10003;</span>
+  <span id="toastMessage">Item added to cart</span>
+</div>
+
+<!-- ========================================
+     FOOTER
+     ======================================== -->
+<footer class="footer">
+  <div class="footer-brand">Anshull's <span>Code Kitchen</span></div>
+  <p>Freshly compiled code, served hot. Built with love, caffeine, and questionable variable names.</p>
+  <div class="footer-links">
+    <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+    <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener noreferrer" class="footer-link">LinkedIn</a>
+    <a href="mailto:hello@anshullgarg.com" class="footer-link">Email</a>
+    <a href="#appetizers" class="footer-link">Back to Menu</a>
+  </div>
+  <p style="margin-top:24px; font-size:12px; opacity:0.5;">
+    &copy; 2024 Anshull Garg. No actual food was served in the making of this portfolio.
+  </p>
+</footer>
+
+<!-- ========================================
+     JAVASCRIPT
+     ======================================== -->
+<script>
+(function() {
+  'use strict';
+
+  // ---- STATE ----
+  const cart = {}; // { id: { name, price, icon, qty } }
+
+  // ---- DOM REFS ----
+  const cartContent    = document.getElementById('cartContent');
+  const cartEmpty      = document.getElementById('cartEmpty');
+  const cartBill       = document.getElementById('cartBill');
+  const cartBadge      = document.getElementById('cartBadge');
+  const billSubtotal   = document.getElementById('billSubtotal');
+  const billTotal      = document.getElementById('billTotal');
+  const btnTotal       = document.getElementById('btnTotal');
+  const placeOrderBtn  = document.getElementById('placeOrderBtn');
+  const cartSavings    = document.getElementById('cartSavings');
+  const toast          = document.getElementById('toast');
+  const toastMsg       = document.getElementById('toastMessage');
+  const modalOverlay   = document.getElementById('modalOverlay');
+  const formView       = document.getElementById('formView');
+  const successView    = document.getElementById('successView');
+  const modalSummary   = document.getElementById('modalOrderSummary');
+
+  // ---- CART FUNCTIONS ----
+  window.addToCart = function(btn) {
+    const item = btn.closest('.menu-item');
+    const id    = item.dataset.id;
+    const name  = item.dataset.name;
+    const price = parseInt(item.dataset.price) || 0;
+    const icon  = item.dataset.icon;
+
+    if (!cart[id]) {
+      cart[id] = { name, price, icon, qty: 0 };
+    }
+    cart[id].qty++;
+
+    // Switch button to qty controls
+    updateItemButton(item, id);
+    renderCart();
+    showToast(name + ' added to cart');
+  };
+
+  window.changeQty = function(id, delta) {
+    if (!cart[id]) return;
+    cart[id].qty += delta;
+    if (cart[id].qty <= 0) {
+      delete cart[id];
+    }
+
+    // Update button in menu
+    const menuItem = document.querySelector('.menu-item[data-id="' + id + '"]');
+    if (menuItem) updateItemButton(menuItem, id);
+
+    renderCart();
+  };
+
+  window.removeFromCart = function(id) {
+    delete cart[id];
+    const menuItem = document.querySelector('.menu-item[data-id="' + id + '"]');
+    if (menuItem) updateItemButton(menuItem, id);
+    renderCart();
+  };
+
+  function updateItemButton(menuItem, id) {
+    const wrap = menuItem.querySelector('.add-btn-wrap');
+    if (cart[id] && cart[id].qty > 0) {
+      wrap.innerHTML = '<div class="qty-controls">' +
+        '<button class="qty-btn" onclick="changeQty(\'' + id + '\', -1)" aria-label="Decrease quantity">&minus;</button>' +
+        '<span class="qty-count">' + cart[id].qty + '</span>' +
+        '<button class="qty-btn" onclick="changeQty(\'' + id + '\', 1)" aria-label="Increase quantity">+</button>' +
+        '</div>';
+    } else {
+      wrap.innerHTML = '<button class="add-btn" onclick="addToCart(this)" aria-label="Add ' + menuItem.dataset.name + ' to cart">ADD</button>';
+    }
+  }
+
+  function renderCart() {
+    const ids = Object.keys(cart);
+    const totalItems = ids.reduce(function(sum, id) { return sum + cart[id].qty; }, 0);
+    const totalPrice = ids.reduce(function(sum, id) { return sum + (cart[id].price * cart[id].qty); }, 0);
+
+    // Badge
+    cartBadge.textContent = totalItems;
+    cartBadge.classList.add('bump');
+    setTimeout(function() { cartBadge.classList.remove('bump'); }, 400);
+
+    if (ids.length === 0) {
+      cartEmpty.style.display = 'block';
+      // Remove cart items container if exists
+      const existingItems = cartContent.querySelector('.cart-items');
+      if (existingItems) existingItems.remove();
+      cartBill.style.display = 'none';
+      placeOrderBtn.disabled = true;
+      return;
+    }
+
+    cartEmpty.style.display = 'none';
+    placeOrderBtn.disabled = false;
+
+    // Build items list
+    let html = '<div class="cart-items">';
+    ids.forEach(function(id) {
+      const c = cart[id];
+      html += '<div class="cart-item">' +
+        '<span class="cart-item-icon" aria-hidden="true">' + c.icon + '</span>' +
+        '<div class="cart-item-details">' +
+          '<div class="cart-item-name">' + c.name + '</div>' +
+          '<div class="cart-item-qty">Qty: ' + c.qty + '</div>' +
+        '</div>' +
+        '<div class="cart-item-price">' + (c.price > 0 ? '&#8377;' + (c.price * c.qty) : 'FREE') + '</div>' +
+        '<button class="cart-item-remove" onclick="removeFromCart(\'' + id + '\')" aria-label="Remove ' + c.name + ' from cart">&times;</button>' +
+      '</div>';
+    });
+    html += '</div>';
+
+    const existingItems = cartContent.querySelector('.cart-items');
+    if (existingItems) existingItems.remove();
+    cartEmpty.insertAdjacentHTML('afterend', html);
+
+    // Bill
+    cartBill.style.display = 'block';
+    billSubtotal.innerHTML = '&#8377;' + totalPrice;
+    billTotal.innerHTML    = '&#8377;' + totalPrice;
+    btnTotal.innerHTML     = totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' | &#8377;' + totalPrice;
+
+    if (totalPrice > 0) {
+      cartSavings.style.display = 'flex';
+    } else {
+      cartSavings.style.display = 'none';
+    }
+  }
+
+  // ---- CATEGORY TOGGLE ----
+  window.toggleCategory = function(header) {
+    header.parentElement.classList.toggle('collapsed');
+  };
+
+  // ---- CATEGORY SCROLL ----
+  window.scrollToCategory = function(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    // Update active tab
+    document.querySelectorAll('.category-tab').forEach(function(t) { t.classList.remove('active'); });
+    event.target.closest('.category-tab').classList.add('active');
+  };
+
+  window.scrollToCart = function() {
+    document.getElementById('cartSection').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // ---- MODAL ----
+  window.openModal = function() {
+    // Build order summary for modal
+    const ids = Object.keys(cart);
+    if (ids.length === 0) return;
+
+    const totalPrice = ids.reduce(function(sum, id) { return sum + (cart[id].price * cart[id].qty); }, 0);
+
+    let summaryHtml = '<h4>Your Order Summary</h4>';
+    ids.forEach(function(id) {
+      const c = cart[id];
+      summaryHtml += '<div class="modal-order-item">' +
+        '<span>' + c.icon + ' ' + c.name + ' x' + c.qty + '</span>' +
+        '<span>' + (c.price > 0 ? '&#8377;' + (c.price * c.qty) : 'FREE') + '</span>' +
+      '</div>';
+    });
+    summaryHtml += '<div class="modal-order-total"><span>Total</span><span>&#8377;' + totalPrice + '</span></div>';
+
+    modalSummary.innerHTML = summaryHtml;
+    formView.style.display = 'block';
+    successView.classList.remove('active');
+    modalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(function() {
+      document.getElementById('name').focus();
+    }, 300);
+  };
+
+  window.closeModal = function() {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  // Close modal on overlay click
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  // ---- FORM SUBMIT ----
+  window.submitOrder = function(e) {
+    e.preventDefault();
+    formView.style.display = 'none';
+    successView.classList.add('active');
+
+    // Generate random order ID
+    const ordNum = 'CK-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('orderId').textContent = 'Order #' + ordNum;
+
+    showToast('Order placed! Check your inbox soon.');
+  };
+
+  // ---- TOAST ----
+  let toastTimer;
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+
+  // ---- SCROLL ANIMATIONS ----
+  function initScrollAnimations() {
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(function(el) {
+      observer.observe(el);
+    });
+  }
+
+  // ---- HEADER SCROLL EFFECT ----
+  function initHeaderScroll() {
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 20) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }, { passive: true });
+  }
+
+  // ---- ACTIVE CATEGORY TAB ON SCROLL ----
+  function initCategoryHighlight() {
+    const sections = document.querySelectorAll('.menu-category');
+    const tabs = document.querySelectorAll('.category-tab');
+    const categoryIds = ['appetizers', 'main-course', 'sides', 'desserts'];
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          const idx = categoryIds.indexOf(entry.target.id);
+          if (idx !== -1) {
+            tabs.forEach(function(t) { t.classList.remove('active'); });
+            tabs[idx].classList.add('active');
+          }
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '-100px 0px -60% 0px' });
+
+    sections.forEach(function(s) { observer.observe(s); });
+  }
+
+  // ---- INIT ----
+  document.addEventListener('DOMContentLoaded', function() {
+    initScrollAnimations();
+    initHeaderScroll();
+    initCategoryHighlight();
+  });
+
+})();
+</script>
+</body>
+</html>

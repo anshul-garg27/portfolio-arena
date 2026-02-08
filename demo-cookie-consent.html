@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg - Cookie Consent Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & VARIABLES
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0f0f14;
+  --overlay: rgba(0, 0, 0, 0.65);
+  --banner-bg: #1a1a24;
+  --banner-border: #2a2a3a;
+  --surface: #22222e;
+  --surface-hover: #2a2a38;
+  --surface-active: #32324a;
+  --accent: #4f8cff;
+  --accent-dim: rgba(79, 140, 255, 0.12);
+  --accent-glow: rgba(79, 140, 255, 0.25);
+  --green: #34d399;
+  --green-dim: rgba(52, 211, 153, 0.12);
+  --red: #f87171;
+  --red-dim: rgba(248, 113, 113, 0.12);
+  --orange: #fb923c;
+  --orange-dim: rgba(251, 146, 60, 0.12);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167, 139, 250, 0.12);
+  --pink: #f472b6;
+  --pink-dim: rgba(244, 114, 182, 0.12);
+  --yellow: #fbbf24;
+  --yellow-dim: rgba(251, 191, 36, 0.12);
+  --text: #e8e8f0;
+  --text-secondary: #a0a0b8;
+  --text-muted: #6a6a82;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ============================================================
+   BACKGROUND PATTERN -- subtle grid
+   ============================================================ */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+.bg-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,140,255,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ============================================================
+   OVERLAY -- dims background content
+   ============================================================ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: opacity var(--transition), backdrop-filter var(--transition);
+}
+
+.overlay.clear {
+  background: rgba(0,0,0,0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+}
+
+/* ============================================================
+   FAKE WEBSITE BEHIND THE BANNER
+   ============================================================ */
+.fake-site {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.fake-site.hidden {
+  opacity: 0;
+}
+
+.fake-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.fake-nav-block {
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+}
+
+.fake-content-block {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+/* ============================================================
+   COOKIE BANNER CONTAINER
+   ============================================================ */
+.cookie-banner {
+  position: fixed;
+  z-index: 100;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* STATE: initial popup (bottom bar) */
+.cookie-banner.state-popup {
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 32px));
+  max-height: 90vh;
+  background: var(--banner-bg);
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+
+/* STATE: expanding (mid-screen) */
+.cookie-banner.state-expanding {
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(680px, calc(100% - 32px));
+  max-height: 85vh;
+  background: var(--banner-bg);
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius);
+  box-shadow:
+    0 8px 48px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+
+/* STATE: fullscreen takeover */
+.cookie-banner.state-fullscreen {
+  bottom: 0;
+  left: 0;
+  transform: none;
+  width: 100%;
+  height: 100%;
+  max-height: 100vh;
+  background: var(--bg);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Inner scroll wrapper */
+.banner-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: inherit;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-active) transparent;
+}
+
+.banner-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.banner-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.banner-scroll::-webkit-scrollbar-thumb {
+  background: var(--surface-active);
+  border-radius: 3px;
+}
+
+/* ============================================================
+   BANNER HEADER
+   ============================================================ */
+.banner-header {
+  padding: 24px 28px 0;
+  position: relative;
+}
+
+.cookie-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cookie-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: transform var(--spring);
+}
+
+.cookie-icon:hover {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.cookie-icon.large {
+  width: 52px;
+  height: 52px;
+  font-size: 26px;
+  border-radius: 16px;
+}
+
+.banner-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.banner-title.large {
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.banner-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 8px;
+  max-width: 480px;
+}
+
+.banner-subtitle.large {
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+/* Name badge for fullscreen mode */
+.name-badge {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.state-fullscreen .name-badge {
+  display: flex;
+}
+
+.name-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.name-badge span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   BUTTON ROW
+   ============================================================ */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  padding: 16px 28px 20px;
+  flex-wrap: wrap;
+}
+
+.btn-row.sticky {
+  position: sticky;
+  bottom: 0;
+  background: var(--banner-bg);
+  border-top: 1px solid var(--banner-border);
+  z-index: 10;
+  padding: 16px 28px;
+}
+
+.state-fullscreen .btn-row.sticky {
+  background: var(--bg);
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.btn-accept {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(79, 140, 255, 0.3);
+}
+
+.btn-accept:hover {
+  background: #6ba0ff;
+  box-shadow: 0 4px 20px rgba(79, 140, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-reject {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--banner-border);
+}
+
+.btn-reject:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.btn-customize {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-color: rgba(79, 140, 255, 0.3);
+}
+
+.btn-customize:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.btn-save {
+  background: var(--green);
+  color: #0f2419;
+  box-shadow: 0 2px 12px rgba(52, 211, 153, 0.3);
+}
+
+.btn-save:hover {
+  background: #5ee0b0;
+  box-shadow: 0 4px 20px rgba(52, 211, 153, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 15px;
+}
+
+/* ============================================================
+   COOKIE CATEGORIES
+   ============================================================ */
+.categories {
+  padding: 0 28px 8px;
+}
+
+.category {
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: all var(--transition);
+  background: rgba(255,255,255,0.01);
+}
+
+.category:hover {
+  border-color: rgba(255,255,255,0.08);
+}
+
+.category.active {
+  border-color: rgba(79, 140, 255, 0.2);
+  background: rgba(79, 140, 255, 0.03);
+}
+
+/* Category header row */
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.cat-header:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.cat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: transform var(--spring);
+}
+
+.cat-header:hover .cat-icon {
+  transform: scale(1.08);
+}
+
+.cat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cat-real-name {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.cat-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* Chevron */
+.cat-chevron {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.category.open .cat-chevron {
+  transform: rotate(180deg);
+}
+
+/* Toggle switch */
+.toggle-wrapper {
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border: 1px solid var(--banner-border);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+}
+
+.toggle input:checked + .toggle-track {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(79, 140, 255, 0.3);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.toggle input:checked ~ .toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* Required label (for essential cookies) */
+.required-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: var(--green-dim);
+  color: var(--green);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   CATEGORY CONTENT (expandable)
+   ============================================================ */
+.cat-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.35s ease;
+  padding: 0 18px;
+}
+
+.category.open .cat-content {
+  max-height: 2000px;
+  padding: 0 18px 20px;
+}
+
+.cat-divider {
+  height: 1px;
+  background: var(--banner-border);
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   SECTION: ABOUT ME (Essential Cookies)
+   ============================================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.about-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.25);
+}
+
+.about-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+.about-role {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.about-location {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.about-bio {
+  margin-top: 14px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.about-bio p + p {
+  margin-top: 10px;
+}
+
+.about-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.about-stat {
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--surface);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--banner-border);
+}
+
+.about-stat .num {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+.about-stat .label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.cookie-data-table {
+  width: 100%;
+  margin-top: 14px;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+.cookie-data-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--banner-border);
+  font-size: 10px;
+}
+
+.cookie-data-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text-secondary);
+}
+
+.cookie-data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cookie-data-table .cookie-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+/* ============================================================
+   SECTION: SKILLS (Performance Cookies)
+   ============================================================ */
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.skill-category-card {
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius-xs);
+  transition: all 0.2s ease;
+}
+
+.skill-category-card:hover {
+  border-color: rgba(255,255,255,0.08);
+  background: var(--surface-hover);
+}
+
+.skill-cat-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-cat-title .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.skill-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-pill {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 100px;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.skill-pill:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-1px);
+}
+
+/* Performance bar (cookie metaphor) */
+.perf-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.perf-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 60px;
+  font-weight: 500;
+}
+
+.perf-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.perf-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0;
+}
+
+.category.open .perf-fill {
+  width: var(--perf-width);
+}
+
+.perf-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 28px;
+  text-align: right;
+  font-family: var(--mono);
+}
+
+/* ============================================================
+   SECTION: EXPERIENCE (Analytics Cookies)
+   ============================================================ */
+.timeline {
+  position: relative;
+  padding-left: 20px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--purple), var(--pink));
+  border-radius: 1px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius-xs);
+  transition: all 0.2s ease;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-item:hover {
+  border-color: rgba(255,255,255,0.08);
+  background: var(--surface-hover);
+  transform: translateX(4px);
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--banner-bg);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.timeline-item:nth-child(2)::before {
+  background: var(--purple);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.25);
+}
+
+.timeline-item:nth-child(3)::before {
+  background: var(--pink);
+  box-shadow: 0 0 8px rgba(244, 114, 182, 0.25);
+}
+
+.tl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tl-company {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.tl-date {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: var(--mono);
+}
+
+.tl-role {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.tl-bullets {
+  list-style: none;
+  padding: 0;
+}
+
+.tl-bullets li {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.tl-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+}
+
+.tl-metrics {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.tl-metric {
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tl-metric .val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--mono);
+}
+
+.tl-metric .desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Analytics data table */
+.analytics-insight {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: var(--orange-dim);
+  border: 1px solid rgba(251, 146, 60, 0.15);
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.analytics-insight .icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SECTION: PROJECTS (Marketing Cookies)
+   ============================================================ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.project-card {
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius-xs);
+  transition: all 0.25s ease;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+.project-card:hover {
+  border-color: rgba(255,255,255,0.08);
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.proj-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.proj-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.proj-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.proj-type {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.proj-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.proj-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.proj-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+}
+
+.proj-impact {
+  display: flex;
+  gap: 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  flex-wrap: wrap;
+}
+
+.proj-impact-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.proj-impact-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SECTION: CONTACT (Social Cookies)
+   ============================================================ */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--banner-border);
+  border-radius: var(--radius-xs);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.contact-link:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255,255,255,0.08);
+  transform: translateX(4px);
+}
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.contact-info .contact-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.contact-info .contact-value {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.contact-arrow {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.contact-link:hover .contact-arrow {
+  transform: translateX(4px);
+  color: var(--accent);
+}
+
+/* ============================================================
+   BANNER FOOTER
+   ============================================================ */
+.banner-footer {
+  padding: 14px 28px 18px;
+  border-top: 1px solid var(--banner-border);
+}
+
+.footer-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.footer-text strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.footer-link {
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #6ba0ff;
+  text-decoration: underline;
+}
+
+/* ============================================================
+   REJECT SCREEN
+   ============================================================ */
+.reject-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 28px;
+  min-height: 300px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.reject-screen.visible {
+  display: flex;
+}
+
+.reject-emoji {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: sadBounce 2s ease-in-out infinite;
+}
+
+@keyframes sadBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(-5deg); }
+  75% { transform: translateY(-4px) rotate(5deg); }
+}
+
+.reject-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 10px;
+}
+
+.reject-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 380px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.reject-comeback {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 24px;
+}
+
+.reject-comeback button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.reject-comeback button:hover {
+  color: #6ba0ff;
+}
+
+/* ============================================================
+   PROGRESS INDICATOR (cookie jar filling up)
+   ============================================================ */
+.cookie-jar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 28px 0;
+}
+
+.cookie-jar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cookie-jar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cookie-jar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.cookie-jar-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ============================================================
+   FULLSCREEN HEADER BAR
+   ============================================================ */
+.fullscreen-header {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 16px 28px;
+  background: rgba(15, 15, 20, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--banner-border);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.state-fullscreen .fullscreen-header {
+  display: flex;
+}
+
+.fs-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fs-logo .cookie {
+  font-size: 22px;
+}
+
+.fs-logo-text {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.fs-logo-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.fs-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fs-status {
+  font-size: 11px;
+  color: var(--green);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fs-status .pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(60px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s ease both;
+}
+
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.1s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.2s; }
+.delay-5 { animation-delay: 0.25s; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .banner-header { padding: 20px 20px 0; }
+  .btn-row { padding: 14px 20px 16px; gap: 8px; }
+  .btn-row.sticky { padding: 14px 20px; }
+  .categories { padding: 0 20px 8px; }
+  .cookie-jar { padding: 8px 20px 0; }
+  .banner-footer { padding: 12px 20px 16px; }
+  .fullscreen-header { padding: 14px 20px; }
+
+  .btn { padding: 9px 16px; font-size: 12px; }
+  .banner-title { font-size: 16px; }
+  .banner-title.large { font-size: 22px; }
+
+  .about-grid { grid-template-columns: 1fr; }
+  .about-avatar { width: 56px; height: 56px; font-size: 22px; border-radius: 14px; }
+  .about-stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .about-stat .num { font-size: 16px; }
+
+  .skills-grid { grid-template-columns: 1fr; }
+
+  .tl-header { flex-direction: column; align-items: flex-start; }
+  .tl-metrics { gap: 8px; }
+
+  .contact-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   PRINT HIDDEN
+   ============================================================ */
+@media print {
+  .cookie-banner { position: static !important; width: 100% !important; max-height: none !important; }
+  .banner-scroll { max-height: none !important; overflow: visible !important; }
+  .overlay, .fake-site, .bg-grid, .bg-gradient { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background decorations -->
+<div class="bg-grid"></div>
+<div class="bg-gradient"></div>
+
+<!-- Fake website content behind the banner -->
+<div class="fake-site" id="fakeSite">
+  <div class="fake-nav">
+    <div class="fake-nav-block" style="width:80px"></div>
+    <div class="fake-nav-block" style="width:50px"></div>
+    <div class="fake-nav-block" style="width:50px"></div>
+    <div class="fake-nav-block" style="width:50px"></div>
+    <div class="fake-nav-block" style="width:60px; margin-left:auto"></div>
+  </div>
+  <div class="fake-content-block" style="height:24px; max-width:200px"></div>
+  <div class="fake-content-block" style="height:48px; max-width:400px"></div>
+  <div class="fake-content-block" style="height:16px; max-width:300px"></div>
+  <div class="fake-content-block" style="height:200px; max-width:500px; margin-top:20px"></div>
+  <div style="display:flex; gap:16px; max-width:500px; width:100%; margin-top:12px">
+    <div class="fake-content-block" style="height:120px; flex:1"></div>
+    <div class="fake-content-block" style="height:120px; flex:1"></div>
+    <div class="fake-content-block" style="height:120px; flex:1"></div>
+  </div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ============================================================
+     THE COOKIE CONSENT BANNER (a.k.a. THE ENTIRE PORTFOLIO)
+     ============================================================ -->
+<div class="cookie-banner state-popup" id="cookieBanner" style="animation: slideIn 0.6s ease both;">
+  <div class="banner-scroll" id="bannerScroll">
+
+    <!-- Fullscreen sticky header (only visible in fullscreen state) -->
+    <div class="fullscreen-header">
+      <div class="fs-logo">
+        <span class="cookie">&#127850;</span>
+        <div>
+          <div class="fs-logo-text">Anshull Garg <span class="fs-logo-sub">Cookie Preferences</span></div>
+        </div>
+      </div>
+      <div class="fs-controls">
+        <div class="fs-status"><span class="pulse"></span> All cookies accepted</div>
+      </div>
+    </div>
+
+    <!-- BANNER HEADER -->
+    <div class="banner-header" id="bannerHeader">
+      <div class="cookie-icon-row">
+        <div class="cookie-icon" id="cookieIconMain">&#127850;</div>
+        <div>
+          <div class="banner-title" id="bannerTitle">We use cookies to improve your experience</div>
+          <div class="name-badge">
+            <span class="dot"></span>
+            <span>anshullgarg.dev</span>
+          </div>
+        </div>
+      </div>
+      <div class="banner-subtitle" id="bannerSubtitle">
+        This website uses cookies to ensure you get the best experience. Please review our cookie categories below and choose your preferences.
+      </div>
+    </div>
+
+    <!-- COOKIE JAR PROGRESS -->
+    <div class="cookie-jar" id="cookieJar" style="display:none;">
+      <span class="cookie-jar-label">Cookie Jar:</span>
+      <div class="cookie-jar-track">
+        <div class="cookie-jar-fill" id="jarFill"></div>
+      </div>
+      <span class="cookie-jar-count" id="jarCount">0/5</span>
+    </div>
+
+    <!-- INITIAL BUTTONS (before customize) -->
+    <div class="btn-row" id="initialButtons">
+      <button class="btn btn-accept" onclick="acceptAll()">
+        <span class="btn-icon">&#10003;</span> Accept All
+      </button>
+      <button class="btn btn-reject" onclick="rejectAll()">
+        Reject All
+      </button>
+      <button class="btn btn-customize" onclick="showCustomize()">
+        <span class="btn-icon">&#9881;</span> Customize
+      </button>
+    </div>
+
+    <!-- COOKIE CATEGORIES (hidden until "Customize") -->
+    <div class="categories" id="categories" style="display:none;">
+
+      <!-- ======== ESSENTIAL COOKIES: ABOUT ME ======== -->
+      <div class="category open active animate-in delay-1" data-cat="essential" id="catEssential">
+        <div class="cat-header" onclick="toggleCategory('essential')">
+          <div class="cat-icon" style="background: var(--green-dim); color: var(--green);">&#128274;</div>
+          <div class="cat-info">
+            <div class="cat-name">
+              Essential Cookies
+              <span class="cat-real-name">About Me</span>
+            </div>
+            <div class="cat-desc">Strictly necessary for the site to function. Cannot be disabled.</div>
+          </div>
+          <span class="required-badge">Required</span>
+          <div class="cat-chevron">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="cat-content">
+          <div class="cat-divider"></div>
+          <div class="about-grid">
+            <div class="about-avatar">AG</div>
+            <div>
+              <div class="about-name">Anshull Garg</div>
+              <div class="about-role">Software Developer at Walmart</div>
+              <div class="about-location">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 11S1.5 7.5 1.5 4.5a4.5 4.5 0 019 0C10.5 7.5 6 11 6 11z"/><circle cx="6" cy="4.5" r="1.5"/></svg>
+                Bentonville, AR
+              </div>
+            </div>
+          </div>
+          <div class="about-bio">
+            <p>Software developer with a focus on building high-performance, user-centric applications at scale. Currently at Walmart, where I work on systems that touch millions of users daily.</p>
+            <p>I thrive at the intersection of engineering excellence and product thinking. Whether it is optimizing checkout flows or building reusable component libraries, I bring a systematic approach to solving problems that matter.</p>
+          </div>
+          <div class="about-stats-row">
+            <div class="about-stat">
+              <div class="num">240M+</div>
+              <div class="label">Weekly Users</div>
+            </div>
+            <div class="about-stat">
+              <div class="num">4+</div>
+              <div class="label">Years Exp.</div>
+            </div>
+            <div class="about-stat">
+              <div class="num">Fortune 1</div>
+              <div class="label">Company</div>
+            </div>
+          </div>
+          <table class="cookie-data-table">
+            <thead>
+              <tr>
+                <th>Cookie</th>
+                <th>Purpose</th>
+                <th>Expires</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cookie-name">_identity</td>
+                <td>Stores core developer identity</td>
+                <td>Never</td>
+              </tr>
+              <tr>
+                <td class="cookie-name">_passion</td>
+                <td>Enables clean code obsession</td>
+                <td>Never</td>
+              </tr>
+              <tr>
+                <td class="cookie-name">_curiosity</td>
+                <td>Drives continuous learning</td>
+                <td>Session</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ======== PERFORMANCE COOKIES: SKILLS ======== -->
+      <div class="category animate-in delay-2" data-cat="performance" id="catPerformance">
+        <div class="cat-header" onclick="toggleCategory('performance')">
+          <div class="cat-icon" style="background: var(--accent-dim); color: var(--accent);">&#9889;</div>
+          <div class="cat-info">
+            <div class="cat-name">
+              Performance Cookies
+              <span class="cat-real-name">Skills</span>
+            </div>
+            <div class="cat-desc">Help us optimize site speed and responsiveness.</div>
+          </div>
+          <div class="toggle-wrapper">
+            <label class="toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" data-toggle="performance" onchange="updateToggle('performance', this.checked)">
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </label>
+          </div>
+          <div class="cat-chevron">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="cat-content">
+          <div class="cat-divider"></div>
+          <div class="skills-grid">
+            <div class="skill-category-card">
+              <div class="skill-cat-title"><span class="dot" style="background:#61DAFB"></span> Frontend</div>
+              <div class="skill-pills">
+                <span class="skill-pill">React</span>
+                <span class="skill-pill">TypeScript</span>
+                <span class="skill-pill">Next.js</span>
+                <span class="skill-pill">Tailwind</span>
+                <span class="skill-pill">Redux</span>
+              </div>
+            </div>
+            <div class="skill-category-card">
+              <div class="skill-cat-title"><span class="dot" style="background:#339933"></span> Backend</div>
+              <div class="skill-pills">
+                <span class="skill-pill">Node.js</span>
+                <span class="skill-pill">GraphQL</span>
+                <span class="skill-pill">REST APIs</span>
+                <span class="skill-pill">Redis</span>
+                <span class="skill-pill">Python</span>
+              </div>
+            </div>
+            <div class="skill-category-card">
+              <div class="skill-cat-title"><span class="dot" style="background:#2496ED"></span> DevOps</div>
+              <div class="skill-pills">
+                <span class="skill-pill">Docker</span>
+                <span class="skill-pill">AWS</span>
+                <span class="skill-pill">Kubernetes</span>
+                <span class="skill-pill">CI/CD</span>
+                <span class="skill-pill">Git</span>
+              </div>
+            </div>
+            <div class="skill-category-card">
+              <div class="skill-cat-title"><span class="dot" style="background:var(--purple)"></span> Practices</div>
+              <div class="skill-pills">
+                <span class="skill-pill">System Design</span>
+                <span class="skill-pill">TDD</span>
+                <span class="skill-pill">Agile</span>
+                <span class="skill-pill">Code Review</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="perf-bar-row">
+              <span class="perf-label">Frontend</span>
+              <div class="perf-track"><div class="perf-fill" style="--perf-width:92%; background: linear-gradient(90deg, #61DAFB, var(--accent));"></div></div>
+              <span class="perf-value">92%</span>
+            </div>
+            <div class="perf-bar-row" style="margin-top:6px">
+              <span class="perf-label">Backend</span>
+              <div class="perf-track"><div class="perf-fill" style="--perf-width:85%; background: linear-gradient(90deg, #339933, var(--green));"></div></div>
+              <span class="perf-value">85%</span>
+            </div>
+            <div class="perf-bar-row" style="margin-top:6px">
+              <span class="perf-label">DevOps</span>
+              <div class="perf-track"><div class="perf-fill" style="--perf-width:78%; background: linear-gradient(90deg, #2496ED, var(--purple));"></div></div>
+              <span class="perf-value">78%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== ANALYTICS COOKIES: EXPERIENCE ======== -->
+      <div class="category animate-in delay-3" data-cat="analytics" id="catAnalytics">
+        <div class="cat-header" onclick="toggleCategory('analytics')">
+          <div class="cat-icon" style="background: var(--orange-dim); color: var(--orange);">&#128202;</div>
+          <div class="cat-info">
+            <div class="cat-name">
+              Analytics Cookies
+              <span class="cat-real-name">Experience</span>
+            </div>
+            <div class="cat-desc">Track usage patterns and site interactions over time.</div>
+          </div>
+          <div class="toggle-wrapper">
+            <label class="toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" data-toggle="analytics" onchange="updateToggle('analytics', this.checked)">
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </label>
+          </div>
+          <div class="cat-chevron">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="cat-content">
+          <div class="cat-divider"></div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="tl-header">
+                <span class="tl-company">Walmart Global Tech</span>
+                <span class="tl-date">2022 - Present</span>
+              </div>
+              <div class="tl-role">Software Developer</div>
+              <ul class="tl-bullets">
+                <li>Build and maintain critical e-commerce systems powering one of the world's largest retailers</li>
+                <li>Architected checkout flow redesign, reducing cart abandonment and boosting conversions</li>
+                <li>Led development of shared component library adopted by 12+ product teams</li>
+                <li>Optimized API response times and frontend performance across high-traffic surfaces</li>
+              </ul>
+              <div class="tl-metrics">
+                <div class="tl-metric">
+                  <span class="val">240M+</span>
+                  <span class="desc">Weekly Users</span>
+                </div>
+                <div class="tl-metric">
+                  <span class="val">99.9%</span>
+                  <span class="desc">Uptime</span>
+                </div>
+                <div class="tl-metric">
+                  <span class="val">50ms</span>
+                  <span class="desc">Avg Response</span>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-header">
+                <span class="tl-company">Software Engineering Intern</span>
+                <span class="tl-date">2021 - 2022</span>
+              </div>
+              <div class="tl-role">Full-Stack Development</div>
+              <ul class="tl-bullets">
+                <li>Developed internal tools used by 500+ engineers across multiple teams</li>
+                <li>Contributed to microservice architecture serving high-throughput requests</li>
+                <li>Implemented automated testing pipelines, reducing bug resolution time by 40%</li>
+              </ul>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-header">
+                <span class="tl-company">Computer Science Degree</span>
+                <span class="tl-date">2018 - 2022</span>
+              </div>
+              <div class="tl-role">University Education</div>
+              <ul class="tl-bullets">
+                <li>Studied algorithms, data structures, systems programming, and software engineering</li>
+                <li>Built multiple full-stack projects and contributed to open-source communities</li>
+              </ul>
+            </div>
+          </div>
+          <div class="analytics-insight">
+            <span class="icon">&#128161;</span>
+            Analytics show this developer has been shipping production code at Fortune 1 scale since 2022. Retention rate: permanent.
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== MARKETING COOKIES: PROJECTS ======== -->
+      <div class="category animate-in delay-4" data-cat="marketing" id="catMarketing">
+        <div class="cat-header" onclick="toggleCategory('marketing')">
+          <div class="cat-icon" style="background: var(--purple-dim); color: var(--purple);">&#128640;</div>
+          <div class="cat-info">
+            <div class="cat-name">
+              Marketing Cookies
+              <span class="cat-real-name">Projects</span>
+            </div>
+            <div class="cat-desc">Used to promote relevant content and highlight achievements.</div>
+          </div>
+          <div class="toggle-wrapper">
+            <label class="toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" data-toggle="marketing" onchange="updateToggle('marketing', this.checked)">
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </label>
+          </div>
+          <div class="cat-chevron">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="cat-content">
+          <div class="cat-divider"></div>
+          <div class="projects-grid">
+
+            <!-- Project 1 -->
+            <div class="project-card">
+              <div class="proj-header">
+                <div class="proj-icon" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                  <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z"/></svg>
+                </div>
+                <div>
+                  <div class="proj-name">Checkout Optimization</div>
+                  <div class="proj-type">E-commerce Platform</div>
+                </div>
+              </div>
+              <div class="proj-desc">Led the redesign of the checkout flow, reducing cart abandonment and improving conversion rates. Implemented real-time inventory checks and streamlined the payment pipeline.</div>
+              <div class="proj-tags">
+                <span class="proj-tag" style="background: var(--accent-dim); color: var(--accent);">React</span>
+                <span class="proj-tag" style="background: var(--red-dim); color: var(--red);">Node.js</span>
+                <span class="proj-tag" style="background: var(--green-dim); color: var(--green);">GraphQL</span>
+                <span class="proj-tag" style="background: var(--purple-dim); color: var(--purple);">Redis</span>
+                <span class="proj-tag" style="background: var(--yellow-dim); color: var(--yellow);">TypeScript</span>
+              </div>
+              <div class="proj-impact">
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--red);"></span>
+                  15% conversion increase
+                </div>
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--accent);"></span>
+                  40% faster page load
+                </div>
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--green);"></span>
+                  60% fewer API calls
+                </div>
+              </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="project-card">
+              <div class="proj-header">
+                <div class="proj-icon" style="background: linear-gradient(135deg, #4A90D9, #7C3AED);">
+                  <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="14" height="14" rx="3"/><path d="M7 7h6M7 10h6M7 13h4"/></svg>
+                </div>
+                <div>
+                  <div class="proj-name">Component Library</div>
+                  <div class="proj-type">Design System</div>
+                </div>
+              </div>
+              <div class="proj-desc">Architected and built a shared component library adopted across multiple product teams. Enforced design consistency and reduced development time for new features.</div>
+              <div class="proj-tags">
+                <span class="proj-tag" style="background: var(--accent-dim); color: var(--accent);">React</span>
+                <span class="proj-tag" style="background: var(--purple-dim); color: var(--purple);">Storybook</span>
+                <span class="proj-tag" style="background: var(--green-dim); color: var(--green);">Figma</span>
+                <span class="proj-tag" style="background: var(--yellow-dim); color: var(--yellow);">TypeScript</span>
+                <span class="proj-tag" style="background: var(--red-dim); color: var(--red);">Jest</span>
+              </div>
+              <div class="proj-impact">
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--red);"></span>
+                  80+ components
+                </div>
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--accent);"></span>
+                  12 teams adopted
+                </div>
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--purple);"></span>
+                  30% faster delivery
+                </div>
+              </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="project-card">
+              <div class="proj-header">
+                <div class="proj-icon" style="background: linear-gradient(135deg, #34d399, #06B6D4);">
+                  <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M3 10h14M10 3v14"/><circle cx="10" cy="10" r="7"/></svg>
+                </div>
+                <div>
+                  <div class="proj-name">Performance Dashboard</div>
+                  <div class="proj-type">Internal Tooling</div>
+                </div>
+              </div>
+              <div class="proj-desc">Built a real-time monitoring dashboard for tracking Core Web Vitals and API health across Walmart's digital surfaces. Used by engineering leads to identify and resolve performance regressions.</div>
+              <div class="proj-tags">
+                <span class="proj-tag" style="background: var(--accent-dim); color: var(--accent);">Next.js</span>
+                <span class="proj-tag" style="background: var(--orange-dim); color: var(--orange);">D3.js</span>
+                <span class="proj-tag" style="background: var(--green-dim); color: var(--green);">WebSocket</span>
+                <span class="proj-tag" style="background: var(--purple-dim); color: var(--purple);">PostgreSQL</span>
+              </div>
+              <div class="proj-impact">
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--green);"></span>
+                  500+ engineers use it
+                </div>
+                <div class="proj-impact-item">
+                  <span class="proj-impact-dot" style="background: var(--orange);"></span>
+                  25% faster debug time
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== SOCIAL COOKIES: CONTACT ======== -->
+      <div class="category animate-in delay-5" data-cat="social" id="catSocial">
+        <div class="cat-header" onclick="toggleCategory('social')">
+          <div class="cat-icon" style="background: var(--pink-dim); color: var(--pink);">&#127760;</div>
+          <div class="cat-info">
+            <div class="cat-name">
+              Social Cookies
+              <span class="cat-real-name">Contact</span>
+            </div>
+            <div class="cat-desc">Enable connections with third-party platforms and networks.</div>
+          </div>
+          <div class="toggle-wrapper">
+            <label class="toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" data-toggle="social" onchange="updateToggle('social', this.checked)">
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </label>
+          </div>
+          <div class="cat-chevron">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="cat-content">
+          <div class="cat-divider"></div>
+          <div class="contact-grid">
+            <a href="mailto:anshullgarg@gmail.com" class="contact-link">
+              <div class="contact-icon" style="background: var(--red-dim); color: var(--red);">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="14" height="10" rx="2"/><path d="M2 4l7 5 7-5"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">Email</div>
+                <div class="contact-value">anshullgarg@gmail.com</div>
+              </div>
+              <span class="contact-arrow">&#8594;</span>
+            </a>
+            <a href="https://github.com/anshullgarg" target="_blank" rel="noopener" class="contact-link">
+              <div class="contact-icon" style="background: rgba(255,255,255,0.06); color: var(--text);">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">GitHub</div>
+                <div class="contact-value">github.com/anshullgarg</div>
+              </div>
+              <span class="contact-arrow">&#8594;</span>
+            </a>
+            <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener" class="contact-link">
+              <div class="contact-icon" style="background: var(--accent-dim); color: var(--accent);">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </div>
+              <div class="contact-info">
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value">linkedin.com/in/anshullgarg</div>
+              </div>
+              <span class="contact-arrow">&#8594;</span>
+            </a>
+          </div>
+          <div class="analytics-insight" style="background: var(--pink-dim); border-color: rgba(244,114,182,0.15); color: var(--pink); margin-top: 14px;">
+            <span class="icon">&#128140;</span>
+            Social cookies indicate this developer is open to interesting conversations and new opportunities.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end categories -->
+
+    <!-- REJECT SCREEN (hidden by default) -->
+    <div class="reject-screen" id="rejectScreen">
+      <div class="reject-emoji">&#128546;</div>
+      <div class="reject-title">Fine, no cookies for you.</div>
+      <div class="reject-subtitle">
+        But you'll miss out on a great developer. No bio, no skills, no projects, no way to get in touch. Just this sad empty page and the lingering feeling that you should have clicked "Accept All."
+      </div>
+      <button class="btn btn-accept" onclick="undoReject()" style="margin:0 auto">
+        <span class="btn-icon">&#127850;</span> Okay, I changed my mind
+      </button>
+      <div class="reject-comeback">
+        Or <button onclick="undoReject()">manage your cookie preferences</button> like a responsible adult.
+      </div>
+    </div>
+
+    <!-- STICKY BUTTON ROW (for customize / fullscreen modes) -->
+    <div class="btn-row sticky" id="stickyButtons" style="display:none;">
+      <button class="btn btn-accept" onclick="acceptAll()">
+        <span class="btn-icon">&#10003;</span> Accept All
+      </button>
+      <button class="btn btn-save" onclick="savePreferences()">
+        <span class="btn-icon">&#128190;</span> Save Preferences
+      </button>
+      <button class="btn btn-reject" onclick="rejectAll()">
+        Reject All
+      </button>
+    </div>
+
+    <!-- BANNER FOOTER -->
+    <div class="banner-footer" id="bannerFooter">
+      <div class="footer-text">
+        This site uses <strong>0 actual cookies</strong>. But it does use <strong>4+ years of development experience</strong>.
+      </div>
+      <div class="footer-links">
+        <span class="footer-link" onclick="showCustomize()">Cookie Policy</span>
+        <span class="footer-link" onclick="window.open('https://github.com/anshullgarg','_blank')">Source Code</span>
+        <span class="footer-link" onclick="easterEgg()">Do Not Track</span>
+      </div>
+    </div>
+
+  </div><!-- end banner-scroll -->
+</div><!-- end cookie-banner -->
+
+<script>
+/* ================================================================
+   STATE
+   ================================================================ */
+const state = {
+  mode: 'popup',       // popup | customize | fullscreen | rejected
+  toggles: {
+    essential: true,   // always on
+    performance: false,
+    analytics: false,
+    marketing: false,
+    social: false
+  },
+  openCategories: new Set(['essential']),
+  customizeShown: false,
+  easterEggCount: 0
+};
+
+/* ================================================================
+   DOM REFS
+   ================================================================ */
+const banner       = document.getElementById('cookieBanner');
+const bannerScroll = document.getElementById('bannerScroll');
+const overlay      = document.getElementById('overlay');
+const fakeSite     = document.getElementById('fakeSite');
+const bannerTitle  = document.getElementById('bannerTitle');
+const bannerSub    = document.getElementById('bannerSubtitle');
+const cookieIcon   = document.getElementById('cookieIconMain');
+const initialBtns  = document.getElementById('initialButtons');
+const categories   = document.getElementById('categories');
+const stickyBtns   = document.getElementById('stickyButtons');
+const rejectScreen = document.getElementById('rejectScreen');
+const cookieJar    = document.getElementById('cookieJar');
+const jarFill      = document.getElementById('jarFill');
+const jarCount     = document.getElementById('jarCount');
+const bannerFooter = document.getElementById('bannerFooter');
+const bannerHeader = document.getElementById('bannerHeader');
+
+/* ================================================================
+   SHOW CUSTOMIZE VIEW
+   ================================================================ */
+function showCustomize() {
+  if (state.mode === 'rejected') {
+    undoReject();
+    return;
+  }
+
+  state.mode = 'customize';
+  state.customizeShown = true;
+
+  // Transition banner to expanding state
+  banner.className = 'cookie-banner state-expanding';
+
+  // Show categories and sticky buttons
+  categories.style.display = 'block';
+  stickyBtns.style.display = 'flex';
+  initialBtns.style.display = 'none';
+  cookieJar.style.display = 'flex';
+  rejectScreen.classList.remove('visible');
+
+  // Update header text
+  bannerTitle.textContent = 'Customize your cookie preferences';
+  bannerSub.textContent = 'Toggle each cookie category to control exactly what data is collected. Essential cookies cannot be disabled -- they contain critical developer information.';
+
+  updateJar();
+  bannerScroll.scrollTop = 0;
+}
+
+/* ================================================================
+   ACCEPT ALL
+   ================================================================ */
+function acceptAll() {
+  // Turn on all toggles
+  Object.keys(state.toggles).forEach(key => {
+    state.toggles[key] = true;
+    const input = document.querySelector(`input[data-toggle="${key}"]`);
+    if (input) input.checked = true;
+  });
+
+  // Open all categories
+  document.querySelectorAll('.category').forEach(cat => {
+    cat.classList.add('open', 'active');
+    state.openCategories.add(cat.dataset.cat);
+  });
+
+  // Go fullscreen
+  goFullscreen();
+}
+
+/* ================================================================
+   GO FULLSCREEN
+   ================================================================ */
+function goFullscreen() {
+  state.mode = 'fullscreen';
+
+  // Show all the panels
+  categories.style.display = 'block';
+  stickyBtns.style.display = 'none';
+  initialBtns.style.display = 'none';
+  cookieJar.style.display = 'flex';
+  rejectScreen.classList.remove('visible');
+
+  // Transition
+  banner.className = 'cookie-banner state-fullscreen';
+  overlay.classList.add('clear');
+  fakeSite.classList.add('hidden');
+
+  // Update header
+  bannerTitle.classList.add('large');
+  bannerTitle.textContent = 'Anshull Garg';
+  bannerSub.classList.add('large');
+  bannerSub.textContent = 'Software Developer at Walmart. Building scalable systems that serve millions. All cookies accepted -- full portfolio unlocked.';
+  cookieIcon.classList.add('large');
+
+  // Update jar to 100%
+  Object.keys(state.toggles).forEach(key => state.toggles[key] = true);
+  updateJar();
+
+  // Scroll to top
+  bannerScroll.scrollTop = 0;
+
+  // Animate open all categories with stagger
+  const cats = document.querySelectorAll('.category');
+  cats.forEach((cat, i) => {
+    setTimeout(() => {
+      cat.classList.add('open', 'active');
+      state.openCategories.add(cat.dataset.cat);
+    }, i * 100);
+  });
+}
+
+/* ================================================================
+   REJECT ALL
+   ================================================================ */
+function rejectAll() {
+  state.mode = 'rejected';
+
+  // Turn off all optional toggles
+  ['performance', 'analytics', 'marketing', 'social'].forEach(key => {
+    state.toggles[key] = false;
+    const input = document.querySelector(`input[data-toggle="${key}"]`);
+    if (input) input.checked = false;
+  });
+
+  // Close all categories
+  document.querySelectorAll('.category').forEach(cat => {
+    cat.classList.remove('open', 'active');
+  });
+  state.openCategories.clear();
+
+  // Hide sections, show reject screen
+  categories.style.display = 'none';
+  stickyBtns.style.display = 'none';
+  initialBtns.style.display = 'none';
+  cookieJar.style.display = 'none';
+  rejectScreen.classList.add('visible');
+
+  // Shrink banner a bit
+  banner.className = 'cookie-banner state-popup';
+  overlay.classList.remove('clear');
+  fakeSite.classList.remove('hidden');
+
+  bannerTitle.classList.remove('large');
+  bannerTitle.textContent = 'Cookies rejected';
+  bannerSub.classList.remove('large');
+  bannerSub.textContent = '';
+  cookieIcon.classList.remove('large');
+}
+
+/* ================================================================
+   UNDO REJECT
+   ================================================================ */
+function undoReject() {
+  rejectScreen.classList.remove('visible');
+  state.mode = 'popup';
+  banner.className = 'cookie-banner state-popup';
+
+  bannerTitle.textContent = 'We use cookies to improve your experience';
+  bannerSub.textContent = 'This website uses cookies to ensure you get the best experience. Please review our cookie categories below and choose your preferences.';
+
+  if (state.customizeShown) {
+    showCustomize();
+  } else {
+    initialBtns.style.display = 'flex';
+    categories.style.display = 'none';
+    stickyBtns.style.display = 'none';
+    cookieJar.style.display = 'none';
+  }
+}
+
+/* ================================================================
+   SAVE PREFERENCES
+   ================================================================ */
+function savePreferences() {
+  const anyOn = Object.values(state.toggles).some(v => v);
+  const allOn = Object.values(state.toggles).every(v => v);
+
+  if (allOn) {
+    goFullscreen();
+  } else if (!anyOn || (state.toggles.essential && !state.toggles.performance && !state.toggles.analytics && !state.toggles.marketing && !state.toggles.social)) {
+    // Only essential is on -- show a partial view
+    banner.className = 'cookie-banner state-expanding';
+    bannerTitle.textContent = 'Preferences saved';
+    bannerSub.textContent = 'Only essential cookies are active. Toggle more categories to unlock the full experience.';
+
+    // Close categories that are toggled off, open ones that are on
+    Object.keys(state.toggles).forEach(key => {
+      const cat = document.getElementById('cat' + key.charAt(0).toUpperCase() + key.slice(1));
+      if (cat) {
+        if (state.toggles[key]) {
+          cat.classList.add('active');
+        } else {
+          cat.classList.remove('active', 'open');
+          state.openCategories.delete(key);
+        }
+      }
+    });
+  } else {
+    // Some cookies accepted -- expand further
+    const onCount = Object.values(state.toggles).filter(v => v).length;
+    if (onCount >= 4) {
+      goFullscreen();
+    } else {
+      banner.className = 'cookie-banner state-expanding';
+      bannerTitle.textContent = 'Preferences saved (' + onCount + '/5 categories)';
+      bannerSub.textContent = 'Toggle more categories to unlock additional portfolio sections.';
+
+      // Open only active categories
+      Object.keys(state.toggles).forEach(key => {
+        const cat = document.getElementById('cat' + key.charAt(0).toUpperCase() + key.slice(1));
+        if (cat) {
+          if (state.toggles[key]) {
+            cat.classList.add('active', 'open');
+            state.openCategories.add(key);
+          } else {
+            cat.classList.remove('active', 'open');
+            state.openCategories.delete(key);
+          }
+        }
+      });
+    }
+  }
+  updateJar();
+}
+
+/* ================================================================
+   TOGGLE CATEGORY (expand/collapse)
+   ================================================================ */
+function toggleCategory(catName) {
+  const cat = document.getElementById('cat' + catName.charAt(0).toUpperCase() + catName.slice(1));
+  if (!cat) return;
+
+  if (cat.classList.contains('open')) {
+    cat.classList.remove('open');
+    state.openCategories.delete(catName);
+  } else {
+    cat.classList.add('open');
+    state.openCategories.add(catName);
+  }
+}
+
+/* ================================================================
+   UPDATE TOGGLE STATE
+   ================================================================ */
+function updateToggle(catName, checked) {
+  state.toggles[catName] = checked;
+  const cat = document.getElementById('cat' + catName.charAt(0).toUpperCase() + catName.slice(1));
+
+  if (cat) {
+    if (checked) {
+      cat.classList.add('active');
+      // Auto-open when toggled on
+      if (!cat.classList.contains('open')) {
+        cat.classList.add('open');
+        state.openCategories.add(catName);
+      }
+    } else {
+      cat.classList.remove('active');
+    }
+  }
+
+  updateJar();
+
+  // Check if all are now on -> auto-expand banner
+  const allOn = Object.values(state.toggles).every(v => v);
+  if (allOn && state.mode !== 'fullscreen') {
+    setTimeout(() => goFullscreen(), 300);
+  }
+}
+
+/* ================================================================
+   UPDATE COOKIE JAR PROGRESS
+   ================================================================ */
+function updateJar() {
+  const total = Object.keys(state.toggles).length;
+  const active = Object.values(state.toggles).filter(v => v).length;
+  const pct = (active / total) * 100;
+
+  jarFill.style.width = pct + '%';
+  jarCount.textContent = active + '/' + total;
+}
+
+/* ================================================================
+   EASTER EGG: "Do Not Track"
+   ================================================================ */
+function easterEgg() {
+  state.easterEggCount++;
+  const messages = [
+    'You clicked "Do Not Track" but we are already tracking 0 things.',
+    'Still 0 cookies. Still 0 trackers. We promise.',
+    'Okay, we triple-promise. No tracking. Scout\'s honor.',
+    'You know what IS being tracked? Your interest in this portfolio.',
+    'Alright, fine. Here is a cookie for you: &#127850;',
+  ];
+
+  const idx = Math.min(state.easterEggCount - 1, messages.length - 1);
+  const footer = document.querySelector('.footer-text');
+  const original = footer.innerHTML;
+
+  footer.innerHTML = messages[idx];
+  footer.style.color = 'var(--accent)';
+
+  setTimeout(() => {
+    footer.innerHTML = 'This site uses <strong>0 actual cookies</strong>. But it does use <strong>4+ years of development experience</strong>.';
+    footer.style.color = '';
+  }, 3000);
+}
+
+/* ================================================================
+   KEYBOARD ACCESSIBILITY
+   ================================================================ */
+document.addEventListener('keydown', (e) => {
+  // Escape key to go back
+  if (e.key === 'Escape') {
+    if (state.mode === 'fullscreen') {
+      showCustomize();
+      banner.className = 'cookie-banner state-expanding';
+      overlay.classList.remove('clear');
+      fakeSite.classList.remove('hidden');
+      bannerTitle.classList.remove('large');
+      bannerSub.classList.remove('large');
+      cookieIcon.classList.remove('large');
+      stickyBtns.style.display = 'flex';
+      bannerTitle.textContent = 'Customize your cookie preferences';
+      bannerSub.textContent = 'Toggle each cookie category to control exactly what data is collected.';
+    } else if (state.mode === 'rejected') {
+      undoReject();
+    }
+  }
+
+  // A key for accept all
+  if (e.key === 'a' && e.ctrlKey) {
+    e.preventDefault();
+    acceptAll();
+  }
+});
+
+/* ================================================================
+   INIT: Entrance animation
+   ================================================================ */
+(function init() {
+  // Small delay before showing the banner for realistic feel
+  banner.style.opacity = '0';
+  banner.style.transform = 'translateX(-50%) translateY(30px)';
+
+  setTimeout(() => {
+    banner.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    banner.style.opacity = '1';
+    banner.style.transform = 'translateX(-50%) translateY(0)';
+  }, 400);
+})();
+</script>
+
+</body>
+</html>

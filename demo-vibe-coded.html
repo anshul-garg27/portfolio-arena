@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coded Portfolio - Anshull Garg</title>
+<style>
+/* ================================================================
+   RESET & FOUNDATIONS
+   ================================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface-2: #22222e;
+  --border: #2e2e3e;
+  --text: #e0e0e8;
+  --text-dim: #8888a0;
+  --accent: #a78bfa;
+  --accent-2: #6ee7b7;
+  --accent-3: #f472b6;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --chat-bg: #141420;
+  --chat-user: #2a2a44;
+  --chat-ai: #1e1e30;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  --vibe-hue: 0;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ================================================================
+   TOP BANNER
+   ================================================================ */
+.vibe-banner {
+  background: linear-gradient(90deg, #a78bfa 0%, #6ee7b7 33%, #f472b6 66%, #fbbf24 100%);
+  background-size: 300% 100%;
+  animation: bannerShift 8s ease infinite;
+  padding: 12px 24px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #0f0f13;
+  letter-spacing: 0.03em;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@keyframes bannerShift {
+  0%,100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.vibe-banner .banner-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.debug-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,0,0,0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: background 0.3s;
+}
+.debug-toggle:hover { background: rgba(0,0,0,0.25); }
+
+.debug-switch {
+  width: 36px;
+  height: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  position: relative;
+  transition: background 0.3s;
+}
+.debug-switch::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+.debug-toggle.active .debug-switch {
+  background: #10b981;
+}
+.debug-toggle.active .debug-switch::after {
+  transform: translateX(16px);
+}
+
+/* ================================================================
+   MAIN LAYOUT - Split View
+   ================================================================ */
+.main-layout {
+  display: flex;
+  height: calc(100vh - 44px);
+  position: relative;
+}
+
+/* Left: Portfolio */
+.portfolio-side {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Right: Chat Sidebar */
+.chat-side {
+  width: 380px;
+  min-width: 380px;
+  background: var(--chat-bg);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .main-layout { flex-direction: column; }
+  .chat-side { width: 100%; min-width: unset; max-height: 50vh; border-left: none; border-top: 1px solid var(--border); }
+}
+
+/* ================================================================
+   PORTFOLIO CONTENT (LEFT SIDE) - VIBE MODE
+   ================================================================ */
+
+/* --- Hero Section (starts beautiful) --- */
+.section-hero {
+  padding: 80px 48px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(167,139,250,0.12);
+  border: 1px solid rgba(167,139,250,0.25);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-2); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.hero-name {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #e0e0e8 0%, #a78bfa 50%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-tagline {
+  font-size: 1.25rem;
+  color: var(--text-dim);
+  max-width: 500px;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.hero-cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #0f0f13;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: var(--font-sans);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(167,139,250,0.3); }
+
+.btn-secondary {
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  font-family: var(--font-sans);
+}
+.btn-secondary:hover { border-color: var(--accent); }
+
+/* --- About Section (still clean but tiny typos) --- */
+.section-about {
+  padding: 60px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.about-text {
+  color: var(--text-dim);
+  max-width: 600px;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.about-text .typo { /* hidden in clean, shown in vibe */ }
+
+/* --- Skills Section (colors starting to go wrong) --- */
+.section-skills {
+  padding: 60px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.skill-chip {
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+/* --- Projects Section (things start overlapping, lorem appears) --- */
+.section-projects {
+  padding: 60px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.project-card .project-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.project-card .project-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-tag {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  background: rgba(167,139,250,0.1);
+  color: var(--accent);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* --- Experience Section (full chaos) --- */
+.section-experience {
+  padding: 60px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.exp-item {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.exp-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.exp-content { flex: 1; }
+.exp-role { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+.exp-company { color: var(--accent-2); font-size: 0.9rem; margin-bottom: 4px; }
+.exp-date { color: var(--text-dim); font-size: 0.8rem; }
+.exp-desc { color: var(--text-dim); font-size: 0.85rem; margin-top: 8px; line-height: 1.6; }
+
+/* --- Contact Section (completely broken) --- */
+.section-contact {
+  padding: 60px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.contact-form {
+  max-width: 500px;
+  margin-top: 24px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus { border-color: var(--accent); }
+
+.form-group textarea { resize: vertical; min-height: 100px; }
+
+/* --- Footer --- */
+.section-footer {
+  padding: 32px 48px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* ================================================================
+   VIBE MODE PROGRESSIVE DEGRADATION
+   ================================================================ */
+
+/* Level 0: Hero - perfect */
+
+/* Level 1: About - subtle typos (handled in HTML) + slight color drift */
+body.vibe-mode .section-about .section-title {
+  color: #c8a0ff; /* slightly wrong purple */
+}
+
+/* Level 2: Skills - colors go haywire */
+body.vibe-mode .section-skills .skill-chip:nth-child(3n) {
+  background: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
+  transform: rotate(-2deg);
+}
+body.vibe-mode .section-skills .skill-chip:nth-child(3n+1) {
+  background: #00ff88;
+  color: #000;
+  border-color: #00ff88;
+  font-size: 1.1rem;
+}
+body.vibe-mode .section-skills .skill-chip:nth-child(5) {
+  font-size: 1.5rem;
+  padding: 20px;
+  grid-column: span 2;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  color: white;
+  animation: vibeWobble 2s infinite;
+  font-weight: 900;
+}
+body.vibe-mode .section-skills .skill-chip:nth-child(7) {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0 0 20px rgba(255,0,255,0.4);
+}
+
+@keyframes vibeWobble {
+  0%,100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* Level 3: Projects - overlapping, lorem ipsum, chaos */
+body.vibe-mode .project-card:nth-child(2) {
+  transform: rotate(-3deg) translateY(-10px);
+  z-index: 2;
+  border-color: var(--danger);
+}
+body.vibe-mode .project-card:nth-child(3) {
+  transform: rotate(2deg) translateX(15px);
+  z-index: 1;
+}
+body.vibe-mode .project-card .lorem { display: block; }
+body.vibe-mode .project-card .real-desc { display: none; }
+
+/* Level 4: Experience - complete shambles */
+body.vibe-mode .section-experience .exp-item:nth-child(2) {
+  transform: rotate(1.5deg);
+  background: rgba(248,113,113,0.05);
+  padding-left: 20px;
+}
+body.vibe-mode .section-experience .exp-item:nth-child(3) {
+  margin-left: -30px;
+  margin-right: 30px;
+}
+body.vibe-mode .section-experience .broken-div-joke {
+  display: flex;
+}
+
+/* Level 5: Contact - full meltdown */
+body.vibe-mode .section-contact .contact-form {
+  transform: rotate(-4deg);
+}
+body.vibe-mode .section-contact .form-group:nth-child(2) input {
+  background: #ff00ff;
+  color: #00ff00;
+  border-color: #ffff00;
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 1.2rem;
+}
+body.vibe-mode .section-contact .btn-primary {
+  animation: buttonGrow 0.5s infinite alternate;
+  background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff, #ff00ff);
+  background-size: 400% 400%;
+  font-size: 1.3rem;
+  padding: 20px 40px;
+}
+@keyframes buttonGrow {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+body.vibe-mode .section-contact .form-broken-msg { display: block; }
+
+/* Level 6: Footer - beyond repair */
+body.vibe-mode .section-footer {
+  background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+  color: #000;
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 1.1rem;
+  padding: 60px;
+  transform: rotate(1deg);
+}
+
+/* Floating broken elements */
+body.vibe-mode .floating-bug { display: block !important; }
+
+.floating-bug {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.floating-bug.bug-1 {
+  bottom: 20%;
+  left: 5%;
+  color: var(--danger);
+  opacity: 0.7;
+  animation: floatUp 15s infinite;
+}
+
+.floating-bug.bug-2 {
+  top: 40%;
+  left: 15%;
+  color: var(--warning);
+  opacity: 0.5;
+  animation: floatUp 20s infinite 3s;
+  transform: rotate(-12deg);
+}
+
+.floating-bug.bug-3 {
+  bottom: 30%;
+  left: 40%;
+  opacity: 0.6;
+  animation: floatUp 18s infinite 7s;
+}
+
+.floating-bug.bug-4 {
+  top: 60%;
+  left: 60%;
+  color: var(--accent-3);
+  opacity: 0.4;
+  animation: floatUp 22s infinite 5s;
+  font-size: 0.65rem;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-200px) rotate(15deg); opacity: 0; }
+}
+
+/* Broken div joke element */
+.broken-div-joke {
+  display: none;
+  background: var(--surface-2);
+  border: 2px dashed var(--danger);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  position: relative;
+}
+
+.broken-div-joke .inner-div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 8px;
+  position: relative;
+  left: 35%;
+  /* intentionally NOT centered */
+}
+
+.broken-div-joke .comment {
+  color: var(--danger);
+  font-size: 0.7rem;
+  margin-top: 8px;
+}
+
+/* Hidden content in vibe mode */
+.lorem { display: none; color: var(--text-dim); font-style: italic; font-size: 0.8rem; }
+.real-desc { display: block; }
+.form-broken-msg {
+  display: none;
+  background: rgba(248,113,113,0.1);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+/* ================================================================
+   DEBUG MODE - THE REAL PORTFOLIO
+   ================================================================ */
+body.debug-mode .section-hero .hero-name {
+  background: linear-gradient(135deg, #10b981, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+body.debug-mode .section-about .section-title { color: var(--text); }
+body.debug-mode .project-card { transform: none !important; }
+body.debug-mode .project-card .lorem { display: none !important; }
+body.debug-mode .project-card .real-desc { display: block !important; }
+body.debug-mode .section-experience .exp-item { transform: none !important; margin: 0 !important; background: none !important; padding-left: 0 !important; }
+body.debug-mode .broken-div-joke { display: none !important; }
+body.debug-mode .section-contact .contact-form { transform: none !important; }
+body.debug-mode .section-contact .form-group input,
+body.debug-mode .section-contact .form-group textarea { background: var(--surface) !important; color: var(--text) !important; border-color: var(--border) !important; font-family: var(--font-sans) !important; font-size: 0.9rem !important; }
+body.debug-mode .section-contact .btn-primary { animation: none !important; background: #10b981 !important; font-size: 0.95rem !important; padding: 12px 28px !important; transform: none !important; }
+body.debug-mode .section-contact .form-broken-msg { display: none !important; }
+body.debug-mode .section-footer { background: none !important; color: var(--text-dim) !important; font-family: var(--font-sans) !important; font-size: 0.8rem !important; padding: 32px 48px !important; transform: none !important; }
+body.debug-mode .floating-bug { display: none !important; }
+body.debug-mode .skill-chip { background: var(--surface) !important; color: var(--text) !important; border-color: var(--border) !important; transform: none !important; font-size: 0.85rem !important; padding: 10px 16px !important; grid-column: auto !important; animation: none !important; box-shadow: none !important; font-weight: 500 !important; }
+body.debug-mode .typo-text { display: none; }
+body.debug-mode .clean-text { display: inline; }
+body.debug-mode .debug-reveal { display: block; }
+body.debug-mode .vibe-content { display: none; }
+
+/* Debug reveal overlay */
+.debug-reveal {
+  display: none;
+  background: rgba(16,185,129,0.05);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #10b981;
+  line-height: 1.8;
+}
+
+.debug-reveal .debug-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clean-text { display: none; }
+.vibe-content { display: block; }
+
+/* ================================================================
+   CHAT SIDEBAR (RIGHT SIDE)
+   ================================================================ */
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.chat-header .ai-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.7rem;
+  color: #0f0f13;
+}
+
+.chat-header .chat-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.chat-header .chat-subtitle {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-msg {
+  display: flex;
+  gap: 10px;
+  animation: chatFade 0.4s ease both;
+}
+
+@keyframes chatFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg.user { flex-direction: row-reverse; }
+
+.chat-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.chat-msg.ai .chat-avatar {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0f0f13;
+}
+
+.chat-msg.user .chat-avatar {
+  background: var(--chat-user);
+  color: var(--accent);
+}
+
+.chat-bubble {
+  max-width: 280px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.chat-msg.ai .chat-bubble {
+  background: var(--chat-ai);
+  border: 1px solid var(--border);
+  border-top-left-radius: 4px;
+}
+
+.chat-msg.user .chat-bubble {
+  background: var(--chat-user);
+  border-top-right-radius: 4px;
+  color: var(--text);
+}
+
+.chat-msg .section-indicator {
+  font-size: 0.65rem;
+  color: var(--accent);
+  background: rgba(167,139,250,0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.chat-msg .timestamp {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  opacity: 0.6;
+}
+
+.chat-divider {
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  padding: 8px 0;
+  position: relative;
+}
+.chat-divider::before,
+.chat-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 1px;
+  background: var(--border);
+}
+.chat-divider::before { left: 0; }
+.chat-divider::after { right: 0; }
+
+/* Chat input area */
+.chat-input-area {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.chat-input-area input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  outline: none;
+}
+.chat-input-area input:focus { border-color: var(--accent); }
+.chat-input-area input::placeholder { color: var(--text-dim); }
+
+.chat-input-area button {
+  background: var(--accent);
+  color: #0f0f13;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* ================================================================
+   SCROLL-LINKED SECTION HIGHLIGHTING IN CHAT
+   ================================================================ */
+.chat-msg[data-section].active-section .chat-bubble {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(167,139,250,0.15);
+}
+
+/* ================================================================
+   CHAOS CURSOR (vibe mode only)
+   ================================================================ */
+body.vibe-mode .portfolio-side {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ctext y='20' font-size='20'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E") 12 12, auto;
+}
+
+/* ================================================================
+   ERROR TOAST
+   ================================================================ */
+.error-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1a1a24;
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--danger);
+  z-index: 900;
+  opacity: 0;
+  transition: all 0.4s ease;
+  pointer-events: none;
+  max-width: 90%;
+  white-space: nowrap;
+}
+
+.error-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ================================================================
+   CONFETTI / PARTICLES (debug mode celebration)
+   ================================================================ */
+.debug-celebration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2000;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  animation: confettiFall 3s ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ================================================================
+   VIBE QUOTE BOX
+   ================================================================ */
+.vibe-quote {
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.vibe-quote .attribution {
+  margin-top: 8px;
+  font-style: normal;
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ================================================================
+   WATERMARK
+   ================================================================ */
+body.vibe-mode .vibe-watermark { opacity: 0.03; }
+.vibe-watermark {
+  position: fixed;
+  bottom: 10%;
+  right: 5%;
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+  transform: rotate(-15deg);
+  transition: opacity 1s;
+  line-height: 1;
+}
+</style>
+</head>
+<body class="vibe-mode">
+
+<!-- Vibe Watermark -->
+<div class="vibe-watermark">VIBES</div>
+
+<!-- Top Banner -->
+<div class="vibe-banner">
+  <span class="banner-text">This portfolio was 100% vibe coded. No actual programming skills were harmed.</span>
+  <div class="debug-toggle" id="debugToggle" onclick="toggleDebugMode()">
+    <span>Debug Mode</span>
+    <div class="debug-switch"></div>
+  </div>
+</div>
+
+<!-- Floating Broken Elements (vibe mode only) -->
+<div class="floating-bug bug-1">&lt;div&gt; is not defined at line 847</div>
+<div class="floating-bug bug-2">Warning: Each child in a list should have a unique "key" prop.</div>
+<div class="floating-bug bug-3" style="color: #a78bfa;">undefined is not a function (evaluating 'vibes.check()')</div>
+<div class="floating-bug bug-4">Uncaught TypeError: Cannot read properties of null (reading 'style')</div>
+
+<!-- Error Toast -->
+<div class="error-toast" id="errorToast"></div>
+
+<!-- Main Layout -->
+<div class="main-layout">
+
+  <!-- ============================================
+       LEFT SIDE: THE PORTFOLIO
+       ============================================ -->
+  <div class="portfolio-side" id="portfolioSide">
+
+    <!-- HERO SECTION - Level 0: Beautiful, clean -->
+    <section class="section-hero" id="sec-hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Available for collaboration
+      </div>
+      <h1 class="hero-name">Anshull Garg</h1>
+      <p class="hero-tagline">
+        Software Engineer at Walmart Global Tech. I build systems that serve millions and write code that ships.
+      </p>
+      <div class="hero-cta-row">
+        <button class="btn-primary" onclick="showToast('Error: vibes.contact() is undefined')">View My Work</button>
+        <button class="btn-secondary" onclick="showToast('404: Resume lost in the vibes')">Download Resume</button>
+      </div>
+
+      <div class="vibe-quote vibe-content">
+        <span>"The hero section looks great. Ship it."</span>
+        <div class="attribution">-- The AI, 2 minutes into this project</div>
+      </div>
+
+      <div class="debug-reveal">
+        <div class="debug-title">// debug: hero.tsx verified</div>
+        Clean component. SSR-compatible. Lighthouse score: 98. Semantic HTML with proper heading hierarchy. ARIA labels in place. This is what happens when you actually read the docs.
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION - Level 1: Subtle typos, slight color drift -->
+    <section class="section-about" id="sec-about">
+      <div class="section-label">About</div>
+      <div class="section-title">
+        <span class="typo-text">A Litle About Myself</span>
+        <span class="clean-text">A Little About Myself</span>
+      </div>
+      <div class="about-text">
+        <span class="typo-text">
+          I'm a sofware enginer based in Bentonville, AR, currently building at
+          <strong style="color: var(--accent-2);">Walmart Global Tech</strong>. I specialize in
+          full-stack developement with a focus on scalable architecture, performant UIs, and
+          clean code that my futrue self won't hate me for.
+          <br><br>
+          When I'm not codeing, you'll find me exploring new technolgies, contributing to open
+          source, and thinking about how to make complx systems feel simple.
+        </span>
+        <span class="clean-text">
+          I'm a software engineer based in Bentonville, AR, currently building at
+          <strong style="color: var(--accent-2);">Walmart Global Tech</strong>. I specialize in
+          full-stack development with a focus on scalable architecture, performant UIs, and
+          clean code that my future self won't hate me for.
+          <br><br>
+          When I'm not coding, you'll find me exploring new technologies, contributing to open
+          source, and thinking about how to make complex systems feel simple.
+        </span>
+      </div>
+
+      <div class="debug-reveal">
+        <div class="debug-title">// debug: spellcheck.pass()</div>
+        Zero typos. Grammarly score: 100. Content reviewed by actual humans. TypeScript strict mode prevents this kind of sloppiness in code -- why not in copy?
+      </div>
+    </section>
+
+    <!-- SKILLS SECTION - Level 2: Colors go wrong, sizes weird -->
+    <section class="section-skills" id="sec-skills">
+      <div class="section-label">
+        <span class="typo-text">Techncal Skilss</span>
+        <span class="clean-text">Technical Skills</span>
+      </div>
+      <div class="section-title">
+        <span class="typo-text">My Tech Stcak</span>
+        <span class="clean-text">My Tech Stack</span>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-chip">React</div>
+        <div class="skill-chip">TypeScript</div>
+        <div class="skill-chip">Node.js</div>
+        <div class="skill-chip">Python</div>
+        <div class="skill-chip">
+          <span class="typo-text">VIBES</span>
+          <span class="clean-text">Next.js</span>
+        </div>
+        <div class="skill-chip">PostgreSQL</div>
+        <div class="skill-chip">
+          <span class="typo-text">Synergy</span>
+          <span class="clean-text">GraphQL</span>
+        </div>
+        <div class="skill-chip">AWS</div>
+        <div class="skill-chip">Docker</div>
+        <div class="skill-chip">
+          <span class="typo-text">Hustle</span>
+          <span class="clean-text">Kubernetes</span>
+        </div>
+        <div class="skill-chip">Git</div>
+        <div class="skill-chip">
+          <span class="typo-text">Prompt Engineering</span>
+          <span class="clean-text">CI/CD</span>
+        </div>
+        <div class="skill-chip">Java</div>
+        <div class="skill-chip">Redis</div>
+        <div class="skill-chip">
+          <span class="typo-text">Asking ChatGPT</span>
+          <span class="clean-text">Terraform</span>
+        </div>
+      </div>
+
+      <div class="debug-reveal">
+        <div class="debug-title">// debug: skills.map(s => s.verified)</div>
+        Every skill listed here has production usage behind it. No padding. No "used it in a tutorial once." React (3+ years), TypeScript (daily driver), AWS (certified), Kubernetes (managed prod clusters). I can whiteboard any of these.
+      </div>
+    </section>
+
+    <!-- PROJECTS SECTION - Level 3: Overlapping cards, lorem ipsum -->
+    <section class="section-projects" id="sec-projects">
+      <div class="section-label">
+        <span class="typo-text">Selceted Porjects</span>
+        <span class="clean-text">Selected Projects</span>
+      </div>
+      <div class="section-title">
+        <span class="typo-text">Things I've Buidl</span>
+        <span class="clean-text">Things I've Built</span>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-title">E-Commerce Platform</div>
+          <div class="project-desc real-desc">
+            Architected a high-performance e-commerce platform handling 50K+ concurrent users with real-time inventory management and sub-200ms API response times.
+          </div>
+          <div class="project-desc lorem">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. This is definitely a real description.
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">React</span>
+            <span class="project-tag">Node.js</span>
+            <span class="project-tag">Redis</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-title">
+            <span class="typo-text">Rela-Time Anaytics Dashbord</span>
+            <span class="clean-text">Real-Time Analytics Dashboard</span>
+          </div>
+          <div class="project-desc real-desc">
+            Built a real-time analytics dashboard processing 1M+ events/day with WebSocket streaming, custom charting engine, and role-based access control.
+          </div>
+          <div class="project-desc lorem">
+            Lorem ipsum vibes dolor sit amet. The AI said this would look great and I believed it. Consectetur synergy elit. Disrupting the paradigm.
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">TypeScript</span>
+            <span class="project-tag">D3.js</span>
+            <span class="project-tag typo-text" style="background: rgba(248,113,113,0.2); color: var(--danger);">Vibes</span>
+            <span class="project-tag clean-text">WebSocket</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-title">
+            <span class="typo-text">Microservices Infrastrutcure</span>
+            <span class="clean-text">Microservices Infrastructure</span>
+          </div>
+          <div class="project-desc real-desc">
+            Designed and deployed a containerized microservices architecture with automated CI/CD pipelines, reducing deployment time by 80% and improving system reliability to 99.95% uptime.
+          </div>
+          <div class="project-desc lorem">
+            I don't know what this project does but it sounds impressive. Something about containers? The AI told me to add more buzzwords so: blockchain, AI, quantum, synergy.
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Docker</span>
+            <span class="project-tag">Kubernetes</span>
+            <span class="project-tag">AWS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="debug-reveal">
+        <div class="debug-title">// debug: projects.filter(p => p.hasGitHistory)</div>
+        Every project listed has a real git history, real commits, real PRs. Production metrics are from actual monitoring dashboards, not fabricated. Happy to do a live code walkthrough of any of these.
+      </div>
+    </section>
+
+    <!-- EXPERIENCE SECTION - Level 4: Complete shambles -->
+    <section class="section-experience" id="sec-experience">
+      <div class="section-label">
+        <span class="typo-text">Experiance</span>
+        <span class="clean-text">Experience</span>
+      </div>
+      <div class="section-title">
+        <span class="typo-text">Where I've Wroked</span>
+        <span class="clean-text">Where I've Worked</span>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-content">
+          <div class="exp-role">Software Engineer</div>
+          <div class="exp-company">Walmart Global Tech</div>
+          <div class="exp-date">
+            <span class="typo-text">2023 - Presnet</span>
+            <span class="clean-text">2023 - Present</span>
+          </div>
+          <div class="exp-desc">
+            <span class="typo-text">
+              Building scalable full-stack aplications for one of the world's largset retail platforms. Working with React, Node.js, and cloud infrastrcture to deliver features impacting millions of usres.
+            </span>
+            <span class="clean-text">
+              Building scalable full-stack applications for one of the world's largest retail platforms. Working with React, Node.js, and cloud infrastructure to deliver features impacting millions of users.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-dot" style="background: var(--accent-2);"></div>
+        <div class="exp-content">
+          <div class="exp-role">
+            <span class="typo-text">Sofrware Enginer Intern</span>
+            <span class="clean-text">Software Engineer Intern</span>
+          </div>
+          <div class="exp-company">Walmart Global Tech</div>
+          <div class="exp-date">Summer 2022</div>
+          <div class="exp-desc">
+            <span class="typo-text">
+              Developed internal tooling and contributed to the associtae-facing platform. Shipped features in React and Java that are still in prodution today. Also figred out where the good coffee was.
+            </span>
+            <span class="clean-text">
+              Developed internal tooling and contributed to the associate-facing platform. Shipped features in React and Java that are still in production today.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- The famous div that won't center -->
+      <div class="broken-div-joke">
+        <div style="font-weight: 600; color: var(--text); margin-bottom: 8px;">
+          &lt;div className="centered"&gt;
+        </div>
+        <div class="inner-div">
+          I should be centered but I'm not. I've been here for 4 hours.
+        </div>
+        <div class="comment">
+          // TODO: fix this. tried margin: 0 auto, flexbox, grid, position: absolute,<br>
+          // asked 3 AIs, read 14 Stack Overflow answers, considered a career change.<br>
+          // Update: it was a missing display: flex on the parent. It's always the parent.
+        </div>
+      </div>
+
+      <div class="debug-reveal">
+        <div class="debug-title">// debug: career.verified === true</div>
+        <div>display: flex; align-items: center; justify-content: center;</div>
+        <div style="margin-top: 8px;">That's it. That's the fix. Three lines. Took 30 seconds, not 4 hours. Because I actually know CSS. The "vibe coded" version is what happens when you skip the fundamentals.</div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION - Level 5: Full meltdown -->
+    <section class="section-contact" id="sec-contact">
+      <div class="section-label">
+        <span class="typo-text">Conctact</span>
+        <span class="clean-text">Contact</span>
+      </div>
+      <div class="section-title">
+        <span class="typo-text">Get In Toch</span>
+        <span class="clean-text">Get In Touch</span>
+      </div>
+
+      <div class="contact-form">
+        <div class="form-group">
+          <label>
+            <span class="typo-text">Yuor Name</span>
+            <span class="clean-text">Your Name</span>
+          </label>
+          <input type="text" placeholder="Enter your name" />
+        </div>
+        <div class="form-group">
+          <label>
+            <span class="typo-text">Eamil Adress</span>
+            <span class="clean-text">Email Address</span>
+          </label>
+          <input type="email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label>
+            <span class="typo-text">Messsage</span>
+            <span class="clean-text">Message</span>
+          </label>
+          <textarea placeholder="What's on your mind?"></textarea>
+        </div>
+        <button class="btn-primary" onclick="showToast('Error: SMTP vibes not configured. Try sending good thoughts instead.')">
+          <span class="typo-text">SEND IT (please work)</span>
+          <span class="clean-text">Send Message</span>
+        </button>
+      </div>
+
+      <div class="form-broken-msg">
+        <strong>TypeError:</strong> Cannot submit form. The "vibes" middleware rejected your request because Mercury is in retrograde.<br><br>
+        <span style="color: var(--text-dim);">Suggestions: Try again when the vibes are better, or just DM me on LinkedIn like a normal person.</span>
+      </div>
+
+      <div class="debug-reveal">
+        <div class="debug-title">// debug: form.validation.strict()</div>
+        Form works. Server-side validation. Rate limiting. CSRF protection. Honeypot fields for spam. Sends via AWS SES with delivery confirmation. Response time: under 200ms. You know, actual engineering.
+      </div>
+    </section>
+
+    <!-- FOOTER - Level 6: Beyond repair -->
+    <section class="section-footer" id="sec-footer">
+      <div class="vibe-content">
+        <div style="margin-bottom: 8px;">
+          &copy; 2025 Anshull Garg | Built with vibes, prayers, and approximately 847 AI prompts
+        </div>
+        <div style="font-size: 0.7rem; opacity: 0.7;">
+          "Vibe coding is easy. Vibe debugging is the hard part." -- Ancient proverb (2025)
+        </div>
+      </div>
+      <div class="clean-text" style="display: none;">
+        <div style="margin-bottom: 8px;">
+          &copy; 2025 Anshull Garg | Software Engineer
+        </div>
+        <div style="font-size: 0.7rem; opacity: 0.7;">
+          Built with React, TypeScript, and knowing what every line of code does.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================================
+       RIGHT SIDE: AI CHAT SIDEBAR
+       ============================================ -->
+  <div class="chat-side">
+    <div class="chat-header">
+      <div class="ai-logo">AI</div>
+      <div>
+        <div class="chat-title">VibeGPT Pro Max</div>
+        <div class="chat-subtitle">Your portfolio co-pilot (allegedly)</div>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+
+      <!-- Hero Section Chat -->
+      <div class="chat-msg user" data-section="hero">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">Hero Section</div>
+            Make me a portfolio. I want it to look like those really clean ones on Twitter. Make it pop.
+          </div>
+          <div class="timestamp">Today, 2:14 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="hero">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            Absolutely! I'll create a stunning hero section with a gradient text effect, smooth animations, and a modern feel. This will definitely "pop."
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="hero">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Perfect. Ship it. Don't explain anything I won't read it anyway.</div>
+        </div>
+      </div>
+
+      <div class="chat-divider">Things start going downhill</div>
+
+      <!-- About Section Chat -->
+      <div class="chat-msg user" data-section="about">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">About Section</div>
+            Now add an about section. Make it sound smart but approachable. Like I'm a 10x developer but also chill.
+          </div>
+          <div class="timestamp">Today, 2:22 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="about">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            Here's your about section! I've crafted copy that balances technical credibility with personality. Let me know if you'd like any adjustme--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="about">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Looks good don't proofread it I'm sure it's fine. Next section.</div>
+        </div>
+      </div>
+
+      <!-- Skills Section Chat -->
+      <div class="chat-msg user" data-section="skills">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">Skills Section</div>
+            Add my skills. Make them colorful. Add more colors. MORE. Make each one a different color. Add some synergy.
+          </div>
+          <div class="timestamp">Today, 2:31 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="skills">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            I'd recommend a consistent color scheme for a professional look. Perhaps subtle accent colo--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="skills">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">No. Rainbow. Also add "Vibes" as a skill. And "Synergy." And make one of them REALLY big. Trust the vision.</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="skills">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            ...Okay, I've made the adjustments. I should note that "Prompt Engineering" and "Asking ChatGPT" may not be perceived as traditional technical ski--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="skills">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">It's 2025, those ARE the skills. Keep going.</div>
+        </div>
+      </div>
+
+      <div class="chat-divider">2:47 AM -- caffeine wearing off</div>
+
+      <!-- Projects Section Chat -->
+      <div class="chat-msg user" data-section="projects">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">Projects Section</div>
+            Add some projects. I'll fill in the descriptions later. Just put placeholder text for now.
+          </div>
+          <div class="timestamp">Today, 2:52 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="projects">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            I'll add Lorem Ipsum as placeholder text. Remember to replace it before deploying!
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="projects">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Yeah yeah I'll totally do that. Also the cards are overlapping? Is that intentional?</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="projects">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            That appears to be a CSS specificity issue. The transform properties are conflicting with the grid layout. I can fix it by--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="projects">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Leave it. It looks "artsy." Like brutalist design or whatever.</div>
+        </div>
+      </div>
+
+      <!-- Experience Section Chat -->
+      <div class="chat-msg user" data-section="experience">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">Experience</div>
+            Add my experience at Walmart. Also why is there a div that won't center? I didn't ask for that.
+          </div>
+          <div class="timestamp">Today, 3:15 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="experience">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            The centering issue is because the parent container needs display: flex and justify-content: center. Would you like me to--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="experience">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">I already tried that. I tried everything. margin: 0 auto. text-align center. I even tried position: absolute with left: 50%.</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="experience">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            Did you check if the parent has a defined width and display: flex? Sometimes the issue is with the paren--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="experience">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">I don't know, just vibe it. If it was meant to be centered, the universe would have centered it.</div>
+        </div>
+      </div>
+
+      <div class="chat-divider">3:38 AM -- existential crisis phase</div>
+
+      <!-- Contact Section Chat -->
+      <div class="chat-msg user" data-section="contact">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">Contact Form</div>
+            Add a contact form. Make the button bigger. BIGGER. Add some pizzazz.
+          </div>
+          <div class="timestamp">Today, 3:41 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="contact">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            Here's a clean contact form. For the button, I'd recommend keeping it proportional to the form for visual balan--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="contact">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Make it rainbow. And pulsing. And Comic Sans. The email input too. Make it SCREAM "contact me."</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="contact">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            I strongly advise against Comic Sans in a professional portfolio. It may undermine your credib--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="contact">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Did I stutter? Comic Sans. Rainbow. Make it pop. Add more synergy.</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="contact">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            ...Done. Also, I notice the form doesn't actually submit anywhere. Should I set up a backend endpoi--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="contact">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Nah. The vibes will deliver the messages. Like carrier pigeons but digital.</div>
+        </div>
+      </div>
+
+      <div class="chat-divider">4:02 AM -- acceptance phase</div>
+
+      <!-- Final Messages -->
+      <div class="chat-msg user" data-section="footer">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">
+            <div class="section-indicator">Final Review</div>
+            Ok I think it's done. Does it look professional?
+          </div>
+          <div class="timestamp">Today, 4:03 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="footer">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble">
+            Honestly? The hero section is great. After that, things progressively deteriorate. There are 23 typos, the color scheme has no consistency, project descriptions are still Lorem Ipsum, there's a div that refuses to center, and the contact form uses Comic Sans on a neon background. I would recommend--
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user" data-section="footer">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-bubble">Deploy it. YOLO.</div>
+        </div>
+      </div>
+
+      <div class="chat-msg ai" data-section="footer">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble" style="color: var(--danger);">
+            I want it on record that I advised against this. My token limit was wasted here.
+          </div>
+        </div>
+      </div>
+
+      <!-- Debug Mode Messages (hidden by default) -->
+      <div class="chat-msg ai debug-chat-msg" data-section="debug" style="display: none;">
+        <div class="chat-avatar">AI</div>
+        <div>
+          <div class="chat-bubble" style="border-color: #10b981; background: rgba(16,185,129,0.05);">
+            <div class="section-indicator" style="background: rgba(16,185,129,0.15); color: #10b981;">Debug Mode Active</div>
+            <strong style="color: #10b981;">Wait -- the portfolio just fixed itself?</strong>
+            <br><br>
+            Turns out Anshull actually knows how to code. The typos are gone, the colors make sense, the div is centered, and there's not a single Lorem Ipsum in sight.
+            <br><br>
+            <em style="color: var(--text-dim);">Vibe coding is the meme. Knowing your fundamentals is the resume.</em>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chat-input-area">
+      <input type="text" placeholder="Add more vibes..." id="chatInput" onkeydown="if(event.key==='Enter')sendVibeMessage()" />
+      <button onclick="sendVibeMessage()">Send</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Debug Celebration Container -->
+<div class="debug-celebration" id="debugCelebration"></div>
+
+<script>
+/* ================================================================
+   STATE
+   ================================================================ */
+let isDebugMode = false;
+let toastTimeout = null;
+
+const vibeResponses = [
+  "I've added more vibes. The specificity conflicts are now... artistic.",
+  "Done! Though I should mention the z-index is now at 99999.",
+  "Sure, I'll make it pop. *quietly questions career choices*",
+  "Added the synergy. I still don't know what that means in a CSS context.",
+  "The button is now 40% bigger. At this rate it'll be the entire viewport by next prompt.",
+  "I've adjusted the colors. My design training is weeping.",
+  "Implemented your request. My context window died a little inside.",
+  "Done. Deploying this would be a Geneva Convention violation.",
+  "Added more gradients. This portfolio now uses more colors than a Lisa Frank notebook.",
+  "Fixed? No. Embraced the chaos? Absolutely.",
+  "I rearranged the pixels as requested. They're not happy about it.",
+  "The vibes are now at maximum capacity. Any more and the CSS will achieve sentience.",
+  "Adjustments made. I've lost track of which bugs are features at this point.",
+  "Sure thing! Also, your Lighthouse score just sent a distress signal.",
+  "Added per your request. The HTML validator just uninstalled itself.",
+];
+
+/* ================================================================
+   DEBUG MODE TOGGLE
+   ================================================================ */
+function toggleDebugMode() {
+  isDebugMode = !isDebugMode;
+  const body = document.body;
+  const toggle = document.getElementById('debugToggle');
+  const banner = document.querySelector('.vibe-banner .banner-text');
+  const debugMsgs = document.querySelectorAll('.debug-chat-msg');
+
+  if (isDebugMode) {
+    body.classList.remove('vibe-mode');
+    body.classList.add('debug-mode');
+    toggle.classList.add('active');
+    banner.textContent = 'Debug Mode ON: The real portfolio was hiding underneath the whole time.';
+    debugMsgs.forEach(m => m.style.display = 'flex');
+    launchConfetti();
+    showToast('// All bugs fixed. All typos corrected. Welcome to the real portfolio.');
+    /* Scroll chat to bottom */
+    const chat = document.getElementById('chatMessages');
+    setTimeout(() => chat.scrollTop = chat.scrollHeight, 100);
+  } else {
+    body.classList.add('vibe-mode');
+    body.classList.remove('debug-mode');
+    toggle.classList.remove('active');
+    banner.textContent = 'This portfolio was 100% vibe coded. No actual programming skills were harmed.';
+    debugMsgs.forEach(m => m.style.display = 'none');
+    showToast('Vibes re-engaged. Bugs restored. Chaos resumed.');
+  }
+}
+
+/* ================================================================
+   ERROR TOAST
+   ================================================================ */
+function showToast(msg) {
+  const toast = document.getElementById('errorToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+/* ================================================================
+   CHAT INPUT
+   ================================================================ */
+function sendVibeMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const chatMessages = document.getElementById('chatMessages');
+
+  /* User message */
+  const userDiv = document.createElement('div');
+  userDiv.className = 'chat-msg user';
+  userDiv.innerHTML = `
+    <div class="chat-avatar">AG</div>
+    <div>
+      <div class="chat-bubble">${escapeHtml(msg)}</div>
+      <div class="timestamp">Just now</div>
+    </div>
+  `;
+  chatMessages.appendChild(userDiv);
+
+  /* AI response after brief delay */
+  setTimeout(() => {
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'chat-msg ai';
+    const response = vibeResponses[Math.floor(Math.random() * vibeResponses.length)];
+    aiDiv.innerHTML = `
+      <div class="chat-avatar">AI</div>
+      <div>
+        <div class="chat-bubble">${response}</div>
+      </div>
+    `;
+    chatMessages.appendChild(aiDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 800 + Math.random() * 700);
+
+  input.value = '';
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ================================================================
+   CONFETTI
+   ================================================================ */
+function launchConfetti() {
+  const container = document.getElementById('debugCelebration');
+  container.innerHTML = '';
+  const colors = ['#10b981', '#3b82f6', '#a78bfa', '#f472b6', '#fbbf24', '#6ee7b7'];
+
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = Math.random() * 2 + 's';
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.width = (4 + Math.random() * 8) + 'px';
+    piece.style.height = (4 + Math.random() * 8) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => container.innerHTML = '', 5000);
+}
+
+/* ================================================================
+   SCROLL-LINKED CHAT HIGHLIGHTING
+   ================================================================ */
+const sectionMap = {
+  'sec-hero': 'hero',
+  'sec-about': 'about',
+  'sec-skills': 'skills',
+  'sec-projects': 'projects',
+  'sec-experience': 'experience',
+  'sec-contact': 'contact',
+  'sec-footer': 'footer',
+};
+
+const portfolioSide = document.getElementById('portfolioSide');
+let highlightTimeout = null;
+
+portfolioSide.addEventListener('scroll', () => {
+  if (highlightTimeout) return;
+  highlightTimeout = setTimeout(() => {
+    highlightTimeout = null;
+    const scrollTop = portfolioSide.scrollTop;
+    const viewHeight = portfolioSide.clientHeight;
+    const viewCenter = scrollTop + viewHeight * 0.4;
+
+    let activeSection = 'hero';
+    for (const [id, name] of Object.entries(sectionMap)) {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= viewCenter) {
+        activeSection = name;
+      }
+    }
+
+    /* Highlight corresponding chat messages */
+    document.querySelectorAll('.chat-msg[data-section]').forEach(msg => {
+      msg.classList.toggle('active-section', msg.dataset.section === activeSection);
+    });
+
+    /* Auto-scroll chat to first matching message */
+    const firstMatch = document.querySelector(`.chat-msg[data-section="${activeSection}"]`);
+    if (firstMatch) {
+      const chatContainer = document.getElementById('chatMessages');
+      const msgTop = firstMatch.offsetTop - chatContainer.offsetTop;
+      chatContainer.scrollTo({ top: msgTop - 40, behavior: 'smooth' });
+    }
+  }, 100);
+});
+
+/* ================================================================
+   RANDOM VIBE-MODE ERROR TOASTS
+   ================================================================ */
+const vibeErrors = [
+  'Warning: Text content did not match. Server: "professional" Client: "vibes"',
+  'TypeError: vibeCheck() is not a function',
+  'console.warn: You have 847 unused CSS declarations',
+  'Uncaught Promise: the AI promised it would look good',
+  'Error: Maximum vibe depth exceeded (limit: 42)',
+  'Warning: className "centered" is a lie',
+  'SyntaxError: Unexpected token "synergy" at line 420',
+  'CORS Error: The vibes from localhost are being blocked',
+  'RangeError: Button size exceeds viewport bounds',
+  'TypeError: Cannot read property "talent" of undefined',
+];
+
+let vibeErrorInterval;
+
+function startVibeErrors() {
+  vibeErrorInterval = setInterval(() => {
+    if (!isDebugMode && Math.random() > 0.6) {
+      const err = vibeErrors[Math.floor(Math.random() * vibeErrors.length)];
+      showToast(err);
+    }
+  }, 8000);
+}
+
+/* Start after a brief delay */
+setTimeout(startVibeErrors, 5000);
+
+/* ================================================================
+   INITIALIZE
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  /* Start in vibe mode */
+  document.body.classList.add('vibe-mode');
+
+  /* Show welcome toast */
+  setTimeout(() => {
+    showToast('Welcome to the vibes. Scroll down to watch things fall apart.');
+  }, 1500);
+});
+</script>
+</body>
+</html>

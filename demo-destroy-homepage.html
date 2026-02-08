@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG | Destroy This Homepage</title>
+<meta name="description" content="Anshull Garg - Software Developer at Walmart. An interactive destroy-to-discover portfolio experience inspired by Rafael Caferati.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   CUSTOM PROPERTIES
+   ======================================================================== */
+:root {
+  --bg-void: #050508;
+  --bg-deep: #0a0a10;
+  --bg-surface: #111118;
+  --bg-elevated: #1a1a24;
+  --border: #2a2a38;
+  --text-dim: #5a5a72;
+  --text-body: #9a96a8;
+  --text-heading: #eae6f0;
+  --text-white: #ffffff;
+
+  --neon-green: #39ff14;
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff00aa;
+  --neon-orange: #ff6b35;
+  --neon-red: #ff1744;
+  --neon-yellow: #ffd600;
+  --neon-purple: #b24aff;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========================================================================
+   RESET & BASE
+   ======================================================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-void);
+  color: var(--text-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Custom crosshair cursor */
+body.game-active {
+  cursor: none;
+}
+
+::selection {
+  background: rgba(57, 255, 20, 0.2);
+  color: var(--text-white);
+}
+
+/* ========================================================================
+   NEON CROSSHAIR CURSOR
+   ======================================================================== */
+#crosshair {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100000;
+  display: none;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+}
+
+body.game-active #crosshair {
+  display: block;
+}
+
+#crosshair::before,
+#crosshair::after {
+  content: '';
+  position: absolute;
+  background: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green), 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+#crosshair::before {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#crosshair::after {
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.crosshair-circle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--neon-green);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px var(--neon-green), inset 0 0 8px rgba(57, 255, 20, 0.1);
+}
+
+.crosshair-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 6px var(--neon-green);
+}
+
+/* ========================================================================
+   MUZZLE FLASH
+   ======================================================================== */
+.muzzle-flash {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 214, 0, 0.6) 30%, rgba(255, 107, 53, 0.3) 60%, transparent 80%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: muzzleFlash 0.15s ease-out forwards;
+}
+
+@keyframes muzzleFlash {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+}
+
+/* ========================================================================
+   SCREEN SHAKE
+   ======================================================================== */
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, -2px); }
+  20% { transform: translate(4px, 1px); }
+  30% { transform: translate(-2px, 3px); }
+  40% { transform: translate(3px, -1px); }
+  50% { transform: translate(-4px, 2px); }
+  60% { transform: translate(2px, -3px); }
+  70% { transform: translate(-1px, 4px); }
+  80% { transform: translate(3px, -2px); }
+  90% { transform: translate(-3px, 1px); }
+}
+
+body.screen-shake {
+  animation: screenShake 0.25s ease-out;
+}
+
+/* ========================================================================
+   HUD - SCORE COUNTER
+   ======================================================================== */
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  padding: 16px 24px;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(5, 5, 8, 0.95) 0%, rgba(5, 5, 8, 0.7) 70%, transparent 100%);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+}
+
+body.game-active #hud {
+  display: flex;
+}
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.hud-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+}
+
+.hud-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--neon-green);
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-stat-value.combo {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 12px rgba(255, 214, 0, 0.5);
+}
+
+.hud-stat-value.destroyed {
+  color: var(--neon-red);
+  text-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
+}
+
+.hud-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-progress-bar {
+  width: 200px;
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hud-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+  border-radius: 2px;
+  transition: width 0.4s var(--ease-out-expo);
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
+/* ========================================================================
+   BULLET TRACER
+   ======================================================================== */
+.bullet-tracer {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99998;
+  width: 3px;
+  height: 3px;
+  background: var(--neon-yellow);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--neon-yellow), 0 0 12px rgba(255, 214, 0, 0.4);
+}
+
+.bullet-trail {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99997;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-yellow));
+  opacity: 0.6;
+  transform-origin: left center;
+}
+
+/* ========================================================================
+   FRAGMENT / PARTICLE EXPLOSIONS
+   ======================================================================== */
+.fragment {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.explosion-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.score-popup {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10001;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green);
+  animation: scorePopup 0.8s var(--ease-out-expo) forwards;
+}
+
+@keyframes scorePopup {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(1.3); opacity: 0; }
+}
+
+/* ========================================================================
+   DESTROYABLE ELEMENT STYLING
+   ======================================================================== */
+.destroyable {
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+.destroyable::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  pointer-events: none;
+}
+
+body.game-active .destroyable:hover::after {
+  border-color: rgba(255, 23, 68, 0.5);
+  box-shadow: 0 0 20px rgba(255, 23, 68, 0.15);
+}
+
+.destroyable.hit {
+  filter: brightness(2) saturate(0.5);
+}
+
+.destroyable.damaged {
+  filter: hue-rotate(20deg) brightness(1.3);
+}
+
+.destroyable.critical {
+  filter: hue-rotate(40deg) brightness(0.8) saturate(1.5);
+  animation: critical 0.5s ease infinite;
+}
+
+@keyframes critical {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.health-bar {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+body.game-active .destroyable:hover .health-bar,
+.destroyable.damaged .health-bar {
+  opacity: 1;
+}
+
+.health-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--neon-green);
+  border-radius: 2px;
+  transition: width 0.2s ease, background 0.3s ease;
+}
+
+.health-bar-fill.medium {
+  background: var(--neon-yellow);
+}
+
+.health-bar-fill.low {
+  background: var(--neon-red);
+}
+
+/* ========================================================================
+   INTRO / LANDING SCREEN
+   ======================================================================== */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-void);
+  text-align: center;
+  padding: 24px;
+}
+
+.intro-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-green);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.2s var(--ease-out-expo) forwards;
+}
+
+.intro-name {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 120px);
+  font-weight: 700;
+  color: var(--text-white);
+  line-height: 1;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.4s var(--ease-out-expo) forwards;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+.intro-title {
+  font-family: var(--font-body);
+  font-size: clamp(16px, 2.5vw, 22px);
+  color: var(--text-body);
+  font-weight: 300;
+  margin-bottom: 60px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.6s var(--ease-out-expo) forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The big irresistible button */
+.destroy-btn {
+  position: relative;
+  background: transparent;
+  border: 2px solid var(--neon-red);
+  color: var(--neon-red);
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: 600;
+  padding: 20px 48px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp 0.8s 1s var(--ease-out-expo) forwards;
+  transition: all 0.4s ease;
+}
+
+.destroy-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--neon-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease-out-expo);
+  z-index: -1;
+}
+
+.destroy-btn:hover {
+  color: var(--text-white);
+  border-color: var(--neon-red);
+  box-shadow: 0 0 30px rgba(255, 23, 68, 0.3), 0 0 60px rgba(255, 23, 68, 0.1);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.destroy-btn:hover::before {
+  transform: scaleX(1);
+}
+
+.destroy-btn-sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* Pulsing glow around button */
+.destroy-btn-wrapper {
+  position: relative;
+  opacity: 0;
+  animation: fadeInUp 0.8s 1s var(--ease-out-expo) forwards;
+}
+
+.destroy-btn-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgba(255, 23, 68, 0.2);
+  animation: pulseGlow 2s ease infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); border-color: rgba(255, 23, 68, 0.2); }
+  50% { opacity: 1; transform: scale(1.03); border-color: rgba(255, 23, 68, 0.5); }
+}
+
+.intro-hint {
+  position: absolute;
+  bottom: 40px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 1.5s var(--ease-out-expo) forwards;
+}
+
+/* ========================================================================
+   PORTFOLIO SECTIONS (hidden, revealed on destroy)
+   ======================================================================== */
+#game-world {
+  display: none;
+  position: relative;
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+body.game-active #game-world {
+  display: block;
+}
+
+.section-layer {
+  position: relative;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+  padding: 60px 24px;
+}
+
+.section-layer.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-layer.destroyed {
+  pointer-events: none;
+}
+
+.section-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ---- Hero Section ---- */
+#hero-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-greeting {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--neon-green);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 10vw, 100px);
+  font-weight: 700;
+  color: var(--text-white);
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+
+.hero-headline {
+  font-family: var(--font-body);
+  font-size: clamp(18px, 3vw, 28px);
+  color: var(--text-body);
+  font-weight: 300;
+  margin-bottom: 16px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-tagline {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+/* ---- About Section ---- */
+#about-section {
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.about-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  margin-bottom: 24px;
+}
+
+.about-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.about-text {
+  font-size: 16px;
+  color: var(--text-body);
+  line-height: 1.8;
+  margin-bottom: 16px;
+  max-width: 700px;
+}
+
+.about-values {
+  list-style: none;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about-values li {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-body);
+  padding-left: 20px;
+  position: relative;
+}
+
+.about-values li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--neon-green);
+  font-weight: 700;
+}
+
+/* ---- Projects Section ---- */
+#projects-section {
+  padding: 80px 24px;
+}
+
+.projects-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-magenta);
+  margin-bottom: 24px;
+}
+
+.projects-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 48px;
+  line-height: 1.2;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 30px rgba(178, 74, 255, 0.1);
+}
+
+.project-number {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--bg-elevated);
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  line-height: 1;
+}
+
+.project-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 12px;
+}
+
+.project-desc {
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.project-tech span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Skills Section ---- */
+#skills-section {
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 24px;
+}
+
+.skills-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-orange);
+  margin-bottom: 24px;
+}
+
+.skills-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 48px;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+}
+
+.skill-group h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.skill-group ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-group li {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-body);
+  padding: 6px 0;
+  transition: color 0.3s ease;
+}
+
+.skill-group li:hover {
+  color: var(--text-heading);
+}
+
+/* ---- Experience Section ---- */
+#experience-section {
+  padding: 80px 24px;
+}
+
+.exp-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-yellow);
+  margin-bottom: 24px;
+}
+
+.exp-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 48px;
+}
+
+.exp-item {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 32px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.exp-period {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.exp-role {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 4px;
+}
+
+.exp-company {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--neon-green);
+  margin-bottom: 16px;
+}
+
+.exp-desc {
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.8;
+}
+
+/* ---- Contact Section ---- */
+#contact-section {
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border);
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-green);
+  margin-bottom: 24px;
+}
+
+.contact-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 16px;
+}
+
+.contact-text {
+  font-size: 16px;
+  color: var(--text-body);
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-body);
+  text-decoration: none;
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.contact-link:hover {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
+}
+
+/* ========================================================================
+   FINALE SCREEN
+   ======================================================================== */
+#finale-screen {
+  display: none;
+  position: relative;
+  z-index: 500;
+  text-align: center;
+  padding: 100px 24px;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#finale-screen.visible {
+  display: flex;
+}
+
+.finale-message {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 5vw, 40px);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.3s var(--ease-out-expo) forwards;
+}
+
+.finale-sub {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--text-body);
+  font-weight: 300;
+  margin-bottom: 48px;
+  max-width: 600px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.6s var(--ease-out-expo) forwards;
+}
+
+.finale-score {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--neon-green);
+  letter-spacing: 2px;
+  margin-bottom: 60px;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.9s var(--ease-out-expo) forwards;
+}
+
+.finale-portfolio {
+  width: 100%;
+  max-width: 900px;
+  text-align: left;
+  opacity: 0;
+  animation: fadeInUp 0.8s 1.2s var(--ease-out-expo) forwards;
+}
+
+.finale-heading {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.finale-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.finale-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 28px;
+  transition: border-color 0.3s ease;
+}
+
+.finale-card:hover {
+  border-color: var(--neon-cyan);
+}
+
+.finale-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 10px;
+}
+
+.finale-card p {
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.7;
+}
+
+.finale-card .card-tech {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.finale-card .card-tech span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+}
+
+.rebuild-btn {
+  background: transparent;
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  padding: 16px 40px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.4s ease;
+  opacity: 0;
+  animation: fadeInUp 0.8s 1.8s var(--ease-out-expo) forwards;
+}
+
+.rebuild-btn:hover {
+  background: var(--neon-green);
+  color: var(--bg-void);
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
+}
+
+/* ========================================================================
+   DESTROY NOTIFICATION
+   ======================================================================== */
+.destroy-notify {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10002;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  padding: 12px 24px;
+  background: rgba(10, 10, 16, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  backdrop-filter: blur(8px);
+  animation: notifyIn 0.5s var(--ease-out-expo) forwards, notifyOut 0.5s 2.5s ease forwards;
+  white-space: nowrap;
+}
+
+@keyframes notifyIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes notifyOut {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ========================================================================
+   SECTION REVEAL ANIMATION
+   ======================================================================== */
+.section-reveal-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(57, 255, 20, 0.05);
+  z-index: 9000;
+  pointer-events: none;
+  animation: revealFlash 0.5s ease forwards;
+}
+
+@keyframes revealFlash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 768px) {
+  .exp-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .hud-progress-bar {
+    width: 100px;
+  }
+
+  #hud {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .hud-stat-value {
+    font-size: 16px;
+  }
+
+  .hud-stat-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .destroy-btn {
+    padding: 16px 32px;
+    font-size: 14px;
+  }
+
+  .hud-left, .hud-right {
+    gap: 12px;
+  }
+}
+
+/* ========================================================================
+   REDUCED MOTION
+   ======================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .section-layer {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ========================================================================
+   AMMO DISPLAY
+   ======================================================================== */
+.ammo-display {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.ammo-round {
+  width: 3px;
+  height: 12px;
+  background: var(--neon-yellow);
+  border-radius: 1px;
+  transition: opacity 0.1s ease;
+  box-shadow: 0 0 4px rgba(255, 214, 0, 0.3);
+}
+
+.ammo-round.spent {
+  opacity: 0.15;
+}
+
+/* ========================================================================
+   BACKGROUND GRID
+   ======================================================================== */
+#bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(rgba(57, 255, 20, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+body.game-active #bg-grid {
+  opacity: 0.04;
+}
+</style>
+</head>
+<body>
+
+<!-- Background Grid -->
+<div id="bg-grid"></div>
+
+<!-- Neon Crosshair Cursor -->
+<div id="crosshair">
+  <div class="crosshair-circle"></div>
+  <div class="crosshair-dot"></div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-left">
+    <div class="hud-stat">
+      <span class="hud-stat-label">Score</span>
+      <span class="hud-stat-value" id="score-display">0</span>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-stat-label">Combo</span>
+      <span class="hud-stat-value combo" id="combo-display">x1</span>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-stat-label">Destroyed</span>
+      <span class="hud-stat-value destroyed" id="destroyed-display">0/5</span>
+    </div>
+  </div>
+  <div class="hud-right">
+    <div class="hud-progress">
+      <span class="hud-stat-label">Portfolio Unlocked</span>
+      <div class="hud-progress-bar">
+        <div class="hud-progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-stat-label">Ammo</span>
+      <div class="ammo-display" id="ammo-display"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     INTRO SCREEN
+     ============================================================ -->
+<div id="intro-screen">
+  <div class="intro-badge">Interactive Portfolio Experience</div>
+  <h1 class="intro-name">ANSHULL GARG</h1>
+  <p class="intro-title">Software Developer at Walmart Global Tech</p>
+
+  <div class="destroy-btn-wrapper">
+    <button class="destroy-btn" id="start-btn" aria-label="Start the destroy game to explore the portfolio">
+      Don't be shy, feel free to destroy it.
+      <span class="destroy-btn-sub">Click to enter shooting mode</span>
+    </button>
+  </div>
+
+  <div class="intro-hint">WARNING: PORTFOLIO ELEMENTS WILL BE HARMED</div>
+</div>
+
+<!-- ============================================================
+     GAME WORLD - Portfolio Sections (revealed through destruction)
+     ============================================================ -->
+<div id="game-world">
+
+  <!-- LAYER 1: HERO -->
+  <section id="hero-section" class="section-layer revealed" data-layer="1">
+    <div class="section-inner">
+      <div class="destroyable" data-hp="3" data-points="100" data-id="hero-greeting">
+        <p class="hero-greeting">Hello, I'm</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="5" data-points="250" data-id="hero-name">
+        <h1 class="hero-name">ANSHULL GARG</h1>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="150" data-id="hero-headline">
+        <p class="hero-headline">I build systems that serve millions.</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="2" data-points="100" data-id="hero-tagline">
+        <p class="hero-tagline">Software Engineer // Walmart Global Tech // Full-Stack Builder</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYER 2: ABOUT (revealed after hero destroyed) -->
+  <section id="about-section" class="section-layer" data-layer="2">
+    <div class="section-inner">
+      <div class="destroyable" data-hp="2" data-points="100" data-id="about-label">
+        <p class="about-label">// About</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="4" data-points="200" data-id="about-heading">
+        <h2 class="about-heading">I think in systems and ship in sprints.</h2>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="150" data-id="about-text-1">
+        <p class="about-text">Software Engineer with a focus on building scalable, production-grade applications at enterprise scale. Currently at Walmart Global Tech, I work across the full stack to deliver high-impact features for one of the world's largest digital retail platforms.</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="150" data-id="about-values">
+        <ul class="about-values">
+          <li>Writing code that is readable, testable, and built to last</li>
+          <li>Understanding the "why" before jumping to the "how"</li>
+          <li>"It works on my machine" is not a deployment strategy</li>
+          <li>The best documentation is the one someone actually reads</li>
+        </ul>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYER 3: PROJECTS (revealed after about destroyed) -->
+  <section id="projects-section" class="section-layer" data-layer="3">
+    <div class="section-inner">
+      <div class="destroyable" data-hp="2" data-points="100" data-id="proj-label">
+        <p class="projects-label">// Selected Work</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="150" data-id="proj-heading">
+        <h2 class="projects-heading">Things I've Built</h2>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="project-grid">
+        <div class="destroyable" data-hp="4" data-points="200" data-id="proj-1">
+          <div class="project-card">
+            <span class="project-number">01</span>
+            <h3 class="project-name">Enterprise Checkout System</h3>
+            <p class="project-desc">High-throughput checkout pipeline serving millions of transactions. Optimistic UI updates, real-time inventory sync, and sub-200ms response times.</p>
+            <div class="project-tech">
+              <span>React</span><span>Node.js</span><span>Kafka</span><span>Redis</span>
+            </div>
+          </div>
+          <div class="health-bar"><div class="health-bar-fill"></div></div>
+        </div>
+        <div class="destroyable" data-hp="4" data-points="200" data-id="proj-2">
+          <div class="project-card">
+            <span class="project-number">02</span>
+            <h3 class="project-name">Real-Time Analytics Dashboard</h3>
+            <p class="project-desc">Live data visualization platform processing 50K+ events/second. WebSocket streaming with intelligent aggregation and drill-down capabilities.</p>
+            <div class="project-tech">
+              <span>TypeScript</span><span>D3.js</span><span>GraphQL</span><span>AWS</span>
+            </div>
+          </div>
+          <div class="health-bar"><div class="health-bar-fill"></div></div>
+        </div>
+        <div class="destroyable" data-hp="4" data-points="200" data-id="proj-3">
+          <div class="project-card">
+            <span class="project-number">03</span>
+            <h3 class="project-name">Developer Tooling Platform</h3>
+            <p class="project-desc">Internal developer platform used by 500+ engineers. Automated CI/CD pipelines, feature flag management, and deployment orchestration.</p>
+            <div class="project-tech">
+              <span>Go</span><span>Docker</span><span>Kubernetes</span><span>Terraform</span>
+            </div>
+          </div>
+          <div class="health-bar"><div class="health-bar-fill"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYER 4: SKILLS (revealed after projects destroyed) -->
+  <section id="skills-section" class="section-layer" data-layer="4">
+    <div class="section-inner">
+      <div class="destroyable" data-hp="2" data-points="100" data-id="skills-label">
+        <p class="skills-label">// Tech Stack</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="150" data-id="skills-heading">
+        <h2 class="skills-heading">What I Work With</h2>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="5" data-points="300" data-id="skills-grid">
+        <div class="skills-grid">
+          <div class="skill-group">
+            <h3>Frontend</h3>
+            <ul>
+              <li>React / Next.js</li>
+              <li>TypeScript</li>
+              <li>Tailwind CSS</li>
+              <li>Redux / Zustand</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h3>Backend</h3>
+            <ul>
+              <li>Node.js / Express</li>
+              <li>Java / Spring</li>
+              <li>Python</li>
+              <li>GraphQL / REST</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h3>Infrastructure</h3>
+            <ul>
+              <li>AWS / GCP</li>
+              <li>Docker / K8s</li>
+              <li>Terraform</li>
+              <li>CI/CD Pipelines</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h3>Data & Tools</h3>
+            <ul>
+              <li>PostgreSQL / MongoDB</li>
+              <li>Redis / Kafka</li>
+              <li>Git / GitHub Actions</li>
+              <li>Datadog / Grafana</li>
+            </ul>
+          </div>
+        </div>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYER 5: CONTACT (revealed after skills destroyed) -->
+  <section id="contact-section" class="section-layer" data-layer="5">
+    <div class="section-inner">
+      <div class="destroyable" data-hp="2" data-points="100" data-id="contact-label">
+        <p class="contact-label">// Get In Touch</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="150" data-id="contact-heading">
+        <h2 class="contact-heading">Let's Build Something</h2>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="2" data-points="100" data-id="contact-text">
+        <p class="contact-text">Currently open to interesting opportunities and collaborations. If you're building something ambitious, I'd love to hear about it.</p>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+      <div class="destroyable" data-hp="3" data-points="200" data-id="contact-links">
+        <div class="contact-links">
+          <a href="mailto:anshullgarg@gmail.com" class="contact-link">anshullgarg@gmail.com</a>
+          <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <div class="health-bar"><div class="health-bar-fill"></div></div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end game-world -->
+
+<!-- ============================================================
+     FINALE SCREEN
+     ============================================================ -->
+<div id="finale-screen">
+  <div class="finale-message">You destroyed everything. Impressive.</div>
+  <p class="finale-sub">Now that you've obliterated my portfolio, here's what I can actually BUILD:</p>
+  <p class="finale-score" id="final-score">FINAL SCORE: 0 // ELEMENTS DESTROYED: 0</p>
+
+  <div class="finale-portfolio">
+    <h2 class="finale-heading">What I Bring to the Table</h2>
+    <div class="finale-grid">
+      <div class="finale-card">
+        <h3>Scalable Architecture</h3>
+        <p>I design systems that handle millions of users. Enterprise-grade, battle-tested, production-ready code that performs under real-world pressure.</p>
+        <div class="card-tech"><span>Microservices</span><span>Event-Driven</span><span>Cloud-Native</span></div>
+      </div>
+      <div class="finale-card">
+        <h3>Full-Stack Development</h3>
+        <p>From pixel-perfect interfaces to robust APIs. I own the entire stack and ship features end-to-end, fast and without cutting corners.</p>
+        <div class="card-tech"><span>React</span><span>Node.js</span><span>TypeScript</span><span>Java</span></div>
+      </div>
+      <div class="finale-card">
+        <h3>Performance Engineering</h3>
+        <p>Sub-200ms response times, optimized bundles, efficient queries. I obsess over the metrics that matter to users and business alike.</p>
+        <div class="card-tech"><span>Optimization</span><span>Caching</span><span>CDN</span><span>Profiling</span></div>
+      </div>
+      <div class="finale-card">
+        <h3>Developer Experience</h3>
+        <p>I build tools and workflows that make other engineers faster. Internal platforms, CI/CD pipelines, and documentation that people actually read.</p>
+        <div class="card-tech"><span>CI/CD</span><span>Docker</span><span>Tooling</span><span>DX</span></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="rebuild-btn" id="rebuild-btn" aria-label="Rebuild the portfolio and start over">
+    Rebuild Portfolio
+  </button>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT - GAME ENGINE
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ---- AudioContext for sound effects ----
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playShootSound() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.1);
+  }
+
+  function playHitSound() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.15);
+  }
+
+  function playDestroySound() {
+    if (!audioCtx) return;
+    // Low boom
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(120, audioCtx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.4);
+    gain1.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    osc1.start(audioCtx.currentTime);
+    osc1.stop(audioCtx.currentTime + 0.4);
+    // Noise burst
+    const bufferSize = audioCtx.sampleRate * 0.2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    }
+    const noise = audioCtx.createBufferSource();
+    const noiseGain = audioCtx.createGain();
+    noise.buffer = buffer;
+    noise.connect(noiseGain);
+    noiseGain.connect(audioCtx.destination);
+    noiseGain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+    noise.start(audioCtx.currentTime);
+  }
+
+  function playRevealSound() {
+    if (!audioCtx) return;
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.1);
+      gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + i * 0.1 + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.3);
+      osc.start(audioCtx.currentTime + i * 0.1);
+      osc.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+    });
+  }
+
+  // ---- Game State ----
+  const state = {
+    active: false,
+    score: 0,
+    combo: 1,
+    comboTimer: null,
+    destroyedCount: 0,
+    totalDestroyables: 0,
+    sectionsDestroyed: 0,
+    totalSections: 5,
+    currentLayer: 1,
+    ammo: 12,
+    maxAmmo: 12,
+    reloading: false,
+    mouseX: 0,
+    mouseY: 0,
+    lastShotTime: 0,
+  };
+
+  // Section layer tracking
+  const layers = {
+    1: { section: 'hero-section', destroyables: [], allDestroyed: false, next: 2 },
+    2: { section: 'about-section', destroyables: [], allDestroyed: false, next: 3 },
+    3: { section: 'projects-section', destroyables: [], allDestroyed: false, next: 4 },
+    4: { section: 'skills-section', destroyables: [], allDestroyed: false, next: 5 },
+    5: { section: 'contact-section', destroyables: [], allDestroyed: false, next: null },
+  };
+
+  // ---- DOM References ----
+  const crosshair = document.getElementById('crosshair');
+  const introScreen = document.getElementById('intro-screen');
+  const gameWorld = document.getElementById('game-world');
+  const hud = document.getElementById('hud');
+  const scoreDisplay = document.getElementById('score-display');
+  const comboDisplay = document.getElementById('combo-display');
+  const destroyedDisplay = document.getElementById('destroyed-display');
+  const progressFill = document.getElementById('progress-fill');
+  const ammoDisplay = document.getElementById('ammo-display');
+  const finaleScreen = document.getElementById('finale-screen');
+  const finalScore = document.getElementById('final-score');
+  const startBtn = document.getElementById('start-btn');
+  const rebuildBtn = document.getElementById('rebuild-btn');
+
+  // ---- Initialize ----
+  function init() {
+    // Count destroyables per layer
+    for (const layerNum in layers) {
+      const sectionEl = document.getElementById(layers[layerNum].section);
+      if (sectionEl) {
+        const items = sectionEl.querySelectorAll('.destroyable');
+        items.forEach(el => {
+          layers[layerNum].destroyables.push(el);
+          el._layerNum = parseInt(layerNum);
+          el._maxHp = parseInt(el.dataset.hp) || 3;
+          el._hp = el._maxHp;
+          el._points = parseInt(el.dataset.points) || 100;
+          el._destroyed = false;
+        });
+        state.totalDestroyables += items.length;
+      }
+    }
+
+    destroyedDisplay.textContent = `0/${state.totalSections}`;
+    buildAmmoDisplay();
+  }
+
+  function buildAmmoDisplay() {
+    ammoDisplay.innerHTML = '';
+    for (let i = 0; i < state.maxAmmo; i++) {
+      const round = document.createElement('div');
+      round.className = 'ammo-round';
+      if (i >= state.ammo) round.classList.add('spent');
+      ammoDisplay.appendChild(round);
+    }
+  }
+
+  function updateAmmoDisplay() {
+    const rounds = ammoDisplay.querySelectorAll('.ammo-round');
+    rounds.forEach((r, i) => {
+      r.classList.toggle('spent', i >= state.ammo);
+    });
+  }
+
+  // ---- Start Game ----
+  function startGame() {
+    initAudio();
+    state.active = true;
+    document.body.classList.add('game-active');
+
+    // Fade out intro
+    introScreen.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    introScreen.style.opacity = '0';
+    introScreen.style.transform = 'scale(1.05)';
+    setTimeout(() => {
+      introScreen.style.display = 'none';
+    }, 600);
+
+    // Show game world
+    gameWorld.style.display = 'block';
+    hud.style.display = 'flex';
+
+    // Reveal first layer
+    const firstSection = document.getElementById(layers[1].section);
+    setTimeout(() => {
+      firstSection.classList.add('revealed');
+      showNotify('DESTROY THE HERO TO REVEAL MORE');
+    }, 300);
+  }
+
+  // ---- Cursor Tracking ----
+  document.addEventListener('mousemove', (e) => {
+    state.mouseX = e.clientX;
+    state.mouseY = e.clientY;
+    crosshair.style.left = e.clientX + 'px';
+    crosshair.style.top = e.clientY + 'px';
+  });
+
+  // ---- Shooting ----
+  document.addEventListener('click', (e) => {
+    if (!state.active) return;
+
+    const now = Date.now();
+    if (now - state.lastShotTime < 80) return; // fire rate limit
+    state.lastShotTime = now;
+
+    if (state.reloading) return;
+
+    if (state.ammo <= 0) {
+      reload();
+      return;
+    }
+
+    state.ammo--;
+    updateAmmoDisplay();
+
+    // Sound & visual effects
+    playShootSound();
+    createMuzzleFlash(e.clientX, e.clientY);
+
+    // Auto-reload when empty
+    if (state.ammo <= 0) {
+      setTimeout(reload, 300);
+    }
+
+    // Raycast: find destroyable under click
+    const hitEl = findDestroyableAt(e.clientX, e.clientY);
+
+    if (hitEl && !hitEl._destroyed) {
+      handleHit(hitEl, e.clientX, e.clientY);
+    } else {
+      // Miss - spawn sparks
+      createSparks(e.clientX, e.clientY, 5, '#888');
+    }
+  });
+
+  function reload() {
+    if (state.reloading) return;
+    state.reloading = true;
+
+    // Play reload sound
+    if (audioCtx) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    // Refill ammo over time
+    let refilled = 0;
+    const interval = setInterval(() => {
+      refilled++;
+      state.ammo = refilled;
+      updateAmmoDisplay();
+      if (refilled >= state.maxAmmo) {
+        clearInterval(interval);
+        state.reloading = false;
+      }
+    }, 40);
+  }
+
+  function findDestroyableAt(x, y) {
+    const elements = document.elementsFromPoint(x, y);
+    for (const el of elements) {
+      if (el.classList.contains('destroyable') && !el._destroyed) {
+        return el;
+      }
+      // Check parent
+      const parent = el.closest('.destroyable');
+      if (parent && !parent._destroyed) {
+        return parent;
+      }
+    }
+    return null;
+  }
+
+  // ---- Handle Hit ----
+  function handleHit(el, x, y) {
+    el._hp--;
+    playHitSound();
+
+    // Screen shake
+    document.body.classList.remove('screen-shake');
+    void document.body.offsetWidth;
+    document.body.classList.add('screen-shake');
+    setTimeout(() => document.body.classList.remove('screen-shake'), 250);
+
+    // Visual hit flash
+    el.classList.add('hit');
+    setTimeout(() => el.classList.remove('hit'), 100);
+
+    // Update health bar
+    const hpPercent = (el._hp / el._maxHp) * 100;
+    const healthFill = el.querySelector('.health-bar-fill');
+    if (healthFill) {
+      healthFill.style.width = hpPercent + '%';
+      healthFill.className = 'health-bar-fill';
+      if (hpPercent <= 30) healthFill.classList.add('low');
+      else if (hpPercent <= 60) healthFill.classList.add('medium');
+    }
+
+    // Damage class
+    el.classList.remove('damaged', 'critical');
+    if (hpPercent <= 30) el.classList.add('critical');
+    else if (hpPercent <= 60) el.classList.add('damaged');
+
+    // Sparks
+    createSparks(x, y, 8, getComputedStyle(el).color || '#fff');
+
+    // Combo
+    clearTimeout(state.comboTimer);
+    state.combo = Math.min(state.combo + 1, 10);
+    state.comboTimer = setTimeout(() => {
+      state.combo = 1;
+      comboDisplay.textContent = 'x1';
+    }, 1500);
+
+    // Score
+    const points = Math.round(el._points * (state.combo / el._maxHp));
+    state.score += points;
+    scoreDisplay.textContent = state.score;
+    comboDisplay.textContent = 'x' + state.combo;
+    showScorePopup(x, y, '+' + points);
+
+    // Destroyed?
+    if (el._hp <= 0) {
+      destroyElement(el, x, y);
+    }
+  }
+
+  // ---- Destroy Element ----
+  function destroyElement(el, x, y) {
+    el._destroyed = true;
+    state.destroyedCount++;
+
+    playDestroySound();
+
+    // Big screen shake
+    document.body.classList.remove('screen-shake');
+    void document.body.offsetWidth;
+    document.body.classList.add('screen-shake');
+
+    // Particle explosion
+    createExplosion(el, x, y);
+
+    // Fragment the element into pieces
+    fragmentElement(el);
+
+    // Check if all destroyables in current layer are done
+    checkLayerCompletion(el._layerNum);
+
+    // Update HUD
+    const progress = (state.sectionsDestroyed / state.totalSections) * 100;
+    progressFill.style.width = progress + '%';
+    destroyedDisplay.textContent = state.sectionsDestroyed + '/' + state.totalSections;
+  }
+
+  // ---- Fragment Element into Pieces ----
+  function fragmentElement(el) {
+    const rect = el.getBoundingClientRect();
+    const cols = Math.max(2, Math.min(5, Math.ceil(rect.width / 60)));
+    const rows = Math.max(2, Math.min(4, Math.ceil(rect.height / 40)));
+    const fragWidth = rect.width / cols;
+    const fragHeight = rect.height / rows;
+
+    // Get colors from the element
+    const style = getComputedStyle(el);
+    const bgColor = style.backgroundColor || 'transparent';
+    const textColor = style.color || '#fff';
+
+    // Hide original
+    el.style.visibility = 'hidden';
+    el.style.pointerEvents = 'none';
+
+    // Create fragments
+    const fragments = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const frag = document.createElement('div');
+        frag.className = 'fragment';
+        frag.style.left = (rect.left + c * fragWidth) + 'px';
+        frag.style.top = (rect.top + r * fragHeight) + 'px';
+        frag.style.width = fragWidth + 'px';
+        frag.style.height = fragHeight + 'px';
+        frag.style.overflow = 'hidden';
+
+        // Clone the content with offset
+        const clone = el.cloneNode(true);
+        clone.style.visibility = 'visible';
+        clone.style.position = 'absolute';
+        clone.style.left = -(c * fragWidth) + 'px';
+        clone.style.top = -(r * fragHeight) + 'px';
+        clone.style.width = rect.width + 'px';
+        clone.style.height = rect.height + 'px';
+        clone.style.margin = '0';
+        clone.style.padding = style.padding;
+        frag.appendChild(clone);
+
+        // Add border for visibility
+        frag.style.border = '1px solid rgba(255,255,255,0.1)';
+        frag.style.background = 'rgba(20,20,30,0.8)';
+
+        document.body.appendChild(frag);
+        fragments.push({
+          el: frag,
+          x: rect.left + c * fragWidth + fragWidth / 2,
+          y: rect.top + r * fragHeight + fragHeight / 2,
+          vx: (Math.random() - 0.5) * 12 + (c - cols / 2) * 3,
+          vy: -Math.random() * 8 - 2,
+          rotation: (Math.random() - 0.5) * 30,
+          rotVel: (Math.random() - 0.5) * 15,
+          opacity: 1,
+        });
+      }
+    }
+
+    // Animate fragments with gravity
+    const gravity = 0.5;
+    let frame = 0;
+
+    function animateFragments() {
+      frame++;
+      let allDone = true;
+
+      fragments.forEach(f => {
+        if (f.opacity <= 0) return;
+        allDone = false;
+
+        f.vy += gravity;
+        f.x += f.vx;
+        f.y += f.vy;
+        f.rotation += f.rotVel;
+        f.opacity -= 0.015;
+        f.vx *= 0.99;
+
+        f.el.style.transform = `translate(${f.x - parseFloat(f.el.style.left) - parseFloat(f.el.style.width) / 2}px, ${f.y - parseFloat(f.el.style.top) - parseFloat(f.el.style.height) / 2}px) rotate(${f.rotation}deg)`;
+        f.el.style.opacity = Math.max(0, f.opacity);
+      });
+
+      if (!allDone && frame < 120) {
+        requestAnimationFrame(animateFragments);
+      } else {
+        fragments.forEach(f => {
+          if (f.el.parentNode) f.el.parentNode.removeChild(f.el);
+        });
+      }
+    }
+
+    requestAnimationFrame(animateFragments);
+  }
+
+  // ---- Particle Explosion ----
+  function createExplosion(el, cx, cy) {
+    const rect = el.getBoundingClientRect();
+    const centerX = cx || rect.left + rect.width / 2;
+    const centerY = cy || rect.top + rect.height / 2;
+    const colors = [
+      var_neonGreen, var_neonCyan, var_neonMagenta,
+      var_neonOrange, var_neonYellow, '#fff'
+    ];
+
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'explosion-particle';
+      const size = Math.random() * 6 + 2;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.background = color;
+      particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
+      particle.style.left = centerX + 'px';
+      particle.style.top = centerY + 'px';
+      document.body.appendChild(particle);
+
+      const angle = (Math.PI * 2 / 30) * i + Math.random() * 0.5;
+      const speed = Math.random() * 8 + 4;
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed - 3;
+      let opacity = 1;
+      let px = 0, py = 0;
+      let pvy = vy;
+
+      function animateParticle() {
+        px += vx;
+        pvy += 0.15;
+        py += pvy;
+        opacity -= 0.02;
+
+        particle.style.transform = `translate(${px}px, ${py}px)`;
+        particle.style.opacity = Math.max(0, opacity);
+
+        if (opacity > 0) {
+          requestAnimationFrame(animateParticle);
+        } else {
+          if (particle.parentNode) particle.parentNode.removeChild(particle);
+        }
+      }
+
+      requestAnimationFrame(animateParticle);
+    }
+  }
+
+  // Color shortcuts
+  const var_neonGreen = '#39ff14';
+  const var_neonCyan = '#00f0ff';
+  const var_neonMagenta = '#ff00aa';
+  const var_neonOrange = '#ff6b35';
+  const var_neonYellow = '#ffd600';
+
+  // ---- Sparks (small hit particles) ----
+  function createSparks(x, y, count, color) {
+    for (let i = 0; i < count; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'explosion-particle';
+      const size = Math.random() * 3 + 1;
+      spark.style.width = size + 'px';
+      spark.style.height = size + 'px';
+      spark.style.background = color;
+      spark.style.boxShadow = `0 0 4px ${color}`;
+      spark.style.left = x + 'px';
+      spark.style.top = y + 'px';
+      document.body.appendChild(spark);
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 6 + 2;
+      let sx = 0, sy = 0;
+      let svx = Math.cos(angle) * speed;
+      let svy = Math.sin(angle) * speed;
+      let sopacity = 1;
+
+      function animateSpark() {
+        sx += svx;
+        svy += 0.1;
+        sy += svy;
+        sopacity -= 0.04;
+        svx *= 0.98;
+
+        spark.style.transform = `translate(${sx}px, ${sy}px)`;
+        spark.style.opacity = Math.max(0, sopacity);
+
+        if (sopacity > 0) {
+          requestAnimationFrame(animateSpark);
+        } else {
+          if (spark.parentNode) spark.parentNode.removeChild(spark);
+        }
+      }
+
+      requestAnimationFrame(animateSpark);
+    }
+  }
+
+  // ---- Muzzle Flash ----
+  function createMuzzleFlash(x, y) {
+    const flash = document.createElement('div');
+    flash.className = 'muzzle-flash';
+    flash.style.left = x + 'px';
+    flash.style.top = y + 'px';
+    document.body.appendChild(flash);
+    setTimeout(() => {
+      if (flash.parentNode) flash.parentNode.removeChild(flash);
+    }, 200);
+  }
+
+  // ---- Score Popup ----
+  function showScorePopup(x, y, text) {
+    const popup = document.createElement('div');
+    popup.className = 'score-popup';
+    popup.textContent = text;
+    popup.style.left = (x + 20) + 'px';
+    popup.style.top = (y - 20) + 'px';
+    document.body.appendChild(popup);
+    setTimeout(() => {
+      if (popup.parentNode) popup.parentNode.removeChild(popup);
+    }, 800);
+  }
+
+  // ---- Notification ----
+  function showNotify(text) {
+    // Remove existing
+    document.querySelectorAll('.destroy-notify').forEach(n => n.remove());
+    const notify = document.createElement('div');
+    notify.className = 'destroy-notify';
+    notify.textContent = text;
+    document.body.appendChild(notify);
+    setTimeout(() => {
+      if (notify.parentNode) notify.parentNode.removeChild(notify);
+    }, 3000);
+  }
+
+  // ---- Check Layer Completion ----
+  function checkLayerCompletion(layerNum) {
+    const layer = layers[layerNum];
+    if (!layer || layer.allDestroyed) return;
+
+    const allDone = layer.destroyables.every(d => d._destroyed);
+    if (!allDone) return;
+
+    layer.allDestroyed = true;
+    state.sectionsDestroyed++;
+
+    // Mark section as destroyed
+    const sectionEl = document.getElementById(layer.section);
+    sectionEl.classList.add('destroyed');
+
+    // Update HUD
+    destroyedDisplay.textContent = state.sectionsDestroyed + '/' + state.totalSections;
+    const progress = (state.sectionsDestroyed / state.totalSections) * 100;
+    progressFill.style.width = progress + '%';
+
+    // Reveal next section?
+    if (layer.next) {
+      const nextSection = document.getElementById(layers[layer.next].section);
+      if (nextSection) {
+        playRevealSound();
+
+        // Section reveal flash
+        const flash = document.createElement('div');
+        flash.className = 'section-reveal-flash';
+        document.body.appendChild(flash);
+        setTimeout(() => {
+          if (flash.parentNode) flash.parentNode.removeChild(flash);
+        }, 500);
+
+        setTimeout(() => {
+          nextSection.classList.add('revealed');
+
+          // Scroll to new section
+          setTimeout(() => {
+            nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 300);
+
+          // Notification about what's new
+          const labels = {
+            2: 'ABOUT SECTION UNLOCKED -- KEEP DESTROYING',
+            3: 'PROJECTS UNLOCKED -- YOU CANNOT BE STOPPED',
+            4: 'TECH STACK REVEALED -- ALMOST THERE',
+            5: 'FINAL SECTION -- FINISH IT',
+          };
+          showNotify(labels[layer.next] || 'NEW SECTION UNLOCKED');
+        }, 200);
+      }
+    }
+
+    // All sections destroyed?
+    if (state.sectionsDestroyed >= state.totalSections) {
+      setTimeout(showFinale, 1500);
+    }
+  }
+
+  // ---- Finale ----
+  function showFinale() {
+    state.active = false;
+    document.body.classList.remove('game-active');
+
+    gameWorld.style.transition = 'opacity 0.8s ease';
+    gameWorld.style.opacity = '0';
+
+    setTimeout(() => {
+      gameWorld.style.display = 'none';
+
+      finalScore.textContent = `FINAL SCORE: ${state.score} // SECTIONS DESTROYED: ${state.sectionsDestroyed}/${state.totalSections} // COMBO PEAK: x${state.combo}`;
+      finaleScreen.classList.add('visible');
+
+      // Celebration particles
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          createExplosion(
+            { getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 }) },
+            Math.random() * window.innerWidth,
+            Math.random() * window.innerHeight * 0.5
+          );
+        }, i * 300);
+      }
+    }, 800);
+  }
+
+  // ---- Rebuild ----
+  function rebuild() {
+    finaleScreen.classList.remove('visible');
+
+    // Reset all state
+    state.active = false;
+    state.score = 0;
+    state.combo = 1;
+    state.destroyedCount = 0;
+    state.sectionsDestroyed = 0;
+    state.currentLayer = 1;
+    state.ammo = state.maxAmmo;
+    state.reloading = false;
+
+    scoreDisplay.textContent = '0';
+    comboDisplay.textContent = 'x1';
+    destroyedDisplay.textContent = '0/' + state.totalSections;
+    progressFill.style.width = '0%';
+    buildAmmoDisplay();
+
+    // Reset layers
+    for (const layerNum in layers) {
+      layers[layerNum].allDestroyed = false;
+      const sectionEl = document.getElementById(layers[layerNum].section);
+      sectionEl.classList.remove('revealed', 'destroyed');
+
+      layers[layerNum].destroyables.forEach(el => {
+        el._hp = el._maxHp;
+        el._destroyed = false;
+        el.style.visibility = '';
+        el.style.pointerEvents = '';
+        el.classList.remove('hit', 'damaged', 'critical');
+        const hb = el.querySelector('.health-bar-fill');
+        if (hb) {
+          hb.style.width = '100%';
+          hb.className = 'health-bar-fill';
+        }
+      });
+    }
+
+    // Clean up any lingering fragments or particles
+    document.querySelectorAll('.fragment, .explosion-particle, .score-popup, .muzzle-flash, .destroy-notify, .section-reveal-flash, .bullet-trail').forEach(el => el.remove());
+
+    // Reset game world
+    gameWorld.style.display = 'none';
+    gameWorld.style.opacity = '1';
+    gameWorld.style.transition = '';
+
+    // Show intro
+    introScreen.style.display = 'flex';
+    introScreen.style.opacity = '1';
+    introScreen.style.transform = 'none';
+  }
+
+  // ---- Keyboard: R to reload ----
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') {
+      if (state.active && state.ammo < state.maxAmmo) {
+        reload();
+      }
+    }
+  });
+
+  // ---- Right-click prevention in game mode ----
+  document.addEventListener('contextmenu', (e) => {
+    if (state.active) e.preventDefault();
+  });
+
+  // ---- Event Listeners ----
+  startBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    startGame();
+  });
+
+  rebuildBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    rebuild();
+  });
+
+  // ---- Init ----
+  init();
+
+})();
+</script>
+
+</body>
+</html>
