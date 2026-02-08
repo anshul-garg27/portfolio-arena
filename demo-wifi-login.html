@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WiFi Login | AnshullGarg_5G Network</title>
+<style>
+  /* ============================================
+     WIFI CAPTIVE PORTAL PORTFOLIO
+     Anshull Garg | Institutional Cafe WiFi Login
+     ============================================ */
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --portal-bg: #f0f2f5;
+    --card-bg: #ffffff;
+    --primary: #0066cc;
+    --primary-hover: #0052a3;
+    --primary-light: #e8f0fe;
+    --success: #1a8c3a;
+    --success-bg: #e6f4ea;
+    --warning: #b95000;
+    --warning-bg: #fef3e5;
+    --border: #d1d5db;
+    --border-light: #e5e7eb;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --text-faint: #9ca3af;
+    --ink-dark: #111827;
+    --signal-green: #22c55e;
+    --signal-yellow: #eab308;
+    --input-bg: #f9fafb;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Consolas', 'Liberation Mono', Menlo, monospace;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-system);
+    background: var(--portal-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  /* ============================================
+     TOP STATUS BAR (Browser-like captive portal)
+     ============================================ */
+  .status-bar {
+    width: 100%;
+    background: #1f2937;
+    color: #d1d5db;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    padding: 0.5rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+
+  .status-bar .url-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .status-bar .lock-icon {
+    color: var(--warning);
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .status-bar .url {
+    background: #374151;
+    padding: 0.3rem 0.75rem;
+    border-radius: 4px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #9ca3af;
+  }
+
+  .status-bar .url em {
+    color: #ef4444;
+    font-style: normal;
+    font-size: 0.65rem;
+    margin-left: 0.5rem;
+  }
+
+  .status-bar .status-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .status-bar .signal-mini {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+  }
+
+  .status-bar .signal-mini .bar {
+    width: 3px;
+    background: var(--signal-green);
+    border-radius: 1px 1px 0 0;
+  }
+
+  .status-bar .signal-mini .bar:nth-child(1) { height: 4px; }
+  .status-bar .signal-mini .bar:nth-child(2) { height: 7px; }
+  .status-bar .signal-mini .bar:nth-child(3) { height: 10px; }
+  .status-bar .signal-mini .bar:nth-child(4) { height: 13px; }
+
+  /* ============================================
+     WARNING BANNER
+     ============================================ */
+  .warning-banner {
+    width: 100%;
+    background: var(--warning-bg);
+    border-bottom: 1px solid #f3d5a8;
+    padding: 0.6rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--warning);
+  }
+
+  .warning-banner .warn-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .warning-banner a {
+    color: var(--primary);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ============================================
+     MAIN PORTAL CONTAINER
+     ============================================ */
+  .portal-wrapper {
+    width: 100%;
+    max-width: 520px;
+    padding: 2rem 1.25rem 3rem;
+    flex: 1;
+  }
+
+  /* ============================================
+     NETWORK HEADER CARD
+     ============================================ */
+  .network-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+
+  .network-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
+    color: #fff;
+    padding: 1.5rem 1.5rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .network-header::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .network-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: -10px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .network-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .network-top-row .wifi-icon-large {
+    font-size: 2.5rem;
+    line-height: 1;
+    opacity: 0.95;
+  }
+
+  .signal-strength {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+
+  .signal-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    padding: 0.4rem 0.6rem;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+  }
+
+  .signal-bars .bar {
+    width: 5px;
+    border-radius: 2px 2px 0 0;
+    transition: background 0.4s ease, height 0.4s ease;
+  }
+
+  .signal-bars .bar:nth-child(1) { height: 6px; background: var(--signal-green); }
+  .signal-bars .bar:nth-child(2) { height: 10px; background: var(--signal-green); }
+  .signal-bars .bar:nth-child(3) { height: 14px; background: var(--signal-green); }
+  .signal-bars .bar:nth-child(4) { height: 18px; background: var(--signal-green); }
+  .signal-bars .bar:nth-child(5) { height: 22px; background: var(--signal-green); }
+
+  .signal-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .network-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.15rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .network-name .secure-badge {
+    display: inline-block;
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(34,197,94,0.2);
+    color: #86efac;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    font-family: var(--font-system);
+  }
+
+  .network-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Network stats row */
+  .network-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .network-stat {
+    padding: 0.85rem 1rem;
+    text-align: center;
+    border-right: 1px solid var(--border-light);
+  }
+
+  .network-stat:last-child {
+    border-right: none;
+  }
+
+  .network-stat .stat-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
+
+  .network-stat .stat-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.15rem;
+  }
+
+  .stat-value .pulse-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-green);
+    margin-right: 0.25rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* ============================================
+     LOGIN FORM CARD
+     ============================================ */
+  .login-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .login-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    margin-bottom: 0.25rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Form fields */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.01em;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-faint);
+    font-family: var(--font-system);
+  }
+
+  .form-input.readonly-display {
+    background: var(--primary-light);
+    border-color: transparent;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: default;
+  }
+
+  .password-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .password-hint .hint-icon {
+    font-size: 0.85rem;
+  }
+
+  .password-hint a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .password-hint a:hover {
+    text-decoration: underline;
+  }
+
+  /* ============================================
+     TERMS & CONDITIONS SECTION (The Portfolio)
+     ============================================ */
+  .terms-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .terms-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .terms-toggle-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .terms-toggle-row label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1.45;
+  }
+
+  .terms-toggle-row label a {
+    color: var(--primary);
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  .terms-box {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-top: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    display: none;
+    animation: slideDown 0.3s ease;
+  }
+
+  .terms-box.visible {
+    display: block;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .terms-box::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .terms-box::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .terms-box::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .terms-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 1.25rem 0 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .terms-heading:first-child {
+    margin-top: 0;
+  }
+
+  .terms-box p {
+    margin-bottom: 0.5rem;
+  }
+
+  .terms-box ul {
+    margin: 0.35rem 0 0.65rem 1.25rem;
+    padding: 0;
+  }
+
+  .terms-box ul li {
+    margin-bottom: 0.3rem;
+    padding-left: 0.15rem;
+  }
+
+  .terms-box .clause-number {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.7rem;
+    margin-right: 0.3rem;
+  }
+
+  .terms-box .highlight-metric {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .terms-box .tech-tag {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    margin: 0.1rem 0.1rem;
+    font-family: var(--font-mono);
+  }
+
+  .terms-box .section-icon {
+    margin-right: 0.3rem;
+  }
+
+  /* ============================================
+     CONNECT BUTTON
+     ============================================ */
+  .connect-btn {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .connect-btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 14px rgba(0,102,204,0.25);
+  }
+
+  .connect-btn:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  .connect-btn:disabled {
+    background: #a0c4e8;
+    cursor: not-allowed;
+  }
+
+  .connect-btn .btn-text {
+    transition: opacity 0.2s;
+  }
+
+  .connect-btn .spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .connect-btn.loading .btn-text {
+    opacity: 0;
+  }
+
+  .connect-btn.loading .spinner {
+    display: block;
+  }
+
+  .spinner-circle {
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ============================================
+     HIDDEN PORTFOLIO SECTIONS (Revealed on accept)
+     ============================================ */
+  .portfolio-sections {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .portfolio-sections.visible {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Section card pattern */
+  .section-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: cardReveal 0.4s ease forwards;
+  }
+
+  @keyframes cardReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-card:nth-child(1) { animation-delay: 0.1s; }
+  .section-card:nth-child(2) { animation-delay: 0.2s; }
+  .section-card:nth-child(3) { animation-delay: 0.3s; }
+  .section-card:nth-child(4) { animation-delay: 0.4s; }
+  .section-card:nth-child(5) { animation-delay: 0.5s; }
+  .section-card:nth-child(6) { animation-delay: 0.6s; }
+  .section-card:nth-child(7) { animation-delay: 0.7s; }
+
+  .section-card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .section-card-header .section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .section-card-header .section-badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    background: var(--success-bg);
+    color: var(--success);
+  }
+
+  .section-card-body {
+    padding: 1.25rem;
+  }
+
+  /* Connected state banner */
+  .connected-banner {
+    background: var(--success-bg);
+    border: 1px solid #a3d9b1;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .connected-banner.visible {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .connected-banner .check-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--success);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .connected-banner .connected-text h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #166534;
+    margin-bottom: 0.1rem;
+  }
+
+  .connected-banner .connected-text p {
+    font-size: 0.8rem;
+    color: #4d7c5e;
+  }
+
+  /* ============================================
+     ABOUT / IDENTITY SECTION
+     ============================================ */
+  .about-content h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .about-content .role {
+    font-size: 0.9rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .about-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    line-height: 1.65;
+  }
+
+  /* ============================================
+     EXPERIENCE SECTION (as Connection Log)
+     ============================================ */
+  .connection-log {
+    list-style: none;
+    padding: 0;
+    position: relative;
+  }
+
+  .connection-log::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--border-light);
+  }
+
+  .log-entry {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    position: relative;
+  }
+
+  .log-entry:last-child {
+    padding-bottom: 0;
+  }
+
+  .log-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    margin-top: 3px;
+  }
+
+  .log-dot.active {
+    background: var(--signal-green);
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  }
+
+  .log-entry-content {
+    flex: 1;
+  }
+
+  .log-entry-content .log-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .log-entry-content .log-org {
+    font-size: 0.8rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .log-entry-content .log-period {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    margin-top: 0.15rem;
+  }
+
+  .log-entry-content .log-details {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .log-entry-content .log-details li {
+    margin-bottom: 0.2rem;
+    margin-left: 1rem;
+  }
+
+  /* ============================================
+     SKILLS AS DATA TRANSFER RATES
+     ============================================ */
+  .skill-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .skill-row:last-child {
+    border-bottom: none;
+  }
+
+  .skill-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 100px;
+    font-family: var(--font-mono);
+  }
+
+  .skill-bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border-light);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, #3b82f6 100%);
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
+  }
+
+  .skill-bar-fill.animate {
+    /* widths set inline */
+  }
+
+  .skill-speed {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    min-width: 65px;
+    text-align: right;
+  }
+
+  /* ============================================
+     PROJECTS AS CONNECTED DEVICES
+     ============================================ */
+  .device-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .device-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .device-item:first-child {
+    padding-top: 0;
+  }
+
+  .device-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .device-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .device-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .device-status.live {
+    background: var(--success-bg);
+    color: var(--success);
+  }
+
+  .device-status.archived {
+    background: #f3f4f6;
+    color: var(--text-faint);
+  }
+
+  .device-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    line-height: 1.55;
+  }
+
+  .device-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .device-tech .tech-chip {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    padding: 0.15rem 0.4rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 3px;
+  }
+
+  .device-links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .device-links a {
+    font-size: 0.75rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .device-links a:hover {
+    text-decoration: underline;
+  }
+
+  /* ============================================
+     CONTACT AS NETWORK CONFIG
+     ============================================ */
+  .config-table {
+    width: 100%;
+    font-size: 0.8rem;
+  }
+
+  .config-row {
+    display: flex;
+    align-items: baseline;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .config-row:last-child {
+    border-bottom: none;
+  }
+
+  .config-key {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 110px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .config-value {
+    color: var(--text-primary);
+    word-break: break-all;
+  }
+
+  .config-value a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  .config-value a:hover {
+    text-decoration: underline;
+  }
+
+  /* ============================================
+     SPONSOR FOOTER
+     ============================================ */
+  .sponsor-footer {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .sponsor-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+    margin-bottom: 0.35rem;
+  }
+
+  .sponsor-text {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .sponsor-subtext {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    line-height: 1.6;
+  }
+
+  .sponsor-subtext a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .sponsor-subtext a:hover {
+    text-decoration: underline;
+  }
+
+  .legal-footer {
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  /* ============================================
+     DATA USAGE METER
+     ============================================ */
+  .data-meter {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .data-meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .data-meter-bar {
+    height: 4px;
+    background: var(--border-light);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .data-meter-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--signal-green), #3b82f6, #8b5cf6);
+    width: 0%;
+    transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ============================================
+     TERMS EXPAND LINK
+     ============================================ */
+  .terms-expand-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .terms-expand-btn:hover {
+    color: var(--primary-hover);
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 540px) {
+    .portal-wrapper {
+      padding: 1.25rem 0.75rem 2rem;
+    }
+
+    .network-header {
+      padding: 1.25rem 1rem 1rem;
+    }
+
+    .network-name {
+      font-size: 1.1rem;
+    }
+
+    .network-name .secure-badge {
+      display: block;
+      margin-left: 0;
+      margin-top: 0.25rem;
+      width: fit-content;
+    }
+
+    .network-stats {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .network-stat {
+      padding: 0.65rem 0.5rem;
+    }
+
+    .status-bar {
+      font-size: 0.68rem;
+      padding: 0.4rem 0.75rem;
+    }
+
+    .status-bar .status-right {
+      display: none;
+    }
+
+    .config-key {
+      min-width: 85px;
+    }
+
+    .skill-name {
+      min-width: 80px;
+      font-size: 0.72rem;
+    }
+  }
+
+  /* ============================================
+     ANIMATION UTILITY
+     ============================================ */
+  .stagger-in {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: staggerReveal 0.4s ease forwards;
+  }
+
+  @keyframes staggerReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     STATUS BAR
+     ============================================ -->
+<div class="status-bar" role="banner">
+  <div class="url-bar">
+    <span class="lock-icon" aria-hidden="true">&#9888;</span>
+    <div class="url">
+      captive.portal.anshullgarg.dev/login <em>Not Secure</em>
+    </div>
+  </div>
+  <div class="status-right">
+    <div class="signal-mini" aria-label="Signal strength: excellent">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <span id="statusTime">--:--</span>
+  </div>
+</div>
+
+<!-- ============================================
+     WARNING BANNER
+     ============================================ -->
+<div class="warning-banner" role="alert">
+  <span class="warn-icon" aria-hidden="true">&#9888;</span>
+  <span>You must log in to this network before you can access the internet. <a id="scrollToForm" href="#loginForm">Sign in now</a></span>
+</div>
+
+<!-- ============================================
+     MAIN PORTAL
+     ============================================ -->
+<main class="portal-wrapper" role="main" aria-label="Anshull Garg - Portfolio styled as WiFi captive portal">
+
+  <!-- NETWORK INFO CARD -->
+  <div class="network-card">
+    <div class="network-header">
+      <div class="network-top-row">
+        <span class="wifi-icon-large" aria-hidden="true">&#x1F4F6;</span>
+        <div class="signal-strength">
+          <div class="signal-bars" role="img" aria-label="Signal strength: Excellent, 5 out of 5 bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <span class="signal-label">Excellent</span>
+        </div>
+      </div>
+      <div class="network-name">
+        AnshullGarg_5G
+        <span class="secure-badge">WPA3</span>
+      </div>
+      <div class="network-subtitle">Connect to continue browsing.</div>
+    </div>
+
+    <div class="network-stats">
+      <div class="network-stat">
+        <div class="stat-value"><span class="pulse-dot"></span><span id="deviceCount">47</span></div>
+        <div class="stat-label">Connected</div>
+      </div>
+      <div class="network-stat">
+        <div class="stat-value" id="uptimeValue">99.9%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+      <div class="network-stat">
+        <div class="stat-value">&#8734;</div>
+        <div class="stat-label">Bandwidth</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN FORM CARD -->
+  <div class="login-card" id="loginForm">
+    <div class="login-title">Network Authentication</div>
+    <div class="login-subtitle">Enter your credentials to access this network.</div>
+
+    <div class="form-group">
+      <label class="form-label" for="networkName">Network (SSID)</label>
+      <input class="form-input readonly-display" type="text" id="networkName" value="AnshullGarg_5G" readonly aria-readonly="true">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="emailField">Email or Username</label>
+      <input class="form-input" type="email" id="emailField" placeholder="visitor@company.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="passwordField">Password</label>
+      <input class="form-input" type="password" id="passwordField" placeholder="Enter network password">
+      <div class="password-hint">
+        <span class="hint-icon" aria-hidden="true">&#128273;</span>
+        Hint: <a href="https://github.com/anshullgarg" target="_blank" rel="noopener noreferrer">Check my GitHub</a>
+      </div>
+    </div>
+
+    <!-- TERMS & CONDITIONS -->
+    <div class="terms-section">
+      <div class="terms-toggle-row">
+        <input type="checkbox" id="acceptTerms" aria-describedby="termsDesc">
+        <label for="acceptTerms">
+          I have read and accept the <button class="terms-expand-btn" type="button" id="toggleTermsBtn" aria-expanded="false" aria-controls="termsContent">Terms &amp; Conditions</button>
+        </label>
+      </div>
+      <span id="termsDesc" class="password-hint" style="margin-left: 2rem; margin-top: 0.25rem;">(Required to connect)</span>
+
+      <div class="terms-box" id="termsContent" role="region" aria-label="Terms and Conditions - Full Portfolio">
+
+        <div class="terms-heading" style="margin-top: 0;">
+          <span class="section-icon" aria-hidden="true">&#167;</span> Article 1 - Identity of the Network Operator
+        </div>
+        <p>
+          <span class="clause-number">1.1</span>
+          This network is owned and operated by <span class="highlight-metric">Anshull Garg</span>, a Software Engineer currently based in the United States.
+        </p>
+        <p>
+          <span class="clause-number">1.2</span>
+          The operator specializes in building <span class="highlight-metric">scalable, high-performance applications</span> at enterprise scale. Focus areas include full-stack development, clean architecture, and user-centric design.
+        </p>
+        <p>
+          <span class="clause-number">1.3</span>
+          The operator's engineering philosophy centers on writing code that is <span class="highlight-metric">readable, testable, and built to last</span>.
+        </p>
+
+        <div class="terms-heading">
+          <span class="section-icon" aria-hidden="true">&#167;</span> Article 2 - Professional Experience
+        </div>
+        <p>
+          <span class="clause-number">2.1</span>
+          <span class="highlight-metric">Walmart Global Tech</span> - Software Engineer
+        </p>
+        <p style="margin-left: 1.5rem; font-size: 0.75rem; color: var(--text-muted);">
+          Building systems that power digital commerce at Fortune 1 scale. The operator works across the full stack to deliver high-impact features for one of the world's largest digital retail platforms.
+        </p>
+        <ul>
+          <li>Architected scalable frontend applications serving millions of users</li>
+          <li>Engineered performant APIs and microservices in production environments</li>
+          <li>Led cross-functional collaboration across multiple engineering teams</li>
+          <li>Championed code quality through rigorous testing and review standards</li>
+          <li>Optimized build pipelines and reduced deployment friction</li>
+        </ul>
+
+        <div class="terms-heading">
+          <span class="section-icon" aria-hidden="true">&#167;</span> Article 3 - Technical Capabilities (Allowed Protocols)
+        </div>
+        <p>
+          <span class="clause-number">3.1</span>
+          The network operator is certified to transmit data via the following protocols:
+        </p>
+        <p style="margin: 0.5rem 0;">
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">Next.js</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">Express</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">Java</span>
+          <span class="tech-tag">PostgreSQL</span>
+          <span class="tech-tag">MongoDB</span>
+          <span class="tech-tag">Redis</span>
+          <span class="tech-tag">GraphQL</span>
+          <span class="tech-tag">REST APIs</span>
+          <span class="tech-tag">Docker</span>
+          <span class="tech-tag">Kubernetes</span>
+          <span class="tech-tag">AWS</span>
+          <span class="tech-tag">CI/CD</span>
+          <span class="tech-tag">Git</span>
+          <span class="tech-tag">Tailwind CSS</span>
+          <span class="tech-tag">Jest</span>
+        </p>
+        <p>
+          <span class="clause-number">3.2</span>
+          Protocol proficiency is validated through <span class="highlight-metric">4+ years</span> of production deployments, not self-assessed star ratings.
+        </p>
+
+        <div class="terms-heading">
+          <span class="section-icon" aria-hidden="true">&#167;</span> Article 4 - Network Quality of Service
+        </div>
+        <p>
+          <span class="clause-number">4.1</span>
+          The operator guarantees delivery of: clean, maintainable, well-documented, and thoroughly tested code in all transmissions.
+        </p>
+        <p>
+          <span class="clause-number">4.2</span>
+          Mean time to resolution (MTTR) for any assigned task is governed by a commitment to <span class="highlight-metric">shipping iteratively</span> rather than pursuing theoretical perfection.
+        </p>
+        <p>
+          <span class="clause-number">4.3</span>
+          The operator adheres to the following service-level principles:
+        </p>
+        <ul>
+          <li>Readability is not optional -- code is read 10x more than it is written</li>
+          <li>Tests are documentation that executes</li>
+          <li>The best abstraction is the one you don't need yet</li>
+          <li>Every PR should leave the codebase better than you found it</li>
+          <li>Accessibility is a baseline, not a feature</li>
+        </ul>
+
+        <div class="terms-heading">
+          <span class="section-icon" aria-hidden="true">&#167;</span> Article 5 - Acceptable Use Policy
+        </div>
+        <p>
+          <span class="clause-number">5.1</span>
+          By connecting to this network, you agree that the operator is open to <span class="highlight-metric">full-time opportunities, collaborations, and conversations</span> about software engineering.
+        </p>
+        <p>
+          <span class="clause-number">5.2</span>
+          All inquiries shall be directed to the operator's communication channels listed in the Network Configuration section below.
+        </p>
+        <p>
+          <span class="clause-number">5.3</span>
+          Response time SLA: The operator typically responds within <span class="highlight-metric">24-48 hours</span>.
+        </p>
+
+        <div class="terms-heading">
+          <span class="section-icon" aria-hidden="true">&#167;</span> Article 6 - Disclaimer
+        </div>
+        <p>
+          <span class="clause-number">6.1</span>
+          This network has been operating continuously since <span class="highlight-metric">2020</span> with a guaranteed uptime of 99.9%.
+        </p>
+        <p>
+          <span class="clause-number">6.2</span>
+          Bandwidth is listed as "Unlimited" because the operator's capacity for learning and growth has no known upper bound.
+        </p>
+        <p>
+          <span class="clause-number">6.3</span>
+          No cookies are collected. The only thing stored is a lasting impression.
+        </p>
+      </div>
+    </div>
+
+    <!-- CONNECT BUTTON -->
+    <button class="connect-btn" id="connectBtn" type="button" disabled aria-label="Connect to network">
+      <span class="btn-text">Connect to Network</span>
+      <span class="spinner"><div class="spinner-circle"></div></span>
+    </button>
+  </div>
+
+  <!-- ============================================
+       CONNECTED STATE BANNER
+       ============================================ -->
+  <div class="connected-banner" id="connectedBanner">
+    <div class="check-circle" aria-hidden="true">&#10003;</div>
+    <div class="connected-text">
+      <h3>Connected to AnshullGarg_5G</h3>
+      <p>You now have full access. Scroll down to browse the network.</p>
+    </div>
+  </div>
+
+  <!-- ============================================
+       PORTFOLIO SECTIONS (Hidden until connected)
+       ============================================ -->
+  <div class="portfolio-sections" id="portfolioSections">
+
+    <!-- ABOUT -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Network Operator Profile</span>
+        <span class="section-badge">Verified</span>
+      </div>
+      <div class="section-card-body about-content">
+        <h2>Anshull Garg</h2>
+        <div class="role">Software Engineer @ Walmart Global Tech</div>
+        <p>
+          I build scalable systems that solve real problems for real users. At Walmart Global Tech, I work across the full stack to deliver high-impact features for one of the world's largest digital retail platforms -- the kind that handles traffic spikes, edge cases, and the unpredictable reality of serving millions of users.
+        </p>
+        <p>
+          I care about clean architecture, deep user empathy, and relentless iteration. I believe great software is built at the intersection of thoughtful engineering and genuine understanding of the people who use it.
+        </p>
+        <div class="data-meter">
+          <div class="data-meter-label">
+            <span>Experience Level</span>
+            <span id="expMeter">4+ years</span>
+          </div>
+          <div class="data-meter-bar">
+            <div class="data-meter-fill" id="expMeterFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE (Connection Log) -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Connection History</span>
+        <span class="section-badge">Active</span>
+      </div>
+      <div class="section-card-body">
+        <ul class="connection-log" aria-label="Work experience timeline">
+          <li class="log-entry">
+            <div class="log-dot active" aria-hidden="true"></div>
+            <div class="log-entry-content">
+              <div class="log-title">Software Engineer</div>
+              <div class="log-org">Walmart Global Tech</div>
+              <div class="log-period">2022 - Present // Active Connection</div>
+              <ul class="log-details">
+                <li>Architected scalable frontend applications using React and Next.js</li>
+                <li>Engineered microservices and REST APIs serving enterprise-scale traffic</li>
+                <li>Led cross-functional initiatives improving deployment velocity</li>
+                <li>Championed testing culture and code review best practices</li>
+              </ul>
+            </div>
+          </li>
+          <li class="log-entry">
+            <div class="log-dot" aria-hidden="true"></div>
+            <div class="log-entry-content">
+              <div class="log-title">Software Engineering Intern</div>
+              <div class="log-org">Enterprise Scale</div>
+              <div class="log-period">2021 - 2022 // Session Ended</div>
+              <ul class="log-details">
+                <li>Built internal tools used by engineering teams across the organization</li>
+                <li>Contributed to production systems and participated in on-call rotations</li>
+                <li>Collaborated with senior engineers on system design and architecture</li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SKILLS (Data Transfer Rates) -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Data Transfer Rates (Skills)</span>
+        <span class="section-badge">Measured</span>
+      </div>
+      <div class="section-card-body" id="skillsBody">
+        <div class="skill-row">
+          <span class="skill-name">React/Next.js</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="92%"></div></div>
+          <span class="skill-speed">920 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">TypeScript</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="88%"></div></div>
+          <span class="skill-speed">880 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">Node.js</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="90%"></div></div>
+          <span class="skill-speed">900 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">Python</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="78%"></div></div>
+          <span class="skill-speed">780 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">AWS/Cloud</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="82%"></div></div>
+          <span class="skill-speed">820 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">Docker/K8s</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="76%"></div></div>
+          <span class="skill-speed">760 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">PostgreSQL</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="84%"></div></div>
+          <span class="skill-speed">840 Mbps</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">CI/CD</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" data-width="80%"></div></div>
+          <span class="skill-speed">800 Mbps</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS (Connected Devices) -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Connected Devices (Projects)</span>
+        <span class="section-badge" id="projectCount">3 Active</span>
+      </div>
+      <div class="section-card-body">
+        <div class="device-item">
+          <div class="device-top">
+            <span class="device-name">Portfolio Network Hub</span>
+            <span class="device-status live">Live</span>
+          </div>
+          <div class="device-desc">
+            A creative developer portfolio designed as a WiFi captive portal. You are currently browsing it. Built to demonstrate that portfolio design can be both unconventional and deeply functional.
+          </div>
+          <div class="device-tech">
+            <span class="tech-chip">HTML</span>
+            <span class="tech-chip">CSS</span>
+            <span class="tech-chip">JavaScript</span>
+            <span class="tech-chip">Responsive</span>
+          </div>
+          <div class="device-links">
+            <a href="https://github.com/anshullgarg" target="_blank" rel="noopener">View Source</a>
+          </div>
+        </div>
+
+        <div class="device-item">
+          <div class="device-top">
+            <span class="device-name">Enterprise Commerce Platform</span>
+            <span class="device-status live">Live</span>
+          </div>
+          <div class="device-desc">
+            Full-stack contributions to Walmart's digital commerce platform. Architected frontend components serving millions of daily active users with sub-second load times and 99.9% uptime.
+          </div>
+          <div class="device-tech">
+            <span class="tech-chip">React</span>
+            <span class="tech-chip">Next.js</span>
+            <span class="tech-chip">Node.js</span>
+            <span class="tech-chip">GraphQL</span>
+            <span class="tech-chip">AWS</span>
+          </div>
+        </div>
+
+        <div class="device-item">
+          <div class="device-top">
+            <span class="device-name">Scalable API Gateway</span>
+            <span class="device-status live">Live</span>
+          </div>
+          <div class="device-desc">
+            Engineered a microservice gateway that reduced API latency across downstream services. Implemented intelligent caching, rate limiting, and circuit-breaker patterns for fault tolerance.
+          </div>
+          <div class="device-tech">
+            <span class="tech-chip">Node.js</span>
+            <span class="tech-chip">Express</span>
+            <span class="tech-chip">Redis</span>
+            <span class="tech-chip">Docker</span>
+            <span class="tech-chip">K8s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT (Network Configuration) -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Network Configuration</span>
+        <span class="section-badge">Open</span>
+      </div>
+      <div class="section-card-body">
+        <div class="config-table">
+          <div class="config-row">
+            <span class="config-key">Gateway</span>
+            <span class="config-value"><a href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a></span>
+          </div>
+          <div class="config-row">
+            <span class="config-key">DNS</span>
+            <span class="config-value"><a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a></span>
+          </div>
+          <div class="config-row">
+            <span class="config-key">SMTP</span>
+            <span class="config-value"><a href="mailto:anshullgarg@gmail.com">anshullgarg@gmail.com</a></span>
+          </div>
+          <div class="config-row">
+            <span class="config-key">Location</span>
+            <span class="config-value">United States</span>
+          </div>
+          <div class="config-row">
+            <span class="config-key">Status</span>
+            <span class="config-value" style="color: var(--success); font-weight: 600;">Open to opportunities</span>
+          </div>
+          <div class="config-row">
+            <span class="config-key">Response</span>
+            <span class="config-value">Within 24-48 hours</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPONSOR FOOTER -->
+    <div class="sponsor-footer">
+      <div class="sponsor-label">Free WiFi sponsored by</div>
+      <div class="sponsor-text">4+ Years of Professional Experience</div>
+      <div class="sponsor-subtext">
+        Bandwidth: Unlimited potential.<br>
+        Coverage: Full-stack, end to end.<br>
+        <br>
+        <a href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a>
+        &nbsp;&middot;&nbsp;
+        <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a>
+      </div>
+    </div>
+
+    <div class="legal-footer">
+      This captive portal is a creative portfolio project by Anshull Garg.<br>
+      No actual WiFi is provided. No data is collected or transmitted.<br>
+      Built with HTML, CSS, and vanilla JavaScript. Zero dependencies.<br>
+      &copy; <span id="footerYear">2026</span> Anshull Garg. All rights reserved.
+    </div>
+  </div>
+
+</main>
+
+<script>
+  /* ============================================
+     CAPTIVE PORTAL INTERACTION LOGIC
+     ============================================ */
+
+  (function() {
+    'use strict';
+
+    // --- Elements ---
+    const checkbox = document.getElementById('acceptTerms');
+    const toggleBtn = document.getElementById('toggleTermsBtn');
+    const termsContent = document.getElementById('termsContent');
+    const connectBtn = document.getElementById('connectBtn');
+    const connectedBanner = document.getElementById('connectedBanner');
+    const portfolioSections = document.getElementById('portfolioSections');
+    const scrollToForm = document.getElementById('scrollToForm');
+
+    // --- Clock in status bar ---
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      const el = document.getElementById('statusTime');
+      if (el) el.textContent = h12 + ':' + m + ' ' + ampm;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // --- Footer year ---
+    const footerYear = document.getElementById('footerYear');
+    if (footerYear) footerYear.textContent = new Date().getFullYear();
+
+    // --- Randomize connected device count ---
+    const deviceCountEl = document.getElementById('deviceCount');
+    if (deviceCountEl) {
+      const base = 42;
+      const variation = Math.floor(Math.random() * 15);
+      deviceCountEl.textContent = base + variation;
+    }
+
+    // --- Toggle terms visibility ---
+    toggleBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const isVisible = termsContent.classList.contains('visible');
+      termsContent.classList.toggle('visible');
+      toggleBtn.setAttribute('aria-expanded', !isVisible);
+      if (!isVisible) {
+        termsContent.scrollTop = 0;
+      }
+    });
+
+    // --- Checkbox enables connect button ---
+    checkbox.addEventListener('change', function() {
+      connectBtn.disabled = !this.checked;
+      // Auto-show terms when checking
+      if (this.checked && !termsContent.classList.contains('visible')) {
+        termsContent.classList.add('visible');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // --- Connect button ---
+    connectBtn.addEventListener('click', function() {
+      if (connectBtn.disabled) return;
+
+      // Loading state
+      connectBtn.classList.add('loading');
+      connectBtn.disabled = true;
+
+      // Simulate connection delay
+      setTimeout(function() {
+        connectBtn.classList.remove('loading');
+        connectBtn.style.display = 'none';
+
+        // Show connected banner
+        connectedBanner.classList.add('visible');
+
+        // Show portfolio sections
+        portfolioSections.classList.add('visible');
+
+        // Animate skill bars
+        setTimeout(animateSkillBars, 400);
+
+        // Animate experience meter
+        setTimeout(function() {
+          const fill = document.getElementById('expMeterFill');
+          if (fill) fill.style.width = '75%';
+        }, 600);
+
+        // Scroll to connected banner
+        connectedBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Animate signal bars slightly (show "connected" quality)
+        animateSignalStrength();
+
+      }, 1800);
+    });
+
+    // --- Scroll to form link ---
+    if (scrollToForm) {
+      scrollToForm.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('loginForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+
+    // --- Animate skill bars ---
+    function animateSkillBars() {
+      const bars = document.querySelectorAll('.skill-bar-fill');
+      bars.forEach(function(bar, i) {
+        setTimeout(function() {
+          bar.style.width = bar.getAttribute('data-width');
+        }, i * 100);
+      });
+    }
+
+    // --- Signal strength animation ---
+    function animateSignalStrength() {
+      const bars = document.querySelectorAll('.signal-bars .bar');
+      bars.forEach(function(bar, i) {
+        setTimeout(function() {
+          bar.style.background = '#22c55e';
+          bar.style.transition = 'background 0.3s, box-shadow 0.3s';
+          bar.style.boxShadow = '0 0 4px rgba(34,197,94,0.3)';
+        }, i * 150);
+      });
+    }
+
+  })();
+</script>
+
+</body>
+</html>

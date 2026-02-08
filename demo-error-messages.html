@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Messages - Anshull Garg Portfolio</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #EF4444;
+  --red-dim: #991B1B;
+  --red-glow: rgba(239, 68, 68, 0.15);
+  --red-bg: #1C0A0A;
+  --green: #22C55E;
+  --green-dim: #166534;
+  --green-glow: rgba(34, 197, 94, 0.15);
+  --green-bg: #0A1C0F;
+  --yellow: #FACC15;
+  --yellow-dim: #854D0E;
+  --cyan: #22D3EE;
+  --magenta: #C084FC;
+  --blue: #60A5FA;
+  --orange: #FB923C;
+  --bg: #0A0A0F;
+  --bg-card: #111118;
+  --bg-surface: #16161E;
+  --border: #222230;
+  --border-light: #2A2A3A;
+  --text: #C8C8D0;
+  --text-dim: #666680;
+  --text-bright: #E8E8F0;
+  --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--green); color: var(--bg); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* ========================================
+   SCANLINES OVERLAY
+======================================== */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 10000;
+}
+
+/* ========================================
+   HEADER / HERO
+======================================== */
+.header {
+  padding: 60px 24px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.header-terminal {
+  display: inline-block;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 700px;
+  width: 100%;
+  text-align: left;
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+}
+.terminal-dot.r { background: #FF5F57; }
+.terminal-dot.y { background: #FEBC2E; }
+.terminal-dot.g { background: #28C840; }
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.terminal-body {
+  padding: 24px;
+  font-size: 0.9rem;
+}
+
+.terminal-body .line {
+  margin: 4px 0;
+  opacity: 0;
+  animation: lineIn 0.3s forwards;
+}
+
+.terminal-body .prompt { color: var(--green); }
+.terminal-body .cmd { color: var(--text-bright); font-weight: 600; }
+.terminal-body .err-text { color: var(--red); }
+.terminal-body .warn-text { color: var(--yellow); }
+.terminal-body .dim { color: var(--text-dim); }
+
+@keyframes lineIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header-name {
+  font-family: var(--sans);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--text-bright);
+  margin-top: 32px;
+  letter-spacing: -1px;
+}
+
+.header-subtitle {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.header-subtitle .blink-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--green);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.error-count-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.error-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: all 0.5s ease;
+}
+
+.error-counter .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  transition: background 0.5s ease;
+}
+
+.error-counter.errors .dot { background: var(--red); animation: pulseDot 1.5s infinite; }
+.error-counter.errors { color: var(--red); border-color: var(--red-dim); }
+
+.error-counter.fixed .dot { background: var(--green); animation: none; }
+.error-counter.fixed { color: var(--green); border-color: var(--green-dim); }
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ========================================
+   ERROR SECTION BASE
+======================================== */
+.error-section {
+  max-width: 900px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+}
+
+.error-card {
+  background: var(--bg-card);
+  border: 2px solid var(--red-dim);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.8s ease, box-shadow 0.8s ease;
+  position: relative;
+}
+
+.error-card.fixed {
+  border-color: var(--green-dim);
+  box-shadow: 0 0 30px var(--green-glow);
+}
+
+/* Error Header */
+.error-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--red-bg);
+  border-bottom: 1px solid var(--red-dim);
+  gap: 12px;
+  flex-wrap: wrap;
+  transition: background 0.8s ease, border-color 0.8s ease;
+}
+
+.error-card.fixed .error-header {
+  background: var(--green-bg);
+  border-bottom-color: var(--green-dim);
+}
+
+.error-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  font-weight: 700;
+  transition: color 0.8s ease;
+}
+
+.error-card.fixed .error-icon {
+  color: var(--green);
+}
+
+.error-type-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--red);
+  border: 1px solid var(--red-dim);
+  transition: all 0.8s ease;
+}
+
+.error-card.fixed .error-type-badge {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--green);
+  border-color: var(--green-dim);
+}
+
+/* Error Body */
+.error-body {
+  padding: 24px;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: var(--red);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  transition: color 0.8s ease;
+}
+
+.error-card.fixed .error-message {
+  color: var(--green);
+}
+
+.error-detail {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+.error-detail .file-path { color: var(--cyan); }
+.error-detail .line-num { color: var(--yellow); }
+
+/* Stack trace */
+.stack-trace {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  line-height: 1.8;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.stack-trace .at-sign { color: var(--text-dim); }
+.stack-trace .fn-name { color: var(--yellow); }
+.stack-trace .file-ref { color: var(--cyan); }
+
+/* Fix Button */
+.fix-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: 2px solid var(--red);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--red);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.fix-button:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px var(--red-glow);
+}
+
+.fix-button:active {
+  transform: translateY(0);
+}
+
+.fix-button.fixing {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background: rgba(250, 204, 21, 0.1);
+  cursor: wait;
+  pointer-events: none;
+}
+
+.fix-button.done {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(34, 197, 94, 0.1);
+  cursor: default;
+  pointer-events: none;
+}
+
+.fix-button .spinner {
+  display: none;
+  width: 14px; height: 14px;
+  border: 2px solid transparent;
+  border-top-color: var(--yellow);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.fix-button.fixing .spinner { display: inline-block; }
+.fix-button.fixing .btn-icon { display: none; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Fix Content (hidden initially) */
+.fix-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 1s ease, opacity 0.8s ease;
+  opacity: 0;
+}
+
+.fix-content.revealed {
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.fix-content-inner {
+  padding-top: 24px;
+  border-top: 1px dashed var(--green-dim);
+  margin-top: 20px;
+}
+
+/* Success message */
+.success-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--green);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.5s ease;
+}
+
+.success-msg.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========================================
+   SECTION 1: ABOUT
+======================================== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.about-prop {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.about-key {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.about-val {
+  font-size: 0.9rem;
+  color: var(--text-bright);
+}
+
+.about-code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  margin-top: 16px;
+}
+
+.about-code .kw { color: var(--magenta); }
+.about-code .var-name { color: var(--blue); }
+.about-code .str { color: var(--yellow); }
+.about-code .prop { color: #9CDCFE; }
+.about-code .bracket { color: var(--text-dim); }
+.about-code .comment { color: var(--text-dim); font-style: italic; }
+
+/* ========================================
+   SECTION 2: SKILLS / NPM INSTALL
+======================================== */
+.npm-output {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.npm-line {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.npm-line.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.15s ease;
+}
+
+.npm-line .added { color: var(--green); }
+.npm-line .warn { color: var(--yellow); }
+.npm-line .info { color: var(--cyan); }
+.npm-line .dim { color: var(--text-dim); }
+.npm-line .pkg { color: var(--magenta); }
+.npm-line .version { color: var(--green); font-weight: 600; }
+
+.progress-wrap {
+  display: inline-block;
+  width: 180px;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 0 6px;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-dim), var(--green));
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.skill-category {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.skill-category:hover {
+  border-color: var(--green-dim);
+  transform: translateY(-2px);
+}
+
+.skill-category-name {
+  font-size: 0.7rem;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.skill-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  margin: 3px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.skill-tag:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* ========================================
+   SECTION 3: PROJECTS
+======================================== */
+.projects-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.project-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.project-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+
+.project-name {
+  font-size: 1rem;
+  color: var(--blue);
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-desc {
+  font-size: 0.82rem;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-family: var(--sans);
+  line-height: 1.6;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.project-tech-tag {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  background: rgba(96, 165, 250, 0.1);
+  color: var(--blue);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+.project-impact {
+  font-size: 0.75rem;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ========================================
+   SECTION 4: EXPERIENCE TIMELINE
+======================================== */
+.timeline {
+  position: relative;
+  margin-top: 16px;
+  padding-left: 28px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--green-dim);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+  padding-bottom: 4px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 3px solid var(--bg-card);
+  box-shadow: 0 0 0 2px var(--green-dim);
+}
+
+.timeline-period {
+  font-size: 0.7rem;
+  color: var(--green);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.timeline-role {
+  font-size: 1rem;
+  color: var(--text-bright);
+  font-weight: 700;
+  margin: 4px 0 2px;
+  font-family: var(--sans);
+}
+
+.timeline-company {
+  font-size: 0.85rem;
+  color: var(--yellow);
+  margin-bottom: 8px;
+}
+
+.timeline-details {
+  font-size: 0.8rem;
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.7;
+}
+
+.timeline-details li {
+  margin: 4px 0;
+  padding-left: 4px;
+}
+
+.timeline-details li::marker {
+  color: var(--green-dim);
+}
+
+/* ========================================
+   SECTION 5: CONTACT
+======================================== */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.contact-card:hover {
+  border-color: var(--green);
+  transform: translateY(-2px);
+  color: var(--text-bright);
+}
+
+.contact-card-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.contact-card-label {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.contact-card-value {
+  font-size: 0.82rem;
+  color: var(--text-bright);
+}
+
+.connection-anim {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.connection-anim .success { color: var(--green); }
+.connection-anim .info { color: var(--cyan); }
+.connection-anim .dim { color: var(--text-dim); }
+
+.conn-line {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.conn-line.show { opacity: 1; }
+
+/* ========================================
+   FOOTER
+======================================== */
+.footer {
+  text-align: center;
+  padding: 60px 24px;
+  border-top: 1px solid var(--border);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.footer-text {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.footer-text .green { color: var(--green); }
+
+.footer-status {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.footer-status #errorsRemaining {
+  color: var(--red);
+  font-weight: 700;
+  transition: color 0.5s ease;
+}
+
+.footer-status #errorsRemaining.all-fixed {
+  color: var(--green);
+}
+
+/* ========================================
+   FIX ALL BUTTON
+======================================== */
+.fix-all-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 9999;
+  transform: translateY(0);
+  transition: transform 0.5s ease;
+}
+
+.fix-all-bar.hidden {
+  transform: translateY(100%);
+}
+
+.fix-all-btn {
+  padding: 8px 20px;
+  border: 1px solid var(--green-dim);
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fix-all-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  transform: translateY(-1px);
+}
+
+.fix-all-status {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 640px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .error-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .terminal-body {
+    padding: 16px;
+    font-size: 0.8rem;
+  }
+  .error-message {
+    font-size: 0.95rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ========================================
+     HEADER
+======================================== -->
+<header class="header">
+  <div class="header-terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div>
+      <div class="terminal-dot y"></div>
+      <div class="terminal-dot g"></div>
+      <span class="terminal-title">portfolio.js -- runtime errors</span>
+    </div>
+    <div class="terminal-body">
+      <div class="line" style="animation-delay: 0.2s">
+        <span class="prompt">$</span> <span class="cmd">node portfolio.js</span>
+      </div>
+      <div class="line" style="animation-delay: 0.6s">
+        <span class="dim">Loading Anshull Garg's portfolio...</span>
+      </div>
+      <div class="line" style="animation-delay: 1.0s">
+        <span class="err-text">FATAL: 5 errors detected. Portfolio cannot render.</span>
+      </div>
+      <div class="line" style="animation-delay: 1.4s">
+        <span class="warn-text">Fix each error below to unlock the full portfolio.</span>
+      </div>
+    </div>
+  </div>
+
+  <h1 class="header-name">Anshull Garg</h1>
+  <p class="header-subtitle">
+    <span class="dim">// Software Developer debugging production since 2020</span>
+    <span class="blink-cursor"></span>
+  </p>
+
+  <div class="error-count-bar">
+    <div class="error-counter errors" id="errorCounter">
+      <span class="dot"></span>
+      <span id="errorCountText">5 errors</span>
+    </div>
+    <div class="error-counter" style="color: var(--text-dim);">
+      <span class="dot" style="background: var(--text-dim);"></span>
+      <span>Scroll down to fix</span>
+    </div>
+  </div>
+</header>
+
+<!-- ========================================
+     ERROR 1: TypeError - ABOUT
+======================================== -->
+<section class="error-section" id="section-about">
+  <div class="error-card" id="card-about">
+    <div class="error-header">
+      <div class="error-icon">
+        <span class="error-x" id="icon-about">&#10060;</span>
+        <span>TypeError</span>
+      </div>
+      <span class="error-type-badge">RUNTIME ERROR</span>
+    </div>
+    <div class="error-body">
+      <div class="error-message">
+        TypeError: career is undefined
+      </div>
+      <div class="error-detail">
+        at <span class="file-path">portfolio.js</span>:<span class="line-num">42</span><br>
+        Cannot read properties of undefined (reading 'developer')
+      </div>
+      <div class="stack-trace">
+<span class="at-sign">at</span> <span class="fn-name">renderAbout</span> (<span class="file-ref">portfolio.js:42:15</span>)
+<span class="at-sign">at</span> <span class="fn-name">initPortfolio</span> (<span class="file-ref">portfolio.js:12:3</span>)
+<span class="at-sign">at</span> <span class="fn-name">Object.&lt;anonymous&gt;</span> (<span class="file-ref">portfolio.js:1:1</span>)
+<span class="at-sign">at</span> <span class="fn-name">Module._compile</span> (<span class="file-ref">node:internal/modules/cjs/loader:1234:14</span>)
+      </div>
+      <button class="fix-button" onclick="fixError('about')">
+        <span class="btn-icon">&#9655;</span>
+        <span class="spinner"></span>
+        Define career
+      </button>
+
+      <div class="fix-content" id="content-about">
+        <div class="fix-content-inner">
+          <div class="success-msg" id="success-about">
+            &#10003; career = defined successfully
+          </div>
+
+          <div class="about-code">
+            <span class="kw">const</span> <span class="var-name">career</span> = <span class="bracket">{</span><br>
+            &nbsp;&nbsp;<span class="prop">name</span>: <span class="str">"Anshull Garg"</span>,<br>
+            &nbsp;&nbsp;<span class="prop">role</span>: <span class="str">"Software Developer"</span>,<br>
+            &nbsp;&nbsp;<span class="prop">company</span>: <span class="str">"Walmart"</span>,<br>
+            &nbsp;&nbsp;<span class="prop">location</span>: <span class="str">"India"</span>,<br>
+            &nbsp;&nbsp;<span class="prop">education</span>: <span class="str">"B.Tech Computer Science"</span>,<br>
+            &nbsp;&nbsp;<span class="prop">experience</span>: <span class="str">"4+ years"</span>,<br>
+            <span class="bracket">}</span>; <span class="comment">// TypeError resolved</span>
+          </div>
+
+          <div class="about-grid">
+            <div class="about-prop">
+              <span class="about-key">Focus</span>
+              <span class="about-val">Building scalable systems</span>
+            </div>
+            <div class="about-prop">
+              <span class="about-key">Philosophy</span>
+              <span class="about-val">Clean code at scale</span>
+            </div>
+            <div class="about-prop">
+              <span class="about-key">Strength</span>
+              <span class="about-val">Full-stack problem solving</span>
+            </div>
+            <div class="about-prop">
+              <span class="about-key">Passion</span>
+              <span class="about-val">Open source & mentoring</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ERROR 2: 404 - SKILLS
+======================================== -->
+<section class="error-section" id="section-skills">
+  <div class="error-card" id="card-skills">
+    <div class="error-header">
+      <div class="error-icon">
+        <span class="error-x" id="icon-skills">&#10060;</span>
+        <span>404</span>
+      </div>
+      <span class="error-type-badge">NOT FOUND</span>
+    </div>
+    <div class="error-body">
+      <div class="error-message">
+        404: skills not found
+      </div>
+      <div class="error-detail">
+        at <span class="file-path">GET /api/developer/skills</span> <span class="line-num">HTTP/1.1</span><br>
+        The requested resource could not be located on this server.
+      </div>
+      <div class="stack-trace">
+<span class="at-sign">at</span> <span class="fn-name">SkillsLoader.fetch</span> (<span class="file-ref">skills-module.js:88:22</span>)
+<span class="at-sign">at</span> <span class="fn-name">async renderSkills</span> (<span class="file-ref">portfolio.js:67:9</span>)
+<span class="at-sign">at</span> <span class="fn-name">initPortfolio</span> (<span class="file-ref">portfolio.js:14:3</span>)
+<span class="at-sign">hint:</span> Run <span class="fn-name">npm install @anshull/skills</span> to resolve
+      </div>
+      <button class="fix-button" onclick="fixError('skills')">
+        <span class="btn-icon">&#9655;</span>
+        <span class="spinner"></span>
+        Install skills
+      </button>
+
+      <div class="fix-content" id="content-skills">
+        <div class="fix-content-inner">
+          <div class="success-msg" id="success-skills">
+            &#10003; added 47 packages in 3.2s
+          </div>
+
+          <div class="npm-output" id="npmOutput">
+            <div class="npm-line" data-delay="0"><span class="dim">$</span> npm install @anshull/skills</div>
+            <div class="npm-line" data-delay="200"><span class="info">npm</span> <span class="dim">resolving dependencies...</span></div>
+            <div class="npm-line" data-delay="500"><span class="info">npm</span> <span class="dim">downloading</span> <span class="pkg">@anshull/frontend@latest</span></div>
+            <div class="npm-line" data-delay="800"><span class="info">npm</span> <span class="dim">downloading</span> <span class="pkg">@anshull/backend@latest</span></div>
+            <div class="npm-line" data-delay="1100"><span class="info">npm</span> <span class="dim">downloading</span> <span class="pkg">@anshull/databases@latest</span></div>
+            <div class="npm-line" data-delay="1400"><span class="info">npm</span> <span class="dim">downloading</span> <span class="pkg">@anshull/cloud@latest</span></div>
+            <div class="npm-line" data-delay="1700"><span class="info">npm</span> <span class="dim">downloading</span> <span class="pkg">@anshull/tools@latest</span></div>
+            <div class="npm-line" data-delay="2000"><span class="dim">progress</span> <span class="progress-wrap-placeholder">[==================]</span> <span class="version">100%</span></div>
+            <div class="npm-line" data-delay="2300"><span class="added">added</span> <span class="version">47 packages</span> <span class="dim">in 3.2s</span></div>
+            <div class="npm-line" data-delay="2600"><span class="added">0 vulnerabilities</span></div>
+          </div>
+
+          <div class="skills-grid">
+            <div class="skill-category">
+              <div class="skill-category-name">Frontend</div>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Tailwind CSS</span>
+              <span class="skill-tag">Redux</span>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-name">Backend</div>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Express</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">Java</span>
+              <span class="skill-tag">GraphQL</span>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-name">Databases</div>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">Elasticsearch</span>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-name">Cloud / DevOps</div>
+              <span class="skill-tag">AWS</span>
+              <span class="skill-tag">GCP</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Kubernetes</span>
+              <span class="skill-tag">CI/CD</span>
+            </div>
+            <div class="skill-category">
+              <div class="skill-category-name">Tools</div>
+              <span class="skill-tag">Git</span>
+              <span class="skill-tag">Webpack</span>
+              <span class="skill-tag">Jest</span>
+              <span class="skill-tag">Figma</span>
+              <span class="skill-tag">Jira</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ERROR 3: ReferenceError - PROJECTS
+======================================== -->
+<section class="error-section" id="section-projects">
+  <div class="error-card" id="card-projects">
+    <div class="error-header">
+      <div class="error-icon">
+        <span class="error-x" id="icon-projects">&#10060;</span>
+        <span>ReferenceError</span>
+      </div>
+      <span class="error-type-badge">RUNTIME ERROR</span>
+    </div>
+    <div class="error-body">
+      <div class="error-message">
+        ReferenceError: projects is not defined
+      </div>
+      <div class="error-detail">
+        at <span class="file-path">portfolio.js</span>:<span class="line-num">103</span><br>
+        'projects' is not defined. Did you mean to import it?
+      </div>
+      <div class="stack-trace">
+<span class="at-sign">at</span> <span class="fn-name">renderProjects</span> (<span class="file-ref">portfolio.js:103:5</span>)
+<span class="at-sign">at</span> <span class="fn-name">initPortfolio</span> (<span class="file-ref">portfolio.js:16:3</span>)
+<span class="at-sign">hint:</span> Add <span class="fn-name">import { projects } from './data'</span> at the top of the file
+      </div>
+      <button class="fix-button" onclick="fixError('projects')">
+        <span class="btn-icon">&#9655;</span>
+        <span class="spinner"></span>
+        Import projects
+      </button>
+
+      <div class="fix-content" id="content-projects">
+        <div class="fix-content-inner">
+          <div class="success-msg" id="success-projects">
+            &#10003; import { projects } from './data' -- 3 projects loaded
+          </div>
+
+          <div class="projects-grid">
+            <div class="project-card">
+              <div class="project-name">
+                <span style="color: var(--yellow);">01</span>
+                Walmart Checkout Revamp
+              </div>
+              <div class="project-desc">
+                Rebuilt the checkout flow for Walmart's e-commerce platform, improving conversion rates and reducing cart abandonment through optimized UX and faster load times.
+              </div>
+              <div class="project-tech">
+                <span class="project-tech-tag">React</span>
+                <span class="project-tech-tag">Node.js</span>
+                <span class="project-tech-tag">GraphQL</span>
+                <span class="project-tech-tag">Redis</span>
+              </div>
+              <div class="project-impact">
+                <span>&#8593;</span> Serves 10M+ users/day
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-name">
+                <span style="color: var(--yellow);">02</span>
+                Inventory Sync System
+              </div>
+              <div class="project-desc">
+                Designed a real-time inventory synchronization pipeline handling millions of SKUs across warehouses, achieving near-instant stock updates.
+              </div>
+              <div class="project-tech">
+                <span class="project-tech-tag">Python</span>
+                <span class="project-tech-tag">AWS Lambda</span>
+                <span class="project-tech-tag">DynamoDB</span>
+                <span class="project-tech-tag">SQS</span>
+              </div>
+              <div class="project-impact">
+                <span>&#8593;</span> 40% faster sync times
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-name">
+                <span style="color: var(--yellow);">03</span>
+                Search Platform Enhancement
+              </div>
+              <div class="project-desc">
+                Improved product search relevance through query optimization, custom analyzers, and ML-based ranking models integrated into the search pipeline.
+              </div>
+              <div class="project-tech">
+                <span class="project-tech-tag">Elasticsearch</span>
+                <span class="project-tech-tag">Java</span>
+                <span class="project-tech-tag">Kafka</span>
+                <span class="project-tech-tag">Kubernetes</span>
+              </div>
+              <div class="project-impact">
+                <span>&#8593;</span> 60% better search relevance
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ERROR 4: SyntaxError - EXPERIENCE
+======================================== -->
+<section class="error-section" id="section-experience">
+  <div class="error-card" id="card-experience">
+    <div class="error-header">
+      <div class="error-icon">
+        <span class="error-x" id="icon-experience">&#10060;</span>
+        <span>SyntaxError</span>
+      </div>
+      <span class="error-type-badge">PARSE ERROR</span>
+    </div>
+    <div class="error-body">
+      <div class="error-message">
+        SyntaxError: Unexpected token 'experience'
+      </div>
+      <div class="error-detail">
+        at <span class="file-path">portfolio.js</span>:<span class="line-num">147</span><br>
+        Expected '{' but found identifier 'experience'
+      </div>
+      <div class="stack-trace">
+<span class="at-sign">at</span> <span class="fn-name">Parser.parseStatement</span> (<span class="file-ref">node:internal/modules/esm:891:18</span>)
+<span class="at-sign">at</span> <span class="fn-name">Parser.parseBlock</span> (<span class="file-ref">node:internal/modules/esm:756:25</span>)
+<span class="at-sign">at</span> <span class="fn-name">Module._compile</span> (<span class="file-ref">node:internal/modules/cjs/loader:1234:14</span>)
+<span class="at-sign">fix:</span> Add missing braces around experience block
+      </div>
+      <button class="fix-button" onclick="fixError('experience')">
+        <span class="btn-icon">&#9655;</span>
+        <span class="spinner"></span>
+        Fix syntax
+      </button>
+
+      <div class="fix-content" id="content-experience">
+        <div class="fix-content-inner">
+          <div class="success-msg" id="success-experience">
+            &#10003; SyntaxError fixed -- experience block parsed successfully
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-period">2020 - Present</div>
+              <div class="timeline-role">Software Developer</div>
+              <div class="timeline-company">Walmart</div>
+              <ul class="timeline-details">
+                <li>Built and maintained high-traffic e-commerce features serving millions of daily users</li>
+                <li>Led migration of legacy systems to a modern React + Node.js stack</li>
+                <li>Optimized API performance, reducing average latency by 35%</li>
+                <li>Mentored junior developers and conducted code reviews across teams</li>
+                <li>Designed real-time inventory sync pipeline handling millions of SKUs</li>
+              </ul>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-period">Education</div>
+              <div class="timeline-role">B.Tech Computer Science</div>
+              <div class="timeline-company">Solid foundation in algorithms, data structures, and system design</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ERROR 5: ECONNREFUSED - CONTACT
+======================================== -->
+<section class="error-section" id="section-contact">
+  <div class="error-card" id="card-contact">
+    <div class="error-header">
+      <div class="error-icon">
+        <span class="error-x" id="icon-contact">&#10060;</span>
+        <span>Error</span>
+      </div>
+      <span class="error-type-badge">NETWORK ERROR</span>
+    </div>
+    <div class="error-body">
+      <div class="error-message">
+        Error: ECONNREFUSED - connection refused
+      </div>
+      <div class="error-detail">
+        at <span class="file-path">connect</span>:<span class="line-num">127.0.0.1:3000</span><br>
+        Could not establish connection to the contact server.
+      </div>
+      <div class="stack-trace">
+<span class="at-sign">at</span> <span class="fn-name">TCPConnectWrap.afterConnect</span> (<span class="file-ref">net.js:1141:16</span>)
+<span class="at-sign">at</span> <span class="fn-name">ContactService.connect</span> (<span class="file-ref">contact-module.js:23:11</span>)
+<span class="at-sign">errno:</span> <span class="fn-name">-111</span>
+<span class="at-sign">code:</span> <span class="fn-name">'ECONNREFUSED'</span>
+<span class="at-sign">syscall:</span> <span class="fn-name">'connect'</span>
+      </div>
+      <button class="fix-button" onclick="fixError('contact')">
+        <span class="btn-icon">&#9655;</span>
+        <span class="spinner"></span>
+        Retry connection
+      </button>
+
+      <div class="fix-content" id="content-contact">
+        <div class="fix-content-inner">
+          <div class="success-msg" id="success-contact">
+            &#10003; Connection established on port 3000
+          </div>
+
+          <div class="connection-anim" id="connectionAnim">
+            <div class="conn-line" data-delay="0"><span class="dim">Retrying connection...</span></div>
+            <div class="conn-line" data-delay="400"><span class="info">TCP</span> <span class="dim">SYN sent to 127.0.0.1:3000</span></div>
+            <div class="conn-line" data-delay="800"><span class="info">TCP</span> <span class="dim">SYN-ACK received</span></div>
+            <div class="conn-line" data-delay="1200"><span class="success">TCP</span> <span class="dim">Connection established</span></div>
+            <div class="conn-line" data-delay="1600"><span class="success">200 OK</span> <span class="dim">-- Contact data loaded</span></div>
+          </div>
+
+          <div class="contact-grid">
+            <a class="contact-card" href="mailto:anshullgarg@gmail.com">
+              <span class="contact-card-icon">&#9993;</span>
+              <div>
+                <div class="contact-card-label">Email</div>
+                <div class="contact-card-value">anshullgarg@gmail.com</div>
+              </div>
+            </a>
+            <a class="contact-card" href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">
+              <span class="contact-card-icon">&#128101;</span>
+              <div>
+                <div class="contact-card-label">LinkedIn</div>
+                <div class="contact-card-value">linkedin.com/in/anshullgarg</div>
+              </div>
+            </a>
+            <a class="contact-card" href="https://github.com/anshullgarg" target="_blank" rel="noopener">
+              <span class="contact-card-icon">&#128187;</span>
+              <div>
+                <div class="contact-card-label">GitHub</div>
+                <div class="contact-card-value">github.com/anshullgarg</div>
+              </div>
+            </a>
+            <div class="contact-card">
+              <span class="contact-card-icon">&#127919;</span>
+              <div>
+                <div class="contact-card-label">Status</div>
+                <div class="contact-card-value" style="color: var(--green);">Open to opportunities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+<footer class="footer" id="footer">
+  <div class="footer-text">
+    <span class="green">process.exit(0)</span> <span class="dim">// All errors resolved. Portfolio compiled successfully.</span>
+  </div>
+  <div class="footer-status">
+    Runtime errors remaining: <span id="errorsRemaining">5</span>
+  </div>
+</footer>
+
+<!-- ========================================
+     FIX ALL BAR
+======================================== -->
+<div class="fix-all-bar" id="fixAllBar">
+  <span class="fix-all-status" id="fixAllStatus">5 errors remaining</span>
+  <button class="fix-all-btn" id="fixAllBtn" onclick="fixAll()">$ fix --all</button>
+</div>
+
+<!-- ========================================
+     JAVASCRIPT
+======================================== -->
+<script>
+(function() {
+  'use strict';
+
+  /* ---- STATE ---- */
+  const sections = ['about', 'skills', 'projects', 'experience', 'contact'];
+  const fixed = {};
+  let errorsLeft = 5;
+  let isFixing = false;
+
+  /* ---- DOM REFS ---- */
+  const errorCounter = document.getElementById('errorCounter');
+  const errorCountText = document.getElementById('errorCountText');
+  const errorsRemainingEl = document.getElementById('errorsRemaining');
+  const fixAllBar = document.getElementById('fixAllBar');
+  const fixAllStatus = document.getElementById('fixAllStatus');
+  const fixAllBtn = document.getElementById('fixAllBtn');
+
+  /* ---- UPDATE COUNTERS ---- */
+  function updateCounters() {
+    errorCountText.textContent = errorsLeft === 0 ? '0 errors' : errorsLeft + ' error' + (errorsLeft === 1 ? '' : 's');
+    errorsRemainingEl.textContent = errorsLeft;
+    fixAllStatus.textContent = errorsLeft === 0 ? 'All errors fixed' : errorsLeft + ' error' + (errorsLeft === 1 ? '' : 's') + ' remaining';
+
+    if (errorsLeft === 0) {
+      errorCounter.classList.remove('errors');
+      errorCounter.classList.add('fixed');
+      errorsRemainingEl.classList.add('all-fixed');
+      fixAllBar.classList.add('hidden');
+    }
+  }
+
+  /* ---- NPM INSTALL ANIMATION ---- */
+  function animateNpmInstall() {
+    const lines = document.querySelectorAll('#npmOutput .npm-line');
+    lines.forEach(function(line) {
+      var delay = parseInt(line.getAttribute('data-delay') || '0', 10);
+      setTimeout(function() {
+        line.classList.add('show');
+        var container = line.closest('.npm-output');
+        if (container) container.scrollTop = container.scrollHeight;
+      }, delay);
+    });
+  }
+
+  /* ---- CONNECTION ANIMATION ---- */
+  function animateConnection() {
+    var lines = document.querySelectorAll('#connectionAnim .conn-line');
+    lines.forEach(function(line) {
+      var delay = parseInt(line.getAttribute('data-delay') || '0', 10);
+      setTimeout(function() {
+        line.classList.add('show');
+      }, delay);
+    });
+  }
+
+  /* ---- FIX AN ERROR ---- */
+  window.fixError = function(section) {
+    if (fixed[section] || isFixing) return;
+    isFixing = true;
+
+    var card = document.getElementById('card-' + section);
+    var btn = card.querySelector('.fix-button');
+    var content = document.getElementById('content-' + section);
+    var successMsg = document.getElementById('success-' + section);
+    var icon = document.getElementById('icon-' + section);
+
+    /* Phase 1: Fixing animation */
+    btn.classList.add('fixing');
+    btn.querySelector('.btn-icon').style.display = 'none';
+
+    /* Determine fix time based on section */
+    var fixTime = section === 'skills' ? 2800 : section === 'contact' ? 2000 : 1200;
+
+    setTimeout(function() {
+      /* Phase 2: Mark as fixed */
+      btn.classList.remove('fixing');
+      btn.classList.add('done');
+      btn.innerHTML = '<span style="color: var(--green);">&#10003;</span> Fixed';
+
+      card.classList.add('fixed');
+      icon.innerHTML = '&#10004;';
+
+      /* Update badge text */
+      var badge = card.querySelector('.error-type-badge');
+      badge.textContent = 'RESOLVED';
+
+      /* Reveal content */
+      content.classList.add('revealed');
+
+      /* Run section-specific animations */
+      if (section === 'skills') animateNpmInstall();
+      if (section === 'contact') animateConnection();
+
+      /* Show success message */
+      setTimeout(function() {
+        successMsg.classList.add('show');
+      }, 300);
+
+      /* Update counters */
+      fixed[section] = true;
+      errorsLeft--;
+      updateCounters();
+      isFixing = false;
+    }, fixTime);
+  };
+
+  /* ---- FIX ALL ---- */
+  window.fixAll = function() {
+    var unfixed = sections.filter(function(s) { return !fixed[s]; });
+    if (unfixed.length === 0) return;
+
+    var delay = 0;
+    unfixed.forEach(function(section) {
+      setTimeout(function() {
+        /* Scroll to the section */
+        var el = document.getElementById('section-' + section);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        /* Small delay after scroll to fix */
+        setTimeout(function() {
+          window.fixError(section);
+        }, 400);
+      }, delay);
+      delay += 2200;
+    });
+  };
+
+  /* ---- INTERSECTION OBSERVER for subtle entrance ---- */
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.error-section').forEach(function(section) {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(section);
+  });
+
+  /* ---- KEYBOARD SHORTCUT ---- */
+  document.addEventListener('keydown', function(e) {
+    /* Press 'f' to fix next unfixed section */
+    if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      var target = e.target;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+      var next = sections.find(function(s) { return !fixed[s]; });
+      if (next) {
+        var el = document.getElementById('section-' + next);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(function() { window.fixError(next); }, 400);
+      }
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
