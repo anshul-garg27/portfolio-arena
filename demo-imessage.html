@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Anshull Garg - iMessage Portfolio</title>
+<style>
+/*
+  iMessage / Text Conversation Portfolio
+  Two recruiters texting about hiring Anshull Garg
+  Pixel-perfect iPhone Messages UI
+*/
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --imessage-blue: #007AFF;
+  --imessage-blue-dark: #0063D1;
+  --gray-bubble: #E9E9EB;
+  --gray-bubble-text: #000;
+  --bg: #FFFFFF;
+  --nav-bg: rgba(247,247,247,0.92);
+  --separator: rgba(60,60,67,0.12);
+  --text-primary: #000;
+  --text-secondary: #8E8E93;
+  --timestamp-color: #8E8E93;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
+  --radius-bubble: 18px;
+  --green: #34C759;
+  --red: #FF3B30;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: #1C1C1E;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* iPhone Frame */
+.iphone-frame {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  max-height: 932px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 500px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    padding: 20px;
+  }
+  .iphone-frame {
+    border-radius: 48px;
+    border: 4px solid #2C2C2E;
+    height: min(932px, 95vh);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.1),
+      0 40px 80px rgba(0,0,0,0.5),
+      0 0 120px rgba(0,0,0,0.3);
+  }
+}
+
+/* Dynamic Island */
+.dynamic-island {
+  width: 126px;
+  height: 36px;
+  background: #000;
+  border-radius: 20px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+}
+
+/* Status Bar */
+.status-bar {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px 0;
+  height: 54px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--nav-bg);
+  flex-shrink: 0;
+}
+
+.status-time { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 12px;
+}
+
+.signal-bars .bar {
+  width: 3px;
+  background: #000;
+  border-radius: 1px;
+}
+
+.signal-bars .bar:nth-child(1) { height: 4px; }
+.signal-bars .bar:nth-child(2) { height: 6px; }
+.signal-bars .bar:nth-child(3) { height: 8px; }
+.signal-bars .bar:nth-child(4) { height: 10px; }
+
+.wifi-icon, .battery-icon-svg { width: 16px; height: 16px; }
+
+.battery-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.battery-outline {
+  width: 25px;
+  height: 12px;
+  border: 1.5px solid rgba(0,0,0,0.35);
+  border-radius: 3.5px;
+  position: relative;
+  padding: 1.5px;
+}
+
+.battery-outline::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5px;
+  height: 5px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 0 1.5px 1.5px 0;
+}
+
+.battery-fill-bar {
+  width: 85%;
+  height: 100%;
+  background: #000;
+  border-radius: 1.5px;
+}
+
+/* Navigation Bar */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px 10px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--separator);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.nav-back {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--imessage-blue);
+  font-size: 17px;
+  cursor: pointer;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.nav-back svg { width: 22px; height: 22px; }
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 0;
+}
+
+.contact-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #A8A8AA, #8E8E93);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.contact-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.1px;
+}
+
+.nav-right {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+  padding: 6px;
+}
+
+.nav-right svg {
+  width: 22px;
+  height: 22px;
+  color: var(--imessage-blue);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+/* Messages Area */
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 16px 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--bg);
+}
+
+.messages-area::-webkit-scrollbar { display: none; }
+
+/* Timestamp */
+.timestamp {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--timestamp-color);
+  padding: 14px 0 8px;
+  letter-spacing: -0.1px;
+}
+
+/* Message Bubble */
+.message-row {
+  display: flex;
+  margin-bottom: 2px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: none;
+}
+
+.message-row.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.message-row.sent {
+  justify-content: flex-end;
+}
+
+.message-row.received {
+  justify-content: flex-start;
+}
+
+.message-row.gap-after {
+  margin-bottom: 10px;
+}
+
+.bubble {
+  max-width: 72%;
+  padding: 8px 14px;
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.sent .bubble {
+  background: var(--imessage-blue);
+  color: #fff;
+  border-radius: var(--radius-bubble) var(--radius-bubble) 4px var(--radius-bubble);
+}
+
+.received .bubble {
+  background: var(--gray-bubble);
+  color: var(--gray-bubble-text);
+  border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) 4px;
+}
+
+/* Tail adjustments for consecutive messages */
+.sent.first-in-group .bubble {
+  border-radius: var(--radius-bubble) var(--radius-bubble) 4px var(--radius-bubble);
+}
+.sent.last-in-group .bubble {
+  border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
+}
+.sent.single .bubble {
+  border-radius: var(--radius-bubble) var(--radius-bubble) 4px var(--radius-bubble);
+}
+
+.received.first-in-group .bubble {
+  border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) 4px;
+}
+.received.last-in-group .bubble {
+  border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
+}
+.received.single .bubble {
+  border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) 4px;
+}
+
+/* Emoji Reaction */
+.reaction {
+  position: absolute;
+  top: -12px;
+  font-size: 12px;
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  border-radius: 20px;
+  padding: 2px 5px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reaction.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sent .reaction { left: -4px; }
+.received .reaction { right: -4px; }
+
+/* Read Receipt */
+.read-receipt {
+  text-align: right;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--timestamp-color);
+  padding: 2px 4px 6px;
+  letter-spacing: -0.1px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.3s ease;
+}
+
+.read-receipt.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Typing Indicator */
+.typing-indicator-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 4px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.typing-indicator-row.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.typing-bubble {
+  background: var(--gray-bubble);
+  border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) 4px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #999;
+  animation: typingPulse 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingPulse {
+  0%, 60%, 100% { opacity: 0.3; transform: scale(0.85); }
+  30% { opacity: 1; transform: scale(1); }
+}
+
+/* Image Bubble */
+.image-bubble {
+  max-width: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.image-bubble img,
+.image-bubble .img-placeholder {
+  width: 100%;
+  display: block;
+}
+
+.img-placeholder {
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+}
+
+.sent .img-placeholder {
+  background: linear-gradient(135deg, #005EC4, #007AFF);
+  color: rgba(255,255,255,0.9);
+}
+
+.received .img-placeholder {
+  background: linear-gradient(135deg, #D6D6D8, #E9E9EB);
+  color: rgba(0,0,0,0.6);
+}
+
+.img-placeholder svg {
+  width: 32px;
+  height: 32px;
+  opacity: 0.6;
+}
+
+/* Link Preview */
+.link-preview {
+  max-width: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  background: #F2F2F7;
+}
+
+.link-preview-img {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  position: relative;
+}
+
+.link-preview-img.github {
+  background: linear-gradient(135deg, #24292E, #1B1F23);
+}
+
+.link-preview-img.linkedin {
+  background: linear-gradient(135deg, #0077B5, #005582);
+}
+
+.link-preview-img svg {
+  width: 50px;
+  height: 50px;
+  fill: #fff;
+}
+
+.link-preview-body {
+  padding: 10px 12px;
+}
+
+.link-preview-domain {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}
+
+.link-preview-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.link-preview-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* Contact Card */
+.contact-card {
+  max-width: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #F2F2F7;
+  border: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.contact-card-header {
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contact-card-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.contact-card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.contact-card-title {
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  margin-top: 1px;
+}
+
+.contact-card-body {
+  padding: 12px 16px;
+}
+
+.contact-card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.contact-card-row:last-child { border-bottom: none; }
+
+.contact-card-row svg {
+  width: 16px;
+  height: 16px;
+  color: var(--imessage-blue);
+  flex-shrink: 0;
+}
+
+.contact-card-row a {
+  color: var(--imessage-blue);
+  text-decoration: none;
+}
+
+/* Message Input Bar */
+.input-bar {
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 10px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--separator);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 4px;
+}
+
+.input-actions svg {
+  width: 28px;
+  height: 28px;
+  color: var(--text-secondary);
+}
+
+.input-field {
+  flex: 1;
+  min-height: 36px;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 16px;
+  font-family: var(--font);
+  background: #fff;
+  outline: none;
+  resize: none;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.input-field::placeholder { color: var(--text-secondary); }
+
+.send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--imessage-blue);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.send-btn:active { transform: scale(0.9); }
+
+.send-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+  margin-left: -1px;
+}
+
+/* Home Indicator */
+.home-indicator {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+.home-indicator-bar {
+  width: 134px;
+  height: 5px;
+  border-radius: 3px;
+  background: #000;
+  opacity: 0.2;
+}
+
+/* Delivered text */
+.delivered-text {
+  text-align: right;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  padding: 2px 4px 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.delivered-text.visible { opacity: 1; }
+
+/* Emphasis animation for emoji text */
+.emphasis {
+  display: inline;
+  animation: emphasisPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes emphasisPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Screen Effect - Confetti */
+.screen-effect {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+}
+
+/* Shimmer on project images */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.15) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmerSlide 2s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+@keyframes shimmerSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Pulse ring on contact avatar */
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(0,122,255,0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(0,122,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,122,255,0); }
+}
+
+.pulse-avatar {
+  animation: pulseRing 2s ease infinite;
+}
+
+/* Skills tags inside bubble */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.skill-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+}
+
+.received .skill-tag {
+  background: rgba(0,0,0,0.07);
+  color: #333;
+}
+</style>
+</head>
+<body>
+
+<div class="iphone-frame" id="frame">
+  <!-- Dynamic Island -->
+  <div class="dynamic-island"></div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-time">9:41</div>
+    <div class="status-right">
+      <div class="signal-bars">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <svg class="wifi-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 13.5a1 1 0 100-2 1 1 0 000 2z" fill="#000"/>
+        <path d="M5.05 10.54a4.15 4.15 0 015.9 0" stroke="#000" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M2.81 8.05a7.28 7.28 0 0110.38 0" stroke="#000" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M.93 5.56A10.15 10.15 0 0115.07 5.56" stroke="#000" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div class="battery-wrap">
+        <div class="battery-outline">
+          <div class="battery-fill-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav Bar -->
+  <div class="nav-bar">
+    <div class="nav-back">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="font-size:12px;margin-top:1px">12</span>
+    </div>
+    <div class="nav-center">
+      <div class="contact-avatar pulse-avatar">R</div>
+      <div class="contact-name">Recruiter &#x1F4BC;</div>
+    </div>
+    <div class="nav-right">
+      <svg viewBox="0 0 24 24"><path d="M15.05 5A5 5 0 0119 8.95M15.05 1A9 9 0 0123 8.94" stroke-linecap="round"/><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.35 1.9.68 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.56 2.81.68a2 2 0 011.72 2.05z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <!-- Messages Area -->
+  <div class="messages-area" id="messagesArea">
+
+    <!-- All messages will be injected by JS -->
+
+  </div>
+
+  <!-- Input Bar -->
+  <div class="input-bar">
+    <div class="input-actions">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <input class="input-field" type="text" placeholder="iMessage" readonly>
+    <button class="send-btn" aria-label="Send">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+  <!-- Home Indicator -->
+  <div class="home-indicator">
+    <div class="home-indicator-bar"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const messagesArea = document.getElementById('messagesArea');
+
+  // Message data structure
+  // type: 'text' | 'image' | 'link' | 'contact' | 'typing' | 'timestamp' | 'read' | 'delivered'
+  const conversation = [
+    { type: 'timestamp', text: 'Today 2:12 PM' },
+
+    { type: 'text', sender: 'sent', text: 'Have you seen Anshull Garg\'s portfolio? \u{1F440}', group: 'first' },
+    { type: 'text', sender: 'sent', text: 'Like... this guy is SERIOUSLY talented', group: 'last', gapAfter: true },
+    { type: 'delivered', text: 'Delivered' },
+
+    { type: 'typing', duration: 1200 },
+
+    { type: 'text', sender: 'received', text: 'OMG yes! He works at Walmart! \u{1F6D2}', group: 'first', reaction: '\u2764\uFE0F' },
+    { type: 'text', sender: 'received', text: 'Senior Software Engineer right? I saw his LinkedIn', group: 'last', gapAfter: true },
+
+    { type: 'text', sender: 'sent', text: 'His React skills are insane \u{1F525}\u{1F525}\u{1F525}', group: 'single', gapAfter: true },
+
+    { type: 'typing', duration: 800 },
+
+    { type: 'text', sender: 'received', text: 'The way he architects components is next level. TypeScript, performance optimization, the whole package', group: 'first' },
+    { type: 'text', sender: 'received', text: 'Plus he does full-stack too. Node.js, cloud infra, the works', group: 'last', gapAfter: true, reaction: '\u{1F4AF}' },
+
+    { type: 'timestamp', text: '2:18 PM' },
+
+    { type: 'text', sender: 'sent', text: 'Check out some of his projects:', group: 'single', gapAfter: true },
+
+    { type: 'image', sender: 'sent', label: 'E-Commerce Platform', sublabel: 'React + Node.js + AWS', icon: 'cart' },
+    { type: 'image', sender: 'sent', label: 'Analytics Dashboard', sublabel: 'React + D3.js + GraphQL', icon: 'chart', gapAfter: true },
+
+    { type: 'typing', duration: 1000 },
+
+    { type: 'text', sender: 'received', text: 'WOW \u{1F92F} Those are production-grade', group: 'first' },
+    { type: 'text', sender: 'received', text: 'The UI/UX on that dashboard is chef\'s kiss \u{1F468}\u200D\u{1F373}', group: 'last', gapAfter: true, reaction: '\u{1F44D}' },
+
+    { type: 'text', sender: 'sent', text: 'Right?? And he\'s built some seriously cool stuff:', group: 'single' },
+    {
+      type: 'text', sender: 'sent',
+      text: 'Skills breakdown:',
+      skills: ['React', 'TypeScript', 'Node.js', 'AWS', 'GraphQL', 'Next.js', 'Python', 'System Design'],
+      group: 'single',
+      gapAfter: true
+    },
+
+    { type: 'timestamp', text: '2:24 PM' },
+
+    { type: 'text', sender: 'received', text: 'Should I reach out to him? \u{1F914}', group: 'single', gapAfter: true },
+
+    { type: 'typing', duration: 1400 },
+
+    { type: 'text', sender: 'sent', text: 'DEFINITELY. Here\'s his info:', group: 'single', gapAfter: true },
+
+    { type: 'contact', sender: 'sent' },
+
+    { type: 'text', sender: 'sent', text: 'And his profiles:', group: 'single', gapAfter: true },
+
+    { type: 'link', sender: 'sent', platform: 'github', url: 'github.com/anshullgarg', title: 'AnshullGarg', desc: '40+ repositories, open source contributor' },
+    { type: 'link', sender: 'sent', platform: 'linkedin', url: 'linkedin.com/in/anshullgarg', title: 'Anshull Garg', desc: 'Senior Software Engineer at Walmart', gapAfter: true },
+
+    { type: 'typing', duration: 900 },
+
+    { type: 'text', sender: 'received', text: 'Sending him a message RIGHT NOW \u{1F4E8}', group: 'first', reaction: '\u{1F389}' },
+    { type: 'text', sender: 'received', text: 'Companies are going to be fighting over this guy', group: 'last', gapAfter: true },
+
+    { type: 'text', sender: 'sent', text: 'Trust me, he\'s the real deal. Tell him I sent you! \u{1F91D}', group: 'single', gapAfter: true },
+
+    { type: 'read', text: 'Read 2:34 PM' },
+  ];
+
+  // Render functions
+  function createTimestamp(data) {
+    const div = document.createElement('div');
+    div.className = 'timestamp';
+    div.textContent = data.text;
+    return div;
+  }
+
+  function createTextBubble(data) {
+    const row = document.createElement('div');
+    row.className = `message-row ${data.sender}`;
+    if (data.group === 'first') row.classList.add('first-in-group');
+    else if (data.group === 'last') row.classList.add('last-in-group');
+    else if (data.group === 'single') row.classList.add('single');
+    if (data.gapAfter) row.classList.add('gap-after');
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    if (data.skills) {
+      bubble.innerHTML = `<span>${data.text}</span>`;
+      const tags = document.createElement('div');
+      tags.className = 'skill-tags';
+      data.skills.forEach(s => {
+        const tag = document.createElement('span');
+        tag.className = 'skill-tag';
+        tag.textContent = s;
+        tags.appendChild(tag);
+      });
+      bubble.appendChild(tags);
+    } else {
+      bubble.textContent = data.text;
+    }
+
+    if (data.reaction) {
+      const r = document.createElement('div');
+      r.className = 'reaction';
+      r.textContent = data.reaction;
+      bubble.appendChild(r);
+      // Show reaction after bubble appears
+      setTimeout(() => r.classList.add('show'), 600);
+    }
+
+    row.appendChild(bubble);
+    return row;
+  }
+
+  function createImageBubble(data) {
+    const row = document.createElement('div');
+    row.className = `message-row ${data.sender} single`;
+    if (data.gapAfter) row.classList.add('gap-after');
+
+    const imgBubble = document.createElement('div');
+    imgBubble.className = 'image-bubble shimmer';
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'img-placeholder';
+
+    const iconSvg = data.icon === 'cart'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>';
+
+    placeholder.innerHTML = `
+      ${iconSvg}
+      <span>${data.label}</span>
+      <span style="font-size:10px;font-weight:400;opacity:0.7">${data.sublabel}</span>
+    `;
+
+    imgBubble.appendChild(placeholder);
+    row.appendChild(imgBubble);
+    return row;
+  }
+
+  function createLinkPreview(data) {
+    const row = document.createElement('div');
+    row.className = `message-row ${data.sender} single`;
+    if (data.gapAfter) row.classList.add('gap-after');
+
+    const link = document.createElement('div');
+    link.className = 'link-preview';
+    link.style.cursor = 'pointer';
+
+    const imgSection = document.createElement('div');
+    imgSection.className = `link-preview-img ${data.platform}`;
+
+    if (data.platform === 'github') {
+      imgSection.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>';
+    } else {
+      imgSection.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
+    }
+
+    const body = document.createElement('div');
+    body.className = 'link-preview-body';
+    body.innerHTML = `
+      <div class="link-preview-domain">${data.url}</div>
+      <div class="link-preview-title">${data.title}</div>
+      <div class="link-preview-desc">${data.desc}</div>
+    `;
+
+    link.appendChild(imgSection);
+    link.appendChild(body);
+    row.appendChild(link);
+    return row;
+  }
+
+  function createContactCard(data) {
+    const row = document.createElement('div');
+    row.className = `message-row ${data.sender} single gap-after`;
+
+    const card = document.createElement('div');
+    card.className = 'contact-card';
+    card.innerHTML = `
+      <div class="contact-card-header">
+        <div class="contact-card-avatar">AG</div>
+        <div>
+          <div class="contact-card-name">Anshull Garg</div>
+          <div class="contact-card-title">Senior Software Engineer @ Walmart</div>
+        </div>
+      </div>
+      <div class="contact-card-body">
+        <div class="contact-card-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:anshull.garg@gmail.com">anshull.garg@gmail.com</a>
+        </div>
+        <div class="contact-card-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Dallas-Fort Worth, TX</span>
+        </div>
+        <div class="contact-card-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          <span>5+ Years Experience</span>
+        </div>
+        <div class="contact-card-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Available for opportunities</span>
+        </div>
+      </div>
+    `;
+
+    row.appendChild(card);
+    return row;
+  }
+
+  function createTypingIndicator() {
+    const row = document.createElement('div');
+    row.className = 'typing-indicator-row';
+    row.innerHTML = `
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    `;
+    return row;
+  }
+
+  function createReadReceipt(data) {
+    const div = document.createElement('div');
+    div.className = 'read-receipt';
+    div.textContent = data.text;
+    return div;
+  }
+
+  function createDelivered(data) {
+    const div = document.createElement('div');
+    div.className = 'delivered-text';
+    div.textContent = data.text;
+    return div;
+  }
+
+  // Scroll to bottom
+  function scrollToBottom(smooth) {
+    if (smooth) {
+      messagesArea.scrollTo({ top: messagesArea.scrollHeight, behavior: 'smooth' });
+    } else {
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+  }
+
+  // Animate message in
+  function animateIn(el) {
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      el.classList.add('visible');
+    });
+  }
+
+  // Main animation sequence
+  async function playConversation() {
+    let baseDelay = 400;
+    let i = 0;
+
+    while (i < conversation.length) {
+      const msg = conversation[i];
+
+      if (msg.type === 'timestamp') {
+        const el = createTimestamp(msg);
+        messagesArea.appendChild(el);
+        scrollToBottom(true);
+        await wait(300);
+        i++;
+        continue;
+      }
+
+      if (msg.type === 'typing') {
+        const typingEl = createTypingIndicator();
+        messagesArea.appendChild(typingEl);
+        scrollToBottom(true);
+        await wait(100);
+        typingEl.classList.add('visible');
+        scrollToBottom(true);
+        await wait(msg.duration || 1200);
+        typingEl.remove();
+        i++;
+        continue;
+      }
+
+      if (msg.type === 'read') {
+        const el = createReadReceipt(msg);
+        messagesArea.appendChild(el);
+        scrollToBottom(true);
+        await wait(200);
+        el.classList.add('visible');
+        scrollToBottom(true);
+        await wait(400);
+        i++;
+        continue;
+      }
+
+      if (msg.type === 'delivered') {
+        const el = createDelivered(msg);
+        messagesArea.appendChild(el);
+        scrollToBottom(true);
+        await wait(100);
+        el.classList.add('visible');
+        await wait(600);
+        i++;
+        continue;
+      }
+
+      let el;
+      if (msg.type === 'text') {
+        el = createTextBubble(msg);
+      } else if (msg.type === 'image') {
+        el = createImageBubble(msg);
+      } else if (msg.type === 'link') {
+        el = createLinkPreview(msg);
+      } else if (msg.type === 'contact') {
+        el = createContactCard(msg);
+      }
+
+      if (el) {
+        messagesArea.appendChild(el);
+        scrollToBottom(true);
+
+        await wait(80);
+        animateIn(el);
+        scrollToBottom(true);
+
+        // Reactions animate themselves via setTimeout inside createTextBubble
+        // Dynamic delay based on message type
+        let delay = baseDelay;
+        if (msg.type === 'image') delay = 500;
+        else if (msg.type === 'link') delay = 600;
+        else if (msg.type === 'contact') delay = 800;
+        else if (msg.gapAfter) delay = 700;
+        else delay = 400;
+
+        await wait(delay);
+      }
+
+      i++;
+    }
+  }
+
+  function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Start after a brief pause
+  setTimeout(() => {
+    playConversation();
+  }, 800);
+
+})();
+</script>
+</body>
+</html>

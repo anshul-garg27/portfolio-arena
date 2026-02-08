@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Store Receipt Portfolio</title>
+<style>
+  /* ============================================
+     STORE RECEIPT PORTFOLIO - THERMAL PRINT
+     Anshull Garg | Developer Depot
+  ============================================ */
+
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root {
+    --paper: #f0ebe3;
+    --paper-dark: #e5dfd6;
+    --ink: #2a2520;
+    --ink-light: #6b6259;
+    --ink-faded: #9b9488;
+    --ink-ghost: #c5bfb6;
+    --receipt-width: 380px;
+    --thermal-fade: 0.88;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1714;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, #2a2318 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, #1e1b16 0%, transparent 60%);
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    padding: 40px 20px;
+    overflow-x: hidden;
+  }
+
+  /* ---- RECEIPT CONTAINER ---- */
+  .receipt-wrapper {
+    position: relative;
+    filter: drop-shadow(0 20px 60px rgba(0,0,0,0.5))
+            drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    animation: receiptDrop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  @keyframes receiptDrop {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .receipt {
+    width: var(--receipt-width);
+    max-width: 95vw;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 0 24px 30px;
+    position: relative;
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- THERMAL PAPER TEXTURE ---- */
+  .receipt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(0,0,0,0.008) 1px,
+        rgba(0,0,0,0.008) 2px
+      ),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ---- FADED EDGE EFFECT (thermal aging) ---- */
+  .receipt::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg,
+        rgba(255,255,255,0.08) 0%,
+        transparent 8%,
+        transparent 92%,
+        rgba(255,255,255,0.08) 100%
+      ),
+      linear-gradient(180deg,
+        transparent 0%,
+        transparent 85%,
+        rgba(255,255,255,0.06) 100%
+      );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ---- TORN TOP EDGE ---- */
+  .torn-edge-top {
+    width: 100%;
+    height: 20px;
+    background: var(--paper);
+    position: relative;
+    margin-bottom: -1px;
+  }
+
+  .torn-edge-top::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: -2px;
+    right: -2px;
+    height: 14px;
+    background: var(--paper);
+    clip-path: polygon(
+      0% 100%,
+      0% 60%,
+      1% 40%,
+      2% 55%,
+      3% 30%,
+      4.5% 50%,
+      5% 20%,
+      6% 45%,
+      7.5% 25%,
+      8% 50%,
+      9% 35%,
+      10% 55%,
+      11% 15%,
+      12.5% 45%,
+      13% 30%,
+      14% 60%,
+      15% 20%,
+      16.5% 50%,
+      17% 35%,
+      18% 55%,
+      19% 10%,
+      20% 40%,
+      21.5% 55%,
+      22% 25%,
+      23% 50%,
+      24% 35%,
+      25% 60%,
+      26% 15%,
+      27.5% 45%,
+      28% 30%,
+      29% 55%,
+      30% 40%,
+      31% 20%,
+      32.5% 50%,
+      33% 35%,
+      34% 55%,
+      35% 25%,
+      36% 50%,
+      37.5% 15%,
+      38% 40%,
+      39% 55%,
+      40% 30%,
+      41% 50%,
+      42.5% 20%,
+      43% 45%,
+      44% 35%,
+      45% 55%,
+      46% 10%,
+      47.5% 40%,
+      48% 55%,
+      49% 25%,
+      50% 45%,
+      51% 35%,
+      52.5% 55%,
+      53% 20%,
+      54% 50%,
+      55% 30%,
+      56% 55%,
+      57.5% 15%,
+      58% 40%,
+      59% 50%,
+      60% 25%,
+      61% 55%,
+      62.5% 35%,
+      63% 50%,
+      64% 20%,
+      65% 45%,
+      66% 55%,
+      67.5% 30%,
+      68% 50%,
+      69% 15%,
+      70% 40%,
+      71% 55%,
+      72.5% 25%,
+      73% 50%,
+      74% 35%,
+      75% 55%,
+      76% 20%,
+      77.5% 45%,
+      78% 30%,
+      79% 55%,
+      80% 40%,
+      81% 15%,
+      82.5% 50%,
+      83% 35%,
+      84% 55%,
+      85% 25%,
+      86% 50%,
+      87.5% 20%,
+      88% 40%,
+      89% 55%,
+      90% 30%,
+      91% 50%,
+      92.5% 15%,
+      93% 45%,
+      94% 35%,
+      95% 55%,
+      96% 20%,
+      97% 45%,
+      98% 30%,
+      99% 55%,
+      100% 40%,
+      100% 100%
+    );
+  }
+
+  /* ---- SLIGHT PAPER CURL ---- */
+  .receipt-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 5%;
+    right: 5%;
+    height: 30px;
+    background: transparent;
+    border-radius: 0 0 50% 50%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    z-index: -1;
+  }
+
+  /* Curl at bottom corners */
+  .receipt-curl {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(
+      225deg,
+      rgba(0,0,0,0.06) 0%,
+      transparent 60%
+    );
+    z-index: 3;
+  }
+
+  /* ---- CONTENT SECTIONS ---- */
+  .receipt > * {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Store header */
+  .store-header {
+    text-align: center;
+    padding: 20px 0 12px;
+    border-bottom: 1px dashed var(--ink-ghost);
+  }
+
+  .store-logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--ink);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+  }
+
+  .store-logo .bracket {
+    color: var(--ink-faded);
+    font-weight: 400;
+  }
+
+  .store-tagline {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .store-address {
+    font-size: 10px;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  .store-address span {
+    display: block;
+  }
+
+  /* Transaction info */
+  .transaction-info {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--ink-ghost);
+    font-size: 11px;
+    color: var(--ink-light);
+  }
+
+  .transaction-row {
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.8;
+  }
+
+  .transaction-row .label {
+    color: var(--ink-faded);
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Items */
+  .items-section {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--ink-ghost);
+  }
+
+  .items-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ink-ghost);
+    margin-bottom: 8px;
+  }
+
+  .item-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    opacity: var(--thermal-fade);
+    animation: thermalPrint 0.3s ease forwards;
+    animation-delay: var(--delay);
+    transform: translateX(-3px);
+  }
+
+  @keyframes thermalPrint {
+    to { transform: translateX(0); opacity: var(--thermal-fade); }
+  }
+
+  .item-name {
+    flex: 1;
+    color: var(--ink);
+  }
+
+  .item-exp {
+    font-size: 9px;
+    color: var(--ink-light);
+    margin-left: 4px;
+  }
+
+  .item-price {
+    text-align: right;
+    min-width: 60px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .item-dots {
+    flex: 1;
+    margin: 0 6px;
+    border-bottom: 1px dotted var(--ink-ghost);
+    min-width: 20px;
+    transform: translateY(-3px);
+  }
+
+  /* Totals */
+  .totals-section {
+    padding: 12px 0;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    line-height: 2;
+    color: var(--ink-light);
+  }
+
+  .total-row.subtotal {
+    padding-bottom: 4px;
+    border-bottom: 1px dotted var(--ink-ghost);
+    margin-bottom: 4px;
+  }
+
+  .total-row.tax {
+    font-size: 10px;
+    color: var(--ink-faded);
+  }
+
+  .total-row.tax .note {
+    font-size: 8px;
+    font-style: italic;
+  }
+
+  .total-row.discount {
+    color: var(--ink-light);
+    font-size: 10px;
+  }
+
+  .total-row.discount .value {
+    font-style: italic;
+  }
+
+  .total-row.grand-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    padding-top: 8px;
+    border-top: 2px solid var(--ink);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Payment */
+  .payment-section {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--ink-ghost);
+    text-align: center;
+  }
+
+  .payment-method {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin-bottom: 2px;
+  }
+
+  .payment-card {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.12em;
+  }
+
+  .payment-status {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 6px;
+  }
+
+  /* Barcode */
+  .barcode-section {
+    padding: 20px 0 12px;
+    text-align: center;
+  }
+
+  .barcode {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    gap: 1px;
+    height: 50px;
+    margin: 0 auto 8px;
+    max-width: 260px;
+    opacity: 0.75;
+  }
+
+  .barcode .bar {
+    background: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .barcode-number {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faded);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* QR code (CSS grid) */
+  .qr-section {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .qr-code {
+    display: grid;
+    grid-template-columns: repeat(21, 4px);
+    grid-template-rows: repeat(21, 4px);
+    gap: 0;
+    opacity: 0.6;
+  }
+
+  .qr-code .cell {
+    background: var(--ink);
+  }
+
+  .qr-code .cell.empty {
+    background: transparent;
+  }
+
+  /* Footer */
+  .receipt-footer {
+    padding: 14px 0 4px;
+    text-align: center;
+  }
+
+  .thank-you {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 10px;
+    opacity: var(--thermal-fade);
+  }
+
+  .footer-note {
+    font-size: 9px;
+    color: var(--ink-faded);
+    line-height: 1.8;
+    margin-bottom: 6px;
+  }
+
+  .footer-divider {
+    width: 100%;
+    text-align: center;
+    font-size: 9px;
+    color: var(--ink-ghost);
+    letter-spacing: 0.2em;
+    margin: 8px 0;
+  }
+
+  .star-rating {
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    margin: 6px 0;
+    opacity: 0.8;
+  }
+
+  .rating-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+  }
+
+  .website-url {
+    font-size: 10px;
+    color: var(--ink-faded);
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .receipt-id {
+    font-size: 8px;
+    color: var(--ink-ghost);
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- THERMAL PRINT IMPERFECTIONS ---- */
+  .thermal-smudge {
+    position: absolute;
+    background: rgba(0,0,0,0.02);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .smudge-1 {
+    width: 80px;
+    height: 15px;
+    top: 120px;
+    right: 10px;
+    transform: rotate(-2deg);
+  }
+
+  .smudge-2 {
+    width: 40px;
+    height: 8px;
+    top: 340px;
+    left: 20px;
+    transform: rotate(1deg);
+  }
+
+  .smudge-3 {
+    width: 100px;
+    height: 12px;
+    bottom: 200px;
+    left: 30px;
+    transform: rotate(-1deg);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ---- DOUBLE-LINE SEPARATOR ---- */
+  .double-line {
+    border: none;
+    border-top: 1px solid var(--ink-ghost);
+    border-bottom: 1px solid var(--ink-ghost);
+    height: 4px;
+    margin: 0;
+  }
+
+  .dashed-sep {
+    text-align: center;
+    font-size: 10px;
+    color: var(--ink-ghost);
+    letter-spacing: 0.08em;
+    padding: 2px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* ---- HOVER / INTERACTIVE ---- */
+  .item-line {
+    transition: opacity 0.2s;
+    cursor: default;
+  }
+
+  .item-line:hover {
+    opacity: 1 !important;
+  }
+
+  .item-line:hover .item-name {
+    color: #000;
+  }
+
+  /* ---- SKILL BADGE (hidden extra detail on hover) ---- */
+  .skill-detail {
+    display: none;
+    font-size: 8px;
+    color: var(--ink-faded);
+    font-style: italic;
+    margin-top: 1px;
+  }
+
+  .item-line:hover .skill-detail {
+    display: block;
+  }
+
+  /* ---- PRINT STYLES ---- */
+  @media print {
+    body { background: white; padding: 0; }
+    .receipt-wrapper { filter: none; }
+    .receipt { box-shadow: none; }
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 420px) {
+    :root { --receipt-width: 100%; }
+    .receipt { padding: 0 16px 24px; font-size: 11px; }
+    .store-logo { font-size: 18px; }
+    .barcode { max-width: 200px; height: 40px; }
+  }
+
+  /* ---- STAGGERED ENTRANCE ---- */
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in:nth-child(1) { animation-delay: 0.3s; }
+  .fade-in:nth-child(2) { animation-delay: 0.4s; }
+  .fade-in:nth-child(3) { animation-delay: 0.5s; }
+  .fade-in:nth-child(4) { animation-delay: 0.6s; }
+  .fade-in:nth-child(5) { animation-delay: 0.7s; }
+  .fade-in:nth-child(6) { animation-delay: 0.8s; }
+  .fade-in:nth-child(7) { animation-delay: 0.9s; }
+  .fade-in:nth-child(8) { animation-delay: 1.0s; }
+  .fade-in:nth-child(9) { animation-delay: 1.1s; }
+  .fade-in:nth-child(10) { animation-delay: 1.2s; }
+  .fade-in:nth-child(11) { animation-delay: 1.3s; }
+  .fade-in:nth-child(12) { animation-delay: 1.4s; }
+
+  /* ---- THERMAL FLICKER (subtle) ---- */
+  @keyframes thermalFlicker {
+    0%, 100% { opacity: var(--thermal-fade); }
+    50% { opacity: calc(var(--thermal-fade) - 0.03); }
+  }
+
+  .thermal-flicker {
+    animation: thermalFlicker 8s ease-in-out infinite;
+  }
+</style>
+</head>
+<body>
+
+<div class="receipt-wrapper" role="main" aria-label="Anshull Garg - Developer Portfolio styled as a store receipt">
+
+  <!-- TORN TOP EDGE -->
+  <div class="torn-edge-top" aria-hidden="true"></div>
+
+  <div class="receipt">
+
+    <!-- Thermal imperfections -->
+    <div class="thermal-smudge smudge-1" aria-hidden="true"></div>
+    <div class="thermal-smudge smudge-2" aria-hidden="true"></div>
+    <div class="thermal-smudge smudge-3" aria-hidden="true"></div>
+
+    <!-- ======== STORE HEADER ======== -->
+    <header class="store-header fade-in">
+      <div class="store-logo">
+        <span class="bracket">{</span> DEVELOPER <span class="bracket">}</span><br>
+        <span class="bracket">[</span> DEPOT <span class="bracket">]</span>
+      </div>
+      <div class="store-tagline">Quality Code Since 2020</div>
+      <div class="store-address">
+        <span>github.com/anshullgarg</span>
+        <span>linkedin.com/in/anshullgarg</span>
+        <span>San Francisco, CA 94102</span>
+        <span>TEL: (000) DEV-CODE</span>
+      </div>
+    </header>
+
+    <!-- ======== TRANSACTION INFO ======== -->
+    <section class="transaction-info fade-in" aria-label="Transaction details">
+      <div class="transaction-row">
+        <span class="label">Date</span>
+        <span id="receipt-date">02/08/2026</span>
+      </div>
+      <div class="transaction-row">
+        <span class="label">Time</span>
+        <span id="receipt-time">--:--:-- --</span>
+      </div>
+      <div class="transaction-row">
+        <span class="label">Cashier</span>
+        <span>HIRING MANAGER</span>
+      </div>
+      <div class="transaction-row">
+        <span class="label">Register</span>
+        <span>#04 - PORTFOLIO</span>
+      </div>
+      <div class="transaction-row">
+        <span class="label">Customer</span>
+        <span>ANSHULL GARG</span>
+      </div>
+    </section>
+
+    <!-- ======== DASHED SEPARATOR ======== -->
+    <div class="dashed-sep" aria-hidden="true">- - - - - - - - - - - - - - - - - - -</div>
+
+    <!-- ======== ITEMS ======== -->
+    <section class="items-section fade-in" aria-label="Skills and experience">
+      <div class="items-header">
+        <span>Item Description</span>
+        <span>Price</span>
+      </div>
+
+      <!-- Item 1 -->
+      <div class="item-line" style="--delay: 0.5s" role="listitem">
+        <div>
+          <span class="item-name">React.js</span>
+          <span class="item-exp">x3 yrs</span>
+          <div class="skill-detail">Hooks, Context, Next.js, Redux</div>
+        </div>
+        <span class="item-dots" aria-hidden="true"></span>
+        <span class="item-price">$12.99</span>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="item-line" style="--delay: 0.65s" role="listitem">
+        <div>
+          <span class="item-name">Node.js</span>
+          <span class="item-exp">x3 yrs</span>
+          <div class="skill-detail">Express, REST APIs, GraphQL</div>
+        </div>
+        <span class="item-dots" aria-hidden="true"></span>
+        <span class="item-price">$11.99</span>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="item-line" style="--delay: 0.8s" role="listitem">
+        <div>
+          <span class="item-name">TypeScript</span>
+          <span class="item-exp">x2 yrs</span>
+          <div class="skill-detail">Generics, Type Guards, Strict</div>
+        </div>
+        <span class="item-dots" aria-hidden="true"></span>
+        <span class="item-price">$9.99</span>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="item-line" style="--delay: 0.95s" role="listitem">
+        <div>
+          <span class="item-name">AWS</span>
+          <span class="item-exp">x2 yrs</span>
+          <div class="skill-detail">EC2, S3, Lambda, CloudFront</div>
+        </div>
+        <span class="item-dots" aria-hidden="true"></span>
+        <span class="item-price">$14.99</span>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="item-line" style="--delay: 1.1s" role="listitem">
+        <div>
+          <span class="item-name">Docker</span>
+          <span class="item-exp">x2 yrs</span>
+          <div class="skill-detail">Compose, K8s, CI/CD Pipelines</div>
+        </div>
+        <span class="item-dots" aria-hidden="true"></span>
+        <span class="item-price">$8.99</span>
+      </div>
+
+      <div class="dashed-sep" aria-hidden="true" style="margin-top: 6px;">
+        ----------------------------------------
+      </div>
+
+      <div style="text-align: right; font-size: 9px; color: var(--ink-faded); padding-top: 4px;">
+        5 ITEM(S) SOLD
+      </div>
+    </section>
+
+    <!-- ======== TOTALS ======== -->
+    <section class="totals-section fade-in thermal-flicker" aria-label="Totals">
+      <div class="total-row subtotal">
+        <span>SUBTOTAL</span>
+        <span>$58.95</span>
+      </div>
+      <div class="total-row tax">
+        <span>TAX <span class="note">(coffee consumed)</span></span>
+        <span>$847.00</span>
+      </div>
+      <div class="total-row discount">
+        <span>EXPERIENCE DISCOUNT</span>
+        <span class="value">-$0.00</span>
+      </div>
+      <div style="text-align: right; font-size: 8px; color: var(--ink-faded); font-style: italic; line-height: 2;">
+        (priceless)
+      </div>
+
+      <hr class="double-line" aria-hidden="true">
+
+      <div class="total-row grand-total">
+        <span>TOTAL</span>
+        <span>4+ YEARS</span>
+      </div>
+    </section>
+
+    <!-- ======== PAYMENT ======== -->
+    <section class="payment-section fade-in" aria-label="Payment information">
+      <div class="payment-method">PAYMENT METHOD</div>
+      <div class="payment-card">TALENT CARD ****2026</div>
+      <div class="payment-status">** APPROVED **</div>
+      <div style="font-size: 8px; color: var(--ink-ghost); margin-top: 4px;">
+        AUTH CODE: #H1R3M3
+      </div>
+    </section>
+
+    <!-- ======== BARCODE ======== -->
+    <section class="barcode-section fade-in" aria-label="Barcode">
+      <div class="barcode" id="barcode" aria-hidden="true">
+        <!-- Generated by JS -->
+      </div>
+      <div class="barcode-number">0 26943 85710 4</div>
+    </section>
+
+    <!-- ======== FOOTER ======== -->
+    <footer class="receipt-footer fade-in">
+      <div class="thank-you">THANK YOU FOR SHOPPING!</div>
+
+      <div class="footer-note">
+        Returns accepted within: <strong>never</strong><br>
+        <em>(skills are permanent)</em>
+      </div>
+
+      <div class="footer-divider" aria-hidden="true">* * * * * * * * * * * *</div>
+
+      <div class="rating-label">Rate your experience</div>
+      <div class="star-rating" aria-label="Five out of five stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+
+      <div class="footer-divider" aria-hidden="true">- - - - - - - - - - -</div>
+
+      <div class="footer-note" style="margin-top: 4px;">
+        Save this receipt for your records.<br>
+        This developer is available for hire.<br>
+        Warranty: Lifetime of continuous learning.
+      </div>
+
+      <div class="website-url">anshullgarg.dev</div>
+      <div class="receipt-id">TXN: DEV-2026-0208-AGARG | POS v4.2.0</div>
+    </footer>
+
+    <!-- Paper curl -->
+    <div class="receipt-curl" aria-hidden="true"></div>
+  </div>
+</div>
+
+<script>
+  // ---- Set current time on receipt ----
+  (function setTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const secs = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const h12 = hours % 12 || 12;
+    const el = document.getElementById('receipt-time');
+    if (el) el.textContent = `${String(h12).padStart(2, '0')}:${mins}:${secs} ${ampm}`;
+  })();
+
+  // ---- Generate barcode bars ----
+  (function generateBarcode() {
+    const container = document.getElementById('barcode');
+    if (!container) return;
+
+    // Encode a pseudo-barcode pattern (Code 128 inspired)
+    const pattern = [
+      2,1,1,3,1,2,1,1,3,1,1,2,3,1,1,1,2,1,1,3,
+      1,2,1,1,2,3,1,1,2,1,3,1,1,2,1,1,3,1,2,1,
+      1,1,3,2,1,1,2,1,3,1,1,2,1,1,2,3,1,1,1,2,
+      3,1,1,2,1,1,3,1,2,1,1,2,1,3,1,1,2,1,1,3,
+      1,2,1,1,3,1,1,2,1,3,1,2,1,1,2,1,3,1,1,2
+    ];
+
+    pattern.forEach((w, i) => {
+      const bar = document.createElement('div');
+      bar.classList.add('bar');
+      bar.style.width = w + 'px';
+      // Alternate black bars and white spaces
+      if (i % 2 === 0) {
+        bar.style.background = 'var(--ink)';
+      } else {
+        bar.style.background = 'transparent';
+      }
+      // Vary heights slightly for realism
+      const h = 44 + Math.random() * 6;
+      bar.style.height = h + 'px';
+      container.appendChild(bar);
+    });
+  })();
+</script>
+
+</body>
+</html>
