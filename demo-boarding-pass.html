@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAREER AIRLINES - Boarding Pass | Anshull Garg</title>
+<style>
+  /* ============================================
+     CSS RESET & BASE
+     ============================================ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --airline-blue: #003366;
+    --airline-light: #0055a4;
+    --airline-accent: #e63946;
+    --pass-bg: #f5f0e8;
+    --pass-white: #ffffff;
+    --ink-dark: #1a1a2e;
+    --ink-gray: #555568;
+    --ink-light: #8888a0;
+    --dotted-color: #bbb8ad;
+    --perf-size: 10px;
+    --font-mono: 'Courier New', 'Consolas', monospace;
+    --font-label: 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-label);
+    background: linear-gradient(135deg, #e8edf2 0%, #c9d6e3 50%, #dfe6ed 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem;
+    color: var(--ink-dark);
+  }
+
+  /* ============================================
+     AIRPORT AMBIENT BACKGROUND
+     ============================================ */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(0,51,102,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(0,85,164,0.04) 0%, transparent 50%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 100px,
+        rgba(0,51,102,0.015) 100px,
+        rgba(0,51,102,0.015) 101px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ============================================
+     FLIGHT INFO DISPLAY (Airport Screen)
+     ============================================ */
+  .airport-header {
+    position: relative;
+    z-index: 1;
+    background: var(--airline-blue);
+    color: #fff;
+    padding: 1.5rem 3rem;
+    border-radius: 8px;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    box-shadow:
+      0 4px 20px rgba(0,51,102,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    width: 100%;
+    max-width: 880px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .airport-header .logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .airport-header .logo .plane-icon {
+    font-size: 1.6rem;
+  }
+
+  .airport-header .flight-status {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    opacity: 0.9;
+    animation: blink-status 3s ease-in-out infinite;
+  }
+
+  @keyframes blink-status {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.5; }
+  }
+
+  .airport-header .now-boarding {
+    background: var(--airline-accent);
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    animation: pulse-board 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-board {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* ============================================
+     BOARDING PASS CONTAINER (FRONT)
+     ============================================ */
+  .boarding-pass {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 880px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    background: var(--pass-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 8px 40px rgba(0,0,0,0.12),
+      0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 1rem;
+  }
+
+  /* Perforated top edge */
+  .boarding-pass::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 20px;
+    right: 20px;
+    height: 10px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 4px,
+      var(--pass-bg) 4px,
+      var(--pass-bg) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+    z-index: 10;
+  }
+
+  /* Perforated bottom edge */
+  .boarding-pass::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 20px;
+    right: 20px;
+    height: 10px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 4px,
+      var(--pass-bg) 4px,
+      var(--pass-bg) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+    z-index: 10;
+  }
+
+  /* ============================================
+     LEFT STUB (Tear-off Passenger Info)
+     ============================================ */
+  .stub-left {
+    padding: 1.8rem 1.5rem;
+    position: relative;
+    background: var(--pass-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Dotted tear line */
+  .stub-left::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    right: 0;
+    width: 0;
+    border-right: 2.5px dashed var(--dotted-color);
+  }
+
+  /* Semi-circle cutouts on tear line */
+  .stub-left .cutout-top,
+  .stub-left .cutout-bottom {
+    position: absolute;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #e8edf2, #c9d6e3);
+    border-radius: 50%;
+    z-index: 5;
+  }
+  .stub-left .cutout-top { top: -10px; }
+  .stub-left .cutout-bottom { bottom: -10px; }
+
+  .stub-logo {
+    font-family: var(--font-label);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--airline-blue);
+    text-transform: uppercase;
+    border-bottom: 1.5px solid var(--airline-blue);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .stub-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stub-field .label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .stub-field .value {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    letter-spacing: 1px;
+  }
+
+  .stub-field .value.large {
+    font-size: 1.6rem;
+    color: var(--airline-blue);
+  }
+
+  .stub-route {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.3rem 0;
+  }
+
+  .stub-route .code {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--airline-blue);
+  }
+
+  .stub-route .arrow {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    color: var(--ink-light);
+    font-size: 0.7rem;
+    position: relative;
+  }
+
+  .stub-route .arrow::before {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ink-light);
+  }
+
+  .stub-route .arrow::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid var(--ink-light);
+  }
+
+  .stub-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .stub-barcode {
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+
+  .stub-barcode .mini-barcode {
+    display: flex;
+    gap: 1px;
+    height: 30px;
+    overflow: hidden;
+  }
+
+  .stub-barcode .mini-barcode span {
+    display: block;
+    background: var(--ink-dark);
+    flex-shrink: 0;
+  }
+
+  /* ============================================
+     RIGHT MAIN SECTION
+     ============================================ */
+  .main-right {
+    padding: 1.8rem 2rem;
+    background: var(--pass-white);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .main-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--airline-blue);
+    padding-bottom: 0.8rem;
+  }
+
+  .main-header .airline-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--airline-blue);
+  }
+
+  .main-header .boarding-text {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--airline-accent);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .main-passenger {
+    font-family: var(--font-mono);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    letter-spacing: 2px;
+    padding: 0.3rem 0;
+  }
+
+  .main-route {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.8rem 0;
+  }
+
+  .route-point {
+    text-align: center;
+  }
+
+  .route-point .code {
+    font-family: var(--font-mono);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--airline-blue);
+    line-height: 1;
+  }
+
+  .route-point .name {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-gray);
+    margin-top: 4px;
+  }
+
+  .route-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+  }
+
+  .route-line .plane-route {
+    font-size: 1.4rem;
+    color: var(--airline-blue);
+    position: relative;
+    z-index: 2;
+    animation: fly-plane 4s ease-in-out infinite;
+  }
+
+  @keyframes fly-plane {
+    0%, 100% { transform: translateX(-20px); }
+    50% { transform: translateX(20px); }
+  }
+
+  .route-line::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--airline-blue),
+      var(--airline-blue) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+    transform: translateY(-50%);
+  }
+
+  .route-line .flight-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--ink-gray);
+    background: var(--pass-white);
+    padding: 0 6px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Details grid */
+  .main-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    padding: 0.8rem 0;
+    border-top: 1px solid #e8e5de;
+    border-bottom: 1px solid #e8e5de;
+  }
+
+  .detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .detail-field .label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .detail-field .value {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    letter-spacing: 1px;
+  }
+
+  .detail-field .value.highlight {
+    color: var(--airline-accent);
+  }
+
+  .detail-field .value.blue {
+    color: var(--airline-blue);
+  }
+
+  /* QR / Barcode Section */
+  .main-barcode-area {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    gap: 1.5rem;
+  }
+
+  .qr-code {
+    width: 80px;
+    height: 80px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    gap: 1px;
+    flex-shrink: 0;
+  }
+
+  .qr-code span {
+    display: block;
+    border-radius: 1px;
+  }
+
+  .qr-code span.b { background: var(--ink-dark); }
+  .qr-code span.w { background: var(--pass-white); }
+
+  .barcode-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .barcode-main .bars {
+    display: flex;
+    gap: 1px;
+    height: 50px;
+    overflow: hidden;
+  }
+
+  .barcode-main .bars span {
+    display: block;
+    background: var(--ink-dark);
+    flex-shrink: 0;
+  }
+
+  .barcode-main .barcode-text {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--ink-gray);
+    text-align: center;
+  }
+
+  /* ============================================
+     FLIP INDICATOR
+     ============================================ */
+  .flip-hint {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin: 1.5rem 0;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    cursor: default;
+  }
+
+  .flip-hint .arrow-down {
+    display: inline-block;
+    animation: bounce-down 2s ease-in-out infinite;
+    font-size: 1rem;
+  }
+
+  @keyframes bounce-down {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* ============================================
+     BACK OF BOARDING PASS
+     ============================================ */
+  .boarding-pass-back {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 880px;
+    background: var(--pass-white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 8px 40px rgba(0,0,0,0.12),
+      0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem;
+  }
+
+  /* Perforated edges for back */
+  .boarding-pass-back::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 20px;
+    right: 20px;
+    height: 10px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 4px,
+      var(--pass-white) 4px,
+      var(--pass-white) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+    z-index: 10;
+  }
+
+  .boarding-pass-back::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 20px;
+    right: 20px;
+    height: 10px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 4px,
+      var(--pass-white) 4px,
+      var(--pass-white) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+    z-index: 10;
+  }
+
+  /* Left perforated edge */
+  .boarding-pass-back .perf-left,
+  .boarding-pass-back .perf-right {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    width: 10px;
+  }
+
+  .boarding-pass-back .perf-left {
+    left: -5px;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 4px,
+      var(--pass-white) 4px,
+      var(--pass-white) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+  }
+
+  .boarding-pass-back .perf-right {
+    right: -5px;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 4px,
+      var(--pass-white) 4px,
+      var(--pass-white) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+  }
+
+  .back-header {
+    text-align: center;
+    border-bottom: 2px solid var(--airline-blue);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .back-header h2 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--airline-blue);
+    margin-bottom: 0.3rem;
+  }
+
+  .back-header p {
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--ink-light);
+    text-transform: uppercase;
+  }
+
+  .back-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .back-section {
+    position: relative;
+  }
+
+  .back-section.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .back-section-title {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--airline-blue);
+    border-bottom: 1px solid #e0ddd6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .back-section-title .icon {
+    font-size: 0.9rem;
+  }
+
+  /* Baggage Allowance (Skills) */
+  .baggage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .baggage-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    background: #f8f7f4;
+    border-radius: 4px;
+    border-left: 3px solid var(--airline-blue);
+    transition: all 0.2s ease;
+  }
+
+  .baggage-item:hover {
+    background: #eef3f9;
+    border-left-color: var(--airline-accent);
+    transform: translateX(3px);
+  }
+
+  .baggage-item .weight {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--airline-blue);
+    min-width: 30px;
+  }
+
+  .baggage-item .name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--ink-dark);
+    letter-spacing: 0.5px;
+  }
+
+  /* In-Flight Entertainment (Projects) */
+  .entertainment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .entertainment-item {
+    padding: 0.8rem;
+    background: #f8f7f4;
+    border-radius: 6px;
+    border: 1px solid #eeebe4;
+    transition: all 0.25s ease;
+    cursor: default;
+  }
+
+  .entertainment-item:hover {
+    background: #eef3f9;
+    border-color: var(--airline-blue);
+    box-shadow: 0 2px 8px rgba(0,51,102,0.08);
+  }
+
+  .entertainment-item .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+
+  .entertainment-item .title {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    letter-spacing: 0.5px;
+  }
+
+  .entertainment-item .channel {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--airline-blue);
+    letter-spacing: 1px;
+    background: #e8edf5;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .entertainment-item .desc {
+    font-size: 0.68rem;
+    color: var(--ink-gray);
+    line-height: 1.5;
+  }
+
+  .entertainment-item .tags {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .entertainment-item .tag {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    background: var(--airline-blue);
+    color: #fff;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Frequent Flyer (Contact) */
+  .ffp-card {
+    background: linear-gradient(135deg, var(--airline-blue), var(--airline-light));
+    border-radius: 8px;
+    padding: 1.2rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ffp-card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+
+  .ffp-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -20px;
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .ffp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ffp-header .tier {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .ffp-header .member-since {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    opacity: 0.7;
+    letter-spacing: 1px;
+  }
+
+  .ffp-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ffp-contact {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.2s ease;
+    padding: 0.3rem 0;
+  }
+
+  .ffp-contact:hover {
+    transform: translateX(4px);
+  }
+
+  .ffp-contact .contact-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .ffp-contact .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .ffp-contact .contact-label {
+    font-size: 0.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .ffp-contact .contact-value {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Experience Timeline */
+  .experience-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .exp-item {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding: 0.6rem;
+    background: #f8f7f4;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .exp-item:hover {
+    background: #eef3f9;
+  }
+
+  .exp-item .exp-year {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--airline-blue);
+    min-width: 72px;
+    letter-spacing: 1px;
+    padding-top: 2px;
+  }
+
+  .exp-item .exp-detail {
+    flex: 1;
+  }
+
+  .exp-item .exp-role {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-dark);
+    margin-bottom: 2px;
+  }
+
+  .exp-item .exp-company {
+    font-size: 0.62rem;
+    color: var(--ink-gray);
+    letter-spacing: 0.5px;
+  }
+
+  /* Safety Instructions (Footer) */
+  .safety-footer {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--dotted-color);
+    text-align: center;
+  }
+
+  .safety-footer p {
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    line-height: 1.8;
+  }
+
+  .safety-footer .fine-print {
+    font-family: var(--font-mono);
+    font-size: 0.48rem;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+    opacity: 0.6;
+  }
+
+  /* ============================================
+     RESPONSIVE DESIGN
+     ============================================ */
+  @media (max-width: 768px) {
+    body { padding: 1rem 0.5rem; }
+
+    .airport-header {
+      flex-direction: column;
+      text-align: center;
+      padding: 1rem 1.5rem;
+    }
+
+    .boarding-pass {
+      grid-template-columns: 1fr;
+    }
+
+    .stub-left {
+      border-bottom: 2.5px dashed var(--dotted-color);
+      padding: 1.5rem;
+    }
+
+    .stub-left::after {
+      display: none;
+    }
+
+    .stub-left .cutout-top,
+    .stub-left .cutout-bottom {
+      display: none;
+    }
+
+    .main-right {
+      padding: 1.5rem;
+    }
+
+    .main-passenger {
+      font-size: 1.3rem;
+    }
+
+    .route-point .code {
+      font-size: 1.8rem;
+    }
+
+    .main-details {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .main-barcode-area {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .back-sections {
+      grid-template-columns: 1fr;
+    }
+
+    .baggage-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .main-passenger { font-size: 1.1rem; }
+    .route-point .code { font-size: 1.4rem; }
+    .boarding-pass-back { padding: 1.2rem; }
+  }
+
+  /* ============================================
+     PRINT STYLES
+     ============================================ */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .airport-header { box-shadow: none; border: 2px solid var(--airline-blue); }
+    .boarding-pass, .boarding-pass-back { box-shadow: none; border: 1px solid #ccc; }
+    .flip-hint { display: none; }
+    * { animation: none !important; }
+  }
+
+  /* ============================================
+     ACCESSIBILITY
+     ============================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus styles */
+  a:focus-visible,
+  .ffp-contact:focus-visible {
+    outline: 3px solid var(--airline-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============================================
+       AIRPORT DEPARTURE DISPLAY HEADER
+       ============================================ -->
+  <header class="airport-header" role="banner">
+    <div class="logo">
+      <span class="plane-icon" aria-hidden="true">&#9992;</span>
+      Career Airlines
+    </div>
+    <div class="flight-status" aria-label="Flight status display">
+      FLIGHT AG-2026 &bull; ON TIME &bull; GATE: GITHUB
+    </div>
+    <div class="now-boarding" role="status" aria-live="polite">
+      NOW BOARDING
+    </div>
+  </header>
+
+  <!-- ============================================
+       FRONT OF BOARDING PASS
+       ============================================ -->
+  <main class="boarding-pass" role="region" aria-label="Boarding pass front side">
+
+    <!-- LEFT STUB (Tear-off) -->
+    <section class="stub-left" aria-label="Passenger stub">
+      <div class="cutout-top" aria-hidden="true"></div>
+      <div class="cutout-bottom" aria-hidden="true"></div>
+
+      <div class="stub-logo">
+        <span aria-hidden="true">&#9992;</span>
+        Career Airlines
+      </div>
+
+      <div class="stub-field">
+        <span class="label">Passenger Name</span>
+        <span class="value large">GARG/<wbr>ANSHULL</span>
+      </div>
+
+      <div class="stub-field">
+        <span class="label">Route</span>
+        <div class="stub-route" aria-label="From EDU to WMT">
+          <span class="code">EDU</span>
+          <span class="arrow" aria-hidden="true"></span>
+          <span class="code">WMT</span>
+        </div>
+      </div>
+
+      <div class="stub-row">
+        <div class="stub-field">
+          <span class="label">Flight</span>
+          <span class="value">AG-2026</span>
+        </div>
+        <div class="stub-field">
+          <span class="label">Seat</span>
+          <span class="value">SENIOR</span>
+        </div>
+      </div>
+
+      <div class="stub-row">
+        <div class="stub-field">
+          <span class="label">Class</span>
+          <span class="value">FIRST</span>
+        </div>
+        <div class="stub-field">
+          <span class="label">Seq</span>
+          <span class="value">004</span>
+        </div>
+      </div>
+
+      <div class="stub-field">
+        <span class="label">Boarding Group</span>
+        <span class="value">FULL-STACK</span>
+      </div>
+
+      <!-- Mini barcode on stub -->
+      <div class="stub-barcode" aria-hidden="true">
+        <div class="mini-barcode" id="stub-barcode"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT MAIN SECTION -->
+    <section class="main-right" aria-label="Flight details">
+
+      <div class="main-header">
+        <div>
+          <div class="airline-name">Career Airlines</div>
+        </div>
+        <div class="boarding-text">
+          Boarding Pass<br>Electronic Ticket
+        </div>
+      </div>
+
+      <div class="main-passenger" aria-label="Passenger: Garg, Anshull">
+        GARG/ANSHULL
+      </div>
+
+      <!-- Route Display -->
+      <div class="main-route" aria-label="Route from Education City to Walmart Global Tech">
+        <div class="route-point">
+          <div class="code">EDU</div>
+          <div class="name">Education City</div>
+        </div>
+        <div class="route-line" aria-hidden="true">
+          <span class="plane-route">&#9992;</span>
+          <span class="flight-num">AG-2026</span>
+        </div>
+        <div class="route-point">
+          <div class="code">WMT</div>
+          <div class="name">Walmart Global Tech</div>
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="main-details">
+        <div class="detail-field">
+          <span class="label">Gate</span>
+          <span class="value blue">GITHUB</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Seat</span>
+          <span class="value">SENIOR</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Class</span>
+          <span class="value highlight">FIRST</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Boarding Group</span>
+          <span class="value">FULL-STACK</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Departure</span>
+          <span class="value blue">2020</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Arrival</span>
+          <span class="value blue">PRESENT</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Sequence</span>
+          <span class="value">004</span>
+        </div>
+        <div class="detail-field">
+          <span class="label">Experience</span>
+          <span class="value highlight">4+ YRS</span>
+        </div>
+      </div>
+
+      <!-- Barcode & QR -->
+      <div class="main-barcode-area" aria-label="Boarding pass barcode">
+        <div class="qr-code" id="qr-code" role="img" aria-label="QR code for portfolio"></div>
+        <div class="barcode-main">
+          <div class="bars" id="main-barcode"></div>
+          <div class="barcode-text">AG 2026 0004 GARG ANSHULL EDU WMT FIRST SENIOR</div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ============================================
+       FLIP INDICATOR
+       ============================================ -->
+  <div class="flip-hint" aria-hidden="true">
+    <span class="arrow-down">&#9660;</span>
+    &nbsp; Turn over for terms and conditions &nbsp;
+    <span class="arrow-down">&#9660;</span>
+  </div>
+
+  <!-- ============================================
+       BACK OF BOARDING PASS
+       ============================================ -->
+  <section class="boarding-pass-back" role="region" aria-label="Boarding pass back side - Skills, Projects, and Contact">
+    <div class="perf-left" aria-hidden="true"></div>
+    <div class="perf-right" aria-hidden="true"></div>
+
+    <div class="back-header">
+      <h2>Career Airlines &mdash; Terms &amp; Conditions</h2>
+      <p>Important information for your career journey</p>
+    </div>
+
+    <div class="back-sections">
+
+      <!-- BAGGAGE ALLOWANCE (Skills) -->
+      <section class="back-section" aria-label="Skills as baggage allowance">
+        <h3 class="back-section-title">
+          <span class="icon" aria-hidden="true">&#128188;</span>
+          Baggage Allowance (Skills)
+        </h3>
+        <div class="baggage-grid">
+          <div class="baggage-item">
+            <span class="weight">23kg</span>
+            <span class="name">React / Next.js</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">23kg</span>
+            <span class="name">TypeScript</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">20kg</span>
+            <span class="name">Node.js</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">20kg</span>
+            <span class="name">Java / Spring Boot</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">18kg</span>
+            <span class="name">Python</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">18kg</span>
+            <span class="name">SQL / NoSQL</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">15kg</span>
+            <span class="name">AWS / GCP</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">15kg</span>
+            <span class="name">Docker / K8s</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">12kg</span>
+            <span class="name">GraphQL / REST</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">12kg</span>
+            <span class="name">CI/CD Pipelines</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">10kg</span>
+            <span class="name">System Design</span>
+          </div>
+          <div class="baggage-item">
+            <span class="weight">10kg</span>
+            <span class="name">Agile / Scrum</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLIGHT HISTORY (Experience) -->
+      <section class="back-section" aria-label="Experience as flight history">
+        <h3 class="back-section-title">
+          <span class="icon" aria-hidden="true">&#9992;</span>
+          Flight History (Experience)
+        </h3>
+        <div class="experience-timeline">
+          <div class="exp-item">
+            <span class="exp-year">2022 - NOW</span>
+            <div class="exp-detail">
+              <div class="exp-role">Senior Software Engineer</div>
+              <div class="exp-company">Walmart Global Tech - Bentonville, AR</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <span class="exp-year">2020 - 2022</span>
+            <div class="exp-detail">
+              <div class="exp-role">Software Engineer</div>
+              <div class="exp-company">Walmart Global Tech - Bentonville, AR</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <span class="exp-year">2020</span>
+            <div class="exp-detail">
+              <div class="exp-role">Software Engineering Intern</div>
+              <div class="exp-company">Walmart Labs - Summer Cohort</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <span class="exp-year">2016 - 2020</span>
+            <div class="exp-detail">
+              <div class="exp-role">B.S. Computer Science</div>
+              <div class="exp-company">University - Education City</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IN-FLIGHT ENTERTAINMENT (Projects) -->
+      <section class="back-section full-width" aria-label="Projects as in-flight entertainment">
+        <h3 class="back-section-title">
+          <span class="icon" aria-hidden="true">&#127916;</span>
+          In-Flight Entertainment (Projects)
+        </h3>
+        <div class="entertainment-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+          <div class="entertainment-item">
+            <div class="title-row">
+              <span class="title">E-Commerce Platform</span>
+              <span class="channel">CH 01</span>
+            </div>
+            <p class="desc">Full-stack e-commerce solution with real-time inventory management, payment processing, and microservices architecture serving millions of users.</p>
+            <div class="tags">
+              <span class="tag">React</span>
+              <span class="tag">Node.js</span>
+              <span class="tag">Kafka</span>
+              <span class="tag">Redis</span>
+            </div>
+          </div>
+          <div class="entertainment-item">
+            <div class="title-row">
+              <span class="title">CI/CD Pipeline Overhaul</span>
+              <span class="channel">CH 02</span>
+            </div>
+            <p class="desc">Redesigned deployment pipeline reducing build times by 60% and enabling zero-downtime deployments across global infrastructure.</p>
+            <div class="tags">
+              <span class="tag">Jenkins</span>
+              <span class="tag">Docker</span>
+              <span class="tag">K8s</span>
+              <span class="tag">Terraform</span>
+            </div>
+          </div>
+          <div class="entertainment-item">
+            <div class="title-row">
+              <span class="title">Design System Library</span>
+              <span class="channel">CH 03</span>
+            </div>
+            <p class="desc">Built a comprehensive component library with 50+ accessible, themeable components adopted across multiple product teams.</p>
+            <div class="tags">
+              <span class="tag">TypeScript</span>
+              <span class="tag">Storybook</span>
+              <span class="tag">A11y</span>
+            </div>
+          </div>
+          <div class="entertainment-item">
+            <div class="title-row">
+              <span class="title">Real-Time Analytics Dashboard</span>
+              <span class="channel">CH 04</span>
+            </div>
+            <p class="desc">Interactive dashboard processing live data streams with customizable widgets, alerting, and drill-down capabilities.</p>
+            <div class="tags">
+              <span class="tag">React</span>
+              <span class="tag">D3.js</span>
+              <span class="tag">WebSocket</span>
+              <span class="tag">GraphQL</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FREQUENT FLYER PROGRAM (Contact) -->
+      <section class="back-section full-width" aria-label="Contact information as frequent flyer program">
+        <h3 class="back-section-title">
+          <span class="icon" aria-hidden="true">&#127775;</span>
+          Frequent Flyer Program (Contact)
+        </h3>
+        <div class="ffp-card">
+          <div class="ffp-header">
+            <span class="tier">Platinum Elite Member</span>
+            <span class="member-since">Member Since: 2020</span>
+          </div>
+          <div class="ffp-contacts">
+            <a href="mailto:anshull.garg@email.com" class="ffp-contact" aria-label="Send email">
+              <span class="contact-icon" aria-hidden="true">&#9993;</span>
+              <span class="contact-info">
+                <span class="contact-label">Email</span>
+                <span class="contact-value">anshull.garg@email.com</span>
+              </span>
+            </a>
+            <a href="https://github.com/anshullgarg" class="ffp-contact" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile (opens in new tab)">
+              <span class="contact-icon" aria-hidden="true">&#128187;</span>
+              <span class="contact-info">
+                <span class="contact-label">GitHub (Gate)</span>
+                <span class="contact-value">github.com/anshullgarg</span>
+              </span>
+            </a>
+            <a href="https://linkedin.com/in/anshullgarg" class="ffp-contact" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in new tab)">
+              <span class="contact-icon" aria-hidden="true">&#128101;</span>
+              <span class="contact-info">
+                <span class="contact-label">LinkedIn</span>
+                <span class="contact-value">linkedin.com/in/anshullgarg</span>
+              </span>
+            </a>
+            <a href="https://anshullgarg.dev" class="ffp-contact" target="_blank" rel="noopener noreferrer" aria-label="Portfolio website (opens in new tab)">
+              <span class="contact-icon" aria-hidden="true">&#127760;</span>
+              <span class="contact-info">
+                <span class="contact-label">Portfolio</span>
+                <span class="contact-value">anshullgarg.dev</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Safety Footer -->
+      <div class="safety-footer" aria-label="Footer disclaimer">
+        <p>
+          This boarding pass is non-transferable. Passenger must present valid skills and experience at the gate.
+          <br>Career Airlines reserves the right to upgrade passengers based on demonstrated performance.
+        </p>
+        <p class="fine-print">
+          REF: AG-2026-004 | ISSUED: 2025 | VALID: INDEFINITELY | CARRIER: CAREER AIRLINES INTL
+          <br>ENDORSEMENTS: FULL-STACK DEVELOPMENT / SYSTEM DESIGN / TEAM LEADERSHIP
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================
+       JAVASCRIPT: Generate CSS Barcodes & QR
+       ============================================ -->
+  <script>
+    // Generate barcode bars from a seed string
+    function generateBarcode(containerId, height, numBars) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const seed = 'AG2026GARGANSHULL004EDUWMTFIRSTSENIOR';
+      let html = '';
+
+      for (let i = 0; i < numBars; i++) {
+        const charCode = seed.charCodeAt(i % seed.length);
+        const width = (charCode % 3) + 1;
+        const isBar = (charCode + i) % 3 !== 0;
+
+        if (isBar) {
+          html += `<span style="width:${width}px; height:${height}px;"></span>`;
+        } else {
+          html += `<span style="width:${width}px; height:${height}px; background:transparent;"></span>`;
+        }
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Generate QR-like pattern
+    function generateQR(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      // 9x9 grid with finder patterns
+      const pattern = [
+        [1,1,1,1,1,0,1,1,1],
+        [1,0,0,0,1,0,1,0,1],
+        [1,0,1,0,1,0,1,0,1],
+        [1,0,0,0,1,0,1,0,1],
+        [1,1,1,1,1,0,1,1,1],
+        [0,0,0,0,0,0,0,0,0],
+        [1,1,1,0,1,0,1,0,1],
+        [0,0,0,0,0,1,0,1,0],
+        [1,0,1,1,1,0,1,1,1]
+      ];
+
+      // Add pseudo-random data area
+      const seed = 'ANSHULLGARG';
+      let idx = 0;
+      for (let r = 5; r < 9; r++) {
+        for (let c = 0; c < 5; c++) {
+          if (pattern[r][c] === 0) {
+            pattern[r][c] = seed.charCodeAt(idx % seed.length) % 2;
+            idx++;
+          }
+        }
+      }
+
+      let html = '';
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          html += `<span class="${pattern[r][c] ? 'b' : 'w'}"></span>`;
+        }
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Initialize
+    generateBarcode('stub-barcode', 30, 60);
+    generateBarcode('main-barcode', 50, 120);
+    generateQR('qr-code');
+  </script>
+
+</body>
+</html>

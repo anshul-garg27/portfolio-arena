@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WANTED: Anshull Garg - The Code Wrangler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --paper: #e8d5a3;
+            --paper-dark: #c9a96e;
+            --paper-edge: #b8944d;
+            --ink: #2c1810;
+            --ink-light: #4a3020;
+            --ink-faded: #6b4c38;
+            --wood-dark: #3e2213;
+            --wood-mid: #5a3a1e;
+            --wood-light: #7a5530;
+            --wood-grain: #4a2e16;
+            --stain: rgba(101, 67, 33, 0.15);
+            --nail: #777;
+            --nail-shadow: #333;
+            --red-ink: #8b1a1a;
+            --red-stamp: #a02020;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Rye', serif;
+            background: var(--wood-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px 80px;
+            overflow-x: hidden;
+        }
+
+        /* ===== WOOD PLANK BACKGROUND ===== */
+        .wood-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .wood-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0px,
+                    transparent 118px,
+                    rgba(0,0,0,0.3) 118px,
+                    rgba(0,0,0,0.5) 120px,
+                    rgba(0,0,0,0.3) 122px,
+                    transparent 122px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    var(--wood-mid) 0px,
+                    var(--wood-light) 30px,
+                    var(--wood-mid) 60px,
+                    var(--wood-dark) 80px,
+                    var(--wood-mid) 100px,
+                    var(--wood-light) 120px
+                );
+        }
+
+        .wood-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        /* Wood grain lines */
+        .wood-grain-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                repeating-linear-gradient(
+                    180deg,
+                    transparent 0px,
+                    transparent 3px,
+                    rgba(0,0,0,0.04) 3px,
+                    rgba(0,0,0,0.04) 4px,
+                    transparent 4px,
+                    transparent 8px,
+                    rgba(0,0,0,0.02) 8px,
+                    rgba(0,0,0,0.02) 9px,
+                    transparent 9px,
+                    transparent 15px
+                );
+            pointer-events: none;
+        }
+
+        /* Wood knots */
+        .wood-knot {
+            position: fixed;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .wood-knot-1 {
+            width: 60px;
+            height: 45px;
+            top: 120px;
+            left: 80px;
+            background: radial-gradient(ellipse, var(--wood-dark) 30%, var(--wood-grain) 60%, transparent 70%);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .wood-knot-2 {
+            width: 40px;
+            height: 35px;
+            bottom: 200px;
+            right: 150px;
+            background: radial-gradient(ellipse, var(--wood-dark) 25%, var(--wood-grain) 55%, transparent 70%);
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+        }
+
+        .wood-knot-3 {
+            width: 50px;
+            height: 40px;
+            top: 400px;
+            right: 60px;
+            background: radial-gradient(ellipse, var(--wood-dark) 20%, var(--wood-grain) 50%, transparent 65%);
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.25);
+        }
+
+        /* ===== POSTER CONTAINER ===== */
+        .poster-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 680px;
+        }
+
+        .poster {
+            position: relative;
+            background: var(--paper);
+            padding: 50px 45px 60px;
+            box-shadow:
+                0 4px 20px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(0,0,0,0.1),
+                inset 0 0 80px rgba(139, 109, 63, 0.3);
+            border: 2px solid var(--paper-edge);
+        }
+
+        /* ===== TORN EDGES ===== */
+        .poster::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            right: 15px;
+            height: 12px;
+            background: var(--paper);
+            clip-path: polygon(
+                0% 100%, 2% 40%, 4% 80%, 6% 30%, 8% 70%, 10% 20%, 12% 60%,
+                14% 40%, 16% 90%, 18% 30%, 20% 70%, 22% 50%, 24% 80%, 26% 20%,
+                28% 60%, 30% 40%, 32% 90%, 34% 30%, 36% 70%, 38% 50%, 40% 85%,
+                42% 25%, 44% 65%, 46% 45%, 48% 80%, 50% 30%, 52% 70%, 54% 50%,
+                56% 85%, 58% 20%, 60% 60%, 62% 35%, 64% 75%, 66% 45%, 68% 90%,
+                70% 30%, 72% 65%, 74% 40%, 76% 80%, 78% 25%, 80% 55%, 82% 35%,
+                84% 75%, 86% 50%, 88% 85%, 90% 25%, 92% 65%, 94% 40%, 96% 80%,
+                98% 35%, 100% 100%
+            );
+            filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.1));
+        }
+
+        .poster::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 15px;
+            right: 10px;
+            height: 12px;
+            background: var(--paper);
+            clip-path: polygon(
+                0% 0%, 2% 60%, 4% 20%, 6% 70%, 8% 30%, 10% 80%, 12% 40%,
+                14% 60%, 16% 10%, 18% 70%, 20% 30%, 22% 50%, 24% 20%, 26% 80%,
+                28% 40%, 30% 60%, 32% 10%, 34% 70%, 36% 30%, 38% 50%, 40% 15%,
+                42% 75%, 44% 35%, 46% 55%, 48% 20%, 50% 70%, 52% 30%, 54% 50%,
+                56% 15%, 58% 80%, 60% 40%, 62% 65%, 64% 25%, 66% 55%, 68% 10%,
+                70% 70%, 72% 35%, 74% 60%, 76% 20%, 78% 75%, 80% 45%, 82% 65%,
+                84% 25%, 86% 50%, 88% 15%, 90% 75%, 92% 35%, 94% 60%, 96% 20%,
+                98% 65%, 100% 0%
+            );
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+        }
+
+        /* Left torn edge */
+        .torn-left {
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            left: -8px;
+            width: 12px;
+            background: var(--paper);
+            clip-path: polygon(
+                100% 0%, 40% 2%, 80% 4%, 30% 6%, 70% 8%, 20% 10%, 60% 12%,
+                40% 14%, 90% 16%, 30% 18%, 70% 20%, 50% 22%, 80% 24%, 20% 26%,
+                60% 28%, 40% 30%, 90% 32%, 30% 34%, 70% 36%, 50% 38%, 85% 40%,
+                25% 42%, 65% 44%, 45% 46%, 80% 48%, 30% 50%, 70% 52%, 50% 54%,
+                85% 56%, 20% 58%, 60% 60%, 35% 62%, 75% 64%, 45% 66%, 90% 68%,
+                30% 70%, 65% 72%, 40% 74%, 80% 76%, 25% 78%, 55% 80%, 35% 82%,
+                75% 84%, 50% 86%, 85% 88%, 25% 90%, 65% 92%, 40% 94%, 80% 96%,
+                35% 98%, 100% 100%
+            );
+        }
+
+        /* Right torn edge */
+        .torn-right {
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            right: -8px;
+            width: 12px;
+            background: var(--paper);
+            clip-path: polygon(
+                0% 0%, 60% 2%, 20% 4%, 70% 6%, 30% 8%, 80% 10%, 40% 12%,
+                60% 14%, 10% 16%, 70% 18%, 30% 20%, 50% 22%, 20% 24%, 80% 26%,
+                40% 28%, 60% 30%, 10% 32%, 70% 34%, 30% 36%, 50% 38%, 15% 40%,
+                75% 42%, 35% 44%, 55% 46%, 20% 48%, 70% 50%, 30% 52%, 50% 54%,
+                15% 56%, 80% 58%, 40% 60%, 65% 62%, 25% 64%, 55% 66%, 10% 68%,
+                70% 70%, 35% 72%, 60% 74%, 20% 76%, 75% 78%, 45% 80%, 65% 82%,
+                25% 84%, 50% 86%, 15% 88%, 75% 90%, 35% 92%, 60% 94%, 20% 96%,
+                65% 98%, 0% 100%
+            );
+        }
+
+        /* ===== PAPER TEXTURE & AGING ===== */
+        .paper-texture {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Noise grain */
+        .paper-texture::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+            opacity: 0.8;
+        }
+
+        /* Aged vignette */
+        .paper-texture::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                ellipse at center,
+                transparent 30%,
+                rgba(139, 109, 63, 0.15) 60%,
+                rgba(101, 67, 33, 0.3) 100%
+            );
+        }
+
+        /* ===== COFFEE STAINS ===== */
+        .coffee-stain {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .coffee-stain-1 {
+            width: 120px;
+            height: 110px;
+            top: 60px;
+            right: 40px;
+            background: radial-gradient(
+                ellipse at center,
+                transparent 40%,
+                rgba(101, 67, 33, 0.08) 45%,
+                rgba(101, 67, 33, 0.12) 50%,
+                rgba(101, 67, 33, 0.06) 55%,
+                transparent 60%
+            );
+            transform: rotate(-15deg);
+        }
+
+        .coffee-stain-2 {
+            width: 90px;
+            height: 85px;
+            bottom: 180px;
+            left: 30px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(101, 67, 33, 0.05) 35%,
+                rgba(101, 67, 33, 0.1) 45%,
+                rgba(101, 67, 33, 0.15) 50%,
+                rgba(101, 67, 33, 0.08) 55%,
+                transparent 65%
+            );
+            transform: rotate(10deg);
+        }
+
+        .coffee-stain-3 {
+            width: 70px;
+            height: 65px;
+            top: 350px;
+            right: 60px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(80, 50, 20, 0.04) 30%,
+                rgba(80, 50, 20, 0.09) 48%,
+                rgba(80, 50, 20, 0.12) 52%,
+                rgba(80, 50, 20, 0.06) 58%,
+                transparent 65%
+            );
+        }
+
+        /* ===== NAIL HOLES ===== */
+        .nail {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            z-index: 10;
+        }
+
+        .nail::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at 40% 35%,
+                #aaa 0%,
+                #888 30%,
+                #666 60%,
+                #444 100%
+            );
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.5),
+                inset 0 1px 2px rgba(255,255,255,0.3),
+                inset 0 -1px 2px rgba(0,0,0,0.3);
+        }
+
+        .nail::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 1px;
+            top: 8px;
+            left: 6px;
+            background: #555;
+            box-shadow:
+                0 0 0 1px rgba(0,0,0,0.2),
+                3px -2px 0 -0.5px #555,
+                -1px 3px 0 -0.5px #555;
+            transform: rotate(35deg);
+        }
+
+        .nail-tl {
+            top: 12px;
+            left: 12px;
+        }
+
+        .nail-tr {
+            top: 14px;
+            right: 14px;
+        }
+
+        .nail-bl {
+            bottom: 14px;
+            left: 14px;
+        }
+
+        .nail-br {
+            bottom: 12px;
+            right: 12px;
+        }
+
+        /* Nail hole shadow on paper */
+        .nail-shadow {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.15) 30%, transparent 70%);
+            z-index: 1;
+        }
+
+        .nail-shadow-tl { top: 9px; left: 9px; }
+        .nail-shadow-tr { top: 11px; right: 11px; }
+        .nail-shadow-bl { bottom: 11px; left: 11px; }
+        .nail-shadow-br { bottom: 9px; right: 9px; }
+
+        /* ===== FOLD LINES ===== */
+        .fold-h {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(0,0,0,0.06) 10%,
+                rgba(0,0,0,0.08) 50%,
+                rgba(0,0,0,0.06) 90%,
+                transparent 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .fold-h::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 1px;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255,255,255,0.08) 10%,
+                rgba(255,255,255,0.1) 50%,
+                rgba(255,255,255,0.08) 90%,
+                transparent 100%
+            );
+        }
+
+        .fold-h-1 { top: 33%; }
+        .fold-h-2 { top: 66%; }
+
+        .fold-v {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            left: 50%;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                rgba(0,0,0,0.05) 10%,
+                rgba(0,0,0,0.07) 50%,
+                rgba(0,0,0,0.05) 90%,
+                transparent 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ===== POSTER CONTENT ===== */
+        .poster-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            color: var(--ink);
+        }
+
+        /* ===== WANTED HEADING ===== */
+        .wanted-heading {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            letter-spacing: 0.15em;
+            line-height: 1;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-shadow:
+                2px 2px 0 rgba(0,0,0,0.15),
+                0 0 20px rgba(139, 109, 63, 0.2);
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .wanted-heading::after {
+            content: '';
+            display: block;
+            width: 80%;
+            height: 3px;
+            background: var(--ink);
+            margin: 8px auto 0;
+            opacity: 0.8;
+        }
+
+        /* ===== DEAD OR ALIVE / FOR HIRING ===== */
+        .subtitle-area {
+            position: relative;
+            margin: 15px 0 25px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dead-or-alive {
+            font-size: clamp(1rem, 3.5vw, 1.5rem);
+            letter-spacing: 0.2em;
+            color: var(--ink-faded);
+            position: relative;
+            display: inline-block;
+            opacity: 0.5;
+        }
+
+        .dead-or-alive::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            right: -10px;
+            height: 3px;
+            background: var(--red-ink);
+            transform: rotate(-3deg);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+        }
+
+        .for-hiring {
+            font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+            letter-spacing: 0.2em;
+            color: var(--red-stamp);
+            position: relative;
+            transform: rotate(-2deg);
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        .for-hiring::before,
+        .for-hiring::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40px;
+            height: 3px;
+            background: var(--ink);
+            opacity: 0.4;
+        }
+
+        .for-hiring::before {
+            left: -50px;
+            transform: translateY(-50%);
+        }
+
+        .for-hiring::after {
+            right: -50px;
+            transform: translateY(-50%);
+        }
+
+        /* ===== DECORATIVE BORDER ===== */
+        .ornamental-border {
+            border: 3px double var(--ink);
+            padding: 30px 25px;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .ornamental-border::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px solid var(--ink-faded);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Corner ornaments */
+        .corner-ornament {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            z-index: 4;
+        }
+
+        .corner-ornament::before,
+        .corner-ornament::after {
+            content: '';
+            position: absolute;
+            background: var(--ink);
+            opacity: 0.6;
+        }
+
+        .corner-ornament::before {
+            width: 20px;
+            height: 2px;
+        }
+
+        .corner-ornament::after {
+            width: 2px;
+            height: 20px;
+        }
+
+        .corner-tl { top: -1px; left: -1px; }
+        .corner-tl::before { top: 0; left: 0; }
+        .corner-tl::after { top: 0; left: 0; }
+
+        .corner-tr { top: -1px; right: -1px; }
+        .corner-tr::before { top: 0; right: 0; }
+        .corner-tr::after { top: 0; right: 0; }
+
+        .corner-bl { bottom: -1px; left: -1px; }
+        .corner-bl::before { bottom: 0; left: 0; }
+        .corner-bl::after { bottom: 0; left: 0; }
+
+        .corner-br { bottom: -1px; right: -1px; }
+        .corner-br::before { bottom: 0; right: 0; }
+        .corner-br::after { bottom: 0; right: 0; }
+
+        /* ===== PHOTO AREA ===== */
+        .photo-area {
+            width: 200px;
+            height: 220px;
+            margin: 25px auto;
+            border: 3px solid var(--ink);
+            background: linear-gradient(
+                135deg,
+                #d4c090 0%,
+                #c9b57a 30%,
+                #bfa86a 60%,
+                #c9b57a 100%
+            );
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.15);
+        }
+
+        .photo-area::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 1px solid var(--ink-faded);
+            opacity: 0.4;
+        }
+
+        /* Silhouette */
+        .silhouette {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .silhouette svg {
+            width: 140px;
+            height: 170px;
+            opacity: 0.6;
+        }
+
+        .initials-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            color: var(--ink);
+            opacity: 0.3;
+            letter-spacing: 0.1em;
+        }
+
+        /* ===== STAR DECORATIONS ===== */
+        .star-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .star {
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+
+        .star::before {
+            content: '\2605';
+            font-size: 16px;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .star-lg::before {
+            font-size: 22px;
+        }
+
+        /* ===== INFO SECTIONS ===== */
+        .info-section {
+            text-align: left;
+            margin: 18px 0;
+            padding: 0 5px;
+        }
+
+        .info-label {
+            font-size: clamp(0.6rem, 1.8vw, 0.75rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-faded);
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .info-value {
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+            line-height: 1.5;
+            color: var(--ink);
+        }
+
+        .info-value .aka {
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        /* Name section */
+        .name-section {
+            text-align: center;
+            margin: 20px 0 15px;
+        }
+
+        .name-section .info-label {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+        }
+
+        .suspect-name {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            letter-spacing: 0.08em;
+            margin-bottom: 2px;
+        }
+
+        .suspect-aka {
+            font-size: clamp(0.8rem, 2.2vw, 1rem);
+            color: var(--ink-light);
+            font-style: italic;
+        }
+
+        /* ===== DIVIDERS ===== */
+        .divider {
+            width: 100%;
+            height: 2px;
+            background: var(--ink);
+            margin: 18px 0;
+            opacity: 0.3;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '\2666';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--paper);
+            padding: 0 10px;
+            font-size: 10px;
+            color: var(--ink);
+            opacity: 0.5;
+        }
+
+        .divider-thick {
+            height: 3px;
+            opacity: 0.5;
+        }
+
+        .divider-double {
+            height: 1px;
+            box-shadow: 0 4px 0 rgba(44, 24, 16, 0.3);
+            margin: 18px 0 22px;
+        }
+
+        /* ===== CRIMES LIST ===== */
+        .crimes-section {
+            margin: 20px 0;
+        }
+
+        .crimes-header {
+            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 12px;
+            color: var(--ink);
+        }
+
+        .crimes-list {
+            list-style: none;
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        .crimes-list li {
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            line-height: 1.6;
+            padding: 6px 0 6px 24px;
+            position: relative;
+            color: var(--ink-light);
+            border-bottom: 1px dotted rgba(44, 24, 16, 0.15);
+        }
+
+        .crimes-list li:last-child {
+            border-bottom: none;
+        }
+
+        .crimes-list li::before {
+            content: '\2022';
+            position: absolute;
+            left: 8px;
+            color: var(--ink);
+            font-size: 1.2em;
+        }
+
+        /* ===== REWARD SECTION ===== */
+        .reward-section {
+            text-align: center;
+            margin: 25px 0 15px;
+            padding: 15px;
+            border-top: 2px solid var(--ink);
+            border-bottom: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .reward-label {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .reward-value {
+            font-size: clamp(0.85rem, 2.3vw, 1.05rem);
+            color: var(--ink-light);
+            line-height: 1.5;
+        }
+
+        /* ===== WARNING BOX ===== */
+        .warning-section {
+            margin: 20px 0;
+            padding: 12px 15px;
+            border: 2px solid var(--red-ink);
+            text-align: center;
+            position: relative;
+            background: rgba(139, 26, 26, 0.03);
+        }
+
+        .warning-section::before {
+            content: '! WARNING !';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--paper);
+            padding: 0 12px;
+            font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+            letter-spacing: 0.2em;
+            color: var(--red-ink);
+        }
+
+        .warning-text {
+            font-size: clamp(0.75rem, 2vw, 0.88rem);
+            color: var(--ink-light);
+            line-height: 1.5;
+        }
+
+        /* ===== APPROACH SECTION ===== */
+        .approach-section {
+            text-align: center;
+            margin: 18px 0;
+        }
+
+        .approach-label {
+            font-size: clamp(0.65rem, 1.8vw, 0.78rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-faded);
+            margin-bottom: 5px;
+        }
+
+        .approach-value {
+            font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+            color: var(--ink-light);
+            line-height: 1.5;
+        }
+
+        /* ===== CONTACT SECTION ===== */
+        .contact-section {
+            margin-top: 25px;
+            padding-top: 18px;
+            border-top: 2px solid var(--ink);
+            text-align: center;
+        }
+
+        .contact-header {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin-bottom: 15px;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px 25px;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--ink-light);
+            font-size: clamp(0.65rem, 1.8vw, 0.78rem);
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .contact-link:hover {
+            color: var(--red-stamp);
+        }
+
+        .contact-link svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .contact-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-link:hover::after {
+            opacity: 0.5;
+        }
+
+        /* ===== FINE PRINT ===== */
+        .fine-print {
+            margin-top: 20px;
+            text-align: center;
+            font-size: clamp(0.5rem, 1.2vw, 0.6rem);
+            letter-spacing: 0.1em;
+            color: var(--ink-faded);
+            opacity: 0.6;
+            line-height: 1.6;
+        }
+
+        /* ===== STAMP OVERLAY ===== */
+        .stamp {
+            position: absolute;
+            top: 140px;
+            right: 30px;
+            width: 120px;
+            height: 120px;
+            border: 4px solid var(--red-stamp);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(18deg);
+            opacity: 0.18;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .stamp-text {
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            color: var(--red-stamp);
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* ===== AGING SPOTS ===== */
+        .age-spot {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(101, 67, 33, 0.08);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .age-spot-1 { width: 30px; height: 25px; top: 25%; left: 15%; }
+        .age-spot-2 { width: 20px; height: 18px; top: 55%; right: 20%; }
+        .age-spot-3 { width: 35px; height: 30px; bottom: 20%; left: 25%; }
+        .age-spot-4 { width: 15px; height: 13px; top: 40%; left: 40%; }
+        .age-spot-5 { width: 25px; height: 22px; bottom: 35%; right: 15%; }
+
+        /* ===== BURN MARK ===== */
+        .burn-mark {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            width: 50px;
+            height: 40px;
+            background: radial-gradient(
+                ellipse,
+                rgba(80, 50, 20, 0.1) 0%,
+                rgba(60, 35, 10, 0.05) 50%,
+                transparent 70%
+            );
+            border-radius: 50%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ===== WANTED POSTER SLIGHT TILT ===== */
+        .poster-wrapper {
+            transform: rotate(-0.8deg);
+        }
+
+        .poster-wrapper:hover {
+            transform: rotate(0deg);
+            transition: transform 0.5s ease;
+        }
+
+        /* ===== POSTER DROP SHADOW ON WOOD ===== */
+        .poster-shadow {
+            position: absolute;
+            inset: 5px -3px -8px 3px;
+            background: rgba(0, 0, 0, 0.3);
+            filter: blur(12px);
+            z-index: -1;
+        }
+
+        /* ===== ORNAMENTAL FLOURISHES ===== */
+        .flourish {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--ink);
+            opacity: 0.4;
+            letter-spacing: 0.3em;
+            margin: 8px 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px 60px;
+            }
+
+            .poster {
+                padding: 35px 25px 45px;
+            }
+
+            .ornamental-border {
+                padding: 20px 15px;
+                margin: 0 5px;
+            }
+
+            .photo-area {
+                width: 160px;
+                height: 180px;
+            }
+
+            .for-hiring::before,
+            .for-hiring::after {
+                width: 25px;
+            }
+
+            .for-hiring::before {
+                left: -32px;
+            }
+
+            .for-hiring::after {
+                right: -32px;
+            }
+
+            .stamp {
+                width: 90px;
+                height: 90px;
+                top: 110px;
+                right: 15px;
+                border-width: 3px;
+            }
+
+            .stamp-text {
+                font-size: 0.65rem;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .crimes-list li {
+                padding-left: 20px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .poster {
+                padding: 25px 18px 35px;
+            }
+
+            .ornamental-border {
+                padding: 15px 10px;
+                margin: 0;
+            }
+
+            .photo-area {
+                width: 130px;
+                height: 150px;
+            }
+
+            .for-hiring::before,
+            .for-hiring::after {
+                display: none;
+            }
+        }
+
+        /* ===== SUBTLE ANIMATIONS ===== */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.97; }
+            75% { opacity: 0.99; }
+        }
+
+        .poster {
+            animation: flicker 8s ease-in-out infinite;
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .wood-bg, .wood-grain-overlay, .wood-knot {
+                display: none;
+            }
+            .poster-wrapper {
+                transform: none;
+            }
+            .poster {
+                box-shadow: none;
+                border: 2px solid #333;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Wood plank background -->
+    <div class="wood-bg"></div>
+    <div class="wood-grain-overlay"></div>
+    <div class="wood-knot wood-knot-1"></div>
+    <div class="wood-knot wood-knot-2"></div>
+    <div class="wood-knot wood-knot-3"></div>
+
+    <!-- Poster -->
+    <div class="poster-wrapper">
+        <div class="poster-shadow"></div>
+        <div class="poster">
+
+            <!-- Torn edges -->
+            <div class="torn-left"></div>
+            <div class="torn-right"></div>
+
+            <!-- Paper texture & aging -->
+            <div class="paper-texture"></div>
+            <div class="coffee-stain coffee-stain-1"></div>
+            <div class="coffee-stain coffee-stain-2"></div>
+            <div class="coffee-stain coffee-stain-3"></div>
+
+            <!-- Age spots -->
+            <div class="age-spot age-spot-1"></div>
+            <div class="age-spot age-spot-2"></div>
+            <div class="age-spot age-spot-3"></div>
+            <div class="age-spot age-spot-4"></div>
+            <div class="age-spot age-spot-5"></div>
+
+            <!-- Burn mark -->
+            <div class="burn-mark"></div>
+
+            <!-- Fold lines -->
+            <div class="fold-h fold-h-1"></div>
+            <div class="fold-h fold-h-2"></div>
+            <div class="fold-v"></div>
+
+            <!-- Nail holes -->
+            <div class="nail-shadow nail-shadow-tl"></div>
+            <div class="nail-shadow nail-shadow-tr"></div>
+            <div class="nail-shadow nail-shadow-bl"></div>
+            <div class="nail-shadow nail-shadow-br"></div>
+            <div class="nail nail-tl"></div>
+            <div class="nail nail-tr"></div>
+            <div class="nail nail-bl"></div>
+            <div class="nail nail-br"></div>
+
+            <!-- Stamp overlay -->
+            <div class="stamp">
+                <span class="stamp-text">Available<br>for Hire</span>
+            </div>
+
+            <!-- Poster content -->
+            <div class="poster-content">
+
+                <div class="flourish">~ ~ ~</div>
+
+                <h1 class="wanted-heading">WANTED</h1>
+
+                <!-- Dead or Alive / For Hiring -->
+                <div class="subtitle-area">
+                    <span class="dead-or-alive">DEAD OR ALIVE</span>
+                    <span class="for-hiring">FOR HIRING</span>
+                </div>
+
+                <div class="ornamental-border">
+                    <div class="corner-ornament corner-tl"></div>
+                    <div class="corner-ornament corner-tr"></div>
+                    <div class="corner-ornament corner-bl"></div>
+                    <div class="corner-ornament corner-br"></div>
+
+                    <!-- Photo area with silhouette -->
+                    <div class="photo-area">
+                        <div class="silhouette">
+                            <svg viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Head -->
+                                <ellipse cx="60" cy="42" rx="28" ry="32" fill="#2c1810" opacity="0.5"/>
+                                <!-- Hat brim -->
+                                <ellipse cx="60" cy="18" rx="42" ry="8" fill="#2c1810" opacity="0.5"/>
+                                <!-- Hat top -->
+                                <path d="M35 18 Q38 -5 60 -8 Q82 -5 85 18" fill="#2c1810" opacity="0.5"/>
+                                <!-- Neck -->
+                                <rect x="50" y="70" width="20" height="12" fill="#2c1810" opacity="0.5" rx="3"/>
+                                <!-- Shoulders -->
+                                <path d="M10 150 Q10 100 30 90 Q45 82 60 82 Q75 82 90 90 Q110 100 110 150" fill="#2c1810" opacity="0.5"/>
+                                <!-- Collar detail -->
+                                <path d="M45 85 L60 100 L75 85" stroke="#2c1810" stroke-width="2" fill="none" opacity="0.3"/>
+                            </svg>
+                        </div>
+                        <span class="initials-overlay">AG</span>
+                    </div>
+
+                    <!-- Star row -->
+                    <div class="star-row">
+                        <span class="star"></span>
+                        <span class="star"></span>
+                        <span class="star star-lg"></span>
+                        <span class="star"></span>
+                        <span class="star"></span>
+                    </div>
+
+                    <!-- Name -->
+                    <div class="name-section">
+                        <span class="info-label">Name</span>
+                        <div class="suspect-name">Anshull Garg</div>
+                        <div class="suspect-aka">aka "The Code Wrangler"</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Last Seen -->
+                    <div class="info-section">
+                        <span class="info-label">Last Seen</span>
+                        <div class="info-value">Writing clean code at <strong>Walmart Global Tech</strong></div>
+                    </div>
+
+                    <!-- Known Aliases -->
+                    <div class="info-section">
+                        <span class="info-label">Known Aliases</span>
+                        <div class="info-value">
+                            Full-Stack Developer, React Specialist, TypeScript Enthusiast
+                        </div>
+                    </div>
+
+                    <div class="divider divider-double"></div>
+
+                    <!-- Crimes -->
+                    <div class="crimes-section">
+                        <div class="crimes-header">Crimes Committed</div>
+                        <ul class="crimes-list">
+                            <li>Building systems that serve <strong>240M+ customers</strong></li>
+                            <li>Reducing latency by <strong>40%</strong></li>
+                            <li>Creating component libraries used by <strong>12 teams</strong></li>
+                        </ul>
+                    </div>
+
+                    <div class="divider divider-thick"></div>
+
+                    <!-- Reward -->
+                    <div class="reward-section">
+                        <div class="reward-label">Reward</div>
+                        <div class="reward-value">Exceptional software and a great teammate</div>
+                    </div>
+
+                    <!-- Approach With -->
+                    <div class="approach-section">
+                        <div class="approach-label">Approach With</div>
+                        <div class="approach-value">Interesting problems and competitive compensation</div>
+                    </div>
+
+                    <!-- Warning -->
+                    <div class="warning-section">
+                        <p class="warning-text">
+                            Armed with <strong>4+ years of experience</strong> and dangerous attention to detail
+                        </p>
+                    </div>
+
+                    <!-- Star row -->
+                    <div class="star-row">
+                        <span class="star"></span>
+                        <span class="star star-lg"></span>
+                        <span class="star"></span>
+                    </div>
+
+                </div>
+
+                <!-- Contact section -->
+                <div class="contact-section">
+                    <div class="contact-header">Report Sightings To</div>
+                    <div class="contact-links">
+                        <a href="mailto:anshullgarg@gmail.com" class="contact-link" aria-label="Send email to Anshull Garg">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M22 4L12 13L2 4"/>
+                            </svg>
+                            anshullgarg@gmail.com
+                        </a>
+                        <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            LinkedIn
+                        </a>
+                        <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Visit GitHub profile">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flourish">~ ~ ~</div>
+
+                <div class="fine-print">
+                    Posted by order of the Territory of Good Engineering<br>
+                    Any person found harboring this individual shall be rewarded with high-quality code
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Entrance animation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const poster = document.querySelector('.poster-wrapper');
+            poster.style.opacity = '0';
+            poster.style.transform = 'rotate(-0.8deg) translateY(30px)';
+            poster.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    poster.style.opacity = '1';
+                    poster.style.transform = 'rotate(-0.8deg) translateY(0)';
+                });
+            });
+
+            // Parallax tilt on hover for desktop
+            if (window.matchMedia('(hover: hover)').matches) {
+                poster.addEventListener('mousemove', (e) => {
+                    const rect = poster.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    const tiltX = y * -2;
+                    const tiltY = x * 2;
+                    poster.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                    poster.style.transition = 'transform 0.1s ease';
+                });
+
+                poster.addEventListener('mouseleave', () => {
+                    poster.style.transform = 'rotate(-0.8deg)';
+                    poster.style.transition = 'transform 0.5s ease';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
