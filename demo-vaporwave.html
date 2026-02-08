@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSHULL GARG // VAPORWAVE PORTFOLIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==============================
+   RESET & BASE
+   ============================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --neon-pink: #FF71CE;
+  --electric-cyan: #01CDFE;
+  --lavender: #B967FF;
+  --mint: #05FFA1;
+  --soft-yellow: #FFFB96;
+  --deep-purple: #1a0a2e;
+  --win95-gray: #c0c0c0;
+  --win95-dark: #808080;
+  --win95-light: #dfdfdf;
+  --win95-blue: #000080;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--deep-purple);
+  color: #fff;
+  overflow-x: hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpolygon points='0,0 0,20 6,16 10,24 14,22 10,14 18,14' fill='%23FF71CE' stroke='%2301CDFE' stroke-width='1'/%3E%3C/svg%3E"), auto;
+}
+
+/* ==============================
+   CRT SCANLINE OVERLAY
+   ============================== */
+.crt-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+.crt-overlay::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.4) 100%);
+}
+
+/* ==============================
+   VHS TIMESTAMP
+   ============================== */
+.vhs-timestamp {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--soft-yellow);
+  z-index: 9999;
+  text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--electric-cyan);
+  opacity: 0.8;
+}
+
+.vhs-rec {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #ff0000;
+  z-index: 9999;
+  animation: blink 1s infinite;
+}
+
+.vhs-rec::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: #ff0000;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+@keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+/* ==============================
+   JAPANESE DECORATIVE TEXT
+   ============================== */
+.jp-deco {
+  position: fixed;
+  font-size: 14px;
+  color: var(--neon-pink);
+  opacity: 0.15;
+  writing-mode: vertical-rl;
+  z-index: 1;
+  font-weight: 300;
+  letter-spacing: 8px;
+  pointer-events: none;
+}
+
+.jp-deco.left { left: 15px; top: 50%; transform: translateY(-50%); }
+.jp-deco.right { right: 15px; top: 50%; transform: translateY(-50%); }
+
+/* ==============================
+   GRADIENT SKY BACKGROUND
+   ============================== */
+.sky-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    180deg,
+    #0d0221 0%,
+    #1a0533 15%,
+    #2d1b69 30%,
+    #6b2fa0 45%,
+    #b9379e 55%,
+    #e8498e 65%,
+    #ff6b6b 75%,
+    #ff9a5c 85%,
+    #ffd93d 95%
+  );
+  z-index: -3;
+}
+
+/* ==============================
+   SUN
+   ============================== */
+.sun {
+  position: fixed;
+  bottom: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd93d 0%, #ff6b6b 40%, #ff71ce 100%);
+  z-index: -2;
+  box-shadow: 0 0 80px rgba(255,107,107,0.6), 0 0 160px rgba(255,113,206,0.3);
+}
+
+.sun::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 8px,
+    var(--deep-purple) 8px,
+    var(--deep-purple) 10px
+  );
+  clip-path: inset(50% 0 0 0);
+}
+
+/* ==============================
+   PERSPECTIVE GRID FLOOR
+   ============================== */
+.grid-floor {
+  position: fixed;
+  bottom: 0; left: -50%;
+  width: 200%; height: 50%;
+  background:
+    linear-gradient(90deg, rgba(1,205,254,0.3) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(1,205,254,0.3) 1px, transparent 1px);
+  background-size: 60px 40px;
+  transform: perspective(400px) rotateX(60deg);
+  transform-origin: center top;
+  z-index: -1;
+  animation: gridScroll 4s linear infinite;
+}
+
+@keyframes gridScroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 40px; }
+}
+
+.grid-floor::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(180deg, transparent 0%, rgba(26,10,46,0.8) 100%);
+}
+
+/* ==============================
+   PALM TREE SILHOUETTES
+   ============================== */
+.palm-left, .palm-right {
+  position: fixed;
+  bottom: 20%;
+  z-index: 0;
+  opacity: 0.4;
+  pointer-events: none;
+}
+.palm-left { left: -20px; }
+.palm-right { right: -20px; transform: scaleX(-1); }
+
+/* ==============================
+   CHROME TEXT EFFECT
+   ============================== */
+.chrome-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  background: linear-gradient(
+    180deg,
+    #fff 0%,
+    #e0e0e0 20%,
+    #aaa 40%,
+    #fff 50%,
+    #888 60%,
+    #ddd 80%,
+    #fff 100%
+  );
+  background-size: 100% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: chromeShine 3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 20px rgba(255,113,206,0.5))
+          drop-shadow(0 0 40px rgba(1,205,254,0.3));
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+@keyframes chromeShine {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+/* ==============================
+   GLITCH TEXT EFFECT
+   ============================== */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.glitch::before {
+  -webkit-text-fill-color: var(--electric-cyan);
+  animation: glitch-1 2s infinite linear alternate-reverse;
+  clip-path: inset(0 0 65% 0);
+}
+
+.glitch::after {
+  -webkit-text-fill-color: var(--neon-pink);
+  animation: glitch-2 2s infinite linear alternate-reverse;
+  clip-path: inset(65% 0 0 0);
+}
+
+@keyframes glitch-1 {
+  0% { transform: translate(0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(3px, -3px); }
+  60% { transform: translate(-2px, 1px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes glitch-2 {
+  0% { transform: translate(0); }
+  20% { transform: translate(3px, -3px); }
+  40% { transform: translate(-3px, 3px); }
+  60% { transform: translate(2px, -1px); }
+  80% { transform: translate(-2px, 2px); }
+  100% { transform: translate(0); }
+}
+
+/* ==============================
+   GREEK COLUMNS (CSS)
+   ============================== */
+.column {
+  width: 50px;
+  position: relative;
+}
+
+.column-shaft {
+  width: 40px;
+  height: 200px;
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    #666 0%, #aaa 15%, #ddd 30%, #fff 50%, #ddd 70%, #aaa 85%, #666 100%
+  );
+  position: relative;
+}
+
+.column-shaft::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 4px,
+    rgba(0,0,0,0.05) 4px,
+    rgba(0,0,0,0.05) 5px
+  );
+}
+
+.column-capital {
+  width: 56px;
+  height: 20px;
+  background: linear-gradient(180deg, #fff, #ccc);
+  margin: 0 auto;
+  position: relative;
+}
+
+.column-capital::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: -4px;
+  width: 64px; height: 10px;
+  background: linear-gradient(180deg, #eee, #bbb);
+  border-radius: 2px;
+}
+
+.column-base {
+  width: 56px;
+  height: 15px;
+  background: linear-gradient(180deg, #ccc, #999);
+  margin: 0 auto;
+}
+
+.column-base::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 8px;
+  background: linear-gradient(180deg, #bbb, #888);
+  margin-left: -4px;
+  margin-top: 2px;
+}
+
+/* ==============================
+   WINDOWS 95 DIALOG BOX
+   ============================== */
+.win95-box {
+  background: var(--win95-gray);
+  border: 2px solid;
+  border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+  box-shadow: 1px 1px 0 #000;
+  color: #000;
+  font-family: 'Inter', sans-serif;
+  max-width: 480px;
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.win95-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5), 0 0 30px rgba(255,113,206,0.3);
+}
+
+.win95-titlebar {
+  background: linear-gradient(90deg, var(--win95-blue), #1084d0);
+  color: #fff;
+  padding: 3px 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.win95-titlebar-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.win95-buttons {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.win95-btn {
+  width: 16px; height: 14px;
+  background: var(--win95-gray);
+  border: 1px solid;
+  border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+  font-size: 8px;
+  line-height: 12px;
+  text-align: center;
+  cursor: pointer;
+  color: #000;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+
+.win95-btn:active {
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+}
+
+.win95-content {
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.win95-content h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--win95-blue);
+  margin-bottom: 8px;
+}
+
+.win95-statusbar {
+  border-top: 1px solid var(--win95-dark);
+  padding: 2px 6px;
+  font-size: 10px;
+  color: #333;
+  display: flex;
+  gap: 8px;
+}
+
+.win95-statusbar span {
+  border: 1px solid;
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+  padding: 1px 6px;
+  flex: 1;
+}
+
+/* ==============================
+   TASKBAR
+   ============================== */
+.taskbar {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%; height: 36px;
+  background: var(--win95-gray);
+  border-top: 2px solid var(--win95-light);
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  z-index: 9998;
+  gap: 4px;
+}
+
+.start-btn {
+  height: 28px;
+  padding: 0 8px;
+  background: var(--win95-gray);
+  border: 2px solid;
+  border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #000;
+}
+
+.start-btn:active {
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+}
+
+.start-logo {
+  width: 16px; height: 16px;
+  background: conic-gradient(#ff0000 25%, #00ff00 25% 50%, #0000ff 50% 75%, #ffff00 75%);
+}
+
+.taskbar-items {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.taskbar-item {
+  height: 28px;
+  padding: 0 8px;
+  background: var(--win95-gray);
+  border: 2px solid;
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  color: #000;
+  text-decoration: none;
+}
+
+.taskbar-item:hover {
+  background: #d0d0d0;
+}
+
+.taskbar-clock {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid;
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  color: #000;
+}
+
+/* ==============================
+   NAVIGATION
+   ============================== */
+.nav-float {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9990;
+  display: flex;
+  gap: 8px;
+}
+
+.nav-float a {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--electric-cyan);
+  text-decoration: none;
+  padding: 6px 10px;
+  border: 1px solid var(--electric-cyan);
+  background: rgba(1,205,254,0.1);
+  transition: all 0.3s;
+}
+
+.nav-float a:hover {
+  background: var(--electric-cyan);
+  color: var(--deep-purple);
+}
+
+/* ==============================
+   HERO SECTION
+   ============================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  padding: 60px 20px 120px;
+  text-align: center;
+}
+
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.hero-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.jp-title {
+  font-size: 14px;
+  letter-spacing: 12px;
+  color: var(--neon-pink);
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(8px, 2vw, 12px);
+  color: var(--electric-cyan);
+  margin-top: 16px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px var(--electric-cyan);
+}
+
+.hero-tagline {
+  margin-top: 24px;
+  font-size: 16px;
+  color: var(--lavender);
+  max-width: 500px;
+  line-height: 1.8;
+  opacity: 0.9;
+}
+
+.hero-tagline .highlight {
+  color: var(--mint);
+  font-weight: 600;
+}
+
+.decorative-line {
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-pink), var(--electric-cyan), transparent);
+  margin: 20px auto;
+}
+
+/* ==============================
+   FLOATING SHAPES
+   ============================== */
+.shape {
+  position: fixed;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.shape-triangle {
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--neon-pink);
+  animation: floatShape 8s ease-in-out infinite;
+}
+
+.shape-diamond {
+  width: 50px; height: 50px;
+  background: var(--electric-cyan);
+  transform: rotate(45deg);
+  animation: floatShape 10s ease-in-out infinite reverse;
+}
+
+.shape-circle {
+  width: 60px; height: 60px;
+  border: 3px solid var(--lavender);
+  border-radius: 50%;
+  animation: floatShape 6s ease-in-out infinite;
+}
+
+@keyframes floatShape {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(5deg); }
+  75% { transform: translateY(20px) rotate(-5deg); }
+}
+
+.shape-diamond { animation: floatShape 10s ease-in-out infinite; }
+
+/* ==============================
+   SECTIONS
+   ============================== */
+.section {
+  position: relative;
+  z-index: 2;
+  padding: 80px 20px 120px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-header h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(14px, 3vw, 22px);
+  color: var(--soft-yellow);
+  text-shadow: 0 0 20px rgba(255,251,150,0.5);
+  margin-bottom: 8px;
+}
+
+.section-header .jp-sub {
+  font-size: 12px;
+  color: var(--neon-pink);
+  opacity: 0.5;
+  letter-spacing: 6px;
+}
+
+/* ==============================
+   ABOUT - AS A PROGRAM
+   ============================== */
+.about-program {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.about-program .win95-content {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.about-program .win95-content p {
+  margin-bottom: 12px;
+}
+
+.pixel-divider {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 12px 0;
+}
+
+.pixel-divider span {
+  width: 8px; height: 8px;
+  display: inline-block;
+}
+
+.pixel-divider span:nth-child(1) { background: var(--neon-pink); }
+.pixel-divider span:nth-child(2) { background: var(--electric-cyan); }
+.pixel-divider span:nth-child(3) { background: var(--lavender); }
+.pixel-divider span:nth-child(4) { background: var(--mint); }
+.pixel-divider span:nth-child(5) { background: var(--soft-yellow); }
+
+/* ==============================
+   SKILLS GRID
+   ============================== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.skill-card {
+  background: rgba(26,10,46,0.7);
+  border: 1px solid rgba(1,205,254,0.3);
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.skill-card:hover {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 20px rgba(255,113,206,0.2), inset 0 0 20px rgba(255,113,206,0.05);
+  transform: translateY(-4px);
+}
+
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--electric-cyan), transparent);
+  animation: scanLine 3s linear infinite;
+}
+
+@keyframes scanLine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.skill-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.skill-card h4 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--electric-cyan);
+  margin-bottom: 8px;
+}
+
+.skill-card p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.6;
+}
+
+.skill-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-pink), var(--electric-cyan));
+  transition: width 1s ease;
+}
+
+/* ==============================
+   PROJECTS
+   ============================== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.project-window .win95-content {
+  min-height: 140px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.project-tech span {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  background: var(--win95-blue);
+  color: #fff;
+  padding: 3px 6px;
+}
+
+.project-desc {
+  color: #333;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ==============================
+   EXPERIENCE TIMELINE
+   ============================== */
+.timeline {
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--neon-pink), var(--electric-cyan), var(--lavender));
+}
+
+.timeline-item {
+  padding-left: 60px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 14px; top: 6px;
+  width: 14px; height: 14px;
+  background: var(--deep-purple);
+  border: 2px solid var(--mint);
+  box-shadow: 0 0 10px var(--mint);
+}
+
+.timeline-year {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--soft-yellow);
+  margin-bottom: 6px;
+}
+
+.timeline-role {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--electric-cyan);
+  margin-bottom: 2px;
+}
+
+.timeline-company {
+  font-size: 14px;
+  color: var(--neon-pink);
+  margin-bottom: 8px;
+}
+
+.timeline-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+}
+
+/* ==============================
+   CONTACT SECTION
+   ============================== */
+.contact-box {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.contact-box .win95-content a {
+  display: block;
+  padding: 8px 12px;
+  margin: 6px 0;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+  color: var(--win95-blue);
+  text-decoration: none;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.contact-box .win95-content a:hover {
+  background: var(--win95-blue);
+  color: #fff;
+}
+
+.contact-box .win95-content a::before {
+  content: '>';
+  margin-right: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+}
+
+/* ==============================
+   STATUE DECORATION
+   ============================== */
+.statue-container {
+  text-align: center;
+  margin: 40px auto 0;
+  max-width: 200px;
+  position: relative;
+}
+
+.statue-svg {
+  filter: drop-shadow(0 0 15px rgba(185,103,255,0.3));
+  opacity: 0.7;
+}
+
+/* ==============================
+   PIXEL ART DECORATIONS
+   ============================== */
+.pixel-art {
+  display: inline-grid;
+  grid-template-columns: repeat(8, 6px);
+  gap: 1px;
+}
+
+.pixel-art .px {
+  width: 6px; height: 6px;
+}
+
+.px-p { background: var(--neon-pink); }
+.px-c { background: var(--electric-cyan); }
+.px-l { background: var(--lavender); }
+.px-m { background: var(--mint); }
+.px-y { background: var(--soft-yellow); }
+.px-0 { background: transparent; }
+
+/* ==============================
+   SCROLL INDICATOR
+   ============================== */
+.scroll-indicator {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.scroll-indicator span {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--electric-cyan);
+  opacity: 0.6;
+}
+
+.scroll-arrow {
+  width: 20px; height: 20px;
+  border-right: 2px solid var(--electric-cyan);
+  border-bottom: 2px solid var(--electric-cyan);
+  transform: rotate(45deg);
+  opacity: 0.6;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(10px); }
+}
+
+/* ==============================
+   FOOTER
+   ============================== */
+.footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 40px 20px 80px;
+}
+
+.footer p {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--lavender);
+  opacity: 0.5;
+  line-height: 2;
+}
+
+/* ==============================
+   ENTRANCE ANIMATIONS
+   ============================== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==============================
+   RESPONSIVE
+   ============================== */
+@media (max-width: 768px) {
+  .hero-inner { flex-direction: column; gap: 20px; }
+  .column { display: none; }
+  .nav-float { display: none; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  .jp-deco { display: none; }
+  .taskbar-items { display: none; }
+  .palm-left, .palm-right { display: none; }
+  .sun { width: 150px; height: 150px; }
+}
+
+@media (max-width: 480px) {
+  .skills-grid { grid-template-columns: 1fr; }
+  .win95-box { margin: 0 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- CRT Scanline Overlay -->
+<div class="crt-overlay"></div>
+
+<!-- VHS Elements -->
+<div class="vhs-rec">REC</div>
+<div class="vhs-timestamp" id="vhsTime">PLAY 00:00:00</div>
+
+<!-- Japanese Decorative Side Text -->
+<div class="jp-deco left">未来は今日始まる ソフトウェア開発者 夢を追いかけて</div>
+<div class="jp-deco right">美的感覚 蒸気波 永遠の夏 デジタルの夢 無限</div>
+
+<!-- Gradient Sky -->
+<div class="sky-bg"></div>
+
+<!-- Sun -->
+<div class="sun"></div>
+
+<!-- Perspective Grid Floor -->
+<div class="grid-floor"></div>
+
+<!-- Palm Tree Silhouettes -->
+<svg class="palm-left" width="160" height="300" viewBox="0 0 160 300">
+  <g fill="#0d0221">
+    <rect x="72" y="100" width="16" height="200" rx="3"/>
+    <ellipse cx="40" cy="80" rx="55" ry="18" transform="rotate(-30 40 80)"/>
+    <ellipse cx="120" cy="75" rx="50" ry="16" transform="rotate(25 120 75)"/>
+    <ellipse cx="60" cy="50" rx="52" ry="15" transform="rotate(-50 60 50)"/>
+    <ellipse cx="110" cy="45" rx="48" ry="14" transform="rotate(45 110 45)"/>
+    <ellipse cx="80" cy="35" rx="45" ry="13" transform="rotate(-10 80 35)"/>
+    <ellipse cx="75" cy="60" rx="50" ry="15" transform="rotate(15 75 60)"/>
+  </g>
+</svg>
+
+<svg class="palm-right" width="160" height="300" viewBox="0 0 160 300">
+  <g fill="#0d0221">
+    <rect x="72" y="100" width="16" height="200" rx="3"/>
+    <ellipse cx="40" cy="80" rx="55" ry="18" transform="rotate(-30 40 80)"/>
+    <ellipse cx="120" cy="75" rx="50" ry="16" transform="rotate(25 120 75)"/>
+    <ellipse cx="60" cy="50" rx="52" ry="15" transform="rotate(-50 60 50)"/>
+    <ellipse cx="110" cy="45" rx="48" ry="14" transform="rotate(45 110 45)"/>
+    <ellipse cx="80" cy="35" rx="45" ry="13" transform="rotate(-10 80 35)"/>
+    <ellipse cx="75" cy="60" rx="50" ry="15" transform="rotate(15 75 60)"/>
+  </g>
+</svg>
+
+<!-- Floating Shapes -->
+<div class="shape shape-triangle" style="top:15%;left:8%;"></div>
+<div class="shape shape-diamond" style="top:25%;right:10%;"></div>
+<div class="shape shape-circle" style="top:60%;left:5%;"></div>
+<div class="shape shape-triangle" style="top:70%;right:7%;opacity:0.1;"></div>
+<div class="shape shape-diamond" style="top:45%;left:12%;opacity:0.08;"></div>
+
+<!-- Navigation -->
+<nav class="nav-float">
+  <a href="#about">ABOUT</a>
+  <a href="#skills">SKILLS</a>
+  <a href="#work">WORK</a>
+  <a href="#projects">PROJECTS</a>
+  <a href="#contact">CONTACT</a>
+</nav>
+
+<!-- ============================
+     HERO SECTION
+     ============================ -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <!-- Left Greek Column -->
+    <div class="column" aria-hidden="true">
+      <div class="column-capital"></div>
+      <div class="column-shaft"></div>
+      <div class="column-base"></div>
+    </div>
+
+    <!-- Center Content -->
+    <div class="hero-center">
+      <div class="jp-title" aria-hidden="true">ガーグ アンシュル</div>
+      <h1 class="chrome-text glitch" data-text="ANSHULL GARG">ANSHULL GARG</h1>
+      <div class="decorative-line"></div>
+      <p class="subtitle">SOFTWARE DEVELOPER</p>
+      <p class="hero-tagline">
+        Building <span class="highlight">digital experiences</span> at
+        <span class="highlight" style="color:var(--soft-yellow);">Walmart</span>.
+        Crafting code that scales to <span class="highlight">millions</span>.
+      </p>
+
+      <!-- Pixel Art Heart -->
+      <div style="margin-top:24px;" aria-hidden="true">
+        <div class="pixel-art">
+          <div class="px px-0"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-0"></div>
+          <div class="px px-p"></div><div class="px px-c"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-c"></div><div class="px px-p"></div>
+          <div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div>
+          <div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div>
+          <div class="px px-0"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-0"></div>
+          <div class="px px-0"></div><div class="px px-0"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-0"></div><div class="px px-0"></div>
+          <div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-p"></div><div class="px px-p"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div>
+          <div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div><div class="px px-0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Greek Column -->
+    <div class="column" aria-hidden="true">
+      <div class="column-capital"></div>
+      <div class="column-shaft"></div>
+      <div class="column-base"></div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>SCROLL</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ============================
+     ABOUT SECTION
+     ============================ -->
+<section class="section" id="about">
+  <div class="section-header fade-in">
+    <h2>// ABOUT.EXE</h2>
+    <div class="jp-sub" aria-hidden="true">自己紹介</div>
+  </div>
+
+  <div class="about-program win95-box fade-in" style="margin:0 auto;">
+    <div class="win95-titlebar">
+      <span class="win95-titlebar-text">about_anshull.exe</span>
+      <div class="win95-buttons">
+        <div class="win95-btn">_</div>
+        <div class="win95-btn">[]</div>
+        <div class="win95-btn">X</div>
+      </div>
+    </div>
+    <div class="win95-content">
+      <p>
+        Software Developer at <strong>Walmart</strong>, where I build scalable systems that serve millions of users.
+        I thrive at the intersection of engineering excellence and user-centric design.
+      </p>
+      <div class="pixel-divider" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <p>
+        Passionate about distributed systems, frontend performance, and writing clean,
+        maintainable code. I believe great software is built with empathy -- for both
+        users and fellow developers.
+      </p>
+      <p style="font-family:'Press Start 2P',monospace;font-size:8px;color:#666;margin-top:16px;">
+        C:\Users\Anshull> STATUS: CODING...
+      </p>
+    </div>
+    <div class="win95-statusbar">
+      <span>Ready</span>
+      <span>Walmart Inc.</span>
+    </div>
+  </div>
+
+  <!-- Decorative Bust / Statue -->
+  <div class="statue-container fade-in" aria-hidden="true">
+    <svg class="statue-svg" width="100" height="140" viewBox="0 0 100 140">
+      <defs>
+        <linearGradient id="statueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#B967FF;stop-opacity:0.6"/>
+          <stop offset="100%" style="stop-color:#01CDFE;stop-opacity:0.4"/>
+        </linearGradient>
+      </defs>
+      <!-- Simplified bust silhouette -->
+      <ellipse cx="50" cy="35" rx="22" ry="28" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+      <rect x="38" y="58" width="24" height="20" rx="4" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+      <path d="M20 78 Q30 70 38 78 L38 110 Q30 115 20 110 Z" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+      <path d="M62 78 Q70 70 80 78 L80 110 Q70 115 62 110 Z" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+      <rect x="15" y="110" width="70" height="8" rx="2" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+      <rect x="10" y="118" width="80" height="6" rx="2" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+      <!-- Eyes -->
+      <ellipse cx="42" cy="32" rx="3" ry="2" fill="none" stroke="#01CDFE" stroke-width="1"/>
+      <ellipse cx="58" cy="32" rx="3" ry="2" fill="none" stroke="#01CDFE" stroke-width="1"/>
+      <!-- Nose -->
+      <line x1="50" y1="34" x2="50" y2="40" stroke="#01CDFE" stroke-width="1"/>
+      <!-- Hair -->
+      <path d="M28 25 Q30 8 50 5 Q70 8 72 25 Q68 15 50 12 Q32 15 28 25" fill="url(#statueGrad)" stroke="#B967FF" stroke-width="1"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ============================
+     SKILLS SECTION
+     ============================ -->
+<section class="section" id="skills">
+  <div class="section-header fade-in">
+    <h2>// SKILLS.SYS</h2>
+    <div class="jp-sub" aria-hidden="true">技術スキル</div>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card fade-in">
+      <span class="skill-icon" aria-hidden="true">{ }</span>
+      <h4>FRONTEND</h4>
+      <p>React, TypeScript, Next.js, Vue.js, Tailwind CSS</p>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:92%;"></div></div>
+    </div>
+    <div class="skill-card fade-in">
+      <span class="skill-icon" aria-hidden="true">&lt;/&gt;</span>
+      <h4>BACKEND</h4>
+      <p>Node.js, Java, Python, Spring Boot, GraphQL</p>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:88%;"></div></div>
+    </div>
+    <div class="skill-card fade-in">
+      <span class="skill-icon" aria-hidden="true">[DB]</span>
+      <h4>DATA</h4>
+      <p>PostgreSQL, MongoDB, Redis, Elasticsearch, Kafka</p>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:85%;"></div></div>
+    </div>
+    <div class="skill-card fade-in">
+      <span class="skill-icon" aria-hidden="true">~$</span>
+      <h4>DEVOPS</h4>
+      <p>Docker, Kubernetes, CI/CD, AWS, Terraform</p>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:80%;"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     EXPERIENCE SECTION
+     ============================ -->
+<section class="section" id="work">
+  <div class="section-header fade-in">
+    <h2>// CAREER.LOG</h2>
+    <div class="jp-sub" aria-hidden="true">職歴</div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item fade-in">
+      <div class="timeline-year">2022 - PRESENT</div>
+      <div class="timeline-role">Software Developer</div>
+      <div class="timeline-company">Walmart Global Tech</div>
+      <div class="timeline-desc">
+        Building and maintaining large-scale distributed systems that serve millions of customers.
+        Working on frontend architecture, API design, and performance optimization for Walmart's
+        digital commerce platform.
+      </div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="timeline-year">2021 - 2022</div>
+      <div class="timeline-role">Software Engineering Intern</div>
+      <div class="timeline-company">Tech Company</div>
+      <div class="timeline-desc">
+        Developed full-stack features, contributed to microservices architecture, and implemented
+        automated testing pipelines that reduced deployment time by 40%.
+      </div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="timeline-year">2018 - 2022</div>
+      <div class="timeline-role">B.Tech Computer Science</div>
+      <div class="timeline-company">University</div>
+      <div class="timeline-desc">
+        Studied algorithms, data structures, operating systems, and software engineering.
+        Active in competitive programming and open-source contributions.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     PROJECTS SECTION
+     ============================ -->
+<section class="section" id="projects">
+  <div class="section-header fade-in">
+    <h2>// PROJECTS.DIR</h2>
+    <div class="jp-sub" aria-hidden="true">プロジェクト</div>
+  </div>
+
+  <div class="projects-grid">
+
+    <div class="win95-box project-window fade-in">
+      <div class="win95-titlebar">
+        <span class="win95-titlebar-text">scalable_api.exe</span>
+        <div class="win95-buttons">
+          <div class="win95-btn">_</div>
+          <div class="win95-btn">[]</div>
+          <div class="win95-btn">X</div>
+        </div>
+      </div>
+      <div class="win95-content">
+        <h3>High-Performance API Gateway</h3>
+        <p class="project-desc">
+          Designed and built a custom API gateway handling 50K+ requests/second with
+          intelligent rate limiting, circuit breaking, and request routing across
+          multiple microservices.
+        </p>
+        <div class="project-tech">
+          <span>Node.js</span>
+          <span>Redis</span>
+          <span>Docker</span>
+          <span>gRPC</span>
+        </div>
+      </div>
+      <div class="win95-statusbar">
+        <span>Status: Production</span>
+        <span>50K+ RPS</span>
+      </div>
+    </div>
+
+    <div class="win95-box project-window fade-in">
+      <div class="win95-titlebar">
+        <span class="win95-titlebar-text">realtime_dash.exe</span>
+        <div class="win95-buttons">
+          <div class="win95-btn">_</div>
+          <div class="win95-btn">[]</div>
+          <div class="win95-btn">X</div>
+        </div>
+      </div>
+      <div class="win95-content">
+        <h3>Real-Time Analytics Dashboard</h3>
+        <p class="project-desc">
+          Built a real-time data visualization platform with WebSocket streaming,
+          interactive charts, and customizable widgets. Processes millions of
+          data points with sub-second latency.
+        </p>
+        <div class="project-tech">
+          <span>React</span>
+          <span>D3.js</span>
+          <span>WebSocket</span>
+          <span>Kafka</span>
+        </div>
+      </div>
+      <div class="win95-statusbar">
+        <span>Status: Active</span>
+        <span>1M+ Events/Day</span>
+      </div>
+    </div>
+
+    <div class="win95-box project-window fade-in">
+      <div class="win95-titlebar">
+        <span class="win95-titlebar-text">ml_pipeline.exe</span>
+        <div class="win95-buttons">
+          <div class="win95-btn">_</div>
+          <div class="win95-btn">[]</div>
+          <div class="win95-btn">X</div>
+        </div>
+      </div>
+      <div class="win95-content">
+        <h3>ML Feature Pipeline</h3>
+        <p class="project-desc">
+          End-to-end machine learning pipeline for product recommendations.
+          Handles feature extraction, model training, and serving predictions
+          at scale across Walmart's catalog.
+        </p>
+        <div class="project-tech">
+          <span>Python</span>
+          <span>Spark</span>
+          <span>Airflow</span>
+          <span>AWS</span>
+        </div>
+      </div>
+      <div class="win95-statusbar">
+        <span>Status: Production</span>
+        <span>10M+ Predictions/Day</span>
+      </div>
+    </div>
+
+    <div class="win95-box project-window fade-in">
+      <div class="win95-titlebar">
+        <span class="win95-titlebar-text">design_system.exe</span>
+        <div class="win95-buttons">
+          <div class="win95-btn">_</div>
+          <div class="win95-btn">[]</div>
+          <div class="win95-btn">X</div>
+        </div>
+      </div>
+      <div class="win95-content">
+        <h3>Component Design System</h3>
+        <p class="project-desc">
+          Created a comprehensive React component library with 60+ accessible,
+          themeable components. Includes documentation site, visual regression
+          testing, and Figma integration.
+        </p>
+        <div class="project-tech">
+          <span>React</span>
+          <span>TypeScript</span>
+          <span>Storybook</span>
+          <span>Jest</span>
+        </div>
+      </div>
+      <div class="win95-statusbar">
+        <span>Status: Open Source</span>
+        <span>60+ Components</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================
+     CONTACT SECTION
+     ============================ -->
+<section class="section" id="contact">
+  <div class="section-header fade-in">
+    <h2>// CONNECT.NET</h2>
+    <div class="jp-sub" aria-hidden="true">連絡先</div>
+  </div>
+
+  <div class="contact-box win95-box fade-in" style="margin:0 auto;">
+    <div class="win95-titlebar">
+      <span class="win95-titlebar-text">internet_explorer.exe - Contact</span>
+      <div class="win95-buttons">
+        <div class="win95-btn">_</div>
+        <div class="win95-btn">[]</div>
+        <div class="win95-btn">X</div>
+      </div>
+    </div>
+    <div class="win95-content">
+      <p style="font-family:'Press Start 2P',monospace;font-size:9px;color:var(--win95-blue);margin-bottom:16px;">
+        CONNECTION ESTABLISHED...
+      </p>
+      <a href="mailto:anshull.garg@email.com">anshull.garg@email.com</a>
+      <a href="https://github.com/anshullgarg" target="_blank" rel="noopener">github.com/anshullgarg</a>
+      <a href="https://linkedin.com/in/anshullgarg" target="_blank" rel="noopener">linkedin.com/in/anshullgarg</a>
+      <a href="https://twitter.com/anshullgarg" target="_blank" rel="noopener">twitter.com/anshullgarg</a>
+      <p style="font-family:'Press Start 2P',monospace;font-size:7px;color:#999;margin-top:16px;text-align:center;">
+        &lt;-- LET'S BUILD SOMETHING TOGETHER --&gt;
+      </p>
+    </div>
+    <div class="win95-statusbar">
+      <span>Connected</span>
+      <span>Bytes: 42069</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     FOOTER
+     ============================ -->
+<div class="footer">
+  <div class="pixel-divider" aria-hidden="true" style="margin-bottom:20px;">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p>
+    DESIGNED IN THE VOID // BUILT WITH HTML, CSS & JS<br>
+    <br>
+    &copy; <span id="footerYear"></span> ANSHULL GARG // ALL RIGHTS RESERVED<br>
+    <br>
+    <span style="color:var(--neon-pink);">AESTHETICS ARE EVERYTHING</span><br>
+    <span style="font-size:10px;letter-spacing:4px;opacity:0.3;">永遠に美しい</span>
+  </p>
+</div>
+
+<!-- ============================
+     TASKBAR
+     ============================ -->
+<div class="taskbar">
+  <button class="start-btn" onclick="alert('Welcome to AnshullOS 95!')">
+    <div class="start-logo"></div>
+    Start
+  </button>
+  <div class="taskbar-items">
+    <a href="#hero" class="taskbar-item">Portfolio.exe</a>
+    <a href="#about" class="taskbar-item">About.txt</a>
+    <a href="#projects" class="taskbar-item">Projects/</a>
+    <a href="#contact" class="taskbar-item">Contact.lnk</a>
+  </div>
+  <div class="taskbar-clock" id="taskbarClock">12:00</div>
+</div>
+
+<!-- ============================
+     JAVASCRIPT
+     ============================ -->
+<script>
+(function() {
+  'use strict';
+
+  // -- VHS Timestamp --
+  const vhsEl = document.getElementById('vhsTime');
+  let vhsSeconds = 0;
+  function updateVHS() {
+    vhsSeconds++;
+    const h = String(Math.floor(vhsSeconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((vhsSeconds % 3600) / 60)).padStart(2, '0');
+    const s = String(vhsSeconds % 60).padStart(2, '0');
+    vhsEl.textContent = 'PLAY ' + h + ':' + m + ':' + s;
+  }
+  setInterval(updateVHS, 1000);
+
+  // -- Taskbar Clock --
+  const clockEl = document.getElementById('taskbarClock');
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    clockEl.textContent = hours + ':' + mins;
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
+
+  // -- Footer Year --
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+  // -- Scroll Fade-In --
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  fadeEls.forEach(function(el) { observer.observe(el); });
+
+  // -- Win95 Close Buttons --
+  document.querySelectorAll('.win95-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const text = btn.textContent.trim();
+      const box = btn.closest('.win95-box');
+      if (!box) return;
+
+      if (text === 'X') {
+        box.style.transition = 'opacity 0.3s, transform 0.3s';
+        box.style.opacity = '0';
+        box.style.transform = 'scale(0.95)';
+        setTimeout(function() {
+          box.style.opacity = '1';
+          box.style.transform = 'scale(1)';
+        }, 2000);
+      } else if (text === '_') {
+        const content = box.querySelector('.win95-content');
+        if (content) {
+          content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+      }
+    });
+  });
+
+  // -- Parallax Sun on Scroll --
+  const sun = document.querySelector('.sun');
+  window.addEventListener('scroll', function() {
+    const scrollY = window.pageYOffset;
+    const offset = scrollY * 0.3;
+    sun.style.transform = 'translateX(-50%) translateY(' + offset + 'px)';
+  }, { passive: true });
+
+  // -- Random glitch burst --
+  const heroTitle = document.querySelector('.chrome-text');
+  function triggerGlitch() {
+    heroTitle.style.animation = 'none';
+    heroTitle.offsetHeight; // reflow
+    heroTitle.style.animation = 'chromeShine 3s ease-in-out infinite alternate';
+
+    // Momentary color flash
+    heroTitle.style.filter = 'drop-shadow(0 0 30px var(--neon-pink)) drop-shadow(0 0 60px var(--electric-cyan)) brightness(1.3)';
+    setTimeout(function() {
+      heroTitle.style.filter = 'drop-shadow(0 0 20px rgba(255,113,206,0.5)) drop-shadow(0 0 40px rgba(1,205,254,0.3))';
+    }, 150);
+
+    const next = 3000 + Math.random() * 8000;
+    setTimeout(triggerGlitch, next);
+  }
+  setTimeout(triggerGlitch, 4000);
+
+})();
+</script>
+</body>
+</html>

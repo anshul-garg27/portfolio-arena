@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg — Wabi-Sabi Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   WABI-SABI: The Beauty of Imperfection
+   ======================================== */
+
+:root {
+  --warm-sand: #D4C5B2;
+  --weathered-stone: #8B7E74;
+  --aged-parchment: #F5F0EB;
+  --dark-clay: #5C5248;
+  --muted-linen: #C8B8A4;
+  --kintsugi-gold: #C19A6B;
+  --kintsugi-glow: #D4A94C;
+  --deep-earth: #3E3832;
+  --soft-white: #FAF8F5;
+  --ink-wash: rgba(92, 82, 72, 0.08);
+
+  /* Seasonal adjustments — JS will modify these */
+  --season-warmth: 0deg;
+  --season-saturation: 100%;
+  --season-brightness: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  filter: hue-rotate(var(--season-warmth)) saturate(var(--season-saturation)) brightness(var(--season-brightness));
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  color: var(--dark-clay);
+  background-color: var(--aged-parchment);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* Paper / linen texture via CSS noise */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* Linen weave overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.018;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(92,82,72,0.15) 2px, rgba(92,82,72,0.15) 3px),
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(92,82,72,0.1) 3px, rgba(92,82,72,0.1) 4px);
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+h1, h2, h3, h4 {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.jp-text {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 300;
+  opacity: 0.3;
+}
+
+/* ========================================
+   KINTSUGI CRACKS — gold repair lines
+   ======================================== */
+
+.kintsugi-line {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.kintsugi-line svg {
+  overflow: visible;
+}
+
+.kintsugi-line path {
+  fill: none;
+  stroke: var(--kintsugi-gold);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 3px rgba(193, 154, 107, 0.4));
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
+
+.kintsugi-line.visible path {
+  animation: kintsugi-reveal 2s ease forwards;
+}
+
+@keyframes kintsugi-reveal {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ========================================
+   INK BRUSH STROKES
+   ======================================== */
+
+.ink-stroke {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.06;
+  z-index: 0;
+}
+
+/* ========================================
+   HERO SECTION — vast emptiness
+   ======================================== */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 8vw 12vh 12vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-season {
+  position: absolute;
+  top: 6vh;
+  right: 8vw;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: var(--weathered-stone);
+  opacity: 0.5;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+.hero-jp {
+  position: absolute;
+  top: 15vh;
+  left: 5vw;
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(4rem, 12vw, 10rem);
+  color: var(--warm-sand);
+  opacity: 0.12;
+  line-height: 1;
+  writing-mode: vertical-rl;
+  letter-spacing: 0.1em;
+  user-select: none;
+}
+
+.hero-circle {
+  position: absolute;
+  top: 18vh;
+  right: 18vw;
+  width: clamp(120px, 20vw, 280px);
+  height: clamp(120px, 20vw, 280px);
+  border: 1px solid var(--muted-linen);
+  border-radius: 62% 38% 46% 54% / 60% 44% 56% 40%;
+  opacity: 0.35;
+  animation: breathe 12s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.35; }
+  50% { transform: scale(1.04) rotate(3deg); opacity: 0.25; }
+}
+
+.hero-name {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(2.2rem, 5.5vw, 5rem);
+  font-weight: 400;
+  color: var(--dark-clay);
+  margin-bottom: 1.5rem;
+  line-height: 1.15;
+  position: relative;
+}
+
+.hero-name .offset {
+  display: block;
+  margin-left: 3vw;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1.2s ease 0.3s forwards;
+}
+
+.hero-name .first {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1.2s ease 0.1s forwards;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-role {
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  color: var(--weathered-stone);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-left: 1vw;
+  opacity: 0;
+  animation: fadeUp 1.2s ease 0.6s forwards;
+}
+
+.hero-role .at-mark {
+  color: var(--kintsugi-gold);
+  font-weight: 400;
+  margin: 0 0.3em;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.5s forwards;
+}
+
+.hero-scroll span {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--weathered-stone);
+  opacity: 0.5;
+}
+
+.hero-scroll .line {
+  width: 1px;
+  height: 40px;
+  background: var(--muted-linen);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-scroll .line::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--kintsugi-gold);
+  animation: scrollLine 2s ease infinite;
+}
+
+@keyframes scrollLine {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
+
+/* ========================================
+   ORGANIC SECTION DIVIDERS
+   ======================================== */
+
+.section-divider {
+  width: 100%;
+  padding: 4vh 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.section-divider svg {
+  width: 100%;
+  height: 30px;
+  display: block;
+}
+
+.section-divider path {
+  fill: none;
+  stroke: var(--muted-linen);
+  stroke-width: 0.8;
+  opacity: 0.5;
+}
+
+/* ========================================
+   SECTION COMMON
+   ======================================== */
+
+section {
+  padding: 10vh 8vw 10vh 12vw;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-label {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--weathered-stone);
+  opacity: 0.6;
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.section-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--muted-linen);
+}
+
+.section-label .jp {
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  opacity: 0.5;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-weight: 400;
+  color: var(--dark-clay);
+  margin-bottom: 3rem;
+  line-height: 1.3;
+  max-width: 50vw;
+}
+
+/* ========================================
+   ABOUT SECTION — asymmetric text blocks
+   ======================================== */
+
+.about {
+  padding: 15vh 8vw 15vh 15vw;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 8vw;
+  align-items: start;
+}
+
+.about-text {
+  max-width: 480px;
+}
+
+.about-text p {
+  margin-bottom: 2rem;
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  color: var(--dark-clay);
+  opacity: 0.8;
+}
+
+.about-text p:first-of-type::first-letter {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 3.5em;
+  float: left;
+  line-height: 0.8;
+  margin-right: 0.12em;
+  margin-top: 0.08em;
+  color: var(--weathered-stone);
+}
+
+.about-aside {
+  margin-top: 8vh;
+  padding-left: 3vw;
+  position: relative;
+}
+
+.about-aside::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -2rem;
+  width: 1px;
+  height: calc(100% + 4rem);
+  background: linear-gradient(to bottom, transparent, var(--muted-linen), transparent);
+}
+
+.about-quote {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(1rem, 1.4vw, 1.3rem);
+  color: var(--weathered-stone);
+  line-height: 2;
+  font-style: italic;
+  margin-bottom: 2rem;
+}
+
+.about-values {
+  list-style: none;
+  padding: 0;
+}
+
+.about-values li {
+  font-size: 0.85rem;
+  color: var(--weathered-stone);
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed var(--muted-linen);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.about-values li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--kintsugi-gold);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ========================================
+   SKILLS — stones on a path
+   ======================================== */
+
+.skills {
+  padding: 15vh 8vw 15vh 10vw;
+  background: linear-gradient(170deg, var(--aged-parchment) 0%, var(--soft-white) 40%, var(--aged-parchment) 100%);
+}
+
+.stones-path {
+  position: relative;
+  min-height: 500px;
+  margin-top: 4rem;
+}
+
+/* The winding path line */
+.stones-path::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--muted-linen) 0px,
+    var(--muted-linen) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  opacity: 0.4;
+  transform: translateX(-50%);
+}
+
+.stone {
+  position: relative;
+  display: inline-block;
+  padding: 1.2rem 2.2rem;
+  background: var(--aged-parchment);
+  border: 1px solid var(--muted-linen);
+  cursor: default;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin-bottom: 1rem;
+  /* Each stone has a unique irregular shape */
+}
+
+.stone:hover {
+  background: var(--soft-white);
+  border-color: var(--kintsugi-gold);
+  box-shadow: 0 4px 20px rgba(193, 154, 107, 0.1);
+  transform: translateY(-3px) rotate(0deg) !important;
+}
+
+.stone-label {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.85rem;
+  color: var(--dark-clay);
+  white-space: nowrap;
+}
+
+.stone-years {
+  font-size: 0.65rem;
+  color: var(--weathered-stone);
+  opacity: 0.6;
+  margin-top: 0.3rem;
+  letter-spacing: 0.1em;
+}
+
+.stones-row {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1rem, 3vw, 3rem);
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.stones-row:nth-child(odd) {
+  padding-left: 5vw;
+}
+
+.stones-row:nth-child(even) {
+  padding-right: 5vw;
+}
+
+.stones-row-label {
+  position: absolute;
+  left: -2rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--weathered-stone);
+  opacity: 0.4;
+  white-space: nowrap;
+}
+
+/* Unique stone shapes */
+.stone:nth-child(1) { border-radius: 43% 57% 52% 48% / 45% 62% 38% 55%; }
+.stone:nth-child(2) { border-radius: 55% 45% 40% 60% / 52% 48% 52% 48%; }
+.stone:nth-child(3) { border-radius: 48% 52% 58% 42% / 40% 55% 45% 60%; }
+.stone:nth-child(4) { border-radius: 60% 40% 45% 55% / 55% 42% 58% 45%; }
+.stone:nth-child(5) { border-radius: 42% 58% 50% 50% / 58% 45% 55% 42%; }
+
+/* ========================================
+   PROJECTS — weathered wooden cards
+   ======================================== */
+
+.projects {
+  padding: 15vh 8vw 15vh 8vw;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 3rem;
+  margin-top: 4rem;
+}
+
+.project-card {
+  position: relative;
+  padding: 2.5rem;
+  background:
+    linear-gradient(135deg, var(--aged-parchment) 0%, #EDE6DC 50%, var(--aged-parchment) 100%);
+  border: 1px dashed var(--muted-linen);
+  transition: all 0.8s ease;
+  overflow: hidden;
+}
+
+/* Wood grain texture */
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0.04;
+  background:
+    repeating-linear-gradient(
+      87deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(92, 82, 72, 0.3) 3px,
+      rgba(92, 82, 72, 0.3) 4px,
+      transparent 4px,
+      transparent 12px,
+      rgba(92, 82, 72, 0.15) 12px,
+      rgba(92, 82, 72, 0.15) 13px
+    ),
+    repeating-linear-gradient(
+      89deg,
+      transparent 0px,
+      transparent 20px,
+      rgba(92, 82, 72, 0.08) 20px,
+      rgba(92, 82, 72, 0.08) 22px
+    );
+}
+
+/* Kintsugi gold crack on card */
+.project-card::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 20%;
+  right: 40%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--kintsugi-gold), transparent);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(193, 154, 107, 0.3);
+  box-shadow:
+    0 8px 40px rgba(92, 82, 72, 0.06),
+    0 2px 10px rgba(193, 154, 107, 0.05);
+}
+
+.project-card:hover::after {
+  opacity: 0.7;
+}
+
+/* Unique card shapes — imperfect */
+.project-card:nth-child(1) { border-radius: 4px 20px 4px 15px; }
+.project-card:nth-child(2) { border-radius: 15px 4px 18px 4px; margin-top: 3rem; }
+.project-card:nth-child(3) { border-radius: 6px 14px 8px 22px; }
+.project-card:nth-child(4) { border-radius: 18px 6px 4px 12px; margin-top: -1rem; }
+
+.project-number {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 3rem;
+  color: var(--muted-linen);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.project-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.3rem;
+  color: var(--dark-clay);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.project-desc {
+  font-size: 0.85rem;
+  color: var(--weathered-stone);
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.project-tech span {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--muted-linen);
+  color: var(--weathered-stone);
+  border-radius: 30% 70% 40% 60% / 55% 45% 55% 45%;
+  transition: all 0.4s ease;
+}
+
+.project-tech span:hover {
+  border-color: var(--kintsugi-gold);
+  color: var(--kintsugi-gold);
+}
+
+/* ========================================
+   EXPERIENCE — timeline with organic flow
+   ======================================== */
+
+.experience {
+  padding: 15vh 8vw 15vh 15vw;
+  background: linear-gradient(175deg, var(--soft-white) 0%, var(--aged-parchment) 100%);
+}
+
+.timeline {
+  position: relative;
+  margin-top: 4rem;
+  padding-left: 4rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--muted-linen) 0px,
+    var(--muted-linen) 6px,
+    transparent 6px,
+    transparent 14px,
+    var(--muted-linen) 14px,
+    var(--muted-linen) 18px,
+    transparent 18px,
+    transparent 30px
+  );
+  opacity: 0.6;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 6rem;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.8s ease;
+}
+
+.timeline-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Kintsugi dot on timeline */
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -4rem;
+  top: 0.5rem;
+  width: 8px;
+  height: 8px;
+  background: var(--kintsugi-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(193, 154, 107, 0.3);
+  transform: translateX(-3.5px);
+}
+
+.timeline-period {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--weathered-stone);
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-role {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.3rem;
+  color: var(--dark-clay);
+  margin-bottom: 0.3rem;
+}
+
+.timeline-company {
+  font-size: 0.85rem;
+  color: var(--kintsugi-gold);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.timeline-desc {
+  font-size: 0.85rem;
+  color: var(--weathered-stone);
+  max-width: 450px;
+  line-height: 1.9;
+}
+
+/* ========================================
+   PHILOSOPHY — ma (negative space)
+   ======================================== */
+
+.philosophy {
+  padding: 20vh 8vw 20vh 8vw;
+  text-align: center;
+  position: relative;
+}
+
+.philosophy-kanji {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(6rem, 18vw, 14rem);
+  color: var(--warm-sand);
+  opacity: 0.08;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  z-index: 0;
+}
+
+.philosophy-content {
+  position: relative;
+  z-index: 1;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.philosophy-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  color: var(--dark-clay);
+  line-height: 2.2;
+  font-weight: 300;
+}
+
+.philosophy-text em {
+  color: var(--kintsugi-gold);
+  font-style: normal;
+  position: relative;
+}
+
+.philosophy-text em::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--kintsugi-gold);
+  opacity: 0.3;
+}
+
+/* ========================================
+   CONTACT — sparse, inviting
+   ======================================== */
+
+.contact {
+  padding: 15vh 8vw 20vh 12vw;
+  position: relative;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 8vw;
+  margin-top: 3rem;
+}
+
+.contact-message {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  color: var(--dark-clay);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.contact-message .gold {
+  color: var(--kintsugi-gold);
+}
+
+.contact-links {
+  margin-top: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--weathered-stone);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed transparent;
+  transition: all 0.5s ease;
+  width: fit-content;
+}
+
+.contact-link:hover {
+  color: var(--kintsugi-gold);
+  border-bottom-color: var(--kintsugi-gold);
+  padding-left: 0.5rem;
+}
+
+.contact-link .arrow {
+  font-size: 1rem;
+  transition: transform 0.5s ease;
+}
+
+.contact-link:hover .arrow {
+  transform: translateX(5px);
+}
+
+.contact-enso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+footer {
+  padding: 6vh 8vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--muted-linen);
+  opacity: 0.5;
+}
+
+footer span {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--weathered-stone);
+}
+
+/* ========================================
+   ENSO CIRCLE — brush stroke circle
+   ======================================== */
+
+.enso {
+  width: 120px;
+  height: 120px;
+  position: relative;
+}
+
+.enso svg {
+  width: 100%;
+  height: 100%;
+}
+
+.enso path {
+  fill: none;
+  stroke: var(--weathered-stone);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.25;
+  stroke-dasharray: 350;
+  stroke-dashoffset: 350;
+}
+
+.enso.visible path {
+  animation: drawEnso 3s ease forwards;
+}
+
+@keyframes drawEnso {
+  to { stroke-dashoffset: 30; /* intentionally not 0, leaving a gap — wabi-sabi */ }
+}
+
+/* ========================================
+   FLOATING PARTICLES — dust motes
+   ======================================== */
+
+.dust-mote {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: var(--muted-linen);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  animation: drift linear infinite;
+}
+
+@keyframes drift {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) translateX(0);
+  }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% {
+    opacity: 0;
+    transform: translateY(-10vh) translateX(50px);
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 900px) {
+  .hero {
+    padding: 0 6vw 15vh 8vw;
+  }
+
+  section {
+    padding: 8vh 6vw 8vh 8vw;
+  }
+
+  .about {
+    padding: 10vh 6vw;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+
+  .about-aside {
+    margin-top: 2rem;
+    padding-left: 2rem;
+  }
+
+  .section-title {
+    max-width: 80vw;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card:nth-child(2),
+  .project-card:nth-child(4) {
+    margin-top: 0;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .timeline {
+    padding-left: 2.5rem;
+  }
+
+  .timeline-item::before {
+    left: -2.5rem;
+  }
+
+  .stones-row {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .stones-row-label {
+    display: none;
+  }
+
+  .hero-jp {
+    font-size: clamp(3rem, 10vw, 6rem);
+    left: 3vw;
+  }
+
+  .hero-circle {
+    right: 8vw;
+    top: 12vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 0 5vw 12vh 6vw;
+    min-height: 90vh;
+  }
+
+  section {
+    padding: 6vh 5vw;
+  }
+
+  .about {
+    padding: 8vh 5vw;
+  }
+
+  .stones-row {
+    gap: 0.8rem;
+  }
+
+  .stone {
+    padding: 0.9rem 1.5rem;
+  }
+
+  footer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+/* ========================================
+   CUSTOM CURSOR
+   ======================================== */
+
+@media (hover: hover) {
+  .cursor-dot {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--kintsugi-gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 0.6;
+    transition: transform 0.15s ease, opacity 0.3s ease;
+    mix-blend-mode: multiply;
+  }
+}
+
+/* ========================================
+   HAND-DRAWN BORDER ANIMATION
+   ======================================== */
+
+.hand-drawn {
+  position: relative;
+}
+
+.hand-drawn::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px dashed var(--muted-linen);
+  border-radius: 3px 8px 5px 10px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.hand-drawn:hover::after {
+  opacity: 0.5;
+}
+
+/* ========================================
+   LOADING SCREEN
+   ======================================== */
+
+.loading {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--aged-parchment);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 1s ease, visibility 1s ease;
+}
+
+.loading.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-kanji {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 3rem;
+  color: var(--dark-clay);
+  opacity: 0.2;
+  animation: loadPulse 2s ease infinite;
+}
+
+.loading-text {
+  margin-top: 1.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--weathered-stone);
+  opacity: 0.5;
+}
+
+@keyframes loadPulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loading" id="loading">
+  <div class="loading-kanji">侘寂</div>
+  <div class="loading-text">finding beauty in imperfection</div>
+</div>
+
+<!-- Custom Cursor -->
+<div class="cursor-dot" id="cursor"></div>
+
+<!-- Dust Motes — generated by JS -->
+
+<!-- ====================================
+     HERO
+     ==================================== -->
+<section class="hero" style="opacity:1; transform:none;">
+
+  <!-- Season indicator -->
+  <div class="hero-season" id="season-label"></div>
+
+  <!-- Large background kanji -->
+  <div class="hero-jp">侘寂</div>
+
+  <!-- Imperfect circle -->
+  <div class="hero-circle"></div>
+
+  <!-- Ink brush decoration -->
+  <div class="ink-stroke" style="top: 8vh; right: 5vw; opacity: 0.04;">
+    <svg width="200" height="300" viewBox="0 0 200 300">
+      <path d="M100,10 Q120,50 90,100 Q60,150 110,200 Q140,230 80,280" stroke="currentColor" stroke-width="40" fill="none" stroke-linecap="round" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <!-- Kintsugi crack -->
+  <div class="kintsugi-line" style="bottom: 25vh; left: 0; width: 35vw;" id="hero-crack">
+    <svg width="100%" height="30" viewBox="0 0 500 30" preserveAspectRatio="none">
+      <path d="M0,15 L80,14 L95,5 L110,18 L160,16 L180,22 L220,13 L280,15 L310,8 L340,17 L400,14 L450,16 L500,15"/>
+    </svg>
+  </div>
+
+  <!-- Name and role -->
+  <h1 class="hero-name">
+    <span class="first">Anshull</span>
+    <span class="offset">Garg</span>
+  </h1>
+  <p class="hero-role">
+    Software Developer <span class="at-mark">@</span> Walmart
+  </p>
+
+  <!-- Scroll indicator -->
+  <div class="hero-scroll">
+    <span>scroll</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<!-- Organic Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1200 30" preserveAspectRatio="none">
+    <path d="M0,15 Q100,5 200,15 T400,12 T600,18 T800,10 T1000,16 T1200,14"/>
+  </svg>
+</div>
+
+<!-- ====================================
+     ABOUT
+     ==================================== -->
+<section class="about">
+  <div class="section-label">
+    About <span class="jp">紹介</span>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-text">
+      <p>Software is rarely perfect at birth. Like aged wood or weathered stone, the best code carries the marks of its journey -- refactored, refined, reshaped by real-world pressures until it finds its natural form.</p>
+
+      <p>I build systems at Walmart that serve millions, embracing the tension between scale and simplicity. Every architecture decision is a conversation between ambition and restraint. I find the cracks are where the most interesting solutions live.</p>
+
+      <p>My work spans the full stack, but my heart lives in the spaces between -- the integrations, the data flows, the invisible seams that hold everything together.</p>
+    </div>
+
+    <div class="about-aside">
+      <blockquote class="about-quote">
+        "In the world of technology, impermanence is the only constant. Embrace it."
+      </blockquote>
+
+      <ul class="about-values">
+        <li>Thoughtful over clever</li>
+        <li>Resilient over rigid</li>
+        <li>Clear over complex</li>
+        <li>Humble over heroic</li>
+        <li>Sustainable over fast</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Kintsugi crack -->
+  <div class="kintsugi-line" style="top: 40%; right: 0; width: 20vw;">
+    <svg width="100%" height="30" viewBox="0 0 300 30" preserveAspectRatio="none">
+      <path d="M0,15 L40,12 L65,22 L90,10 L140,16 L180,8 L220,18 L260,14 L300,15"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Organic Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1200 30" preserveAspectRatio="none">
+    <path d="M0,18 Q150,8 300,15 T600,20 T900,8 T1200,16"/>
+  </svg>
+</div>
+
+<!-- ====================================
+     SKILLS — stones on a path
+     ==================================== -->
+<section class="skills">
+  <div class="section-label">
+    Skills <span class="jp">技術</span>
+  </div>
+
+  <h2 class="section-title">Stones gathered along the path</h2>
+
+  <div class="stones-path">
+    <div class="stones-row">
+      <span class="stones-row-label">Languages</span>
+      <div class="stone hand-drawn" style="transform: rotate(-2deg);">
+        <div class="stone-label">Java</div>
+        <div class="stone-years">deep roots</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(1.5deg);">
+        <div class="stone-label">JavaScript</div>
+        <div class="stone-years">well worn</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-0.8deg);">
+        <div class="stone-label">TypeScript</div>
+        <div class="stone-years">refined</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(2.2deg);">
+        <div class="stone-label">Python</div>
+        <div class="stone-years">trusted</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-1.3deg);">
+        <div class="stone-label">SQL</div>
+        <div class="stone-years">foundational</div>
+      </div>
+    </div>
+
+    <div class="stones-row">
+      <span class="stones-row-label">Frameworks</span>
+      <div class="stone hand-drawn" style="transform: rotate(1deg);">
+        <div class="stone-label">React</div>
+        <div class="stone-years">constant companion</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-1.8deg);">
+        <div class="stone-label">Node.js</div>
+        <div class="stone-years">steadfast</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(0.5deg);">
+        <div class="stone-label">Spring Boot</div>
+        <div class="stone-years">resilient</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-2.5deg);">
+        <div class="stone-label">Next.js</div>
+        <div class="stone-years">evolving</div>
+      </div>
+    </div>
+
+    <div class="stones-row">
+      <span class="stones-row-label">Infrastructure</span>
+      <div class="stone hand-drawn" style="transform: rotate(-1.2deg);">
+        <div class="stone-label">AWS</div>
+        <div class="stone-years">expansive</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(2deg);">
+        <div class="stone-label">Docker</div>
+        <div class="stone-years">essential</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-0.5deg);">
+        <div class="stone-label">Kubernetes</div>
+        <div class="stone-years">orchestral</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(1.7deg);">
+        <div class="stone-label">CI/CD</div>
+        <div class="stone-years">rhythmic</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-1.5deg);">
+        <div class="stone-label">Kafka</div>
+        <div class="stone-years">flowing</div>
+      </div>
+    </div>
+
+    <div class="stones-row">
+      <span class="stones-row-label">Craft</span>
+      <div class="stone hand-drawn" style="transform: rotate(0.8deg);">
+        <div class="stone-label">System Design</div>
+        <div class="stone-years">architectural</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(-2deg);">
+        <div class="stone-label">REST & GraphQL</div>
+        <div class="stone-years">conversational</div>
+      </div>
+      <div class="stone hand-drawn" style="transform: rotate(1.3deg);">
+        <div class="stone-label">Microservices</div>
+        <div class="stone-years">interconnected</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Organic Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1200 30" preserveAspectRatio="none">
+    <path d="M0,12 Q200,22 400,14 T800,18 T1200,10"/>
+  </svg>
+</div>
+
+<!-- ====================================
+     PROJECTS — weathered wooden cards
+     ==================================== -->
+<section class="projects">
+  <div class="section-label">
+    Projects <span class="jp">作品</span>
+  </div>
+
+  <h2 class="section-title">Work that carries the marks of its making</h2>
+
+  <div class="projects-grid">
+
+    <div class="project-card hand-drawn">
+      <div class="project-number">01</div>
+      <h3 class="project-title">E-Commerce Platform at Scale</h3>
+      <p class="project-desc">Built and maintained critical services powering Walmart's online marketplace. Designed systems to handle traffic surges during peak events, where resilience matters more than perfection.</p>
+      <div class="project-tech">
+        <span>Java</span>
+        <span>Spring Boot</span>
+        <span>Kafka</span>
+        <span>React</span>
+      </div>
+    </div>
+
+    <div class="project-card hand-drawn">
+      <div class="project-number">02</div>
+      <h3 class="project-title">Real-Time Inventory Orchestration</h3>
+      <p class="project-desc">An event-driven system that tracks millions of SKUs across thousands of stores. Like water finding its path, data flows through the system naturally, settling where it's needed.</p>
+      <div class="project-tech">
+        <span>Microservices</span>
+        <span>Kafka</span>
+        <span>AWS</span>
+        <span>Redis</span>
+      </div>
+    </div>
+
+    <div class="project-card hand-drawn">
+      <div class="project-number">03</div>
+      <h3 class="project-title">Developer Experience Toolkit</h3>
+      <p class="project-desc">Internal tools that reduce friction for engineering teams. Automated pipelines, shared component libraries, and monitoring dashboards -- the invisible infrastructure that makes work feel effortless.</p>
+      <div class="project-tech">
+        <span>TypeScript</span>
+        <span>React</span>
+        <span>Node.js</span>
+        <span>Docker</span>
+      </div>
+    </div>
+
+    <div class="project-card hand-drawn">
+      <div class="project-number">04</div>
+      <h3 class="project-title">Data Pipeline Modernization</h3>
+      <p class="project-desc">Migrated legacy batch processing to a streaming architecture. Sometimes the most impactful work is making old things new again -- kintsugi for code.</p>
+      <div class="project-tech">
+        <span>Python</span>
+        <span>Spark</span>
+        <span>Airflow</span>
+        <span>SQL</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Kintsugi crack across projects -->
+  <div class="kintsugi-line" style="bottom: 15%; left: 10%; width: 80%;">
+    <svg width="100%" height="30" viewBox="0 0 1000 30" preserveAspectRatio="none">
+      <path d="M0,15 L100,13 L130,6 L160,18 L250,14 L300,22 L380,12 L450,16 L520,8 L600,17 L680,11 L750,19 L830,14 L900,16 L1000,15"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Organic Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1200 30" preserveAspectRatio="none">
+    <path d="M0,16 Q100,8 200,14 T400,20 T600,10 T800,18 T1000,12 T1200,15"/>
+  </svg>
+</div>
+
+<!-- ====================================
+     EXPERIENCE — timeline
+     ==================================== -->
+<section class="experience">
+  <div class="section-label">
+    Experience <span class="jp">経験</span>
+  </div>
+
+  <h2 class="section-title">Each role, a season</h2>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-period">Current</div>
+      <h3 class="timeline-role">Software Developer</h3>
+      <div class="timeline-company">Walmart Global Tech</div>
+      <p class="timeline-desc">Building scalable distributed systems for one of the world's largest retailers. Working at the intersection of commerce and technology, where every millisecond of latency touches millions of lives.</p>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-period">Previous Chapter</div>
+      <h3 class="timeline-role">Software Engineer</h3>
+      <div class="timeline-company">Earlier Roles</div>
+      <p class="timeline-desc">Cultivated expertise across full-stack development, learning that the best solutions come from understanding both the forest and the trees. Each project added a new stone to the path.</p>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-period">Foundation</div>
+      <h3 class="timeline-role">Computer Science</h3>
+      <div class="timeline-company">University</div>
+      <p class="timeline-desc">Where curiosity became craft. Studied algorithms and data structures, but learned that the most important skill is knowing when to step back and let the solution reveal itself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Organic Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1200 30" preserveAspectRatio="none">
+    <path d="M0,14 Q300,24 600,12 T1200,18"/>
+  </svg>
+</div>
+
+<!-- ====================================
+     PHILOSOPHY — ma (negative space)
+     ==================================== -->
+<section class="philosophy">
+  <div class="philosophy-kanji">間</div>
+  <div class="philosophy-content">
+    <p class="philosophy-text">
+      I believe in the power of <em>empty space</em> --
+      in code, in design, in thought.
+      The best architectures breathe.
+      The strongest systems have room to <em>grow</em>.
+      Like the Japanese concept of <em>ma</em>,
+      what we leave out defines what remains.
+    </p>
+  </div>
+</section>
+
+<!-- Organic Divider -->
+<div class="section-divider">
+  <svg viewBox="0 0 1200 30" preserveAspectRatio="none">
+    <path d="M0,18 Q200,6 400,16 T800,10 T1200,14"/>
+  </svg>
+</div>
+
+<!-- ====================================
+     CONTACT
+     ==================================== -->
+<section class="contact">
+  <div class="section-label">
+    Contact <span class="jp">連絡</span>
+  </div>
+
+  <div class="contact-grid">
+    <div>
+      <h2 class="contact-message">
+        Every meaningful connection begins with a <span class="gold">single word</span>.
+      </h2>
+
+      <div class="contact-links">
+        <a href="mailto:anshull.garg@gmail.com" class="contact-link">
+          <span>anshull.garg@gmail.com</span>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://linkedin.com/in/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+          <span>LinkedIn</span>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://github.com/anshullgarg" class="contact-link" target="_blank" rel="noopener">
+          <span>GitHub</span>
+          <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-enso">
+      <div class="enso" id="enso">
+        <svg viewBox="0 0 120 120">
+          <path d="M60,10 C90,10 110,30 110,60 C110,90 90,110 60,110 C30,110 10,90 10,60 C10,35 25,15 50,12"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================
+     FOOTER
+     ==================================== -->
+<footer>
+  <span>Anshull Garg &mdash; <span id="year"></span></span>
+  <span id="season-footer"></span>
+  <span style="font-family: 'Noto Serif JP', serif; opacity: 0.6;">侘寂</span>
+</footer>
+
+
+<script>
+// ========================================
+// SEASONAL AWARENESS
+// ========================================
+(function setSeason() {
+  const month = new Date().getMonth(); // 0-11
+  let season, seasonJp, warmth, sat, bright;
+
+  if (month >= 2 && month <= 4) {
+    season = 'Spring'; seasonJp = '春'; warmth = '-3deg'; sat = '105%'; bright = '102%';
+  } else if (month >= 5 && month <= 7) {
+    season = 'Summer'; seasonJp = '夏'; warmth = '0deg'; sat = '95%'; bright = '103%';
+  } else if (month >= 8 && month <= 10) {
+    season = 'Autumn'; seasonJp = '秋'; warmth = '5deg'; sat = '110%'; bright = '98%';
+  } else {
+    season = 'Winter'; seasonJp = '冬'; warmth = '-5deg'; sat = '90%'; bright = '100%';
+  }
+
+  document.documentElement.style.setProperty('--season-warmth', warmth);
+  document.documentElement.style.setProperty('--season-saturation', sat);
+  document.documentElement.style.setProperty('--season-brightness', bright);
+
+  const label = document.getElementById('season-label');
+  if (label) label.textContent = season + ' ' + seasonJp;
+
+  const footer = document.getElementById('season-footer');
+  if (footer) footer.textContent = season + ' season';
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+
+// ========================================
+// LOADING SCREEN
+// ========================================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hidden');
+  }, 1200);
+});
+
+// ========================================
+// CUSTOM CURSOR
+// ========================================
+(function cursor() {
+  const dot = document.getElementById('cursor');
+  if (!dot || !window.matchMedia('(hover: hover)').matches) return;
+
+  let mx = 0, my = 0, cx = 0, cy = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+  });
+
+  (function loop() {
+    cx += (mx - cx) * 0.15;
+    cy += (my - cy) * 0.15;
+    dot.style.left = cx - 3 + 'px';
+    dot.style.top = cy - 3 + 'px';
+    requestAnimationFrame(loop);
+  })();
+})();
+
+// ========================================
+// INTERSECTION OBSERVER — reveal sections
+// ========================================
+(function observeSections() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Also reveal kintsugi lines within
+        entry.target.querySelectorAll('.kintsugi-line').forEach(line => {
+          line.classList.add('visible');
+        });
+
+        // Reveal enso
+        const enso = entry.target.querySelector('.enso');
+        if (enso) enso.classList.add('visible');
+
+        // Reveal timeline items
+        entry.target.querySelectorAll('.timeline-item').forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 300);
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('section:not(.hero)').forEach(s => observer.observe(s));
+
+  // Hero kintsugi
+  setTimeout(() => {
+    document.getElementById('hero-crack').classList.add('visible');
+  }, 1800);
+})();
+
+// ========================================
+// DUST MOTES — floating particles
+// ========================================
+(function createDust() {
+  const count = 15;
+  for (let i = 0; i < count; i++) {
+    const mote = document.createElement('div');
+    mote.className = 'dust-mote';
+    mote.style.left = Math.random() * 100 + 'vw';
+    mote.style.animationDuration = (15 + Math.random() * 25) + 's';
+    mote.style.animationDelay = (Math.random() * 20) + 's';
+    mote.style.width = mote.style.height = (1 + Math.random() * 2) + 'px';
+    document.body.appendChild(mote);
+  }
+})();
+
+// ========================================
+// STONES — slight movement on hover area
+// ========================================
+(function stoneFloat() {
+  const stones = document.querySelectorAll('.stone');
+  stones.forEach(stone => {
+    const baseRotate = parseFloat(stone.style.transform.replace(/[^-\d.]/g, '')) || 0;
+
+    stone.addEventListener('mouseenter', () => {
+      stone.style.transform = `rotate(${baseRotate}deg) translateY(-4px) scale(1.03)`;
+    });
+    stone.addEventListener('mouseleave', () => {
+      stone.style.transform = `rotate(${baseRotate}deg)`;
+    });
+  });
+})();
+
+// ========================================
+// PARALLAX — subtle depth on scroll
+// ========================================
+(function parallax() {
+  const heroJp = document.querySelector('.hero-jp');
+  const heroCircle = document.querySelector('.hero-circle');
+  const philosophyKanji = document.querySelector('.philosophy-kanji');
+
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+
+    if (heroJp) {
+      heroJp.style.transform = `translateY(${y * 0.15}px)`;
+    }
+    if (heroCircle) {
+      heroCircle.style.transform = `translateY(${y * 0.08}px) scale(${1 + y * 0.0001})`;
+    }
+    if (philosophyKanji) {
+      const rect = philosophyKanji.getBoundingClientRect();
+      const center = window.innerHeight / 2;
+      const offset = (rect.top - center) * 0.05;
+      philosophyKanji.style.transform = `translate(-50%, calc(-50% + ${offset}px))`;
+    }
+  }, { passive: true });
+})();
+
+// ========================================
+// ORGANIC HOVER GLOW on project cards
+// ========================================
+(function cardGlow() {
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.background = `radial-gradient(ellipse at ${x}% ${y}%, rgba(193,154,107,0.04) 0%, var(--aged-parchment) 60%)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.background = '';
+    });
+  });
+})();
+</script>
+</body>
+</html>

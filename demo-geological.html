@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anshull Garg | Geological Survey Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sandstone: #C2956B;
+  --shale: #6B4C3B;
+  --serpentine: #2D4F3A;
+  --iron-oxide: #8C3B2A;
+  --limestone: #D4C5A0;
+  --topsoil: #3B2F1E;
+  --granite: #8A8680;
+  --obsidian: #1A1612;
+  --quartz: #F5F0E8;
+  --core-glow: #D4501E;
+}
+
+html {
+  scroll-behavior: smooth;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='36' viewBox='0 0 28 36'%3E%3Cpath d='M14 0 L18 6 L16 6 L16 28 L18 28 L14 36 L10 28 L12 28 L12 6 L10 6 Z' fill='%236B4C3B' stroke='%23C2956B' stroke-width='1'/%3E%3Crect x='10' y='26' width='8' height='4' fill='%238A8680' rx='1'/%3E%3Crect x='9' y='29' width='10' height='3' fill='%238A8680' rx='1'/%3E%3C/svg%3E") 14 0, auto;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--topsoil);
+  color: var(--quartz);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* ===== DEPTH INDICATOR ===== */
+.depth-gauge {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.depth-gauge__track {
+  width: 3px;
+  height: 200px;
+  background: rgba(212, 197, 160, 0.15);
+  border-radius: 2px;
+  position: relative;
+}
+
+.depth-gauge__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--sandstone);
+  border-radius: 2px;
+  transition: height 0.3s ease;
+}
+
+.depth-gauge__marker {
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--sandstone);
+  border-radius: 50%;
+  background: var(--topsoil);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: top 0.3s ease;
+}
+
+.depth-readout {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  color: var(--sandstone);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 12px;
+  opacity: 0.8;
+}
+
+.depth-number {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 13px;
+  color: var(--limestone);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ===== ERA LABELS ===== */
+.era-labels {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.era-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-left: 2px solid transparent;
+  color: rgba(212, 197, 160, 0.3);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.era-label.active {
+  color: var(--sandstone);
+  border-left-color: var(--sandstone);
+}
+
+/* ===== GEOLOGICAL LAYERS ===== */
+.geological-layer {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Layer transition textures */
+.layer-transition {
+  height: 120px;
+  position: relative;
+  z-index: 2;
+}
+
+/* --- SURFACE / HOLOCENE --- */
+.layer--surface {
+  background: linear-gradient(180deg,
+    #87CEEB 0%,
+    #a8d8ea 15%,
+    #c5e8d5 30%,
+    #6B8F5E 50%,
+    #4a6d3b 65%,
+    var(--topsoil) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.layer--surface::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 3px,
+      rgba(59, 47, 30, 0.08) 3px,
+      rgba(59, 47, 30, 0.08) 4px
+    );
+}
+
+/* Grass blades at surface */
+.grass-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  overflow: hidden;
+}
+
+.grass-blade {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to top, var(--topsoil), #4a6d3b);
+  border-radius: 50% 50% 0 0;
+  transform-origin: bottom center;
+  animation: sway 3s ease-in-out infinite;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+.surface-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  color: var(--topsoil);
+  line-height: 1.1;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.surface-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: rgba(59, 47, 30, 0.75);
+  font-weight: 400;
+  max-width: 500px;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
+}
+
+.survey-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59, 47, 30, 0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 47, 30, 0.2);
+  border-radius: 24px;
+  padding: 8px 20px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--topsoil);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 2;
+}
+
+.survey-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--serpentine);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.scroll-indicator span {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--topsoil);
+  opacity: 0.6;
+}
+
+.drill-down-arrow {
+  width: 20px;
+  height: 30px;
+  position: relative;
+  animation: drillBounce 2s ease-in-out infinite;
+}
+
+.drill-down-arrow::before,
+.drill-down-arrow::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.drill-down-arrow::before {
+  top: 0;
+  width: 4px;
+  height: 18px;
+  background: var(--topsoil);
+  opacity: 0.5;
+}
+
+.drill-down-arrow::after {
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid var(--topsoil);
+  opacity: 0.5;
+}
+
+@keyframes drillBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* --- TRANSITION: Topsoil to Sandstone --- */
+.transition--topsoil-sandstone {
+  background: linear-gradient(180deg,
+    var(--topsoil) 0%,
+    #5C4A35 20%,
+    #8B7355 50%,
+    var(--sandstone) 100%
+  );
+}
+
+.transition--topsoil-sandstone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 8px,
+      rgba(0,0,0,0.06) 8px,
+      rgba(0,0,0,0.06) 9px
+    );
+}
+
+/* --- RECENT / SANDSTONE --- Projects */
+.layer--sandstone {
+  background:
+    repeating-linear-gradient(0deg,
+      var(--sandstone) 0px,
+      var(--sandstone) 6px,
+      #b8885e 6px,
+      #b8885e 7px,
+      var(--sandstone) 7px,
+      var(--sandstone) 14px,
+      #caa07a 14px,
+      #caa07a 15px
+    );
+  padding: 100px 24px;
+}
+
+/* Sedimentary texture overlay */
+.layer--sandstone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(2deg,
+      transparent,
+      transparent 20px,
+      rgba(139, 115, 85, 0.15) 20px,
+      rgba(139, 115, 85, 0.15) 21px
+    );
+  pointer-events: none;
+}
+
+.layer--sandstone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* --- TRANSITION: Sandstone to Shale --- */
+.transition--sandstone-shale {
+  background: linear-gradient(180deg,
+    var(--sandstone) 0%,
+    #9B7B58 30%,
+    #7D5D42 60%,
+    var(--shale) 100%
+  );
+}
+
+.transition--sandstone-shale::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(1deg,
+      transparent,
+      transparent 4px,
+      rgba(0,0,0,0.08) 4px,
+      rgba(0,0,0,0.08) 5px
+    );
+}
+
+/* --- MIDDLE / SHALE --- Experience */
+.layer--shale {
+  background:
+    repeating-linear-gradient(0deg,
+      var(--shale) 0px,
+      var(--shale) 3px,
+      #5f4235 3px,
+      #5f4235 4px,
+      var(--shale) 4px,
+      var(--shale) 8px,
+      #7a5a4a 8px,
+      #7a5a4a 9px
+    );
+  padding: 100px 24px;
+}
+
+/* Finer sedimentary lines for shale */
+.layer--shale::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0.5deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.05) 2px,
+      rgba(0,0,0,0.05) 3px
+    );
+  pointer-events: none;
+}
+
+/* --- TRANSITION: Shale to Serpentine --- */
+.transition--shale-serpentine {
+  background: linear-gradient(180deg,
+    var(--shale) 0%,
+    #4D4A38 30%,
+    #3A4D3B 60%,
+    var(--serpentine) 100%
+  );
+}
+
+/* --- DEEP / SERPENTINE --- Skills */
+.layer--serpentine {
+  background:
+    var(--serpentine);
+  padding: 100px 24px;
+  position: relative;
+}
+
+/* Metamorphic wavy texture */
+.layer--serpentine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(3deg,
+      transparent 0px,
+      transparent 12px,
+      rgba(60, 100, 70, 0.3) 12px,
+      rgba(60, 100, 70, 0.3) 14px,
+      transparent 14px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(-2deg,
+      transparent 0px,
+      transparent 16px,
+      rgba(35, 65, 45, 0.25) 16px,
+      rgba(35, 65, 45, 0.25) 18px,
+      transparent 18px,
+      transparent 28px
+    );
+  pointer-events: none;
+}
+
+.layer--serpentine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* --- TRANSITION: Serpentine to Iron Oxide --- */
+.transition--serpentine-iron {
+  background: linear-gradient(180deg,
+    var(--serpentine) 0%,
+    #3D3E30 30%,
+    #6B3325 60%,
+    var(--iron-oxide) 100%
+  );
+}
+
+/* --- CORE / IRON OXIDE --- About/Contact */
+.layer--core {
+  background: var(--iron-oxide);
+  padding: 100px 24px 60px;
+  position: relative;
+}
+
+/* Igneous speckled texture */
+.layer--core::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle 1px at 20% 30%, rgba(255,200,150,0.2) 1px, transparent 1px),
+    radial-gradient(circle 1px at 60% 10%, rgba(255,200,150,0.15) 1px, transparent 1px),
+    radial-gradient(circle 1.5px at 80% 50%, rgba(255,180,120,0.18) 1px, transparent 1px),
+    radial-gradient(circle 1px at 30% 70%, rgba(255,200,150,0.12) 1px, transparent 1px),
+    radial-gradient(circle 1px at 50% 90%, rgba(255,200,150,0.2) 1px, transparent 1px),
+    radial-gradient(circle 1px at 10% 55%, rgba(255,220,180,0.15) 1px, transparent 1px),
+    radial-gradient(circle 1px at 90% 75%, rgba(255,200,150,0.18) 1px, transparent 1px),
+    radial-gradient(circle 1px at 45% 40%, rgba(255,220,180,0.12) 1px, transparent 1px);
+  background-size: 150px 150px;
+  pointer-events: none;
+}
+
+.layer--core::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: radial-gradient(ellipse at center bottom, rgba(212, 80, 30, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+  position: relative;
+  z-index: 3;
+}
+
+.section-header__era {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+
+.section-header__title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.section-header__depth {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  opacity: 0.4;
+}
+
+.section-header__line {
+  width: 60px;
+  height: 2px;
+  background: currentColor;
+  margin: 20px auto 0;
+  opacity: 0.3;
+}
+
+/* ===== FOSSIL CARDS (Projects) ===== */
+.fossil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+}
+
+.fossil-card {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fossil-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Stone texture on cards */
+.fossil-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 10px,
+      rgba(255,255,255,0.015) 10px,
+      rgba(255,255,255,0.015) 11px
+    );
+  pointer-events: none;
+}
+
+/* Fossil imprint decoration */
+.fossil-card::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.fossil-card__tag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 12px;
+}
+
+.fossil-card__title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.fossil-card__desc {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+.fossil-card__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fossil-card__tech span {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ===== GEODE ANIMATION ===== */
+.geode-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.geode-overlay.active {
+  pointer-events: all;
+  opacity: 1;
+}
+
+.geode-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(180, 140, 200, 0.95) 0%,
+    rgba(120, 80, 160, 0.9) 25%,
+    rgba(80, 50, 130, 0.85) 50%,
+    rgba(60, 30, 80, 0.9) 75%,
+    rgba(40, 20, 50, 0.95) 100%
+  );
+  transform: scale(0);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.geode-overlay.active .geode-circle {
+  transform: scale(1);
+}
+
+.geode-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.3s;
+}
+
+.geode-overlay.active .geode-content {
+  opacity: 1;
+}
+
+.geode-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.geode-overlay.active .sparkle {
+  animation: sparkleAnim 1.5s ease-out forwards;
+}
+
+@keyframes sparkleAnim {
+  0% { opacity: 0; transform: scale(0) translate(0, 0); }
+  20% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5) translate(var(--tx), var(--ty)); }
+}
+
+.geode-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.geode-close:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.geode-content h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  margin-bottom: 16px;
+  color: var(--quartz);
+}
+
+.geode-content p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(245, 240, 232, 0.8);
+  margin-bottom: 20px;
+}
+
+.geode-content .crystal-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.geode-content .crystal-list span {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: var(--quartz);
+  letter-spacing: 0.5px;
+}
+
+/* ===== EXPERIENCE STRATA ===== */
+.strata-list {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+}
+
+.stratum {
+  padding: 40px;
+  margin-bottom: 24px;
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 3px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0 12px 12px 0;
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.stratum:hover {
+  border-left-color: var(--sandstone);
+}
+
+.stratum__period {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.4;
+  margin-bottom: 8px;
+}
+
+.stratum__role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.stratum__org {
+  font-size: 1rem;
+  color: var(--sandstone);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.stratum__desc {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  opacity: 0.7;
+}
+
+.stratum__desc li {
+  margin-bottom: 6px;
+  list-style: none;
+  padding-left: 16px;
+  position: relative;
+}
+
+.stratum__desc li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 2px;
+  background: var(--sandstone);
+  opacity: 0.5;
+}
+
+/* ===== MINERAL DEPOSITS (Skills) ===== */
+.mineral-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+}
+
+.mineral-vein {
+  padding: 32px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mineral-vein__title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mineral-vein__title::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.mineral-vein--primary .mineral-vein__title::before { background: var(--sandstone); }
+.mineral-vein--secondary .mineral-vein__title::before { background: var(--serpentine); }
+.mineral-vein--tertiary .mineral-vein__title::before { background: var(--limestone); }
+
+.mineral-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mineral {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mineral:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Shimmer effect on minerals */
+.mineral::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  transition: left 0.6s ease;
+}
+
+.mineral:hover::after {
+  left: 150%;
+}
+
+/* ===== CORE SECTION ===== */
+.core-content {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 3;
+}
+
+.core-about {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  opacity: 0.8;
+  margin-bottom: 48px;
+}
+
+.core-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+.core-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-decoration: none;
+  color: var(--quartz);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.core-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.core-link--primary {
+  background: var(--sandstone);
+  border-color: var(--sandstone);
+  color: var(--topsoil);
+}
+
+.core-link--primary:hover {
+  background: #d4a57b;
+  border-color: #d4a57b;
+}
+
+/* Core glow effect */
+.core-glow {
+  width: 120px;
+  height: 120px;
+  margin: 48px auto 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--core-glow) 0%, rgba(212, 80, 30, 0.3) 40%, transparent 70%);
+  animation: coreGlow 4s ease-in-out infinite;
+  position: relative;
+}
+
+.core-glow::after {
+  content: 'Fe';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(255, 200, 150, 0.6);
+}
+
+@keyframes coreGlow {
+  0%, 100% { box-shadow: 0 0 60px rgba(212, 80, 30, 0.3); }
+  50% { box-shadow: 0 0 100px rgba(212, 80, 30, 0.5); }
+}
+
+.core-footer {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.3;
+  padding-top: 60px;
+}
+
+/* ===== EMBEDDED FOSSILS (decorative) ===== */
+.embedded-fossil {
+  position: absolute;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.fossil-ammonite {
+  width: 80px;
+  height: 80px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  position: relative;
+}
+
+.fossil-ammonite::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.fossil-ammonite::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .depth-gauge { right: 10px; }
+  .era-labels { display: none; }
+  .fossil-grid { grid-template-columns: 1fr; gap: 20px; }
+  .mineral-grid { grid-template-columns: 1fr; gap: 20px; }
+
+  .layer--sandstone,
+  .layer--shale,
+  .layer--serpentine,
+  .layer--core {
+    padding: 80px 16px;
+  }
+
+  .stratum { padding: 24px; }
+  .fossil-card { padding: 24px; }
+  .mineral-vein { padding: 24px; }
+}
+
+@media (max-width: 480px) {
+  .surface-title { font-size: 2rem; }
+  .fossil-grid { grid-template-columns: 1fr; }
+  .core-links { flex-direction: column; align-items: center; }
+}
+
+/* ===== PARTICLES (Sediment) ===== */
+.sediment-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.sediment {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(194, 149, 107, 0.15);
+  border-radius: 50%;
+}
+</style>
+</head>
+<body>
+
+<!-- Sediment particles -->
+<div class="sediment-particles" id="sedimentParticles"></div>
+
+<!-- Depth Gauge -->
+<div class="depth-gauge" id="depthGauge">
+  <div class="depth-number" id="depthNumber">0m</div>
+  <div class="depth-gauge__track">
+    <div class="depth-gauge__fill" id="depthFill"></div>
+    <div class="depth-gauge__marker" id="depthMarker"></div>
+  </div>
+  <div class="depth-readout">Depth</div>
+</div>
+
+<!-- Era Labels -->
+<nav class="era-labels" id="eraLabels" aria-label="Geological era navigation">
+  <a class="era-label active" href="#surface" data-era="surface">Holocene</a>
+  <a class="era-label" href="#projects" data-era="projects">Pleistocene</a>
+  <a class="era-label" href="#experience" data-era="experience">Miocene</a>
+  <a class="era-label" href="#skills" data-era="skills">Paleozoic</a>
+  <a class="era-label" href="#core" data-era="core">Precambrian</a>
+</nav>
+
+<!-- Geode Overlay -->
+<div class="geode-overlay" id="geodeOverlay" role="dialog" aria-modal="true" aria-label="Project details">
+  <div class="geode-circle" id="geodeCircle"></div>
+  <div class="geode-sparkles" id="geodeSparkles"></div>
+  <button class="geode-close" id="geodeClose" aria-label="Close project details">&times;</button>
+  <div class="geode-content" id="geodeContent"></div>
+</div>
+
+<!-- ===== SURFACE LAYER ===== -->
+<section class="geological-layer layer--surface" id="surface" aria-label="Surface - Introduction">
+  <div class="grass-container" id="grassContainer"></div>
+  <div class="survey-badge">
+    <span>Geological Survey of Software Engineering</span>
+  </div>
+  <h1 class="surface-title">Anshull Garg</h1>
+  <p class="surface-subtitle">
+    Software Developer at Walmart. Excavating clean code from the bedrock of complex systems. Each layer below tells a story millions of iterations in the making.
+  </p>
+  <div class="scroll-indicator">
+    <span>Begin Drilling</span>
+    <div class="drill-down-arrow"></div>
+  </div>
+</section>
+
+<!-- Transition -->
+<div class="layer-transition transition--topsoil-sandstone"></div>
+
+<!-- ===== SANDSTONE LAYER - Projects ===== -->
+<section class="geological-layer layer--sandstone" id="projects" aria-label="Sandstone Layer - Projects">
+  <div class="section-header reveal">
+    <div class="section-header__era">Pleistocene Era</div>
+    <h2 class="section-header__title" style="color: var(--topsoil);">Fossil Record</h2>
+    <div class="section-header__depth" style="color: var(--topsoil);">Depth: 50m - 200m | Sedimentary Sandstone</div>
+    <div class="section-header__line" style="background: var(--topsoil);"></div>
+  </div>
+
+  <!-- Decorative fossil -->
+  <div class="embedded-fossil fossil-ammonite" style="right: 10%; top: 15%; color: var(--shale);"></div>
+
+  <div class="fossil-grid">
+    <div class="fossil-card reveal" data-project="0" style="color: var(--topsoil);" tabindex="0" role="button" aria-label="View project: E-Commerce Platform Engine">
+      <div class="fossil-card__tag">Specimen A-01</div>
+      <h3 class="fossil-card__title">E-Commerce Platform Engine</h3>
+      <p class="fossil-card__desc">Architected a high-throughput order processing system handling millions of transactions. Built resilient microservices with distributed caching layers.</p>
+      <div class="fossil-card__tech">
+        <span>React</span>
+        <span>Node.js</span>
+        <span>Redis</span>
+        <span>Kafka</span>
+      </div>
+    </div>
+
+    <div class="fossil-card reveal" data-project="1" style="color: var(--topsoil);" tabindex="0" role="button" aria-label="View project: Inventory Intelligence System">
+      <div class="fossil-card__tag">Specimen A-02</div>
+      <h3 class="fossil-card__title">Inventory Intelligence System</h3>
+      <p class="fossil-card__desc">Real-time inventory tracking across thousands of locations. Predictive algorithms to optimize stock levels and reduce waste at massive scale.</p>
+      <div class="fossil-card__tech">
+        <span>Python</span>
+        <span>TypeScript</span>
+        <span>GraphQL</span>
+        <span>PostgreSQL</span>
+      </div>
+    </div>
+
+    <div class="fossil-card reveal" data-project="2" style="color: var(--topsoil);" tabindex="0" role="button" aria-label="View project: Customer Experience Dashboard">
+      <div class="fossil-card__tag">Specimen A-03</div>
+      <h3 class="fossil-card__title">Customer Experience Dashboard</h3>
+      <p class="fossil-card__desc">Analytics platform synthesizing customer journey data into actionable insights. Interactive visualizations and real-time monitoring dashboards.</p>
+      <div class="fossil-card__tech">
+        <span>React</span>
+        <span>D3.js</span>
+        <span>WebSocket</span>
+        <span>AWS</span>
+      </div>
+    </div>
+
+    <div class="fossil-card reveal" data-project="3" style="color: var(--topsoil);" tabindex="0" role="button" aria-label="View project: CI/CD Pipeline Automation">
+      <div class="fossil-card__tag">Specimen A-04</div>
+      <h3 class="fossil-card__title">CI/CD Pipeline Automation</h3>
+      <p class="fossil-card__desc">End-to-end deployment pipeline reducing release cycles from weeks to hours. Infrastructure-as-code with automated testing and rollback capabilities.</p>
+      <div class="fossil-card__tech">
+        <span>Docker</span>
+        <span>Kubernetes</span>
+        <span>Terraform</span>
+        <span>GitHub Actions</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Transition -->
+<div class="layer-transition transition--sandstone-shale"></div>
+
+<!-- ===== SHALE LAYER - Experience ===== -->
+<section class="geological-layer layer--shale" id="experience" aria-label="Shale Layer - Experience">
+  <div class="section-header reveal">
+    <div class="section-header__era">Miocene Era</div>
+    <h2 class="section-header__title">Stratified Experience</h2>
+    <div class="section-header__depth">Depth: 200m - 500m | Laminated Shale</div>
+    <div class="section-header__line"></div>
+  </div>
+
+  <div class="strata-list">
+    <div class="stratum reveal">
+      <div class="stratum__period">2022 - Present</div>
+      <h3 class="stratum__role">Software Developer</h3>
+      <div class="stratum__org">Walmart Global Tech</div>
+      <div class="stratum__desc">
+        <ul>
+          <li>Building and scaling enterprise applications serving millions of users across Walmart's digital ecosystem</li>
+          <li>Designing microservice architectures for high-availability commerce platforms with 99.99% uptime targets</li>
+          <li>Leading frontend modernization efforts using React and TypeScript, improving page load times by 40%</li>
+          <li>Collaborating across cross-functional teams to deliver data-driven features impacting global operations</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stratum reveal">
+      <div class="stratum__period">2020 - 2022</div>
+      <h3 class="stratum__role">Software Engineer</h3>
+      <div class="stratum__org">Tech Company</div>
+      <div class="stratum__desc">
+        <ul>
+          <li>Developed full-stack web applications with React, Node.js, and cloud-native infrastructure</li>
+          <li>Implemented RESTful APIs and GraphQL endpoints serving mobile and web clients</li>
+          <li>Optimized database queries and caching strategies, reducing average response times by 60%</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stratum reveal">
+      <div class="stratum__period">2018 - 2020</div>
+      <h3 class="stratum__role">Junior Developer</h3>
+      <div class="stratum__org">Startup</div>
+      <div class="stratum__desc">
+        <ul>
+          <li>Built responsive web interfaces and contributed to agile development workflows</li>
+          <li>Gained foundational experience in JavaScript frameworks, version control, and CI/CD practices</li>
+          <li>Participated in code reviews and pair programming sessions to accelerate learning</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Transition -->
+<div class="layer-transition transition--shale-serpentine"></div>
+
+<!-- ===== SERPENTINE LAYER - Skills ===== -->
+<section class="geological-layer layer--serpentine" id="skills" aria-label="Serpentine Layer - Skills">
+  <div class="section-header reveal">
+    <div class="section-header__era">Paleozoic Era</div>
+    <h2 class="section-header__title">Mineral Deposits</h2>
+    <div class="section-header__depth">Depth: 500m - 1000m | Metamorphic Serpentine</div>
+    <div class="section-header__line"></div>
+  </div>
+
+  <div class="mineral-grid">
+    <div class="mineral-vein mineral-vein--primary reveal">
+      <div class="mineral-vein__title">Languages &amp; Frameworks</div>
+      <div class="mineral-list">
+        <span class="mineral">JavaScript</span>
+        <span class="mineral">TypeScript</span>
+        <span class="mineral">Python</span>
+        <span class="mineral">Java</span>
+        <span class="mineral">React</span>
+        <span class="mineral">Next.js</span>
+        <span class="mineral">Node.js</span>
+        <span class="mineral">Express</span>
+        <span class="mineral">GraphQL</span>
+        <span class="mineral">HTML/CSS</span>
+      </div>
+    </div>
+
+    <div class="mineral-vein mineral-vein--secondary reveal">
+      <div class="mineral-vein__title">Infrastructure &amp; Tools</div>
+      <div class="mineral-list">
+        <span class="mineral">AWS</span>
+        <span class="mineral">Docker</span>
+        <span class="mineral">Kubernetes</span>
+        <span class="mineral">Terraform</span>
+        <span class="mineral">CI/CD</span>
+        <span class="mineral">Git</span>
+        <span class="mineral">Linux</span>
+        <span class="mineral">Nginx</span>
+        <span class="mineral">Jenkins</span>
+      </div>
+    </div>
+
+    <div class="mineral-vein mineral-vein--tertiary reveal">
+      <div class="mineral-vein__title">Data &amp; Systems</div>
+      <div class="mineral-list">
+        <span class="mineral">PostgreSQL</span>
+        <span class="mineral">MongoDB</span>
+        <span class="mineral">Redis</span>
+        <span class="mineral">Kafka</span>
+        <span class="mineral">Elasticsearch</span>
+        <span class="mineral">REST APIs</span>
+        <span class="mineral">Microservices</span>
+        <span class="mineral">System Design</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Transition -->
+<div class="layer-transition transition--serpentine-iron"></div>
+
+<!-- ===== CORE LAYER - About/Contact ===== -->
+<section class="geological-layer layer--core" id="core" aria-label="Core Layer - About and Contact">
+  <div class="section-header reveal">
+    <div class="section-header__era">Precambrian Era</div>
+    <h2 class="section-header__title">The Core</h2>
+    <div class="section-header__depth">Depth: 1000m+ | Igneous Iron Oxide</div>
+    <div class="section-header__line"></div>
+  </div>
+
+  <div class="core-content">
+    <p class="core-about reveal">
+      At the very core, beneath all the layers of projects, experience, and skills, there is a software developer driven by curiosity and the relentless pursuit of elegant solutions. I believe the best code, like the best geology, reveals its structure honestly -- each layer purposeful, each formation telling a story of pressure, time, and transformation.
+    </p>
+
+    <div class="core-links reveal">
+      <a href="mailto:anshullgarg@gmail.com" class="core-link core-link--primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+        Get In Touch
+      </a>
+      <a href="https://github.com/anshullgarg" class="core-link" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://linkedin.com/in/anshullgarg" class="core-link" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+
+    <div class="core-glow"></div>
+
+    <div class="core-footer reveal">
+      Geological Survey Complete -- All Strata Documented
+    </div>
+  </div>
+</section>
+
+<script>
+// ===== PROJECT DATA FOR GEODE =====
+const projectDetails = [
+  {
+    title: 'E-Commerce Platform Engine',
+    desc: 'A crystalline formation of microservices and event-driven architecture. This specimen represents the highest-throughput system in the collection, processing millions of daily transactions with sub-100ms latency. Built with resilient patterns including circuit breakers, retry logic, and distributed caching that ensure 99.99% availability even during peak load events.',
+    tech: ['React', 'Node.js', 'Redis', 'Kafka', 'Docker', 'AWS']
+  },
+  {
+    title: 'Inventory Intelligence System',
+    desc: 'A deeply stratified system of predictive algorithms and real-time data streams. This formation tracks inventory across thousands of physical locations, using machine learning models to forecast demand patterns and optimize replenishment. The crystalline data layer integrates with multiple upstream and downstream services through a unified GraphQL API.',
+    tech: ['Python', 'TypeScript', 'GraphQL', 'PostgreSQL', 'TensorFlow', 'Airflow']
+  },
+  {
+    title: 'Customer Experience Dashboard',
+    desc: 'An iridescent specimen of data visualization and real-time analytics. This formation captures the complete customer journey -- from first interaction to post-purchase -- rendering complex behavioral data into intuitive, interactive dashboards. WebSocket connections provide live updates while D3.js renders rich visualizations that reveal patterns invisible to the naked eye.',
+    tech: ['React', 'D3.js', 'WebSocket', 'AWS Lambda', 'DynamoDB', 'CloudWatch']
+  },
+  {
+    title: 'CI/CD Pipeline Automation',
+    desc: 'A metamorphic formation where manual processes were transformed under pressure into fully automated deployment pipelines. This specimen reduced release cycles from weeks to hours, incorporating infrastructure-as-code, automated testing at every layer, blue-green deployments, and instant rollback capabilities. A textbook example of DevOps crystallization.',
+    tech: ['Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'Helm', 'Prometheus']
+  }
+];
+
+// ===== GEODE ANIMATION =====
+const geodeOverlay = document.getElementById('geodeOverlay');
+const geodeCircle = document.getElementById('geodeCircle');
+const geodeContent = document.getElementById('geodeContent');
+const geodeSparkles = document.getElementById('geodeSparkles');
+const geodeClose = document.getElementById('geodeClose');
+
+function openGeode(card, projectIndex) {
+  const rect = card.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  // Size the circle to cover the viewport
+  const maxDim = Math.max(window.innerWidth, window.innerHeight) * 2.5;
+  geodeCircle.style.width = maxDim + 'px';
+  geodeCircle.style.height = maxDim + 'px';
+  geodeCircle.style.left = (cx - maxDim / 2) + 'px';
+  geodeCircle.style.top = (cy - maxDim / 2) + 'px';
+
+  // Populate content
+  const project = projectDetails[projectIndex];
+  geodeContent.innerHTML = `
+    <h2>${project.title}</h2>
+    <p>${project.desc}</p>
+    <div class="crystal-list">
+      ${project.tech.map(t => `<span>${t}</span>`).join('')}
+    </div>
+  `;
+
+  // Generate sparkles
+  geodeSparkles.innerHTML = '';
+  for (let i = 0; i < 30; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.left = cx + 'px';
+    sparkle.style.top = cy + 'px';
+    const angle = (Math.PI * 2 * i) / 30;
+    const dist = 80 + Math.random() * 200;
+    sparkle.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    sparkle.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    sparkle.style.animationDelay = (Math.random() * 0.4) + 's';
+    sparkle.style.width = (2 + Math.random() * 4) + 'px';
+    sparkle.style.height = sparkle.style.width;
+    geodeSparkles.appendChild(sparkle);
+  }
+
+  geodeOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGeode() {
+  geodeOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+geodeClose.addEventListener('click', closeGeode);
+geodeOverlay.addEventListener('click', (e) => {
+  if (e.target === geodeOverlay || e.target === geodeCircle) closeGeode();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeGeode();
+});
+
+// Attach to fossil cards
+document.querySelectorAll('.fossil-card').forEach(card => {
+  const handler = () => {
+    const idx = parseInt(card.dataset.project);
+    openGeode(card, idx);
+  };
+  card.addEventListener('click', handler);
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handler();
+    }
+  });
+});
+
+// ===== DEPTH GAUGE =====
+const depthFill = document.getElementById('depthFill');
+const depthMarker = document.getElementById('depthMarker');
+const depthNumber = document.getElementById('depthNumber');
+const maxDepth = 1200;
+
+function updateDepthGauge() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = Math.min(scrollTop / docHeight, 1);
+
+  depthFill.style.height = (progress * 100) + '%';
+  depthMarker.style.top = (progress * 100) + '%';
+
+  const currentDepth = Math.round(progress * maxDepth);
+  depthNumber.textContent = currentDepth + 'm';
+}
+
+// ===== ERA LABELS =====
+const sections = ['surface', 'projects', 'experience', 'skills', 'core'];
+const eraLabels = document.querySelectorAll('.era-label');
+
+function updateEraLabels() {
+  let activeSection = 'surface';
+
+  for (const id of sections) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const rect = el.getBoundingClientRect();
+    if (rect.top <= window.innerHeight / 2) {
+      activeSection = id;
+    }
+  }
+
+  eraLabels.forEach(label => {
+    label.classList.toggle('active', label.getAttribute('href') === '#' + activeSection);
+  });
+}
+
+// ===== REVEAL ON SCROLL =====
+function revealOnScroll() {
+  const reveals = document.querySelectorAll('.reveal:not(.visible)');
+  reveals.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) {
+      el.classList.add('visible');
+    }
+  });
+}
+
+// ===== GRASS BLADES =====
+function generateGrass() {
+  const container = document.getElementById('grassContainer');
+  const width = window.innerWidth;
+  const bladeCount = Math.floor(width / 8);
+
+  for (let i = 0; i < bladeCount; i++) {
+    const blade = document.createElement('div');
+    blade.className = 'grass-blade';
+    blade.style.left = (Math.random() * width) + 'px';
+    blade.style.height = (20 + Math.random() * 40) + 'px';
+    blade.style.animationDelay = (Math.random() * 3) + 's';
+    blade.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+    blade.style.opacity = 0.4 + Math.random() * 0.6;
+    container.appendChild(blade);
+  }
+}
+
+// ===== SEDIMENT PARTICLES =====
+function generateSediment() {
+  const container = document.getElementById('sedimentParticles');
+  const count = 40;
+
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'sediment';
+    particle.style.left = (Math.random() * 100) + '%';
+    particle.style.top = (Math.random() * 100) + '%';
+    particle.style.width = (1 + Math.random() * 3) + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.opacity = 0.05 + Math.random() * 0.15;
+
+    // Slow drift animation
+    particle.style.animation = `sedimentDrift ${8 + Math.random() * 12}s ease-in-out infinite`;
+    particle.style.animationDelay = `${Math.random() * 10}s`;
+
+    container.appendChild(particle);
+  }
+
+  // Add keyframes dynamically
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes sedimentDrift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(${10 + Math.random()*20}px, ${5 + Math.random()*15}px) rotate(45deg); }
+      50% { transform: translate(${-5 + Math.random()*10}px, ${10 + Math.random()*20}px) rotate(90deg); }
+      75% { transform: translate(${-10 - Math.random()*15}px, ${-5 + Math.random()*10}px) rotate(135deg); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// ===== SCROLL HANDLER =====
+let ticking = false;
+function onScroll() {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateDepthGauge();
+      updateEraLabels();
+      revealOnScroll();
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+
+// ===== ERA LABEL NAVIGATION =====
+eraLabels.forEach(label => {
+  label.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(label.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// ===== INIT =====
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', () => {
+  updateDepthGauge();
+});
+
+generateGrass();
+generateSediment();
+updateDepthGauge();
+updateEraLabels();
+revealOnScroll();
+
+// Initial reveal for surface elements
+setTimeout(() => revealOnScroll(), 100);
+</script>
+</body>
+</html>
